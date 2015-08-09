@@ -21,8 +21,13 @@ b {
   width: 380px;
 }
 
-th {
+th, td {
   padding: 0 2px;
+  vertical-align: top;
+}
+
+.lacking {
+  background-color: #FCC;
 }
 
 .wardrow {

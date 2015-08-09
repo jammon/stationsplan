@@ -1,9 +1,7 @@
 "use strict";
 // initialize Hoodie
 var hoodie  = new Hoodie();
-
-var plan;  // the View that holds the last plan
-// var days = new Backbone.Collection([], { model: Day });
+var sp = sp || {};
 
 var persons_init = [
   { name: 'Arenz', id: 'Are'},
@@ -25,6 +23,7 @@ var wards_init = [
   { name: 'Intensiv', id: 'Int', min: 1, max: 2, continued: true },
   { name: 'Hausdienst', id: 'D1', min: 0, max: 1, nightshift: true, everyday: true },
   { name: 'Intensivdienst', id: 'D2', min: 0, max: 1, nightshift: true, everyday: true },
+  { name: 'Urlaub', id: 'Url', min: 0, max: 10, on_leave: true, continued: true }
 ];
 
 function days_in_month (month, year) {
@@ -46,7 +45,7 @@ function add_month() {
     'November', 'Dezember'];
   content.append($('<h2/>', { text: month_names[month]+' '+year }));
 
-  var table = $('<table/>');
+  var table = $('<table/>', {border: 1});
 
   var titlerow = $('<tr/>', {'class': 'titlerow'}).append($('<th/>'));
   var d_i_m = days_in_month(month, year);
@@ -59,7 +58,7 @@ function add_month() {
 
   var days = [];
   for (i = 0; i < d_i_m; i++) {
-    var new_day = new Day({
+    var new_day = new sp.Day({
       date: new Date(year, month, i+1),
       yesterday: last_day,
     });
@@ -70,25 +69,28 @@ function add_month() {
     row.append($('<th/>', { text: model.get('name')}));
 
     for (var i = 0; i < d_i_m; i++) {
-      var view = new View({
-        collection: days[i][collection_array][model.id],
-      });
-      row.append(view.render().$el);
+      var collection = days[i][collection_array][model.id];
+      if (collection) {
+        var view = new View({collection: collection});
+        row.append(view.render().$el);
+      } else {
+        row.append('<td></td>');
+      }
     }
     
     table.append(row);
   }
-  wards.each(function(ward) {
-    construct_row(ward, 'wardrow', StaffingView, 'ward_staffings');
+  sp.wards.each(function(ward) {
+    construct_row(ward, 'wardrow', sp.StaffingView, 'ward_staffings');
   });
-  persons.each(function(person) {
-    construct_row(person, 'personrow', DutiesView, 'persons_duties');
+  sp.persons.each(function(person) {
+    construct_row(person, 'personrow', sp.DutiesView, 'persons_duties');
   });
 
   content.append(table);
 }
 
-// initialize persons: persons_init
-initialize_wards(wards_init);
-persons.reset(persons_init);
-add_month();
+function show_addstaff(argument) {
+  // body...
+}
+

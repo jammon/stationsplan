@@ -23,6 +23,11 @@
       </footer>
     </div> <!-- /.container -->
 
+    <!-- div class="hidden centerform" id="addstaff">
+      <form action="javascript:">
+      </form>
+    </div -->
+
     <script src="assets/vendor/jquery-2.1.0.min.js"></script>
     <script src="assets/vendor/bootstrap/bootstrap.js"></script>
     <script src="assets/vendor/underscore.js"></script>
@@ -35,5 +40,11 @@
     <script src="assets/js/models.js"></script>
     <script src="assets/js/views.js"></script>
     <script src="assets/js/main.js"></script>
+    <script type="text/javascript">
+      // initialize persons: persons_init
+      sp.initialize_wards(wards_init);
+      sp.persons.reset(persons_init);
+      add_month();
+    </script>
   </body>
 </html>
