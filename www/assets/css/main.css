@@ -1,24 +1,6 @@
-body {
-  background: url('../img/pattern_130.gif');
-}
-
-b {
-    position: absolute;
-    left: -999em;
-}
-
 .container {
   position: relative;
   background: #fff;
-  margin-top: -10px;
-  padding: 0;
-  box-shadow: 0 0 10px rgba(0,0,0,.5);
-}
-
-.content {
-  padding: 10px;
-  float: left;
-  width: 380px;
 }
 
 th, td {
@@ -28,9 +10,6 @@ th, td {
 
 .lacking {
   background-color: #FCC;
-}
-
-.wardrow {
 }
 
 .personrow {

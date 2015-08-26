@@ -1,5 +1,6 @@
 "use strict";
 // initialize Hoodie
+var log = $("#log");
 var hoodie  = new Hoodie();
 var sp = sp || {};
 
@@ -16,34 +17,38 @@ var persons_init = [
   { name: 'Xourafa', id: 'Xou',}
 ];
 var wards_init = [
-  { name: 'Station A', id: 'A', min: 2, max: 3, continued: true },
-  { name: 'Station B', id: 'B', min: 2, max: 3, continued: true },
-  { name: 'Station P', id: 'P', min: 1, max: 2, continued: true },
-  { name: 'Station IMC', id: 'IMC', min: 1, max: 1, continued: true },
-  { name: 'Intensiv', id: 'Int', min: 1, max: 2, continued: true },
-  { name: 'Hausdienst', id: 'D1', min: 0, max: 1, nightshift: true, everyday: true },
-  { name: 'Intensivdienst', id: 'D2', min: 0, max: 1, nightshift: true, everyday: true },
-  { name: 'Urlaub', id: 'Url', min: 0, max: 10, on_leave: true, continued: true }
+  { name: 'Station A', id: 'A',
+    min: 2, max: 3, continued: true },
+  { name: 'Station B', id: 'B',
+    min: 2, max: 3, continued: true },
+  { name: 'Station P', id: 'P',
+    min: 1, max: 2, continued: true },
+  { name: 'Station IMC', id: 'IMC',
+    min: 1, max: 1, continued: true },
+  { name: 'Intensiv', id: 'Int',
+    min: 1, max: 2, continued: true },
+  { name: 'Hausdienst', id: 'D1',
+    min: 0, max: 1, nightshift: true, everyday: true },
+  { name: 'Intensivdienst', id: 'D2',
+    min: 0, max: 1, nightshift: true, everyday: true },
+  { name: 'Urlaub', id: 'Url',
+    min: 0, max: 10, on_leave: true, continued: true },
 ];
-
-function days_in_month (month, year) {
-  var days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-  return (month == 1) ? (year % 4 ? 28 : 29) : days[month];
-}
 
 var next_date = new Date(2015, 7, 1);
 var last_day;
 
 function add_month() {
   var content = $("#main-content");
-  var log = $("#log")
 
   var month = next_date.getMonth();
   var year = next_date.getFullYear();
   var month_names = ['Januar', 'Februar', 'März', 'April', 'Mai',
     'Juni', 'Juli', 'August', 'September', 'Oktober',
     'November', 'Dezember'];
+
   content.append($('<h2/>', { text: month_names[month]+' '+year }));
+
 
   var table = $('<table/>', {border: 1});
 
@@ -54,7 +59,9 @@ function add_month() {
   for (i = 0; i < d_i_m; i++) {
     titlerow.append($('<th/>', { text: (i+1) + month_string }));
   }
+
   table.append(titlerow);
+
 
   var days = [];
   for (i = 0; i < d_i_m; i++) {
@@ -62,6 +69,7 @@ function add_month() {
       date: new Date(year, month, i+1),
       yesterday: last_day,
     });
+    new_day.store();
     days[i] = last_day = new_day;
   }
   function construct_row(model, row_name, View, collection_array) {
@@ -78,7 +86,9 @@ function add_month() {
       }
     }
     
+  
     table.append(row);
+  
   }
   sp.wards.each(function(ward) {
     construct_row(ward, 'wardrow', sp.StaffingView, 'ward_staffings');
@@ -93,4 +103,3 @@ function add_month() {
 function show_addstaff(argument) {
   // body...
 }
-

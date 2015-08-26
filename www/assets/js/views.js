@@ -1,17 +1,6 @@
 "use strict";
 var sp = sp || {};
 
-var DayView, RowView, WardView, PersonView, StaffingView, DutiesView, NoStaffingView;
-
-sp.RowView = Backbone.View.extend({
-  tagName: 'tr',
-  render: function() {
-    this.$el.html($('<th/>', {text: this.model.get('name')}));
-  }
-});
-sp.WardView = sp.PersonView = sp.RowView;
-
-
 sp.StaffingView = Backbone.View.extend({
   tagName: 'td',
   events: {
