@@ -69,7 +69,7 @@ function add_month() {
       date: new Date(year, month, i+1),
       yesterday: last_day,
     });
-    new_day.store();
+    // new_day.store();
     days[i] = last_day = new_day;
   }
   function construct_row(model, row_name, View, collection_array) {

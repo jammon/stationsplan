@@ -109,50 +109,51 @@ sp.Day = Backbone.Model.extend({
   initialize: function() {
     var that = this;
     var yesterday = this.get('yesterday');
-    this.id = this.get('date').toDateString();
+    this.id = sp.Day.get_id(this.get('date'));
 
     this.persons_duties = {};  // duties for each person
     sp.persons.each(function(person) {
       that.persons_duties[person.id] = new sp.Duties();
     });
 
-    this.ward_staffings = {};  // a staffing for each ward    
-    sp.wards.each(function(ward) {
-      var staffing, yesterdays_staffing;
-      var options = {
-        ward: ward,
-        day: that,
-      };
-      if (!is_free(that.get('date')) || 
-          ward.get('everyday') ||
-          ward.get('on_leave')) {
-        staffing = new sp.Staffing([], options);
-        if (ward.get('continued')) {
-          yesterdays_staffing = that.yesterdays_staffing(ward);
-          if (yesterdays_staffing) {
-            staffing.reset(yesterdays_staffing.models);
-            yesterdays_staffing.on('add', staffing.added_yesterday, staffing);
-            yesterdays_staffing.on('remove', staffing.removed_yesterday, staffing);
-          }
-        }
-        if (ward.get('on_leave')) {
-          staffing.on('add', that.on_leave_added, that);
-        }
-      }
-      that.ward_staffings[ward.id] = staffing;
-      if (yesterday) {
-        yesterday.on('nightshift:added', that.last_nightshift_added, that);
-        yesterday.on('nightshift:removed', that.last_nightshift_removed, that);
-      }
-    });
-
+    this.ward_staffings = {};  // a staffing for each ward
+    // can be undefined if this day is free
+    sp.wards.each(this.get_staffing, this);
+    if (yesterday) {
+      yesterday.on('nightshift:added', this.last_nightshift_added, this);
+      yesterday.on('nightshift:removed', this.last_nightshift_removed, this);
+    }
   },
+  get_staffing: function(ward) {
+    var staffing, yesterdays_staffing;
+    var options = { ward: ward, day: this };
+    if (!is_free(this.get('date')) ||
+        ward.get('everyday') ||
+        ward.get('on_leave')) {
+      staffing = new sp.Staffing([], options);
+      if (ward.get('continued')) {
+        yesterdays_staffing = this.yesterdays_staffing(ward);
+        if (yesterdays_staffing) {
+          staffing.reset(yesterdays_staffing.models);
+          yesterdays_staffing.on('add', staffing.added_yesterday, staffing);
+          yesterdays_staffing.on('remove', staffing.removed_yesterday, staffing);
+        }
+      }
+      if (ward.get('on_leave')) {
+        staffing.on('add', this.on_leave_added, this);
+      }
+    }
+    this.ward_staffings[ward.id] = staffing;
+  },
+
   store: function() {
+    // stores an Array with the person.ids or undefined for every ward
+    // returns a Promise
     var properties = _.mapObject(this.ward_staffings, function(val, key) {
-      return val.pluck('id');
+      return val && val.pluck('id');
     });
-    properties.id = this.id;
-    hoodie.store.add('day', properties).fail(sp.store_error);
+    properties.id = sp.Day.get_id(this.get('date'));
+    return hoodie.store.add('day', properties).fail(sp.store_error);
   },
   store_update: function(staffing) {
     var ward_id = staffing.ward.id;
@@ -246,10 +247,47 @@ sp.Day = Backbone.Model.extend({
     });
   },
 });
+sp.Day.retrieve = function(date, yesterday) {
+  var day = new sp.Day({ date: date, yesterday: yesterday });
+  hoodie.store.find('day', sp.Day.get_id(date))
+    .done(function(properties) {
+      var prop = properties;
+      prop.foo = 'bar';
+      _.mapObject(properties, function(val, key) {
+        var staffing, person;
+        if (key!='id') {
+          if (val) {
+            staffing = new sp.Staffing([], {
+              ward: sp.wards.get(key),
+              day: day,
+            });
+            for (var i = 0; i < val.length; i++) {
+              person = sp.persons.get(val[i]);
+              staffing.add(person);
+            }
+            val = staffing;
+          }
+          day.ward_staffings[key] = val;
+        }
+      });
+    })
+    .fail(function(error) {
+      throw error;
+    });
+  return day;
+};
+sp.Day.get_id = function(date) {
+  function padStr(i) {
+    return (i < 10) ? "0" + i : i;
+  }
+  return "" + date.getFullYear() +
+         padStr(1 + date.getMonth()) +
+         padStr(date.getDate());
+};
 
 sp.store_error = function(error) {
   $('#errors').append($('<li/>', { text: error }));
-},
+};
 
 // // A WardMonth contains the staffings of a ward for a whole month
 // // It has a 'ward' and a reference to the 'month'

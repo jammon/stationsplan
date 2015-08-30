@@ -175,4 +175,64 @@ describe("Day", function() {
             expect(tomorrow.get_available(ward_a).length).toBe(2);
         });
     });
+    describe("calculating the id of the day", function() {
+        it("should calculate usual date to an id", function() {
+            expect(sp.Day.get_id(new Date(2015, 0, 1)))
+                .toBe("20150101");
+            expect(sp.Day.get_id(new Date(2015, 7, 30)))
+                .toBe("20150830");
+            expect(sp.Day.get_id(new Date(2015, 11, 31)))
+                .toBe("20151231");
+            expect(sp.Day.get_id(new Date(1999, 11, 31)))
+                .toBe("19991231");
+        });
+    });
+    describe("storing and retrieving", function() {
+        it("should retrieve an empty day if it hasn't been stored", function() {
+            var day = sp.Day.retrieve(new Date(2015, 0, 1));
+            expect(day.ward_staffings.A.length).toBe(0);
+            expect(day.ward_staffings.B.length).toBe(0);
+            expect(day.ward_staffings.L.length).toBe(0);
+            expect(day.ward_staffings.N.length).toBe(0);
+            expect(day.get('yesterday')).toBe(undefined);
+        });
+        it("should retrieve an empty day if it has been stored empty", function() {
+            var some_date = new Date(2015, 0, 1);
+            var day, day2;
+            day = new sp.Day({ date: some_date });
+            day.store()
+                .then(function() { day2 = sp.Day.retrieve(some_date); })
+                // avoid pollution of the db
+                .then(function() { return hoodie.store.remove('day', day.id, {silent: true});})
+                .then(function() {
+                    expect(day2.ward_staffings.A.length).toBe(0);
+                    expect(day2.ward_staffings.B.length).toBe(0);
+                    expect(day2.ward_staffings.L.length).toBe(0);
+                    expect(day2.ward_staffings.N.length).toBe(0);
+                    expect(day2.get('yesterday')).toBe(undefined);
+                });
+        });
+        it("should retrieve a day with plannings", function() {
+            var some_date = new Date(2015, 0, 1);
+            var day, day2;
+            day = new sp.Day({ date: some_date });
+            day.ward_staffings.A.add(sp.persons.get('A'));
+            day.ward_staffings.B.add(sp.persons.get('B'));
+            day.store()
+                .then(function() { 
+                    day2 = sp.Day.retrieve(some_date); 
+                })
+                // avoid pollution of the db
+                .then(function() { return hoodie.store.remove('day', day.id, {silent: true});})
+                .then(function() {
+                    expect(day2.ward_staffings.A.length).toBe(1);
+                    expect(day2.ward_staffings.A.at(0).id).toBe('A');
+                    expect(day2.ward_staffings.B.length).toBe(1);
+                    expect(day2.ward_staffings.B.at(0).id).toBe('B');
+                    expect(day2.ward_staffings.L.length).toBe(0);
+                    expect(day2.ward_staffings.N.length).toBe(0);
+                    expect(day2.get('yesterday')).toBe(undefined);
+                });
+        });
+    });
 });
