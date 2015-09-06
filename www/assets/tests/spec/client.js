@@ -223,7 +223,9 @@ describe("Day", function() {
                     day2 = sp.Day.retrieve(some_date); 
                 })
                 // avoid pollution of the db
-                .then(function() { return hoodie.store.remove('day', day.id, {silent: true});})
+                .then(function() { 
+                    return hoodie.store.remove('day', day.id, {silent: true});
+                })
                 .then(function() {
                     expect(day2.ward_staffings.A.length).toBe(1);
                     expect(day2.ward_staffings.A.at(0).id).toBe('A');
@@ -234,5 +236,116 @@ describe("Day", function() {
                     expect(day2.get('yesterday')).toBe(undefined);
                 });
         });
+        it("should update the plannings", function() {
+            var some_date = new Date(2015, 0, 1);
+            var day, day2;
+            day = new sp.Day({ date: some_date });
+            day.ward_staffings.A.add(sp.persons.get('A'));
+            day.store()
+                .then(function() { 
+                    day.ward_staffings.B.add(sp.persons.get('B'));
+                    return day.store_update(day.ward_staffings.B);
+                })
+                .then(function() { 
+                    day2 = sp.Day.retrieve(some_date); 
+                })
+                // avoid pollution of the db
+                .then(function() { 
+                    return hoodie.store.remove('day', day.id, {silent: true});
+                })
+                .then(function() {
+                    expect(day2.ward_staffings.A.length).toBe(1);
+                    expect(day2.ward_staffings.A.at(0).id).toBe('A');
+                    expect(day2.ward_staffings.B.length).toBe(1);
+                    expect(day2.ward_staffings.B.at(0).id).toBe('B');
+                    expect(day2.ward_staffings.L.length).toBe(0);
+                    expect(day2.ward_staffings.N.length).toBe(0);
+                    expect(day2.get('yesterday')).toBe(undefined);
+                });
+        });
+    });
+});
+describe("Persons", function() {
+    it("should retrieve zero persons if there aren't any", function() {
+        var persons = new sp.Persons();
+        persons.retrieve()
+            .then(function() {
+                expect(persons.length).toBe(0);
+            });
+    });
+    it("should retrieve persons that have been stored", function() {
+        var p1 = new sp.Person({
+            name: "Test Test",
+            id: "test",
+        });
+        var p2 = new sp.Person({
+            name: "Test Test2",
+            id: "test2",
+            start_date: new Date(2015, 0, 1),
+            end_date: new Date(2015, 11, 31),
+        });
+        var persons = new sp.Persons();
+        p1.store()
+            .then(function() {
+                return p2.store();
+            })
+            .then(function() {
+                return persons.retrieve();
+            })
+            .then(function() {
+                var p1, p2;
+                expect(persons.length).toBe(2);
+                p1 = persons.get("test");
+                p2 = persons.get("test2");
+                expect(p1.get("id")).toBe("test");
+                expect(p2.get("id")).toBe("test2");
+                expect(p1.get("name")).toBe("Test Test");
+                expect(p2.get("name")).toBe("Test Test2");
+            });
+    });
+});
+describe("Wards", function() {
+    it("should retrieve zero wards if there aren't any", function() {
+        var wards = new sp.Wards();
+        wards.retrieve()
+            .then(function() {
+                expect(wards.length).toBe(0);
+            });
+    });
+    it("should retrieve wards that have been stored", function() {
+        var w1 = new sp.Ward({
+            name: "Ward A",
+            id: "a",
+            max: 3,
+            min: 2,
+        });
+        var w2 = new sp.Ward({
+            name: "Ward B",
+            id: "b",
+            max: 2,
+            min: 1,
+        });
+        var wards = new sp.Wards();
+        w1.store()
+            .then(function() {
+                return w2.store();
+            })
+            .then(function() {
+                return wards.retrieve();
+            })
+            .then(function() {
+                var w1_, w2_;
+                expect(wards.length).toBe(2);
+                w1_ = wards.get("a");
+                w2_ = wards.get("b");
+                expect(w1_.get("id")).toBe("a");
+                expect(w2_.get("id")).toBe("b");
+                expect(w1_.get("name")).toBe("Ward A");
+                expect(w2_.get("name")).toBe("Ward B");
+                expect(w1_.get("max")).toBe(3);
+                expect(w2_.get("max")).toBe(2);
+                expect(w1_.get("min")).toBe(2);
+                expect(w2_.get("min")).toBe(1);
+            });
     });
 });
