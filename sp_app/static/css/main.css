@@ -1,0 +1,17 @@
+.container {
+  position: relative;
+  background: #fff;
+}
+
+th, td {
+  padding: 0 2px;
+  vertical-align: top;
+}
+
+.lacking {
+  background-color: #FCC;
+}
+
+.personrow {
+  background-color: #DDD;
+}

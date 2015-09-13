@@ -3,10 +3,10 @@ var persons_init = [
   { name: 'Berta', id: 'B',},
 ];
 var wards_init = [
-  { name: 'Ward A', id: 'A', min: 1, max: 2, continued: true },
-  { name: 'Ward B', id: 'B', min: 2, max: 2, continued: true },
-  { name: 'Nightshift', id: 'N', min: 0, max: 1, nightshift: true, everyday: true },
-  { name: 'Leave', id: 'L', min: 0, max: 10, on_leave: true, continued: true }
+  { name: 'Ward A', shortname: 'A', min: 1, max: 2, continued: true },
+  { name: 'Ward B', shortname: 'B', min: 2, max: 2, continued: true },
+  { name: 'Nightshift', shortname: 'N', min: 0, max: 1, nightshift: true, everyday: true },
+  { name: 'Leave', shortname: 'L', min: 0, max: 10, on_leave: true, continued: true }
 ];
 function init_hospital() {
     sp.initialize_wards(wards_init);
@@ -187,93 +187,9 @@ describe("Day", function() {
                 .toBe("19991231");
         });
     });
-    describe("storing and retrieving", function() {
-        it("should retrieve an empty day if it hasn't been stored", function() {
-            var day = sp.Day.retrieve(new Date(2015, 0, 1));
-            expect(day.ward_staffings.A.length).toBe(0);
-            expect(day.ward_staffings.B.length).toBe(0);
-            expect(day.ward_staffings.L.length).toBe(0);
-            expect(day.ward_staffings.N.length).toBe(0);
-            expect(day.get('yesterday')).toBe(undefined);
-        });
-        it("should retrieve an empty day if it has been stored empty", function() {
-            var some_date = new Date(2015, 0, 1);
-            var day, day2;
-            day = new sp.Day({ date: some_date });
-            day.store()
-                .then(function() { day2 = sp.Day.retrieve(some_date); })
-                // avoid pollution of the db
-                .then(function() { return hoodie.store.remove('day', day.id, {silent: true});})
-                .then(function() {
-                    expect(day2.ward_staffings.A.length).toBe(0);
-                    expect(day2.ward_staffings.B.length).toBe(0);
-                    expect(day2.ward_staffings.L.length).toBe(0);
-                    expect(day2.ward_staffings.N.length).toBe(0);
-                    expect(day2.get('yesterday')).toBe(undefined);
-                });
-        });
-        it("should retrieve a day with plannings", function() {
-            var some_date = new Date(2015, 0, 1);
-            var day, day2;
-            day = new sp.Day({ date: some_date });
-            day.ward_staffings.A.add(sp.persons.get('A'));
-            day.ward_staffings.B.add(sp.persons.get('B'));
-            day.store()
-                .then(function() { 
-                    day2 = sp.Day.retrieve(some_date); 
-                })
-                // avoid pollution of the db
-                .then(function() { 
-                    return hoodie.store.remove('day', day.id, {silent: true});
-                })
-                .then(function() {
-                    expect(day2.ward_staffings.A.length).toBe(1);
-                    expect(day2.ward_staffings.A.at(0).id).toBe('A');
-                    expect(day2.ward_staffings.B.length).toBe(1);
-                    expect(day2.ward_staffings.B.at(0).id).toBe('B');
-                    expect(day2.ward_staffings.L.length).toBe(0);
-                    expect(day2.ward_staffings.N.length).toBe(0);
-                    expect(day2.get('yesterday')).toBe(undefined);
-                });
-        });
-        it("should update the plannings", function() {
-            var some_date = new Date(2015, 0, 1);
-            var day, day2;
-            day = new sp.Day({ date: some_date });
-            day.ward_staffings.A.add(sp.persons.get('A'));
-            day.store()
-                .then(function() { 
-                    day.ward_staffings.B.add(sp.persons.get('B'));
-                    return day.store_update(day.ward_staffings.B);
-                })
-                .then(function() { 
-                    day2 = sp.Day.retrieve(some_date); 
-                })
-                // avoid pollution of the db
-                .then(function() { 
-                    return hoodie.store.remove('day', day.id, {silent: true});
-                })
-                .then(function() {
-                    expect(day2.ward_staffings.A.length).toBe(1);
-                    expect(day2.ward_staffings.A.at(0).id).toBe('A');
-                    expect(day2.ward_staffings.B.length).toBe(1);
-                    expect(day2.ward_staffings.B.at(0).id).toBe('B');
-                    expect(day2.ward_staffings.L.length).toBe(0);
-                    expect(day2.ward_staffings.N.length).toBe(0);
-                    expect(day2.get('yesterday')).toBe(undefined);
-                });
-        });
-    });
 });
 describe("Persons", function() {
-    it("should retrieve zero persons if there aren't any", function() {
-        var persons = new sp.Persons();
-        persons.retrieve()
-            .then(function() {
-                expect(persons.length).toBe(0);
-            });
-    });
-    it("should retrieve persons that have been stored", function() {
+    it("should know, if they are available", function() {
         var p1 = new sp.Person({
             name: "Test Test",
             id: "test",
@@ -284,68 +200,17 @@ describe("Persons", function() {
             start_date: new Date(2015, 0, 1),
             end_date: new Date(2015, 11, 31),
         });
-        var persons = new sp.Persons();
-        p1.store()
-            .then(function() {
-                return p2.store();
-            })
-            .then(function() {
-                return persons.retrieve();
-            })
-            .then(function() {
-                var p1, p2;
-                expect(persons.length).toBe(2);
-                p1 = persons.get("test");
-                p2 = persons.get("test2");
-                expect(p1.get("id")).toBe("test");
-                expect(p2.get("id")).toBe("test2");
-                expect(p1.get("name")).toBe("Test Test");
-                expect(p2.get("name")).toBe("Test Test2");
-            });
-    });
-});
-describe("Wards", function() {
-    it("should retrieve zero wards if there aren't any", function() {
-        var wards = new sp.Wards();
-        wards.retrieve()
-            .then(function() {
-                expect(wards.length).toBe(0);
-            });
-    });
-    it("should retrieve wards that have been stored", function() {
-        var w1 = new sp.Ward({
-            name: "Ward A",
-            id: "a",
-            max: 3,
-            min: 2,
-        });
-        var w2 = new sp.Ward({
-            name: "Ward B",
-            id: "b",
-            max: 2,
-            min: 1,
-        });
-        var wards = new sp.Wards();
-        w1.store()
-            .then(function() {
-                return w2.store();
-            })
-            .then(function() {
-                return wards.retrieve();
-            })
-            .then(function() {
-                var w1_, w2_;
-                expect(wards.length).toBe(2);
-                w1_ = wards.get("a");
-                w2_ = wards.get("b");
-                expect(w1_.get("id")).toBe("a");
-                expect(w2_.get("id")).toBe("b");
-                expect(w1_.get("name")).toBe("Ward A");
-                expect(w2_.get("name")).toBe("Ward B");
-                expect(w1_.get("max")).toBe(3);
-                expect(w2_.get("max")).toBe(2);
-                expect(w1_.get("min")).toBe(2);
-                expect(w2_.get("min")).toBe(1);
-            });
+        var d1 = new Date(2014, 11, 31);
+        var d2 = new Date(2015, 0, 1);
+        var d3 = new Date(2015, 11, 31);
+        var d4 = new Date(2016, 0, 1);
+        expect(p1.is_available(d1)).toBe(true);
+        expect(p1.is_available(d2)).toBe(true);
+        expect(p1.is_available(d3)).toBe(true);
+        expect(p1.is_available(d4)).toBe(true);
+        expect(p2.is_available(d1)).toBe(false);
+        expect(p2.is_available(d2)).toBe(true);
+        expect(p2.is_available(d3)).toBe(true);
+        expect(p2.is_available(d4)).toBe(false);
     });
 });

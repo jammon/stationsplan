@@ -53,8 +53,7 @@ sp.StaffingView = Backbone.View.extend({
             this.selection_aborted();
         }
         this.$('select').remove();
-        var person = sp.persons.get(id);
-        this.collection.add(person);
+        sp.change_and_store(id, this.collection, 'add');
         // this.render();
     },
     selection_aborted: function() {
@@ -63,8 +62,7 @@ sp.StaffingView = Backbone.View.extend({
     },
     remove_person: function(event) {
         var id = event.target.textContent;
-        var person = sp.persons.get(id);
-        this.collection.remove(person);
+        sp.change_and_store(id, this.collection, 'remove');
     },
 });
 
@@ -74,7 +72,7 @@ sp.DutiesView = Backbone.View.extend({
         this.listenTo(this.collection, "update", this.render);
     },
     render: function() {
-        this.$el.html(this.collection.pluck('id').join(', '));
+        this.$el.html(this.collection.pluck('shortname').join(', '));
         return this;
     },
 });
@@ -89,6 +87,3 @@ sp.AddItemView = Backbone.View.extend({
         return this;
     },
 });
-
-sp.PersonView
-

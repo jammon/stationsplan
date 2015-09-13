@@ -35,26 +35,21 @@ sp.Person = Backbone.Model.extend({
         var end = this.get('end_date');
         return ((!begin || begin<=date) && (!end || end>=date));
     },
-    store: function() {
-        return hoodie.store.add('person', this.attributes).fail(sp.store_error);        
-    },
 });
 sp.Persons = Backbone.Collection.extend({
     model: sp.Person,
     retrieve: function() {
         var that = this;
-        return hoodie.store.findAll('person')
-            .done(function(all_persons) {
-                that.reset(all_persons);
-            });
-    }
+        // TODO
+    },
+    comparator: 'name',
 });
 sp.persons = new sp.Persons();
 
 // A ward can be a usual ward, a task or a shift.
 // It has a 
 //     - name
-//     - id    = short form of the name
+//     - shortname = short form of the name
 //     - max = maximum staffing
 //     - min = minimum staffing
 //     - nightshift = if truthy, staffing can not be planned on the next day.
@@ -62,20 +57,16 @@ sp.persons = new sp.Persons();
 //     - continued = if truthy, then todays staffing will be planned for tomorrow
 //     - on_leave = if truthy, then persons planned for this are on leave
 sp.Ward = Backbone.Model.extend({
-    store: function() {
-        return hoodie.store.add('ward', this.attributes)
-                           .fail(sp.store_error);        
-    },
+    idAttribute: "shortname",
 });
 sp.Wards = Backbone.Collection.extend({
     model: sp.Ward,
-    retrieve: function() {
-        var that = this;
-        return hoodie.store.findAll('ward')
-            .done(function(all_wards) {
-                that.reset(all_wards);
-            });
-    }
+    comparator: function(ward) {
+        var res = (ward.get('on_leave') ? '1' : '0') +  // on_leave last
+            (ward.get('continued') ? '0' : '1') +  // normal wards first
+            ward.get('shortname');
+        return res;
+    },
 });
 sp.wards = new sp.Wards();
 sp.nightshifts = new Backbone.Collection();
@@ -109,7 +100,7 @@ sp.Staffing = Backbone.Collection.extend({
     add_remove_person: function(action, person, staffing, options) {
         // continue yesterdays planning
         if (options.no_continue) return;
-        if (!staffing.ward.get('on_leave') && this.day.is_on_leave(person)) 
+        if (!staffing.ward.get('on_leave') && this.day.is_on_leave(person))
             return;
         if (this.day.yesterdays_nightshift(person)) {
             // don't add/remove, but continue the chain
@@ -170,22 +161,6 @@ sp.Day = Backbone.Model.extend({
         this.ward_staffings[ward.id] = staffing;
     },
 
-    store: function() {
-        // stores an Array with the person.ids or undefined for every ward
-        // returns a Promise
-        var properties = _.mapObject(this.ward_staffings, function(val, key) {
-            return val && val.pluck('id');
-        });
-        properties.id = sp.Day.get_id(this.get('date'));
-        return hoodie.store.add('day', properties).fail(sp.store_error);
-    },
-    store_update: function(staffing) {
-        var ward_id = staffing.ward.id;
-        hoodie.store.update('day', this.id, {
-            ward_id: staffing.pluck('id')
-        }).fail(sp.store_error);
-    },
-
     get_available: function(ward) {
         var unavailable = {};
         var available;
@@ -240,7 +215,6 @@ sp.Day = Backbone.Model.extend({
         if (staffing.ward.get('nightshift')) {
             this.trigger('nightshift:added', person, staffing.ward);
         }
-        this.store_update(staffing);
     },
     person_removed: function(person, staffing, options) {
         this.persons_duties[person.id].remove(staffing.ward);
@@ -271,57 +245,55 @@ sp.Day = Backbone.Model.extend({
         });
     },
 });
-sp.Day.retrieve = function(date, yesterday) {
-    var day = new sp.Day({ date: date, yesterday: yesterday });
-    hoodie.store.find('day', sp.Day.get_id(date))
-        .done(function(properties) {
-            var prop = properties;
-            prop.foo = 'bar';
-            _.mapObject(properties, function(val, key) {
-                var staffing, person;
-                if (key!='id') {
-                    if (val) {
-                        staffing = new sp.Staffing([], {
-                            ward: sp.wards.get(key),
-                            day: day,
-                        });
-                        for (var i = 0; i < val.length; i++) {
-                            person = sp.persons.get(val[i]);
-                            staffing.add(person);
-                        }
-                        val = staffing;
-                    }
-                    day.ward_staffings[key] = val;
-                }
-            });
-        })
-        .fail(function(error) {
-            throw error;
-        });
-    return day;
-};
+sp.padStr = function (i) {
+    return (i < 10) ? "0" + i : i;
+}
 sp.Day.get_id = function(date) {
-    function padStr(i) {
-        return (i < 10) ? "0" + i : i;
-    }
     return "" + date.getFullYear() +
-                 padStr(1 + date.getMonth()) +
-                 padStr(date.getDate());
+                sp.padStr(1 + date.getMonth()) +
+                sp.padStr(date.getDate());
+};
+sp.get_month_id = function(year, month) {
+    return "" + year + sp.padStr(1 + month);
 };
 
-sp.store_error = function(error) {
-    $('#errors').append($('<li/>', { text: error }));
+sp.change_and_store = function(person_id, staffing, action) {
+    var person = sp.persons.get(person_id);
+    staffing[action](person);
+    $.ajax('change', {
+        data: {
+            person: person_id,
+            ward: staffing.ward.get('shortname'),
+            day: staffing.day.id,
+            action: action,
+        },
+        method: 'POST',
+        error: function(jqXHR, textStatus, errorThrown) {
+            sp.store_error(textStatus, 'error');
+        },
+        success: function(data, textStatus, jqXHR) {
+            if (data.warning) {
+                sp.store_error(data.warning, 'warning');
+            }
+        },
+    });
 };
 
-// // A WardMonth contains the staffings of a ward for a whole month
-// // It has a 'ward' and a reference to the 'month'
-// sp.WardMonth = Backbone.Model.extend({
-//     staffings: [],
-//     initialize: function() {},
-// });
+sp.apply_change = function(change) {
+    var person = sp.persons.get(change.person);
+    var day = sp.days[change.day];
+    var staffing;
+    if (day && person) {
+        staffing = day.ward_staffings[change.ward];
+        if (staffing) {
+            staffing[change.action](person);
+            return;
+        }
+    }
+    // Something went wrong
+    console.log(change);
+};
 
-// // A Month contains all the plannings for every ward and person.
-// // It has a 'month' and a 'year' and a reference to the 'last_month'.
-// sp.Month = Backbone.Collection.extend({
-
-// });
+sp.store_error = function(error, type) {
+    $('#errors').append($('<li/>', { text: error, 'class': type }));
+};

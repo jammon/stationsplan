@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load staticfiles %}
 <html lang="en" class="no-js">
   <head>
     <meta charset="utf-8">
@@ -7,8 +8,8 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
 
-    <link rel="stylesheet" href="assets/vendor/bootstrap/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'sp_app/css/main.css' %}">
   </head>
   <body>
     <div class="container">
@@ -111,19 +112,17 @@
   </button>
 </script>
 
-    <script src="assets/vendor/jquery-2.1.0.min.js"></script>
-    <script src="assets/vendor/jquery.validate.js"></script>
-    <script src="assets/vendor/bootstrap/bootstrap.js"></script>
-    <script src="assets/vendor/underscore.js"></script>
-    <script src="assets/vendor/backbone.js"></script>
-    <!-- Load the dynamic version of hoodie.js that includes all the plugin code-->
-    <script src="/_api/_files/hoodie.js"></script>
+    <script src="{% static 'vendor/jquery-2.1.0.min.js' %}"></script>
+    <script src="{% static 'vendor/jquery.validate.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/bootstrap.js' %}"></script>
+    <script src="{% static 'vendor/underscore.js' %}"></script>
+    <script src="{% static 'vendor/backbone.js' %}"></script>
 
-    <script src="assets/vendor/hoodie.accountbar.bootstrap.js"></script>
-    <script src="assets/vendor/bootstrap.modalform.js"></script>
-    <script src="assets/js/models.js"></script>
-    <script src="assets/js/views.js"></script>
-    <script src="assets/js/main.js"></script>
+    <script src="{% static 'vendor/hoodie.accountbar.bootstrap.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap.modalform.js' %}"></script>
+    <script src="{% static 'sp_app/js/models.js' %}"></script>
+    <script src="{% static 'sp_app/js/views.js' %}"></script>
+    <script src="{% static 'sp_app/js/main.js' %}"></script>
     <script type="text/javascript">
       // initialize persons: persons_init
       sp.initialize_wards(wards_init);
