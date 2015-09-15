@@ -63,9 +63,13 @@ function add_month(year, month) {
     var d_i_m = days_in_month(month, year);
     var month_string = '.'+(month+1)+'.';
     var i;
-    for (i = 1; i <= d_i_m; i++) {
-        titlerow.append($('<th/>', { text: i + '.' }));
-    }
+    var day_names = ['So.<br>', 'Mo.<br>', 'Di.<br>', 'Mi.<br>',
+                     'Do.<br>', 'Fr.<br>', 'Sa.<br>'];
+    _.each(month_days, function(day) {
+        var date = day.get('date');
+        var title = day_names[date.getDay()] + date.getDate() + '.';
+        titlerow.append($('<th/>', { html: title }));
+    });
     table.append(titlerow);
 
     // Construct rows for wards and persons
@@ -93,8 +97,15 @@ function add_month(year, month) {
     // then the persons
     View = sp.DutiesView;
     collection_array = 'persons_duties';
-    row_class = 'personrow'
+    row_class = 'personrow';
+    var first_of_month = year*10000 + (month+1)*100 + 1;
     sp.persons.each(function(person) {
+        var start = person.get('start_date');
+        if (start && parseInt(start, 10)>first_of_month+31)
+            return;
+        var end = person.get('end_date');
+        if (end && parseInt(end, 10)<first_of_month)
+            return;
         construct_row(person);
     });
 

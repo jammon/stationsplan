@@ -22,9 +22,9 @@ class Person(models.Model):
         res = {'name': self.name,
                'id': self.shortname}
         if self.start_date:
-            res['start_date'] = self.start_date.strftime('%Y-%m-%d')
+            res['start_date'] = self.start_date.strftime('%Y%m%d')
         if self.end_date:
-            res['end_date'] = self.end_date.strftime('%Y-%m-%d')
+            res['end_date'] = self.end_date.strftime('%Y%m%d')
         return res
 
 
@@ -60,6 +60,9 @@ class ChangingStaff(models.Model):
     ward = models.CharField('Ward', max_length=10)
     day = models.DateField()
     added = models.BooleanField()
+
+    class Meta:
+        ordering = ['day']
 
     def toJson(self):
         return {

@@ -126,14 +126,22 @@ sp.Day = Backbone.Model.extend({
         var yesterday = this.get('yesterday');
         this.id = sp.Day.get_id(this.get('date'));
 
-        this.persons_duties = {};    // duties for each person
-        sp.persons.each(function(person) {
-            that.persons_duties[person.id] = new sp.Duties();
-        });
-
         this.ward_staffings = {};    // a staffing for each ward
         // can be undefined if this day is free
         sp.wards.each(this.get_staffing, this);
+
+        this.persons_duties = {};    // duties for each person
+        sp.persons.each(function(person) {
+            var duties = new sp.Duties();
+            sp.wards.each(function(ward) {
+                var staffing = that.ward_staffings[ward.id];
+                if (staffing && staffing.get(person)) {
+                    duties.add(ward);
+                }
+            });
+            that.persons_duties[person.id] = duties;
+        });
+
         if (yesterday) {
             yesterday.on('nightshift:added', this.last_nightshift_added, this);
             yesterday.on('nightshift:removed', this.last_nightshift_removed, this);

@@ -106,14 +106,14 @@ describe("Day", function() {
         var yesterday, today, tomorrow;
         beforeEach(function() {
             yesterday = new sp.Day({
-                date: new Date(2015, 7, 5),
+                date: new Date(2015, 7, 3),
             });
             today = new sp.Day({
-                date: new Date(2015, 7, 6),
+                date: new Date(2015, 7, 4),
                 yesterday: yesterday,
             });
             tomorrow = new sp.Day({
-                date: new Date(2015, 7, 7),
+                date: new Date(2015, 7, 5),
                 yesterday: today,
             });
         });
@@ -173,6 +173,28 @@ describe("Day", function() {
             expect(yesterday.get_available(ward_a).length).toBe(1);
             expect(today.get_available(ward_a).length).toBe(2);
             expect(tomorrow.get_available(ward_a).length).toBe(2);
+        });
+        it("should continue the staffings if a day is added", function() {
+            var tdat;
+            today.ward_staffings.A.add(person_a);
+            tdat = new sp.Day({
+                date: new Date(2015, 7, 6),
+                yesterday: tomorrow,
+            });
+            expect(tdat.ward_staffings.A.length).toBe(1);
+            expect(tdat.ward_staffings.A.models[0].id).toBe('A');
+            expect(tdat.ward_staffings.B.length).toBe(0);
+        });
+        it("should calculate a persons duties if a day is added", function() {
+            var tdat;
+            today.ward_staffings.A.add(person_a);
+            tdat = new sp.Day({
+                date: new Date(2015, 7, 6),
+                yesterday: tomorrow,
+            });
+            expect(tdat.persons_duties.A.length).toBe(1);
+            expect(tdat.persons_duties.A.models[0].id).toBe('A');
+            expect(tdat.persons_duties.B.length).toBe(0);
         });
     });
     describe("calculating the id of the day", function() {
