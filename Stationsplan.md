@@ -13,6 +13,18 @@ Ein Tag kann für jede Stelle einen Mitarbeiter haben. Er hält nach, an welchen
 
 Mitarbeiter, die gestern Dienst hatten oder im Urlaub sind, dürfen nicht verplant werden.
 
+## Krankenhaus
+Ein Krankenhaus hat verschiedene *Abteilungen*. Jede Abteilung hat mehrere *Stationen*, *Dienste* oder *Funktionen*. Diese müssen mit einer oder mehreren *Personen* besetzt werden. Personen können auch im *Urlaub/Fortbildung/Frei* oder *krank* sein und so nicht für die Planung zur Verfügung stehen.
+Jede Person gehört zu einer Abteilung. Stationen, Dienste oder Funktionen können auch von mehreren Abteilungen besetzt werden.
+
+## User
+Angemeldete User können verschiedene Stufen von Benutzerrrechten haben. Sie können:
+- eine Planung ansehen,
+- die Planung von verschiedenen Stationen bearbeiten,
+- Benutzer anlegen, bearbeiten oder löschen,
+- Stationen und Personen anlegen, bearbeiten oder löschen,
+- für mehrere Abteilungen (einer Klinik) Administratorfunktionen wahrnehmen.
+
 ## Backend
 - Der Monat soll gespeichert werden, wenn er erstellt ist
 - Wenn eine Besetzung geändert wurde, soll das gespeichert werden.
@@ -22,6 +34,8 @@ Mitarbeiter, die gestern Dienst hatten oder im Urlaub sind, dürfen nicht verpla
 - Man soll die Stationen/Dienst bearbeiten können
 
 ## TODO
-- Es sollen nur die Ärzte in der Tabelle erscheinen, die in dem Monat in der Klinik arbeiten.
-- Es sollen nur die Ärzte in der Auswahl erscheinen, die in dem Monat in der Klinik arbeiten.
-- In der Titelzeile auch die Wochentage anzeigen.
+- Reihenfolge der Stationen vorgeben
+- Jeder User muss ein Department haben
+- Es soll in /plan immer das Department des Users dargestellt werden
+- in /monat sollen die Changes aus dem Department des Users übermittelt werden.
+- im "Nächsten Monat" sollen nur die Personen dargestellt werden, die dann noch tätig sind.

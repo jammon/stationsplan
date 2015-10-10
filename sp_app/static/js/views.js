@@ -20,7 +20,8 @@ sp.StaffingView = Backbone.View.extend({
                 'class': 'staff',
             }));
         });
-        if (this.collection.length<this.collection.ward.get('max')) {
+        if (sp.can_change &&
+            this.collection.length<this.collection.ward.get('max')) {
             el.append($('<div/>', {
                     text: '+',
                     'class': 'addstaff',
@@ -32,7 +33,7 @@ sp.StaffingView = Backbone.View.extend({
     addstaff: function() {
         var coll = this.collection;
         var available = coll.day.get_available(coll.ward);
-        var select = $('<select/>');
+        var select = $('<select/>', {'class': 'select_person'});
         select.append($('<option/>', {
             text: '---',
             name: '---',
@@ -49,22 +50,21 @@ sp.StaffingView = Backbone.View.extend({
     },
     person_selected: function(event, options) {
         var id = event.target.value;
+        this.$('select').remove();
         if (id == '---') {
-            this.selection_aborted();
+            this.$(".addstaff").show();
+        } else {
+            sp.change_and_store(id, this.collection, 'add');
         }
-        this.$('select').remove();
-        sp.change_and_store(id, this.collection, 'add');
-        // this.render();
-    },
-    selection_aborted: function() {
-        this.$('select').remove();
-        this.$(".addstaff").show();
     },
     remove_person: function(event) {
         var id = event.target.textContent;
-        sp.change_and_store(id, this.collection, 'remove');
+        if (sp.can_change) {
+            sp.change_and_store(id, this.collection, 'remove');
+        }
     },
 });
+sp.Ward.prototype.row_view = sp.StaffingView;
 
 sp.DutiesView = Backbone.View.extend({
     tagName: 'td',
@@ -76,6 +76,7 @@ sp.DutiesView = Backbone.View.extend({
         return this;
     },
 });
+sp.Person.prototype.row_view = sp.DutiesView;
 
 sp.AddItemView = Backbone.View.extend({
     tagName: 'tr',

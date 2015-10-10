@@ -3,7 +3,7 @@ var sp = sp || {};
 
 function getCookie(name) {
     var cookieValue = null;
-    if (document.cookie && document.cookie != '') {
+    if (document.cookie && document.cookie !== '') {
         var cookies = document.cookie.split(';');
         for (var i = 0; i < cookies.length; i++) {
             var cookie = jQuery.trim(cookies[i]);
@@ -73,40 +73,32 @@ function add_month(year, month) {
     table.append(titlerow);
 
     // Construct rows for wards and persons
-    // first the wards
-    var View = sp.StaffingView;
-    var collection_array = 'ward_staffings';
-    var row_class = 'wardrow';
     function construct_row(model) {
         var row, collection, cell;
-        row = $('<tr/>', {'class': row_class});
+        row = $('<tr/>', {'class': model.row_class()});
         row.append($('<th/>', { text: model.get('name')}));
         _.each(month_days, function(day) {
-            collection = day[collection_array][model.id];
+            collection = day[model.collection_array][model.id];
             cell = collection ?
-                (new View({collection: collection})).render().$el :
+                (new model.row_view({collection: collection})).render().$el :
                 '<td></td>';
             row.append(cell);
         });
         table.append(row);
     }
+    // first the wards
     sp.wards.each(function(ward) {
         construct_row(ward);
     });
 
     // then the persons
-    View = sp.DutiesView;
-    collection_array = 'persons_duties';
-    row_class = 'personrow';
-    var first_of_month = year*10000 + (month+1)*100 + 1;
+    var first_of_month = new Date(year, month, 1);
+    var last_of_month = new Date(year, month, d_i_m);
     sp.persons.each(function(person) {
-        var start = person.get('start_date');
-        if (start && parseInt(start, 10)>first_of_month+31)
-            return;
-        var end = person.get('end_date');
-        if (end && parseInt(end, 10)<first_of_month)
-            return;
-        construct_row(person);
+        if (person.is_available(first_of_month) ||
+            person.is_available(last_of_month)) {
+            construct_row(person);
+        }
     });
 
     content.append(table);

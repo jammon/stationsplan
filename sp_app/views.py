@@ -1,79 +1,71 @@
-from datetime import datetime, date, timedelta
-from django.http import HttpResponseNotAllowed, JsonResponse
-from django.shortcuts import render
 import json
+from datetime import datetime, date
+from django.http import HttpResponseNotAllowed, JsonResponse
+from django.shortcuts import render, get_object_or_404
+from django.views.generic.base import TemplateView
+from django.contrib.auth.decorators import login_required
 
-from .models import Person, Ward, ChangingStaff
-
-
-def get_past_changes(first_of_month):
-    past_changes = set()
-    for c in ChangingStaff.objects.filter(
-        day__gt=first_of_month-timedelta(days=92),  # three months back
-        day__lt=first_of_month
-    ).order_by('day'):
-        if c.added:
-            past_changes.add((c.person, c.ward))
-        else:
-            past_changes.discard((c.person, c.ward))
-    return [ChangingStaff(person=person, ward=ward,
-                          day=first_of_month, added=True).toJson()
-            for person, ward in past_changes]
+from .models import Person, Ward, ChangingStaff, Department
+from .utils import get_past_changes, changes_for_month
 
 
-def last_day_of_month(date):
-    return (date.replace(day=31)
-            if date.month == 12
-            else date.replace(month=date.month+1, day=1) - timedelta(days=1))
+class HomePageView(TemplateView):
+    template_name = "sp_app/index.html"
 
 
-def changes_for_month(first_of_month):
-    last_of_month = last_day_of_month(first_of_month)
-
-    past_changes = get_past_changes(first_of_month)
-    current_changes = [c.toJson() for c in ChangingStaff.objects.filter(
-        day__gte=first_of_month,
-        day__lt=last_of_month
-    ).order_by('day')]
-    return past_changes + current_changes
-
-
-def home(request):
+@login_required
+def plan(request):
+    department = get_object_or_404(
+        Department, id=request.session.get('department_id'))
     first_of_month = date.today().replace(day=1)
     persons = [p.toJson() for p in Person.objects.filter(
         start_date__lt=first_of_month.replace(year=first_of_month.year+1,
                                               month=12, day=31),
-        end_date__gt=first_of_month.replace(month=1))]
+        end_date__gt=first_of_month.replace(month=1),
+        department=department)]
+    wards = Ward.objects.filter(department=department)
+    name = request.user.get_full_name() or request.user.get_username()
     data = {
         'persons': json.dumps(persons),
-        'wards': json.dumps(list(Ward.objects.values())),
-        'past_changes': json.dumps(get_past_changes(first_of_month)),
-        'changes': json.dumps(changes_for_month(first_of_month)),
+        'wards': json.dumps(list(wards.values())),
+        'past_changes': json.dumps(get_past_changes(first_of_month, wards)),
+        'changes': json.dumps(changes_for_month(first_of_month, wards)),
         'year': first_of_month.year,
         'month': first_of_month.month,
+        'user': request.user,
+        'name': name,
+        'can_change': 1 if request.user.has_perm('sp_app.add_changingstaff') else 0,
     }
-    return render(request, 'sp_app/index.html', data)
+    return render(request, 'sp_app/plan.html', data)
 
 
-def month(request, year, month):
-    data = changes_for_month(date(int(year), int(month), 1))
-    return JsonResponse(data)
+@login_required
+def month(request):
+    department_id = request.session.get('department_id')
+    wards = Ward.objects.filter(department__id=department_id)
+    year = request.GET['year']
+    month = request.GET['month']
+    data = changes_for_month(date(int(year), int(month), 1), wards)
+    # data['can_change'] = request.user.has_perm('sp_app.add_changingstaff')
+    return JsonResponse(data, safe=False)
 
 
 def tests(request):
     return render(request, 'sp_app/tests.html', {})
 
 
+@login_required
 def change(request):
     """One *person* is
     added to or removed (*action*)
     on one *day*
     from the staffing of one *ward*
     """
+    print("change requested")
     if request.method != 'POST':
         return HttpResponseNotAllowed(['POST'])
-    person = request.POST['person']
-    ward = request.POST['ward']
+    person = get_object_or_404(Person, shortname=request.POST['person'])
+    ward = get_object_or_404(Ward, shortname=request.POST['ward'])
     day = datetime.strptime(request.POST['day'], '%Y%m%d').date()
     added = request.POST['action'] == 'add'
     ch_st, created = ChangingStaff.objects.get_or_create(

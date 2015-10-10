@@ -15,13 +15,17 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
 from sp_app import views as sp_views
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^$', sp_views.home, name='home'),
-    url(r'change$', sp_views.change, name='change'),
-    url(r'month/([0-9]{4})/([0-9]{1-2})/?$', sp_views.month, name='month'),
-    url(r'tests$', TemplateView.as_view(template_name="sp_app/tests.html"), name='tests'),
+    url('^logout/', auth_views.logout, {'next_page': '/'}),
+    url('^', include('django.contrib.auth.urls')),
+    url(r'^$', sp_views.HomePageView.as_view(), name='home'),
+    url(r'^change$', sp_views.change, name='change'),
+    url(r'^month$', sp_views.month, name='month'),
+    url(r'^plan$', sp_views.plan, name='plan'),
+    url(r'^tests$', TemplateView.as_view(template_name="sp_app/tests.html"), name='tests'),
 ]

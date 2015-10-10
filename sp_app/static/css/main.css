@@ -3,6 +3,13 @@
   background: #fff;
 }
 
+.logout {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 5px 5px 0 0;
+}
+
 th, td {
   padding: 0 2px;
   vertical-align: top;
@@ -14,4 +21,14 @@ th, td {
 
 .personrow {
   background-color: #DDD;
+}
+.nightshiftrow {
+    background-color: #CCF;
+}
+.leaverow {
+    background-color: #EEE;
+}
+
+.select_person {
+    position: absolute;
 }
