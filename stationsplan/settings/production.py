@@ -16,6 +16,11 @@ DATABASES = {
         'USER': 'stationsplan',
         'PASSWORD': read_secret(os.path.join(SECRETS_DIR, "db-password.txt"),
                                 "mysql password"),
+        'TEST': {
+            'NAME': 'stationsplantest',
+            'USER': 'stationsplantest',
+            'PASSWORD': 'LavRagJavEvot>'
+        }
     }
 }
 
