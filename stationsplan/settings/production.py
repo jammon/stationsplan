@@ -9,7 +9,6 @@ ALLOWED_HOSTS = []
 SECRETS_DIR = os.path.join(PARENT_OF_BASE_DIR, "secrets")
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
-DB_PASSWORD = read_secret()
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
