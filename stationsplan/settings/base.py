@@ -13,7 +13,8 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+PARENT_OF_BASE_DIR = os.path.dirname(BASE_DIR)
 
 
 # Quick-start development settings - unsuitable for production
@@ -37,7 +38,6 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
     'sp_app',
 )
 
@@ -105,3 +105,26 @@ STATIC_URL = '/static/'
 
 LOGIN_URL = "/login"
 LOGIN_REDIRECT_URL = "/plan"
+
+
+def read_secret(secret_file_name, content_description,
+                generate_secret=False):
+    try:
+        with open(secret_file_name) as f:
+            return f.read().strip()
+    except IOError:
+        pass
+    if generate_secret:
+        try:
+            from random import choice
+            import string
+            secret = ''.join([choice(string.ascii_letters+string.digits)
+                              for i in range(50)])
+            with open(secret_file_name, 'w') as f:
+                f.write(secret)
+            return secret
+        except IOError:
+            pass
+    error_message = ("Please create a file named '%s' with %s!"
+                     % (secret_file_name, content_description))
+    raise Exception(error_message)
