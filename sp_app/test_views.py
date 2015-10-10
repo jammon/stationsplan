@@ -10,9 +10,11 @@ class TestViewsAnonymously(TestCase):
             response = c.get(reverse(url))
             self.assertEqual(response.status_code, 302, msg=url)
             response = c.get(reverse(url), follow=True)
-            self.assertRedirects(response, '/login/', msg_prefix=url)
+            self.assertRedirects(response, '/login/?next=%2F'+url,
+                                 msg_prefix=url)
             response = c.post(reverse(url), follow=True)
-            self.assertRedirects(response, '/login/', msg_prefix=url)
+            self.assertRedirects(response, '/login/?next=%2F'+url,
+                                 msg_prefix=url)
 
     def test_status_post(self):
         c = Client()
