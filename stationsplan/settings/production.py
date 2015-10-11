@@ -5,7 +5,7 @@ import sys
 DEBUG = False
 
 ALLOWED_HOSTS = ['.stationsplan.de']
-STATIC_ROOT = '/var/www/stationsplan/priv/static/'
+STATIC_ROOT = '/var/www/stationsplan/htdocs/static/'
 
 
 SECRETS_DIR = os.path.join(PARENT_OF_BASE_DIR, "secrets")
@@ -35,7 +35,7 @@ SECRET_KEY = read_secret(os.path.join(SECRETS_DIR, "django-key.txt"),
 TEMPLATES = [{
     'BACKEND': 'django.template.backends.django.DjangoTemplates',
     # 'DIRS': [os.path.join(BASE_DIR, 'templates')],
-    'APP_DIRS': True,
+    # 'APP_DIRS': True,
     'OPTIONS': {
         'loaders': [
             ('django.template.loaders.cached.Loader', [
