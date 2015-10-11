@@ -2,10 +2,11 @@ from .base import *
 import os
 import sys
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.stationsplan.de']
+STATIC_ROOT = '/var/www/stationsplan/priv/static/'
+
 
 SECRETS_DIR = os.path.join(PARENT_OF_BASE_DIR, "secrets")
 # Database
@@ -19,9 +20,8 @@ DATABASES = {
                                 "mysql password"),
         'TEST': {
             'NAME': 'stationsplantest',
-            'USER': 'stationsplantest',
-            'PASSWORD': 'LavRagJavEvot>'
-        }
+        },
+        'CONN_MAX_AGE': 5,
     }
 }
 if 'test' in sys.argv:
@@ -31,3 +31,17 @@ if 'test' in sys.argv:
 SECRET_KEY = read_secret(os.path.join(SECRETS_DIR, "django-key.txt"),
                          "random characters to generate your secret key",
                          generate_secret=True)
+
+TEMPLATES = [{
+    'BACKEND': 'django.template.backends.django.DjangoTemplates',
+    # 'DIRS': [os.path.join(BASE_DIR, 'templates')],
+    'APP_DIRS': True,
+    'OPTIONS': {
+        'loaders': [
+            ('django.template.loaders.cached.Loader', [
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader',
+            ]),
+        ],
+    },
+}]
