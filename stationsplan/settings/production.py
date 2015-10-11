@@ -32,19 +32,12 @@ SECRET_KEY = read_secret(os.path.join(SECRETS_DIR, "django-key.txt"),
                          "random characters to generate your secret key",
                          generate_secret=True)
 
-TEMPLATES = [{
-    'BACKEND': 'django.template.backends.django.DjangoTemplates',
-    # 'DIRS': [os.path.join(BASE_DIR, 'templates')],
-    # 'APP_DIRS': True,
-    'OPTIONS': {
-        'loaders': [
-            ('django.template.loaders.cached.Loader', [
-                'django.template.loaders.filesystem.Loader',
-                'django.template.loaders.app_directories.Loader',
-            ]),
-        ],
-    },
-}]
+DJANGO_TEMPLATES['OPTIONS']['loaders'] = [
+    ('django.template.loaders.cached.Loader', [
+        'django.template.loaders.filesystem.Loader',
+        'django.template.loaders.app_directories.Loader',
+    ]),
+]
 
 LOGGING = {
     'version': 1,
@@ -64,4 +57,3 @@ LOGGING = {
         },
     },
 }
-

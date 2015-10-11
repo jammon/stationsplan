@@ -19,3 +19,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+DJANGO_TEMPLATES['DIRS'] = []
+DJANGO_TEMPLATES['APP_DIRS'] = True
