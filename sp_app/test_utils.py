@@ -1,4 +1,5 @@
 # from django.test import TestCase as DjangoTestCase
+from __future__ import unicode_literals
 from unittest import TestCase
 from datetime import date
 

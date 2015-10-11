@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 import json
 from datetime import datetime, date
 from django.http import HttpResponseNotAllowed, JsonResponse

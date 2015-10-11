@@ -1,9 +1,12 @@
+from __future__ import unicode_literals
 from datetime import date
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import ugettext as _
+from django.utils.encoding import python_2_unicode_compatible
 
 
+@python_2_unicode_compatible
 class Company(models.Model):
     name = models.CharField(_('Name'), max_length=50)
     shortname = models.CharField('Short Name', max_length=10)
@@ -16,6 +19,7 @@ class Company(models.Model):
         return self.name
 
 
+@python_2_unicode_compatible
 class Department(models.Model):
     name = models.CharField(_('Name'), max_length=50)
     shortname = models.CharField('Short Name', max_length=10)
@@ -30,6 +34,7 @@ class Department(models.Model):
         return "{} ({})".format(self.name, self.company.name)
 
 
+@python_2_unicode_compatible
 class Person(models.Model):
     name = models.CharField('Name', max_length=50)
     shortname = models.CharField('Short Name', max_length=10)
@@ -56,6 +61,7 @@ class Person(models.Model):
                 'end_date': date_to_json(self.end_date), }
 
 
+@python_2_unicode_compatible
 class Ward(models.Model):
     name = models.CharField('Name', max_length=50)
     shortname = models.CharField('Short Name', max_length=10)
@@ -84,6 +90,7 @@ class Ward(models.Model):
         return self.name
 
 
+@python_2_unicode_compatible
 class ChangingStaff(models.Model):
     """*One person* is
     *added* to or *removed*
@@ -113,6 +120,7 @@ class ChangingStaff(models.Model):
                                self.day.strftime('%Y-%m-%d'))
 
 
+@python_2_unicode_compatible
 class Employee(models.Model):
     user = models.OneToOneField(User, related_name='employee')
     department = models.ForeignKey(Department, related_name='employees')
