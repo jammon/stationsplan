@@ -1,5 +1,6 @@
 from .base import *
 import os
+import sys
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -23,6 +24,9 @@ DATABASES = {
         }
     }
 }
+if 'test' in sys.argv:
+    DATABASES['default']['USER'] = 'stationsplantest'
+    DATABASES['default']['PASSWORD'] = 'LavRagJavEvot>'
 
 SECRET_KEY = read_secret(os.path.join(SECRETS_DIR, "django-key.txt"),
                          "random characters to generate your secret key",
