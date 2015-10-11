@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /plan
+Disallow: /login
+Disallow: /change
+Disallow: /month
+Disallow: /tests
