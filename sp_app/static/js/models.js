@@ -129,6 +129,12 @@ sp.Staffing = Backbone.Collection.extend({
             this[action](person);
         }
     },
+    lacking: function() {
+        this.length<this.ward.get('min');
+    },
+    room_for_more: function() {
+        this.length<this.ward.get('max');
+    },
 });
 
 // Duties are the duties of one person on one day

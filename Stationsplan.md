@@ -33,13 +33,16 @@ Angemeldete User können verschiedene Stufen von Benutzerrrechten haben. Sie kö
 - Man soll die Personen bearbeiten können
 - Man soll die Stationen/Dienst bearbeiten können
 
+## TODO
+- Reihenfolge der Stationen vorgeben
+- Wie sollen neue User angelegt werden? Admins könnten die User für das eigene Department anlegen
+- Benutzer müssen nur bestimmte Stationen bearbeiten können.
+- Wenn eine Planung finalisiert ist, kann sie nur noch von bestimmten Berechtigten bearbeitet werden.
+- Nur finalisierte Planungen sind für Benutzer ohne besondere Berechtigung sichtbar.
+
 ## Done
 - Es soll in /plan immer das Department des Users dargestellt werden
 - in /monat sollen die Changes aus dem Department des Users übermittelt werden.
 - login und logout implementieren
 - Jeder User muss ein Department haben
 - im "Nächsten Monat" sollen nur die Personen dargestellt werden, die dann noch tätig sind.
-
-## TODO
-- Reihenfolge der Stationen vorgeben
-- Wie sollen neue User angelegt werden? Admins könnten die User für das eigene Department anlegen

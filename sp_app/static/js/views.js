@@ -4,9 +4,7 @@ var sp = sp || {};
 sp.StaffingView = Backbone.View.extend({
     tagName: 'td',
     events: {
-        "click .addstaff": "addstaff",
-        "click option": "person_selected",
-        "dblclick .staff": "remove_person",
+        "click": "addstaff",
     },
     initialize: function() {
         this.listenTo(this.collection, "update", this.render);
@@ -20,48 +18,54 @@ sp.StaffingView = Backbone.View.extend({
                 'class': 'staff',
             }));
         });
-        if (sp.can_change &&
-            this.collection.length<this.collection.ward.get('max')) {
+        if (sp.can_change && this.collection.room_for_more()) {
             el.append($('<div/>', {
                     text: '+',
                     'class': 'addstaff',
                 }));
         }
-        el.toggleClass('lacking', this.collection.length<this.collection.ward.get('min'));
+        el.toggleClass('lacking', this.collection.lacking());
         return this;
     },
+    change_person_template: _.template(
+        '<div>' +
+        '<button type="button" class="btn btn-primary changestaff" ' +
+        'data-shortname="<%= shortname %>" data-action="<%= action %>">' +
+        '<%= plus_or_minus %></button> ' +
+        '<%= name %></div>'),
+    add_person_html: function(person, action, dialog_body) {
+        dialog_body.append(this.change_person_template({
+            shortname: person.id,
+            name: person.get('name'),
+            plus_or_minus: (action=='add' ? '+' : '-'),
+            action: action,
+        }));
+    },
     addstaff: function() {
+        if (!sp.can_change) return;
         var coll = this.collection;
         var available = coll.day.get_available(coll.ward);
-        var select = $('<select/>', {'class': 'select_person'});
-        select.append($('<option/>', {
-            text: '---',
-            name: '---',
-        }));
-        _.each(available, function(person) {
-            select.append($('<option/>', {
-                text: person.get('name'),
-                value: person.id,
-            }));
+        var dialog_body = $("#changestaff .modal-body").empty();
+        var that = this;
+        coll.each(function(person) {
+            that.add_person_html(person, 'remove', dialog_body);
         });
-        this.$(".addstaff").hide();
-        this.$el.append(select);
-        select.focus();
-    },
-    person_selected: function(event, options) {
-        var id = event.target.value;
-        this.$('select').remove();
-        if (id == '---') {
-            this.$(".addstaff").show();
-        } else {
-            sp.change_and_store(id, this.collection, 'add');
+        _.each(available, function(person) {
+            that.add_person_html(person, 'add', dialog_body);
+        });
+        var dialog = $("#changestaff");
+        function button_clicked (event) {
+            sp.change_and_store(
+                event.target.dataset.shortname, 
+                that.collection,
+                event.target.dataset.action);
+            dialog.modal('hide');
         }
-    },
-    remove_person: function(event) {
-        var id = event.target.textContent;
-        if (sp.can_change) {
-            sp.change_and_store(id, this.collection, 'remove');
-        }
+        dialog.on("click", "button.changestaff", button_clicked);
+        dialog.on("hide.bs.modal", function() {
+            dialog.off("click", "button.changestaff", button_clicked);
+        });
+        dialog.modal('show');
     },
 });
 sp.Ward.prototype.row_view = sp.StaffingView;
