@@ -39,6 +39,7 @@ Angemeldete User können verschiedene Stufen von Benutzerrrechten haben. Sie kö
 - Benutzer müssen nur bestimmte Stationen bearbeiten können.
 - Wenn eine Planung finalisiert ist, kann sie nur noch von bestimmten Berechtigten bearbeitet werden.
 - Nur finalisierte Planungen sind für Benutzer ohne besondere Berechtigung sichtbar.
+- Angemeldete Nutzer sollen gleich nach /plan kommen.
 
 ## Done
 - Es soll in /plan immer das Department des Users dargestellt werden

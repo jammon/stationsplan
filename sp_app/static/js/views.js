@@ -18,18 +18,12 @@ sp.StaffingView = Backbone.View.extend({
                 'class': 'staff',
             }));
         });
-        if (sp.can_change && this.collection.room_for_more()) {
-            el.append($('<div/>', {
-                    text: '+',
-                    'class': 'addstaff',
-                }));
-        }
         el.toggleClass('lacking', this.collection.lacking());
         return this;
     },
     change_person_template: _.template(
         '<div>' +
-        '<button type="button" class="btn btn-primary changestaff" ' +
+        '<button type="button" class="btn btn-primary btn-sm changestaff" ' +
         'data-shortname="<%= shortname %>" data-action="<%= action %>">' +
         '<%= plus_or_minus %></button> ' +
         '<%= name %></div>'),
@@ -45,6 +39,11 @@ sp.StaffingView = Backbone.View.extend({
         if (!sp.can_change) return;
         var coll = this.collection;
         var available = coll.day.get_available(coll.ward);
+        function datestr(date) {
+            return date.getDate()+'.'+(date.getMonth()+1)+'.'+date.getFullYear();
+        }
+        $("#changestaff .changedate").text(datestr(this.collection.day.get('date')));
+        $("#changestaff .changeward").text(coll.ward.get('name'));
         var dialog_body = $("#changestaff .modal-body").empty();
         var that = this;
         coll.each(function(person) {
