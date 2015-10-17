@@ -31,9 +31,9 @@ function days_in_month (month, year) {
 //     - end_date = end of job
 sp.Person = Backbone.Model.extend({
     initialize: function() {
-        var start = this.get('start_date');
+        var start = this.get('start_date') || [2000, 0, 1];
         this.set('start_date', new Date(start[0], start[1], start[2]));
-        var end = this.get('end_date');
+        var end = this.get('end_date') || [2099, 11, 31];
         this.set('end_date', new Date(end[0], end[1], end[2]));
     },
     collection_array: 'persons_duties',
@@ -130,10 +130,10 @@ sp.Staffing = Backbone.Collection.extend({
         }
     },
     lacking: function() {
-        this.length<this.ward.get('min');
+        return this.length<this.ward.get('min');
     },
     room_for_more: function() {
-        this.length<this.ward.get('max');
+        return this.length<this.ward.get('max');
     },
 });
 

@@ -1,5 +1,5 @@
 var persons_init = [
-  { name: 'Anton', id: 'A'},
+  { name: 'Anton', id: 'A',},
   { name: 'Berta', id: 'B',},
 ];
 var wards_init = [
@@ -219,8 +219,8 @@ describe("Persons", function() {
         var p2 = new sp.Person({
             name: "Test Test2",
             id: "test2",
-            start_date: new Date(2015, 0, 1),
-            end_date: new Date(2015, 11, 31),
+            start_date: [2015, 0, 1],
+            end_date: [2015, 11, 31],
         });
         var d1 = new Date(2014, 11, 31);
         var d2 = new Date(2015, 0, 1);
