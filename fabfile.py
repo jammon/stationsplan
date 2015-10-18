@@ -32,3 +32,13 @@ def server_pull():
 def staticfiles():
     with cd(code_dir):
         run("./manage.py collectstatic")
+
+
+def restart_server():
+    run("touch ~/htdocs/app.wsgi")
+
+
+def deploy():
+    server_pull()
+    staticfiles()
+    restart_server()
