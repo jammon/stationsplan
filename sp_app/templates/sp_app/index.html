@@ -7,7 +7,8 @@
     </div>
     <div class="col-md-4 col-xs-12">
       {% if request.user.is_authenticated %}
-        Hallo, {% firstof request.user.get_full_name request.user.get_username %}!
+        <p>Hallo, {% firstof request.user.get_full_name request.user.get_username %}!</p>
+        <p><a href="/plan">Zur Dienst- und Stationsplanung</a></p>
       {% else %}
         <h2>Anmelden</h2>
         <form  method="post" action="{% url 'django.contrib.auth.views.login' %}">

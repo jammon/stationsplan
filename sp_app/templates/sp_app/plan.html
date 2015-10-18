@@ -43,9 +43,9 @@
     <script src="{% static 'vendor/backbone.js' %}"></script>
 
     <script src="{% static 'vendor/bootstrap.modalform.js' %}"></script>
-    <script src="{% static 'js/models.js' %}"></script>
-    <script src="{% static 'js/views.js' %}"></script>
-    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/models.js' %}?version=0.1"></script>
+    <script src="{% static 'js/views.js' %}?version=0.1"></script>
+    <script src="{% static 'js/main.js' %}?version=0.1"></script>
   {% endcompress %}
     <script type="text/javascript">
       var persons_init = {{ persons|safe }};
