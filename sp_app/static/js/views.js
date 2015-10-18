@@ -21,53 +21,68 @@ sp.StaffingView = Backbone.View.extend({
         el.toggleClass('lacking', this.collection.lacking());
         return this;
     },
+    addstaff: function() {
+        if (!sp.can_change) return;
+        sp.changestaffview.show(this.collection);
+    },
+});
+sp.Ward.prototype.row_view = sp.StaffingView;
+
+sp.ChangeStaffView = Backbone.View.extend({
+    events: {
+        "click button.changestaff": "button_clicked",
+    },
+    button_clicked: function(event) {
+        sp.change_and_store(
+            event.target.dataset.shortname,
+            this.staffing,
+            event.target.dataset.action);
+        this.$el.modal('hide');
+    },
     change_person_template: _.template(
-        '<div>' +
+        '<tr><td>' +
         '<button type="button" class="btn btn-primary btn-sm changestaff" ' +
         'data-shortname="<%= shortname %>" data-action="<%= action %>">' +
-        '<%= plus_or_minus %></button> ' +
-        '<%= name %></div>'),
-    add_person_html: function(person, action, dialog_body) {
+        '<%= plus_or_minus %></button>' +
+        '</td>' +
+        '<td><%= name %></td><td><%= duties %></td></tr>'),
+    add_person_html: function(person, action, dialog_body, day) {
         dialog_body.append(this.change_person_template({
             shortname: person.id,
             name: person.get('name'),
             plus_or_minus: (action=='add' ? '+' : '-'),
             action: action,
+            duties: day.persons_duties[person.id].pluck('shortname').join(', '),
         }));
     },
-    addstaff: function() {
-        if (!sp.can_change) return;
-        var coll = this.collection;
-        var available = coll.day.get_available(coll.ward);
+    render: function() {
+        var ward = this.staffing.ward;
+        var day = this.staffing.day;
+        var available = day.get_available(ward);
+        var dialog_body = this.$("#changestafftable").empty();
+        var that = this;
+        this.$(".changedate").text(datestr(day.get('date')));
+        this.$(".changeward").text(ward.get('name'));
         function datestr(date) {
             return date.getDate()+'.'+(date.getMonth()+1)+'.'+date.getFullYear();
         }
-        $("#changestaff .changedate").text(datestr(this.collection.day.get('date')));
-        $("#changestaff .changeward").text(coll.ward.get('name'));
-        var dialog_body = $("#changestaff .modal-body").empty();
-        var that = this;
-        coll.each(function(person) {
-            that.add_person_html(person, 'remove', dialog_body);
+        this.staffing.each(function(person) {
+            that.add_person_html(person, 'remove', dialog_body, day);
         });
         _.each(available, function(person) {
-            that.add_person_html(person, 'add', dialog_body);
+            that.add_person_html(person, 'add', dialog_body, day);
         });
-        var dialog = $("#changestaff");
-        function button_clicked (event) {
-            sp.change_and_store(
-                event.target.dataset.shortname, 
-                that.collection,
-                event.target.dataset.action);
-            dialog.modal('hide');
-        }
-        dialog.on("click", "button.changestaff", button_clicked);
-        dialog.on("hide.bs.modal", function() {
-            dialog.off("click", "button.changestaff", button_clicked);
-        });
-        dialog.modal('show');
+        return this;
+    },
+    show: function(staffing) {
+        this.staffing = staffing;
+        this.render();
+        this.$el.modal('show');
     },
 });
-sp.Ward.prototype.row_view = sp.StaffingView;
+sp.changestaffview = new sp.ChangeStaffView({
+    el: $("#changestaff"),
+});
 
 sp.DutiesView = Backbone.View.extend({
     tagName: 'td',
