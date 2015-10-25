@@ -31,7 +31,7 @@ def server_pull():
 
 def staticfiles():
     with cd(code_dir):
-        run("./manage.py collectstatic")
+        run("source ~/priv/venv/bin/activate && ./manage.py collectstatic")
 
 
 def restart_server():

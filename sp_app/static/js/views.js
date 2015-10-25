@@ -41,7 +41,7 @@ sp.ChangeStaffView = Backbone.View.extend({
     },
     change_person_template: _.template(
         '<tr><td>' +
-        '<button type="button" class="btn btn-primary btn-sm changestaff" ' +
+        '<button type="button" class="btn btn-primary btn-xs changestaff" ' +
         'data-shortname="<%= shortname %>" data-action="<%= action %>">' +
         '<%= plus_or_minus %></button>' +
         '</td>' +
