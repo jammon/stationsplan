@@ -16,15 +16,14 @@ class HomePageView(TemplateView):
 
 @login_required
 def plan(request):
-    department = get_object_or_404(
-        Department, id=request.session.get('department_id'))
+    department_ids = request.session.get('department_ids')
     first_of_month = date.today().replace(day=1)
+    # Get all Persons who worked here from last month to in one year
     persons = [p.toJson() for p in Person.objects.filter(
-        start_date__lt=first_of_month.replace(year=first_of_month.year+1,
-                                              month=12, day=31),
+        start_date__lt=first_of_month.replace(year=first_of_month.year+1),
         end_date__gt=first_of_month.replace(month=1),
-        department=department)]
-    wards = Ward.objects.filter(department=department)
+        departments__id__in=department_ids)]
+    wards = Ward.objects.filter(department__in=department_ids)
     name = request.user.get_full_name() or request.user.get_username()
     data = {
         'persons': json.dumps(persons),
@@ -42,8 +41,8 @@ def plan(request):
 
 @login_required
 def month(request):
-    department_id = request.session.get('department_id')
-    wards = Ward.objects.filter(department__id=department_id)
+    department_ids = request.session.get('department_ids')
+    wards = Ward.objects.filter(department_id__in=department_ids)
     year = request.GET['year']
     month = request.GET['month']
     data = changes_for_month(date(int(year), int(month), 1), wards)
@@ -62,7 +61,6 @@ def change(request):
     on one *day*
     from the staffing of one *ward*
     """
-    print("change requested")
     if request.method != 'POST':
         return HttpResponseNotAllowed(['POST'])
     person = get_object_or_404(Person, shortname=request.POST['person'])

@@ -31,14 +31,15 @@ class TestChanges(PopulatedTestCase):
     def setUp(self):
         super(TestChanges, self).setUp()
         person_a = Person.objects.create(
-            name="Person A", shortname="P-A", department=self.department,
-            company=self.company)
+            name="Person A", shortname="P-A", company=self.company)
+        person_a.departments.add(self.department)
         person_b = Person.objects.create(
-            name="Person B", shortname="P-B", department=self.department,
-            company=self.company)
+            name="Person B", shortname="P-B", company=self.company)
+        person_b.departments.add(self.department)
         person_c = Person.objects.create(
-            name="Person C", shortname="P-C", department=self.department,
-            company=self.company, end_date=date(2015, 9, 30))
+            name="Person C", shortname="P-C", company=self.company,
+            end_date=date(2015, 9, 30))
+        person_c.departments.add(self.department)
         self.nightshift = Ward.objects.create(
             name="Nightshift", shortname="N", max=1, min=1,
             nightshift=True, everyday=True, continued=False, on_leave=False,

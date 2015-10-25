@@ -42,7 +42,7 @@ class Person(models.Model):
                                   help_text='begin of job')
     end_date = models.DateField(default=date(2099, 12, 31),
                                 help_text='end of job')
-    department = models.ForeignKey(Department, related_name='persons', null=True)
+    departments = models.ManyToManyField(Department, related_name='persons')
     company = models.ForeignKey(Company, related_name='persons', null=True)
 
     class Meta:
@@ -123,11 +123,11 @@ class ChangingStaff(models.Model):
 @python_2_unicode_compatible
 class Employee(models.Model):
     user = models.OneToOneField(User, related_name='employee')
-    department = models.ForeignKey(Department, related_name='employees')
+    departments = models.ManyToManyField(Department, related_name='employees')
     company = models.ForeignKey(Company, related_name='employees')
 
     def __str__(self):
         return "{}, {}, {}".format(
             self.user.get_full_name() or self.user.get_username(),
-            self.department.name,
+            ', '.join([d.name for d in self.departments.all()]),
             self.company.name)

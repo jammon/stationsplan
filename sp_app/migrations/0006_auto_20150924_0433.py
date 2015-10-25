@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='employee',
             name='department',
-            field=models.ForeignKey(related_name='employees', to='sp_app.Department'),
+            field=models.ForeignKey(null=True, related_name='employees', to='sp_app.Department'),
         ),
         migrations.AddField(
             model_name='employee',
