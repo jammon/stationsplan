@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import (Person, Ward, ChangingStaff, Department,
+from .models import (Person, Ward, ChangingStaff, ChangeLogging, Department,
                      Company, Employee)
 
 
@@ -38,3 +38,4 @@ admin.site.register(Ward)
 admin.site.register(Department)
 admin.site.register(Company)
 admin.site.register(Employee)
+admin.site.register(ChangeLogging)

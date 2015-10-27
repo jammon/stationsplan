@@ -1,7 +1,8 @@
 from __future__ import unicode_literals
+from datetime import timedelta
+from django.shortcuts import get_object_or_404
 from django.test import TestCase
 from .models import ChangingStaff, Ward, Company, Department
-from datetime import timedelta
 
 
 def get_past_changes(first_of_month, wards):
@@ -36,6 +37,11 @@ def last_day_of_month(date):
     return (date.replace(day=31)
             if date.month == 12
             else date.replace(month=date.month+1, day=1) - timedelta(days=1))
+
+
+def get_for_company(klass, request, **kwargs):
+    return get_object_or_404(
+        klass, company__id=request.session['company_id'], **kwargs)
 
 
 class PopulatedTestCase(TestCase):

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from datetime import date
 from django.contrib.auth.models import User
@@ -118,6 +119,41 @@ class ChangingStaff(models.Model):
                     else "Remove {} from {} on {}")
         return template.format(self.person.name, self.ward.name,
                                self.day.strftime('%Y-%m-%d'))
+
+
+@python_2_unicode_compatible
+class ChangeLogging(models.Model):
+    """ Logs who has made which changes.
+    Contains essentially the same information as ChangingStaff,
+    but is handled differently.
+    """
+    company = models.ForeignKey(Company)
+    user = models.ForeignKey(User)
+    person = models.ForeignKey(Person)
+    ward = models.ForeignKey(Ward)
+    day = models.DateField()
+    added = models.BooleanField()
+    user_name = models.CharField(max_length=20)
+    person_name = models.CharField(max_length=20)
+    ward_name = models.CharField(max_length=20)
+    ward_continued = models.BooleanField()
+
+    def save(self, *args, **kwargs):
+        self.user_name = self.user.get_full_name() or self.user.get_username()
+        self.person_name = self.person.name
+        self.ward_name = self.ward.name
+        self.ward_continued = self.ward.continued
+        super(ChangeLogging, self).save(*args, **kwargs)
+
+    def __str__(self):
+        template = (
+            "{self.user_name}: {self.person_name} ist {relation} {date} für "
+            "{self.ward_name} {added}eingeteilt")
+        return template.format(
+            self=self,
+            relation="ab" if self.ward_continued else "am",
+            date=self.day.strftime('%Y-%m-%d'),
+            added="" if self.added else "nicht mehr ")
 
 
 @python_2_unicode_compatible

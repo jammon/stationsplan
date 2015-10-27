@@ -1,13 +1,14 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import json
 from datetime import datetime, date
-from django.http import HttpResponseNotAllowed, JsonResponse
-from django.shortcuts import render, get_object_or_404
-from django.views.generic.base import TemplateView
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseNotAllowed, JsonResponse
+from django.shortcuts import render
+from django.views.generic.base import TemplateView
 
-from .models import Person, Ward, ChangingStaff, Department
-from .utils import get_past_changes, changes_for_month
+from .models import Person, Ward, ChangeLogging, ChangingStaff
+from .utils import get_past_changes, changes_for_month, get_for_company
 
 
 class HomePageView(TemplateView):
@@ -63,10 +64,13 @@ def change(request):
     """
     if request.method != 'POST':
         return HttpResponseNotAllowed(['POST'])
-    person = get_object_or_404(Person, shortname=request.POST['person'])
-    ward = get_object_or_404(Ward, shortname=request.POST['ward'])
+    person = get_for_company(Person, request, shortname=request.POST['person'])
+    ward = get_for_company(Ward, request, shortname=request.POST['ward'])
     day = datetime.strptime(request.POST['day'], '%Y%m%d').date()
     added = request.POST['action'] == 'add'
+    ChangeLogging.objects.create(
+        company_id=request.session['company_id'], user=request.user,
+        person=person, ward=ward, day=day, added=added)
     ch_st, created = ChangingStaff.objects.get_or_create(
         person=person, ward=ward, day=day, defaults={'added': added})
     if created:
