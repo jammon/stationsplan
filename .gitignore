@@ -1,6 +1,6 @@
-data/*
-node_modules/*
 __pycache__
 *.pyc
 venv*/*
+cover/*
+.coverage
 db.sqlite3

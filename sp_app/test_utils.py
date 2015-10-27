@@ -4,8 +4,8 @@ from unittest import TestCase
 from datetime import date
 
 from .utils import (get_past_changes, last_day_of_month, changes_for_month,
-                    PopulatedTestCase)
-from .models import Person, Ward, ChangingStaff
+                    get_for_company, PopulatedTestCase)
+from .models import Company, Person, Ward, ChangingStaff
 
 
 class TestLastDayOfMonth(TestCase):
@@ -46,6 +46,8 @@ class TestChanges(PopulatedTestCase):
             company=self.company)
         data = (
             (person_a, self.ward_a, date(2015, 9, 7), True),
+            (person_b, self.ward_a, date(2015, 9, 7), True),  # add to ward a
+            (person_b, self.ward_a, date(2015, 9, 9), False),  # and remove
             (person_c, self.ward_a, date(2015, 9, 7), True),  # leaving in Sept.
             (person_a, self.nightshift, date(2015, 9, 14), True),  # not to be continued
             (person_a, self.ward_a, date(2015, 10, 2), False),
@@ -70,3 +72,21 @@ class TestChanges(PopulatedTestCase):
         self.assertEqual(
             result,
             [{'person': "P-A", 'ward': "A", 'day': "20151001", 'action': "add"}])
+
+
+class TestGetForCompany(TestCase):
+
+    def test_get_for_company(self):
+        company_a = Company.objects.create(name="Company A", shortname="C-A")
+        company_b = Company.objects.create(name="Company B", shortname="C-B")
+        Person.objects.create(name="Anna Smith", shortname="Smith",
+                              company=company_a)
+        Person.objects.create(name="Bob Smythe", shortname="Smythe",
+                              company=company_a)
+        Person.objects.create(name="Peter Smith", shortname="Smith",
+                              company=company_b)
+
+        class Request:
+            session = {'company_id': company_a.id}
+        smith = get_for_company(Person, Request(), shortname="Smith")
+        self.assertEqual(smith.name, "Anna Smith")

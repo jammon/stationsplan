@@ -13,7 +13,6 @@ class Test_ToJson(PopulatedTestCase):
         self.person = Person.objects.create(
             name="Heinz Müller", shortname="Mül", start_date=date(2015, 1, 1),
             end_date=date(2015, 12, 31), company=self.company)
-        self.person.departments.add(self.department)
 
     def test_person(self):
         self.assertEqual(self.person.toJson(),
