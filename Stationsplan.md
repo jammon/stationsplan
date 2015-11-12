@@ -26,7 +26,7 @@ Angemeldete User können verschiedene Stufen von Benutzerrrechten haben. Sie kö
 - für mehrere Abteilungen (einer Klinik) Administratorfunktionen wahrnehmen. - Company Admins
 
 ### Viewer
-Haben keine Berechtigungen.
+Haben keine Berechtigungen, können nur ansehen.
 
 ### Editor
 Können Planungen der eigenen Abteilung ändern.
@@ -68,3 +68,4 @@ Können alles was Department Leader können auf Company-Ebene.
 - im "Nächsten Monat" sollen nur die Personen dargestellt werden, die dann noch tätig sind.
 - Logging einrichten
     + Jede Besetzungsänderung soll ein Logging folgender Art auslösen: "$User: $Person ist ab/am $Datum für $Station [nicht mehr] eingeteilt" oder 
+- Personen können nur bestimmte Funktionen ausüben

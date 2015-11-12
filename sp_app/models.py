@@ -36,35 +36,6 @@ class Department(models.Model):
 
 
 @python_2_unicode_compatible
-class Person(models.Model):
-    """ A person (worker) who can be planned for work
-    """
-    name = models.CharField('Name', max_length=50)
-    shortname = models.CharField('Short Name', max_length=10)
-    start_date = models.DateField(default=date(2015, 1, 1),
-                                  help_text='begin of job')
-    end_date = models.DateField(default=date(2099, 12, 31),
-                                help_text='end of job')
-    departments = models.ManyToManyField(Department, related_name='persons')
-    company = models.ForeignKey(Company, related_name='persons', null=True)
-
-    class Meta:
-        verbose_name = _('Person')
-        verbose_name_plural = _('Persons')
-
-    def __str__(self):
-        return self.name
-
-    def toJson(self):
-        def date_to_json(date):
-            return [date.year, date.month-1, date.day]
-        return {'name': self.name,
-                'id': self.shortname,
-                'start_date': date_to_json(self.start_date),
-                'end_date': date_to_json(self.end_date), }
-
-
-@python_2_unicode_compatible
 class Ward(models.Model):
     name = models.CharField('Name', max_length=50)
     shortname = models.CharField('Short Name', max_length=10)
@@ -91,6 +62,39 @@ class Ward(models.Model):
 
     def __str__(self):
         return self.name
+
+
+@python_2_unicode_compatible
+class Person(models.Model):
+    """ A person (worker) who can be planned for work
+    """
+    name = models.CharField('Name', max_length=50)
+    shortname = models.CharField('Short Name', max_length=10)
+    start_date = models.DateField(default=date(2015, 1, 1),
+                                  help_text='begin of job')
+    end_date = models.DateField(default=date(2099, 12, 31),
+                                help_text='end of job')
+    departments = models.ManyToManyField(Department, related_name='persons')
+    company = models.ForeignKey(Company, related_name='persons', null=True)
+    functions = models.ManyToManyField(
+        Ward, related_name='staff',
+        help_text='Functions that he or she can  perform.')
+
+    class Meta:
+        verbose_name = _('Person')
+        verbose_name_plural = _('Persons')
+
+    def __str__(self):
+        return self.name
+
+    def toJson(self):
+        def date_to_json(date):
+            return [date.year, date.month-1, date.day]
+        return {'name': self.name,
+                'id': self.shortname,
+                'start_date': date_to_json(self.start_date),
+                'end_date': date_to_json(self.end_date),
+                'functions': [f.shortname for f in self.functions.all()]}
 
 
 @python_2_unicode_compatible

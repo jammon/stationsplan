@@ -43,6 +43,10 @@ sp.Person = Backbone.Model.extend({
         var end = this.get('end_date');
         return ((!begin || begin<=date) && (!end || end>=date));
     },
+    can_work_on: function(ward) {
+        var functions = this.get('functions');
+        return _.indexOf(functions, ward.id)>-1;
+    }
 });
 
 sp.Persons = Backbone.Collection.extend({
@@ -185,7 +189,7 @@ sp.Day = Backbone.Model.extend({
                 yesterdays_staffing = this.yesterdays_staffing(ward);
                 if (yesterdays_staffing) {
                     staffing.reset(yesterdays_staffing.filter(function(person) {
-                        var leaving = person.get('end_date') 
+                        var leaving = person.get('end_date');
                         return leaving >= date;
                     }));
                     yesterdays_staffing.on('add', staffing.added_yesterday, staffing);
@@ -205,25 +209,26 @@ sp.Day = Backbone.Model.extend({
         var yesterday = this.get('yesterday');
         var that = this;
 
-        function get_ids (staffing) {
+        function get_unavailables (staffing) {
             staffing.each(function(person) { unavailable[person.id] = true; });
         }
         // yesterdays nightshift
         if (yesterday) {
             sp.nightshifts.each(function(ward) {
-                get_ids(yesterday.ward_staffings[ward.id]);
+                get_unavailables(yesterday.ward_staffings[ward.id]);
             });
         }
         // persons on leave
         sp.on_leave.each(function(ward) {
-            get_ids(this.ward_staffings[ward.id]);
+            get_unavailables(this.ward_staffings[ward.id]);
         }, this);
         // persons planned for this ward
-        get_ids(this.ward_staffings[ward.id]);
+        get_unavailables(this.ward_staffings[ward.id]);
 
         available = sp.persons.filter(function(person) {
             return !unavailable[person.id] &&
-                person.is_available(that.get('date'));
+                person.is_available(that.get('date')) &&
+                person.can_work_on(ward);
         });
         return available;
     },
@@ -331,6 +336,7 @@ sp.apply_change = function(change) {
         }
     }
     // Something went wrong
+    // TODO: This can happen when the first of month is a weekend day
     console.log(change);
 };
 

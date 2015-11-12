@@ -1,7 +1,9 @@
+from django import forms
 from django.contrib import admin
 
 from .models import (Person, Ward, ChangingStaff, ChangeLogging, Department,
                      Company, Employee)
+from .forms import WardForm
 
 
 class CompanyRestrictedMixin(object):
@@ -39,19 +41,25 @@ class ChangingStaffAdmin(DepartmentRestrictedAdmin):
 
 @admin.register(Person)
 class PersonAdmin(CompanyRestrictedMixin, DepartmentRestrictedAdmin):
-    filter_horizontal = ('departments', )
+    filter_horizontal = ('departments', 'functions',)
     list_filter = ('departments', )
     ordering = ('name',)
 
 
 @admin.register(Ward)
 class WardAdmin(CompanyRestrictedMixin, DepartmentRestrictedAdmin):
+    form = WardForm
+    fieldsets = (
+        (None, {'fields': (
+            ('name', 'shortname',
+             ('max', 'min'),
+             ('nightshift', 'everyday', 'continued', 'on_leave',),
+             'departments', 'company', 'staff'))
+        }),
+    )
     filter_horizontal = ('departments', )
     list_filter = ('departments', )
     ordering = ('name',)
-    fields = ('name', 'shortname', ('max', 'min'),
-              ('nightshift', 'everyday', 'continued', 'on_leave',),
-              'departments', 'company',)
 
 admin.site.register(Department)
 admin.site.register(Company)

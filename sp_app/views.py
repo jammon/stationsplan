@@ -20,14 +20,15 @@ def plan(request):
     department_ids = request.session.get('department_ids')
     first_of_month = date.today().replace(day=1)
     # Get all Persons who worked here from last month to in one year
-    persons = [p.toJson() for p in Person.objects.filter(
+    persons = Person.objects.filter(
         start_date__lt=first_of_month.replace(year=first_of_month.year+1),
         end_date__gt=first_of_month.replace(month=1),
-        departments__id__in=department_ids)]
+        departments__id__in=department_ids
+    ).prefetch_related('functions')
     wards = Ward.objects.filter(departments__id__in=department_ids)
     name = request.user.get_full_name() or request.user.get_username()
     data = {
-        'persons': json.dumps(persons),
+        'persons': json.dumps([p.toJson() for p in persons]),
         'wards': json.dumps(list(wards.values())),
         'past_changes': json.dumps(get_past_changes(first_of_month, wards)),
         'changes': json.dumps(changes_for_month(first_of_month, wards)),
@@ -43,7 +44,7 @@ def plan(request):
 @login_required
 def month(request):
     department_ids = request.session.get('department_ids')
-    wards = Ward.objects.filter(department_id__in=department_ids)
+    wards = Ward.objects.filter(departments__id__in=department_ids)
     year = request.GET['year']
     month = request.GET['month']
     data = changes_for_month(date(int(year), int(month), 1), wards)
