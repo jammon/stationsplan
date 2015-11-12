@@ -43,14 +43,15 @@ sp.ChangeStaffView = Backbone.View.extend({
         '<tr><td>' +
         '<button type="button" class="btn btn-primary btn-xs changestaff" ' +
         'data-shortname="<%= shortname %>" data-action="<%= action %>">' +
-        '<%= plus_or_minus %></button>' +
+        '<span class="glyphicon glyphicon-<%= plus_or_minus %>"></span>' +
+        '</button>' +
         '</td>' +
         '<td><%= name %></td><td><%= duties %></td></tr>'),
     add_person_html: function(person, action, dialog_body, day) {
         dialog_body.append(this.change_person_template({
             shortname: person.id,
             name: person.get('name'),
-            plus_or_minus: (action=='add' ? '+' : '-'),
+            plus_or_minus: (action=='add' ? 'plus' : 'minus'),
             action: action,
             duties: day.persons_duties[person.id].pluck('shortname').join(', '),
         }));

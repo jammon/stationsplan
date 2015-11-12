@@ -4,28 +4,32 @@ from .models import (Person, Ward, ChangingStaff, ChangeLogging, Department,
                      Company, Employee)
 
 
-class CompanyRestrictedAdmin(admin.ModelAdmin):
+class CompanyRestrictedMixin(object):
     """ Limits access to objects, that have their "company" field set
     to the users company.
     Prevents usual adding of objects, this has to be done via
     an inline-admin.
     """
+    readonly_fields = ('company',)  # just for testing
+    # exclude = ('company',)
+
+    def save_model(self, request, obj, form, change):
+        obj.company_id = request.session.get('company_id')
+        obj.save()
+
     def queryset(self, request):
-        qs = super(CompanyRestrictedAdmin, self).queryset(request)
+        qs = super(CompanyRestrictedMixin, self).queryset(request)
         return qs.filter(company_id=request.session.get('company_id'))
 
-    def has_add_permission(self, request):
-        return False
 
-
-class DepartmentRestrictedAdmin(CompanyRestrictedAdmin):
+class DepartmentRestrictedAdmin(admin.ModelAdmin):
     """ Limits access to objects, that have their "departments" field set
     to the users departments.
     """
     def queryset(self, request):
         qs = super(DepartmentRestrictedAdmin, self).queryset(request)
         return qs.filter(
-            departments_id__in=request.session.get('department_ids'))
+            departments__id__in=request.session.get('department_ids'))
 
 
 @admin.register(ChangingStaff)
@@ -33,8 +37,22 @@ class ChangingStaffAdmin(DepartmentRestrictedAdmin):
     date_hierarchy = 'day'
 
 
-admin.site.register(Person)
-admin.site.register(Ward)
+@admin.register(Person)
+class PersonAdmin(CompanyRestrictedMixin, DepartmentRestrictedAdmin):
+    filter_horizontal = ('departments', )
+    list_filter = ('departments', )
+    ordering = ('name',)
+
+
+@admin.register(Ward)
+class WardAdmin(CompanyRestrictedMixin, DepartmentRestrictedAdmin):
+    filter_horizontal = ('departments', )
+    list_filter = ('departments', )
+    ordering = ('name',)
+    fields = ('name', 'shortname', ('max', 'min'),
+              ('nightshift', 'everyday', 'continued', 'on_leave',),
+              'departments', 'company',)
+
 admin.site.register(Department)
 admin.site.register(Company)
 admin.site.register(Employee)

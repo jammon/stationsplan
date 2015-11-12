@@ -32,11 +32,13 @@ class Department(models.Model):
         verbose_name_plural = _('Departments')
 
     def __str__(self):
-        return "{} ({})".format(self.name, self.company.name)
+        return self.name
 
 
 @python_2_unicode_compatible
 class Person(models.Model):
+    """ A person (worker) who can be planned for work
+    """
     name = models.CharField('Name', max_length=50)
     shortname = models.CharField('Short Name', max_length=10)
     start_date = models.DateField(default=date(2015, 1, 1),
@@ -80,7 +82,7 @@ class Ward(models.Model):
     on_leave = models.BooleanField(
         default=False,
         help_text='if True, then persons planned for this are on leave')
-    department = models.ManyToManyField(Department, related_name='wards')
+    departments = models.ManyToManyField(Department, related_name='wards')
     company = models.ForeignKey(Company, related_name='wards')
 
     class Meta:
@@ -158,6 +160,10 @@ class ChangeLogging(models.Model):
 
 @python_2_unicode_compatible
 class Employee(models.Model):
+    """ Somebody who uses the plan.
+    Can be anyone who works there, but also other involved personnel,
+    like management etc.
+    """
     user = models.OneToOneField(User, related_name='employee')
     departments = models.ManyToManyField(Department, related_name='employees')
     company = models.ForeignKey(Company, related_name='employees')

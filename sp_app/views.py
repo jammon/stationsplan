@@ -24,7 +24,7 @@ def plan(request):
         start_date__lt=first_of_month.replace(year=first_of_month.year+1),
         end_date__gt=first_of_month.replace(month=1),
         departments__id__in=department_ids)]
-    wards = Ward.objects.filter(department__in=department_ids)
+    wards = Ward.objects.filter(departments__id__in=department_ids)
     name = request.user.get_full_name() or request.user.get_username()
     data = {
         'persons': json.dumps(persons),

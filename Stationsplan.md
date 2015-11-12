@@ -19,11 +19,25 @@ Jede Person gehört zu einer Abteilung. Stationen, Dienste oder Funktionen könn
 
 ## User
 Angemeldete User können verschiedene Stufen von Benutzerrrechten haben. Sie können:
-- eine Planung ansehen,
-- die Planung von verschiedenen Stationen bearbeiten,
-- Benutzer anlegen, bearbeiten oder löschen,
-- Stationen und Personen anlegen, bearbeiten oder löschen,
-- für mehrere Abteilungen (einer Klinik) Administratorfunktionen wahrnehmen.
+- eine Planung ansehen, - Viewer
+- die Planung von verschiedenen Stationen bearbeiten, - Editor
+- Benutzer anlegen, bearbeiten oder löschen, - Department Leader
+- Stationen und Personen anlegen, bearbeiten oder löschen, - Department Leader
+- für mehrere Abteilungen (einer Klinik) Administratorfunktionen wahrnehmen. - Company Admins
+
+### Viewer
+Haben keine Berechtigungen.
+
+### Editor
+Können Planungen der eigenen Abteilung ändern.
+
+### Department Leader
+Können Benutzer (Viewer, Editor, Department Leader) für die eigene Abteilung anlegen/bearbeiten.
+Können Stationen und Personen für die eigene Abteilung anlegen/bearbeiten.
+
+### Company Admins
+Können Departments anlegen/bearbeiten.
+Können alles was Department Leader können auf Company-Ebene.
 
 ## Backend
 - Der Monat soll gespeichert werden, wenn er erstellt ist
@@ -40,6 +54,11 @@ Angemeldete User können verschiedene Stufen von Benutzerrrechten haben. Sie kö
 - Wenn eine Planung finalisiert ist, kann sie nur noch von bestimmten Berechtigten bearbeitet werden.
 - Nur finalisierte Planungen sind für Benutzer ohne besondere Berechtigung sichtbar.
 - Angemeldete Nutzer sollen gleich nach /plan kommen.
+- In admin sollten nur die Personen/Wards angeboten werden, die zur eigenen Abteilung gehören
+- In Person/Ward sollte die eigene Abteilung/Company bei der Auswahl bzw. beim Hinzufügen vorbelegt sein.
+- Berechtigungen implementieren
+- Abfragen auf die Departments einschränken
+- Customize the default error views 
 
 ## Done
 - Es soll in /plan immer das Department des Users dargestellt werden
@@ -47,3 +66,5 @@ Angemeldete User können verschiedene Stufen von Benutzerrrechten haben. Sie kö
 - login und logout implementieren
 - Jeder User muss ein Department haben
 - im "Nächsten Monat" sollen nur die Personen dargestellt werden, die dann noch tätig sind.
+- Logging einrichten
+    + Jede Besetzungsänderung soll ein Logging folgender Art auslösen: "$User: $Person ist ab/am $Datum für $Station [nicht mehr] eingeteilt" oder 

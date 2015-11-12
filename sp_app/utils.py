@@ -56,9 +56,9 @@ class PopulatedTestCase(TestCase):
             name="Ward A", shortname="A", max=3, min=2,
             nightshift=False, everyday=False, continued=True, on_leave=False,
             company=self.company)
-        self.ward_a.department.add(self.department)
+        self.ward_a.departments.add(self.department)
         self.ward_b = Ward.objects.create(
             name="Ward B", shortname="B", max=2, min=1,
             nightshift=False, everyday=False, continued=True, on_leave=False,
             company=self.company)
-        self.ward_b.department.add(self.department)
+        self.ward_b.departments.add(self.department)
