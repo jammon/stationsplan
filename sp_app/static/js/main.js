@@ -1,6 +1,7 @@
 "use strict";
 var sp = sp || {};
 
+// Implement the js part of csrf protection
 function getCookie(name) {
     var cookieValue = null;
     if (document.cookie && document.cookie !== '') {
