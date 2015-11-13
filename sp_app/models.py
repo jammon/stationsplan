@@ -6,6 +6,8 @@ from django.db import models
 from django.utils.translation import ugettext as _
 from django.utils.encoding import python_2_unicode_compatible
 
+from .utils import date_to_json
+
 
 @python_2_unicode_compatible
 class Company(models.Model):
@@ -55,10 +57,14 @@ class Ward(models.Model):
         help_text='if True, then persons planned for this are on leave')
     departments = models.ManyToManyField(Department, related_name='wards')
     company = models.ForeignKey(Company, related_name='wards')
+    position = models.IntegerField(
+        default=1,
+        help_text='Ordering in the display')
+    approved = models.DateField()
 
     class Meta:
-        verbose_name = _('Ward')
-        verbose_name_plural = _('Wards')
+        verbose_name = _('Task')
+        verbose_name_plural = _('Tasks')
 
     def __str__(self):
         return self.name
@@ -79,6 +85,9 @@ class Person(models.Model):
     functions = models.ManyToManyField(
         Ward, related_name='staff',
         help_text='Functions that he or she can  perform.')
+    position = models.IntegerField(
+        default=1,
+        help_text='Ordering in the display')
 
     class Meta:
         verbose_name = _('Person')
@@ -88,13 +97,13 @@ class Person(models.Model):
         return self.name
 
     def toJson(self):
-        def date_to_json(date):
-            return [date.year, date.month-1, date.day]
         return {'name': self.name,
                 'id': self.shortname,
                 'start_date': date_to_json(self.start_date),
                 'end_date': date_to_json(self.end_date),
-                'functions': [f.shortname for f in self.functions.all()]}
+                'functions': [f.shortname for f in self.functions.all()],
+                'position': self.position,
+                }
 
 
 @python_2_unicode_compatible

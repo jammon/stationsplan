@@ -51,11 +51,13 @@ sp.Person = Backbone.Model.extend({
 
 sp.Persons = Backbone.Collection.extend({
     model: sp.Person,
-    retrieve: function() {
-        var that = this;
-        // TODO
+    // retrieve: function() {
+    //     var that = this;
+    //     // TODO
+    // },
+    comparator: function(person) {
+        return person.get('position') + person.get('name');
     },
-    comparator: 'name',
 });
 sp.persons = new sp.Persons();
 
@@ -85,6 +87,7 @@ sp.Wards = Backbone.Collection.extend({
     comparator: function(ward) {
         var res = (ward.get('on_leave') ? '1' : '0') +  // on_leave last
             (ward.get('continued') ? '0' : '1') +  // normal wards first
+            ward.get('position') +
             ward.get('name');
         return res;
     },

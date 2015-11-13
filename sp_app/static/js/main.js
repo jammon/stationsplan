@@ -57,7 +57,7 @@ function add_month(year, month) {
         'November', 'Dezember'];
     content.append($('<h2/>', { text: month_names[month]+' '+year }));
 
-    var table = $('<table/>', {border: 1});
+    var table = $('<table/>', {border: 1, 'class': 'plan'});
 
     // Construct title row
     var titlerow = $('<tr/>', {'class': 'titlerow'}).append($('<th/>'));

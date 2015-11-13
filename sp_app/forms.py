@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib import admin
 
-from .models import Ward, Person
+from .models import Person
+
 
 class WardForm(forms.ModelForm):
 
@@ -17,6 +18,10 @@ class WardForm(forms.ModelForm):
         if self.instance.pk:
             #if this is not a new object, we load related staff
             self.initial['staff'] = self.instance.staff.values_list('pk', flat=True)
+            self.fields['staff'].queryset = Person.objects.filter(
+                company_id=self.instance.company_id)
+        else:
+            self.fields['staff'].queryset = Person.objects.none()
 
     def save(self, *args, **kwargs):
         instance = super(WardForm, self).save(*args, **kwargs)

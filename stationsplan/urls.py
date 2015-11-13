@@ -18,9 +18,11 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
 from sp_app import views as sp_views
+from sp_app.admin import config_site
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^config/', include(config_site.urls)),
     url('^logout/', auth_views.logout, {'next_page': '/'}),
     url('^', include('django.contrib.auth.urls')),
     url(r'^$', sp_views.HomePageView.as_view(), name='home'),
