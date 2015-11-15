@@ -7,7 +7,7 @@ from django.http import HttpResponseNotAllowed, JsonResponse
 from django.shortcuts import render
 from django.views.generic.base import TemplateView
 
-from .models import Person, Ward, ChangeLogging, ChangingStaff
+from .models import Person, Ward, ChangeLogging, ChangingStaff, date_to_json
 from .utils import get_past_changes, changes_for_month, get_for_company
 
 
@@ -26,10 +26,14 @@ def plan(request):
         departments__id__in=department_ids
     ).prefetch_related('functions')
     wards = Ward.objects.filter(departments__id__in=department_ids)
+    wards_list = list(wards.values())
+    for ward in wards_list:
+        if ward['approved']:
+            ward['approved'] = date_to_json(ward['approved'])
     name = request.user.get_full_name() or request.user.get_username()
     data = {
         'persons': json.dumps([p.toJson() for p in persons]),
-        'wards': json.dumps(list(wards.values())),
+        'wards': json.dumps(wards_list),
         'past_changes': json.dumps(get_past_changes(first_of_month, wards)),
         'changes': json.dumps(changes_for_month(first_of_month, wards)),
         'year': first_of_month.year,

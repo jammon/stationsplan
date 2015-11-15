@@ -25,7 +25,8 @@ th, td {
 .personrow {
   background-color: #DDD;
 }
-.nightshiftrow {
+.nightshiftrow,
+.freedaysrow {
     background-color: #CCF;
 }
 .leaverow {

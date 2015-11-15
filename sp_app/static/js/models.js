@@ -31,7 +31,7 @@ function days_in_month (month, year) {
 //     - end_date = end of job
 sp.Person = Backbone.Model.extend({
     initialize: function() {
-        var start = this.get('start_date') || [2000, 0, 1];
+        var start = this.get('start_date') || [2015, 0, 1];
         this.set('start_date', new Date(start[0], start[1], start[2]));
         var end = this.get('end_date') || [2099, 11, 31];
         this.set('end_date', new Date(end[0], end[1], end[2]));
@@ -51,10 +51,6 @@ sp.Person = Backbone.Model.extend({
 
 sp.Persons = Backbone.Collection.extend({
     model: sp.Person,
-    // retrieve: function() {
-    //     var that = this;
-    //     // TODO
-    // },
     comparator: function(person) {
         return person.get('position') + person.get('name');
     },
@@ -69,13 +65,20 @@ sp.persons = new sp.Persons();
 //     - min = minimum staffing
 //     - nightshift = if truthy, staffing can not be planned on the next day.
 //     - everyday = if truthy, is to be planned also on free days.
+//     - freedays = if truthy, is to be planned only on free days.
 //     - continued = if truthy, then todays staffing will be planned for tomorrow
 //     - on_leave = if truthy, then persons planned for this are on leave
+//     - approved = The date until which the plan is approved
 sp.Ward = Backbone.Model.extend({
+    initialize: function() {
+        var start = this.get('approved') || [2015, 0, 1];
+        this.set('approved', new Date(start[0], start[1], start[2]));
+    },
     idAttribute: "shortname",
     collection_array: 'ward_staffings',
     row_class: function() {
         if (this.get('nightshift')) return 'nightshiftrow';
+        if (this.get('freedays')) return 'freedaysrow';
         if (this.get('on_leave')) return 'leaverow';
         return 'wardrow';
     },
@@ -159,8 +162,8 @@ sp.Day = Backbone.Model.extend({
         var yesterday = this.get('yesterday');
         this.id = sp.Day.get_id(this.get('date'));
 
-        this.ward_staffings = {};    // a staffing for each ward
-        // can be undefined if this day is free
+        this.ward_staffings = {};  // a staffing for each ward
+                                   // can be undefined if this day is free
         sp.wards.each(this.get_staffing, this);
 
         this.persons_duties = {};    // duties for each person
@@ -184,9 +187,7 @@ sp.Day = Backbone.Model.extend({
         var staffing, yesterdays_staffing;
         var date = this.get('date');
         var options = { ward: ward, day: this };
-        if (!is_free(date) ||
-                ward.get('everyday') ||
-                ward.get('on_leave')) {
+        if (this.needs_staffing(ward)) {
             staffing = new sp.Staffing([], options);
             if (ward.get('continued')) {
                 yesterdays_staffing = this.yesterdays_staffing(ward);
@@ -250,12 +251,16 @@ sp.Day = Backbone.Model.extend({
 
     yesterdays_staffing: function(ward) {
         var yesterday = this.get('yesterday');
-        if (!ward.get('everyday')) {
-            while (yesterday && is_free(yesterday.get('date'))) {
-                yesterday = yesterday.get('yesterday');
-            }
+        while (yesterday && !yesterday.needs_staffing(ward)) {
+            yesterday = yesterday.get('yesterday');
         }
         return yesterday ? yesterday.ward_staffings[ward.id] : undefined;
+    },
+    needs_staffing: function(ward) {
+        if (ward.get('everyday') || ward.get('on_leave')) {
+            return true;
+        }
+        return is_free(this.get('date')) == (ward.get('freedays') || false);
     },
 
     person_added: function(person, staffing, options) {

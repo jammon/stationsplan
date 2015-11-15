@@ -6,7 +6,9 @@ from django.db import models
 from django.utils.translation import ugettext as _
 from django.utils.encoding import python_2_unicode_compatible
 
-from .utils import date_to_json
+
+def date_to_json(date):
+    return [date.year, date.month-1, date.day]
 
 
 @python_2_unicode_compatible
@@ -49,6 +51,9 @@ class Ward(models.Model):
     everyday = models.BooleanField(
         default=False,
         help_text='if True, is to be planned also on free days.')
+    freedays = models.BooleanField(
+        default=False,
+        help_text='if True, is to be planned only on free days.')
     continued = models.BooleanField(
         default=True,
         help_text='if True, then todays staffing will be planned for tomorrow')
@@ -60,7 +65,9 @@ class Ward(models.Model):
     position = models.IntegerField(
         default=1,
         help_text='Ordering in the display')
-    approved = models.DateField()
+    approved = models.DateField(
+        null=True, blank=True,
+        help_text='The date until which the plan is approved')
 
     class Meta:
         verbose_name = _('Task')

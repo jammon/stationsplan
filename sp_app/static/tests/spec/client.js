@@ -1,12 +1,13 @@
 var persons_init = [
-  { name: 'Anton', id: 'A',},
-  { name: 'Berta', id: 'B',},
+  { name: 'Anton', id: 'A', functions: ['A', 'B']},
+  { name: 'Berta', id: 'B', functions: ['A', 'B']},
 ];
 var wards_init = [
   { name: 'Ward A', shortname: 'A', min: 1, max: 2, continued: true },
   { name: 'Ward B', shortname: 'B', min: 2, max: 2, continued: true },
   { name: 'Nightshift', shortname: 'N', min: 0, max: 1, nightshift: true, everyday: true },
-  { name: 'Leave', shortname: 'L', min: 0, max: 10, on_leave: true, continued: true }
+  { name: 'Leave', shortname: 'L', min: 0, max: 10, on_leave: true, continued: true },
+  { name: 'Free days', shortname: 'F', min: 0, max: 10, freedays: true, continued: true },
 ];
 function init_hospital() {
     sp.initialize_wards(wards_init);
@@ -29,7 +30,7 @@ describe("Initializing data", function() {
     it("should have the persons and wards set", function() {
         init_hospital();
         expect(sp.persons.length).toBe(2);
-        expect(sp.wards.length).toBe(4);
+        expect(sp.wards.length).toBe(5);
         var person_a = sp.persons.get('A');
         expect(person_a.get('name')).toBe('Anton');
         var ward_a = sp.wards.get('A');
@@ -54,10 +55,10 @@ describe("Day", function() {
     describe("check availability:", function() {
         function check_availability (action, nr_avail, first_avail) {
             var yesterday = new sp.Day({
-                date: new Date(2015, 7, 6),
+                date: new Date(2015, 7, 6),  // Thursday
             });
             var today = new sp.Day({
-                date: new Date(2015, 7, 7),
+                date: new Date(2015, 7, 7),  // Friday
                 yesterday: yesterday,
             });
             action(today, yesterday);
@@ -100,6 +101,22 @@ describe("Day", function() {
                 today.ward_staffings.B.add(person_a);
             },
             2);
+        });
+    });
+    describe("need for staffing", function() {
+        it("should respect free days", function() {
+            var sunday = new sp.Day({
+                date: new Date(2015, 7, 2),
+            });
+            var monday = new sp.Day({
+                date: new Date(2015, 7, 3),
+            });
+            var ward_a = sp.wards.get('A');
+            var ward_f = sp.wards.get('F');
+            expect(sunday.needs_staffing(ward_a)).toBeFalsy();
+            expect(sunday.needs_staffing(ward_f)).toBeTruthy();
+            expect(monday.needs_staffing(ward_a)).toBeTruthy();
+            expect(monday.needs_staffing(ward_f)).toBeFalsy();
         });
     });
     describe("interaction with previous planning", function() {
@@ -210,7 +227,7 @@ describe("Day", function() {
         });
     });
 });
-describe("Persons", function() {
+describe("Person", function() {
     it("should know, if they are available", function() {
         var p1 = new sp.Person({
             name: "Test Test",
@@ -219,11 +236,11 @@ describe("Persons", function() {
         var p2 = new sp.Person({
             name: "Test Test2",
             id: "test2",
-            start_date: [2015, 0, 1],
+            start_date: [2015, 1, 1],
             end_date: [2015, 11, 31],
         });
-        var d1 = new Date(2014, 11, 31);
-        var d2 = new Date(2015, 0, 1);
+        var d1 = new Date(2015, 0, 31);
+        var d2 = new Date(2015, 1, 1);
         var d3 = new Date(2015, 11, 31);
         var d4 = new Date(2016, 0, 1);
         expect(p1.is_available(d1)).toBe(true);

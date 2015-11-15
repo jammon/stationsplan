@@ -72,15 +72,15 @@ class WardAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
     fieldsets = (
         (None, {'fields': (
             (('name', 'shortname', 'position'),
-             ('max', 'min'),
-             ('nightshift', 'everyday', 'continued', 'on_leave',),
+             ('max', 'min', 'approved'),
+             ('nightshift', 'everyday', 'freedays', 'continued', 'on_leave',),
              'departments', 'staff'))
         }),
     )
     filter_horizontal = ('departments', )
     list_filter = ('departments', )
     ordering = ('position', 'name',)
-    list_display = ('name', 'position')
+    list_display = ('name', 'shortname', 'position')
     list_editable = ('position',)
 
 
