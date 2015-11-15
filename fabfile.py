@@ -34,6 +34,11 @@ def staticfiles():
         run("source ~/priv/venv/bin/activate && ./manage.py collectstatic")
 
 
+def migrate():
+    with cd(code_dir):
+        run("source ~/priv/venv/bin/activate && ./manage.py migrate")
+
+
 def restart_server():
     run("touch ~/htdocs/app.wsgi")
 
@@ -41,4 +46,5 @@ def restart_server():
 def deploy():
     server_pull()
     staticfiles()
+    migrate()
     restart_server()
