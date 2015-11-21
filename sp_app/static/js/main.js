@@ -1,5 +1,5 @@
+(function($, _, Backbone) {
 "use strict";
-var sp = sp || {};
 
 // Implement the js part of csrf protection
 function getCookie(name) {
@@ -32,6 +32,11 @@ $.ajaxSetup({
 
 sp.days = {};
 sp.months = {};
+
+function days_in_month (month, year) {
+    var days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    return (month == 1) ? (year % 4 ? 28 : 29) : days[month];
+}
 
 function add_month_days(year, month) {
     var month_days = [], i;
@@ -104,3 +109,53 @@ function add_month(year, month) {
 
     content.append(table);
 }
+
+function initialize() {
+    var next_month_btn = $('#next_month');
+    var next_year, next_month;
+
+    sp.initialize_wards(wards_init);
+    sp.persons.reset(persons_init);
+    add_month(curr_year, curr_month-1);
+    _.each(past_changes, sp.apply_change);
+    _.each(changes, sp.apply_change);
+
+    if (curr_month==12) {
+      next_year = curr_year+1;
+      next_month = 0;
+    } else {
+      next_year = curr_year;
+      next_month = curr_month;
+    }
+    next_month_btn.on('click', function () {
+      add_month(next_year, next_month);
+      // TODO: read changes!!
+      $.ajax('/month', {
+          data: {
+              month: next_month+1,
+              year: next_year,
+          },
+          method: 'GET',
+          error: function(jqXHR, textStatus, errorThrown) {
+              sp.store_error(textStatus, 'error');
+              // sp.display_error(jqXHR.responseText);
+          },
+          success: function(data, textStatus, jqXHR) {
+              if (data.warning) {
+                  sp.store_error(data.warning, 'warning');
+              } else {
+                _.each(data, sp.apply_change);
+              }
+          },
+      });
+      next_month += 1;
+      if (next_month==12) {
+        next_year += 1;
+        next_month = 0;
+      }
+    });
+}
+initialize();
+
+})($, _, Backbone);
+

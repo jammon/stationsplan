@@ -1,5 +1,6 @@
+var sp = (function($, _, Backbone) {
 "use strict";
-var sp = sp || {};
+var sp = {};
 
 var free_dates = [
     '2015.10.3',
@@ -10,7 +11,7 @@ var free_dates = [
     '2015.12.31',
     '2016.1.1.',
 ];
-function is_free(date) {
+sp.is_free = function (date) {
     var weekday = date.getDay();
     if (weekday===6 || weekday===0) {
         return true;
@@ -19,10 +20,6 @@ function is_free(date) {
     return (free_dates.indexOf(date_string) > -1);
 }
 
-function days_in_month (month, year) {
-    var days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    return (month == 1) ? (year % 4 ? 28 : 29) : days[month];
-}
 
 // A person has a
 //     - name
@@ -260,7 +257,7 @@ sp.Day = Backbone.Model.extend({
         if (ward.get('everyday') || ward.get('on_leave')) {
             return true;
         }
-        return is_free(this.get('date')) == (ward.get('freedays') || false);
+        return sp.is_free(this.get('date')) == (ward.get('freedays') || false);
     },
 
     person_added: function(person, staffing, options) {
@@ -300,7 +297,7 @@ sp.Day = Backbone.Model.extend({
 });
 sp.padStr = function (i) {
     return (i < 10) ? "0" + i : i;
-}
+};
 sp.Day.get_id = function(date) {
     return "" + date.getFullYear() +
                 sp.padStr(1 + date.getMonth()) +
@@ -355,3 +352,6 @@ sp.store_error = function(error, type) {
 sp.display_error = function(msg) {
     $('#errors').append($('<div/>', { html: msg }));
 };
+
+return sp;
+})($, _, Backbone);

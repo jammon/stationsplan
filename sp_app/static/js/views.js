@@ -1,5 +1,5 @@
+(function($, _, Backbone) {
 "use strict";
-var sp = sp || {};
 
 sp.StaffingView = Backbone.View.extend({
     tagName: 'td',
@@ -22,7 +22,7 @@ sp.StaffingView = Backbone.View.extend({
         return this;
     },
     addstaff: function() {
-        if (!sp.can_change) return;
+        if (!can_change) return;
         sp.changestaffview.show(this.collection);
     },
 });
@@ -107,3 +107,13 @@ sp.AddItemView = Backbone.View.extend({
         return this;
     },
 });
+
+sp.OrganizeFunctionsView = Backbone.View.extend({
+    tagName: 'table',
+    className: 'functions',
+    render: function() {
+
+    },
+});
+
+})($, _, Backbone);

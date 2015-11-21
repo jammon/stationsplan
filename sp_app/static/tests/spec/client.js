@@ -16,14 +16,14 @@ function init_hospital() {
 
 describe("function is_free", function() {
     it("should identify weekdays", function() {
-        expect(is_free(new Date(2015, 7, 7))).toBe(false);  // Friday
-        expect(is_free(new Date(2015, 7, 8))).toBe(true);  // Saturday
-        expect(is_free(new Date(2015, 7, 9))).toBe(true);  // Sunday
-        expect(is_free(new Date(2015, 7, 10))).toBe(false);  // Monday
+        expect(sp.is_free(new Date(2015, 7, 7))).toBe(false);  // Friday
+        expect(sp.is_free(new Date(2015, 7, 8))).toBe(true);  // Saturday
+        expect(sp.is_free(new Date(2015, 7, 9))).toBe(true);  // Sunday
+        expect(sp.is_free(new Date(2015, 7, 10))).toBe(false);  // Monday
     });
     it("should identify special holidays", function() {
-        expect(is_free(new Date(2015, 9, 3))).toBe(true);
-        expect(is_free(new Date(2015, 11, 24))).toBe(true);
+        expect(sp.is_free(new Date(2015, 9, 3))).toBe(true);
+        expect(sp.is_free(new Date(2015, 11, 24))).toBe(true);
     });
 });
 describe("Initializing data", function() {
