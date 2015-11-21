@@ -50,9 +50,10 @@ class TestChanges(PopulatedTestCase):
             (person_b, self.ward_a, date(2015, 9, 9), False),  # and remove
             (person_c, self.ward_a, date(2015, 9, 7), True),  # leaving in Sept.
             (person_a, self.nightshift, date(2015, 9, 14), True),  # not to be continued
-            (person_a, self.ward_a, date(2015, 10, 2), False),
+            (person_a, self.ward_a, date(2015, 10, 1), False),
             (person_a, self.ward_b, date(2015, 10, 5), True),
             (person_b, self.ward_a, date(2015, 10, 5), True),
+            (person_a, self.ward_a, date(2015, 10, 31), True),
             (person_b, self.ward_a, date(2015, 11, 6), False),
         )
         ChangingStaff.objects.bulk_create([
@@ -64,8 +65,10 @@ class TestChanges(PopulatedTestCase):
         result = changes_for_month(date(2015, 10, 1), [self.ward_a])
         self.assertEqual(
             result,
-            [{'person': "P-A", 'ward': "A", 'day': "20151002", 'action': "remove"},
-             {'person': "P-B", 'ward': "A", 'day': "20151005", 'action': "add"}])
+            [{'person': "P-A", 'ward': "A", 'day': "20151001", 'action': "remove"},
+             {'person': "P-B", 'ward': "A", 'day': "20151005", 'action': "add"},
+             {'person': "P-A", 'ward': "A", 'day': "20151031", 'action': "add"},
+             ])
 
     def test_get_past_changes(self):
         result = get_past_changes(date(2015, 10, 1), [self.ward_a, self.nightshift])

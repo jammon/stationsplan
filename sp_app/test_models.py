@@ -19,7 +19,9 @@ class Test_ToJson(PopulatedTestCase):
                          {'name': "Heinz Müller",
                           'id': "Mül",
                           'start_date': [2015, 0, 1],
-                          'end_date': [2015, 11, 31], })
+                          'end_date': [2015, 11, 31],
+                          'functions': [],
+                          'position': 1, })
 
     def test_to_json(self):
         c = ChangingStaff(

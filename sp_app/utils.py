@@ -27,7 +27,7 @@ def get_past_changes(first_of_month, wards):
 def changes_for_month(first_of_month, wards):
     queryset = ChangingStaff.objects.filter(
         day__gte=first_of_month,
-        day__lt=last_day_of_month(first_of_month),
+        day__lte=last_day_of_month(first_of_month),
         ward__in=wards,
     ).order_by('day')
     return [c.toJson() for c in queryset]
