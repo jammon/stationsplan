@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.contrib import admin
+from django.utils.translation import ugettext_lazy as _
 
 from .models import (Person, Ward, ChangingStaff, ChangeLogging, Department,
                      Company, Employee)
@@ -55,13 +56,65 @@ class RestrictFields(object):
             db_field, request, **kwargs)
 
 
-class ChangingStaffAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
+class PersonWardListFilter(admin.SimpleListFilter):
+
+    def lookups(self, request, model_admin):
+        return self.model.objects.filter(
+            company_id=request.session.get('company_id')
+        ).values_list('id', 'name')
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value:
+            return queryset.filter(**{"{}_id".format(self.parameter_name): int(value)})
+        return queryset
+
+
+class WardListFilter(PersonWardListFilter):
+    title = _('Ward')
+    parameter_name = 'ward'
+    model = Ward
+
+
+class PersonListFilter(PersonWardListFilter):
+    title = _('Person')
+    parameter_name = 'person'
+    model = Person
+
+
+class ChangingStaffAdmin(RestrictFields, admin.ModelAdmin):
     date_hierarchy = 'day'
+    list_filter = (WardListFilter, PersonListFilter)
+
+    def get_queryset(self, request):
+        qs = super(ChangingStaffAdmin, self).get_queryset(request)
+        return qs.filter(person__company__id=request.session.get('company_id'))
+
+
+class DepartmentsListFilter(admin.SimpleListFilter):
+    # Human-readable title which will be displayed in the
+    # right admin sidebar just above the filter options.
+    title = _('Department')
+
+    # Parameter for the filter that will be used in the URL query.
+    parameter_name = 'departments'
+
+    def lookups(self, request, model_admin):
+        return Department.objects.filter(
+            company_id=request.session.get('company_id')
+        ).values_list('id', 'name')
+
+    def queryset(self, request, queryset):
+        qs = queryset.filter(company_id=request.session.get('company_id'))
+        value = self.value()
+        if value != None:
+            qs = qs.filter(departments__id=int(value))
+        return qs
 
 
 class PersonAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
     filter_horizontal = ('departments', 'functions',)
-    list_filter = ('departments', )
+    list_filter = (DepartmentsListFilter, )
     ordering = ('position', 'name',)
     list_display = ('name', 'position')
     list_editable = ('position',)
@@ -78,11 +131,10 @@ class WardAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
         }),
     )
     filter_horizontal = ('departments', )
-    list_filter = ('departments', )
+    list_filter = (DepartmentsListFilter, )
     ordering = ('position', 'name',)
     list_display = ('name', 'shortname', 'position')
     list_editable = ('position',)
-
 
 class DepartmentAdmin(CompanyRestrictedMixin, admin.ModelAdmin):
     pass
