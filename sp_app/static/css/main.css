@@ -1,9 +1,9 @@
 .plan {
-  font-size: 12px;
+    font-size: 12px;
 }
 .container {
-  position: relative;
-  background: #fff;
+    position: relative;
+    background: #fff;
 }
 
 .logout {
@@ -14,16 +14,16 @@
 }
 
 th, td {
-  padding: 0 2px;
-  vertical-align: top;
+    padding: 0 2px;
+    vertical-align: top;
 }
 
 .lacking {
-  background-color: #FCC;
+    background-color: #FCC;
 }
 
 .personrow {
-  background-color: #DDD;
+    background-color: #DDD;
 }
 .nightshiftrow,
 .freedaysrow {
@@ -35,4 +35,9 @@ th, td {
 
 .select_person {
     position: absolute;
+}
+
+#changestafftable td {
+    vertical-align: middle;
+    padding: 1px 4px;
 }
