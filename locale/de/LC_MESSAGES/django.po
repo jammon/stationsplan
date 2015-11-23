@@ -1,0 +1,165 @@
+# stationsplan.de
+# Copyright (C) 2015 Dr. Johannes Ammon
+# This file is distributed under the same license as the stationsplan package.
+# Johannes Ammon <j.ammon@dr-ammon.de>, 2015.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-11-23 22:33+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: sp_app/admin.py:74
+msgid "Ward"
+msgstr "Funktion"
+
+#: sp_app/admin.py:80 sp_app/models.py:108
+msgid "Person"
+msgstr "Person"
+
+#: sp_app/admin.py:97 sp_app/models.py:35
+msgid "Department"
+msgstr "Abteilung"
+
+#: sp_app/forms.py:11
+msgid "staff"
+msgstr "Personen"
+
+#: sp_app/forms.py:14 sp_app/models.py:109
+msgid "Persons"
+msgstr "Personen"
+
+#: sp_app/models.py:16 sp_app/models.py:29 sp_app/models.py:44
+#: sp_app/models.py:90
+msgid "Name"
+msgstr "Name"
+
+#: sp_app/models.py:17 sp_app/models.py:30 sp_app/models.py:45
+#: sp_app/models.py:91
+msgid "Short Name"
+msgstr "Kurzname"
+
+#: sp_app/models.py:20
+msgid "Company"
+msgstr "Krankenhaus"
+
+#: sp_app/models.py:21
+msgid "Companies"
+msgstr "Krankenhäuser"
+
+#: sp_app/models.py:32
+msgid "The top organizational unit"
+msgstr "Die oberste Organisationseinheit"
+
+#: sp_app/models.py:36 sp_app/models.py:69 sp_app/models.py:97
+msgid "Departments"
+msgstr "Abteilungen"
+
+#: sp_app/models.py:46
+msgid "maximum staffing"
+msgstr "Maximale Besetzung"
+
+#: sp_app/models.py:47
+msgid "minimum staffing"
+msgstr "Minimale Besetzung"
+
+#: sp_app/models.py:49
+msgid "nightshift"
+msgstr "Nachtdienst"
+
+#: sp_app/models.py:51
+msgid "if True, staffing can not be planned on the next day."
+msgstr ""
+"wenn Wahr, dann kann der Diensthabende nicht für den nächsten Tag verplant "
+"werden"
+
+#: sp_app/models.py:53
+msgid "everyday"
+msgstr "täglich"
+
+#: sp_app/models.py:55
+msgid "if True, is to be planned also on free days."
+msgstr ""
+"wenn Wahr, dann muss diese Funktion auch an freien Tagen geplant werden"
+
+#: sp_app/models.py:57
+msgid "freedays"
+msgstr "freie Tage"
+
+#: sp_app/models.py:59
+msgid "if True, is to be planned only on free days."
+msgstr "wenn Wahr, dann kann diese Funktion nur an freien Tagen geplant werden"
+
+#: sp_app/models.py:61
+msgid "continued"
+msgstr "fortsetzen"
+
+#: sp_app/models.py:63
+msgid "if True, then todays staffing will be planned for tomorrow"
+msgstr ""
+"wenn Wahr, dann wird die heutige Besetzung i.d.R. auch für morgen geplant"
+
+#: sp_app/models.py:65
+msgid "on_leave"
+msgstr "Urlaub/frei"
+
+#: sp_app/models.py:67
+msgid "if True, then persons planned for this are on leave"
+msgstr ""
+"wenn Wahr, dann stehen die hier eingetragenen Personen nicht zur Arbeit zur "
+"Verfügung"
+
+#: sp_app/models.py:73 sp_app/models.py:105
+msgid "Ordering in the display"
+msgstr "Position in der Anzeige"
+
+#: sp_app/models.py:76
+msgid "The date until which the plan is approved"
+msgstr "Das Datum, bis zu dem der Plan genehmigt ist"
+
+#: sp_app/models.py:79
+msgid "Task"
+msgstr "Funktion"
+
+#: sp_app/models.py:80
+msgid "Tasks"
+msgstr "Funktionen"
+
+#: sp_app/models.py:92
+msgid "start date"
+msgstr "Anfangsdatum"
+
+#: sp_app/models.py:93
+msgid "begin of job"
+msgstr "Dienstantritt"
+
+#: sp_app/models.py:94
+msgid "end date"
+msgstr "Endedatum"
+
+#: sp_app/models.py:95
+msgid "end of job"
+msgstr "Dienstende"
+
+#: sp_app/models.py:100
+#, fuzzy
+#| msgid "Ward"
+msgid "Wards"
+msgstr "Funktion"
+
+#: sp_app/models.py:101
+msgid "Functions that he or she can  perform."
+msgstr "Funktionen, die er oder sie ausüben kann"
+
+#: sp_app/models.py:103
+msgid "position"
+msgstr "Position"

@@ -14,7 +14,7 @@ def date_to_json(date):
 @python_2_unicode_compatible
 class Company(models.Model):
     name = models.CharField(_('Name'), max_length=50)
-    shortname = models.CharField('Short Name', max_length=10)
+    shortname = models.CharField(_('Short Name'), max_length=10)
 
     class Meta:
         verbose_name = _('Company')
@@ -27,9 +27,9 @@ class Company(models.Model):
 @python_2_unicode_compatible
 class Department(models.Model):
     name = models.CharField(_('Name'), max_length=50)
-    shortname = models.CharField('Short Name', max_length=10)
+    shortname = models.CharField(_('Short Name'), max_length=10)
     company = models.ForeignKey(Company, related_name='departments',
-                                help_text='The top organizational unit')
+                                help_text=_('The top organizational unit'))
 
     class Meta:
         verbose_name = _('Department')
@@ -41,33 +41,39 @@ class Department(models.Model):
 
 @python_2_unicode_compatible
 class Ward(models.Model):
-    name = models.CharField('Name', max_length=50)
-    shortname = models.CharField('Short Name', max_length=10)
-    max = models.IntegerField(help_text='maximum staffing')
-    min = models.IntegerField(help_text='minimum staffing')
+    name = models.CharField(_('Name'), max_length=50)
+    shortname = models.CharField(_('Short Name'), max_length=10)
+    max = models.IntegerField(help_text=_('maximum staffing'))
+    min = models.IntegerField(help_text=_('minimum staffing'))
     nightshift = models.BooleanField(
+        _('nightshift'),
         default=False,
-        help_text='if True, staffing can not be planned on the next day.')
+        help_text=_('if True, staffing can not be planned on the next day.'))
     everyday = models.BooleanField(
+        _('everyday'),
         default=False,
-        help_text='if True, is to be planned also on free days.')
+        help_text=_('if True, is to be planned also on free days.'))
     freedays = models.BooleanField(
+        _('freedays'),
         default=False,
-        help_text='if True, is to be planned only on free days.')
+        help_text=_('if True, is to be planned only on free days.'))
     continued = models.BooleanField(
+        _('continued'),
         default=True,
-        help_text='if True, then todays staffing will be planned for tomorrow')
+        help_text=_('if True, then todays staffing will be planned for tomorrow'))
     on_leave = models.BooleanField(
+        _('on_leave'),
         default=False,
-        help_text='if True, then persons planned for this are on leave')
-    departments = models.ManyToManyField(Department, related_name='wards')
+        help_text=_('if True, then persons planned for this are on leave'))
+    departments = models.ManyToManyField(
+        Department, verbose_name=_('Departments'), related_name='wards')
     company = models.ForeignKey(Company, related_name='wards')
     position = models.IntegerField(
         default=1,
-        help_text='Ordering in the display')
+        help_text=_('Ordering in the display'))
     approved = models.DateField(
         null=True, blank=True,
-        help_text='The date until which the plan is approved')
+        help_text=_('The date until which the plan is approved'))
 
     class Meta:
         verbose_name = _('Task')
@@ -81,20 +87,22 @@ class Ward(models.Model):
 class Person(models.Model):
     """ A person (worker) who can be planned for work
     """
-    name = models.CharField('Name', max_length=50)
-    shortname = models.CharField('Short Name', max_length=10)
-    start_date = models.DateField(default=date(2015, 1, 1),
-                                  help_text='begin of job')
-    end_date = models.DateField(default=date(2099, 12, 31),
-                                help_text='end of job')
-    departments = models.ManyToManyField(Department, related_name='persons')
+    name = models.CharField(_('Name'), max_length=50)
+    shortname = models.CharField(_('Short Name'), max_length=10)
+    start_date = models.DateField(_('start date'), default=date(2015, 1, 1),
+                                  help_text=_('begin of job'))
+    end_date = models.DateField(_('end date'), default=date(2099, 12, 31),
+                                help_text=_('end of job'))
+    departments = models.ManyToManyField(
+        Department, verbose_name=_('Departments'), related_name='persons')
     company = models.ForeignKey(Company, related_name='persons', null=True)
     functions = models.ManyToManyField(
-        Ward, related_name='staff',
-        help_text='Functions that he or she can  perform.')
+        Ward, related_name='staff', verbose_name=_('Wards'),
+        help_text=_('Functions that he or she can  perform.'))
     position = models.IntegerField(
+        _('position'),
         default=1,
-        help_text='Ordering in the display')
+        help_text=_('Ordering in the display'))
 
     class Meta:
         verbose_name = _('Person')

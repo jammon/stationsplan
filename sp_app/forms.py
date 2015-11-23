@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib import admin
+from django.utils.translation import ugettext as _
 
 from .models import Person
 
@@ -9,7 +10,9 @@ class WardForm(forms.ModelForm):
     staff = forms.ModelMultipleChoiceField(
         Person.objects.all(),
         # Add this line to use the double list widget
-        widget=admin.widgets.FilteredSelectMultiple('Persons', is_stacked=False),
+        widget=admin.widgets.FilteredSelectMultiple(
+            _('Persons'), is_stacked=False),
+        label=_('staff'),
         required=False,
     )
 
