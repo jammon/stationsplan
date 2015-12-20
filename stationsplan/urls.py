@@ -13,7 +13,8 @@ Including another URLconf
     1. Add an import:  from blog import urls as blog_urls
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
-from django.conf.urls import include, url
+from django.conf import settings
+from django.conf.urls import include, patterns, url
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
@@ -28,6 +29,12 @@ urlpatterns = [
     url(r'^$', sp_views.HomePageView.as_view(), name='home'),
     url(r'^change$', sp_views.change, name='change'),
     url(r'^month$', sp_views.month, name='month'),
-    url(r'^plan$', sp_views.plan, name='plan'),
+    url(r'^plan(/(?P<month>[0-9]+))?$', sp_views.plan, name='plan'),
     url(r'^tests$', TemplateView.as_view(template_name="sp_app/tests.html"), name='tests'),
 ]
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns += patterns('',
+        url(r'^__debug__/', include(debug_toolbar.urls)),
+    )

@@ -41,3 +41,22 @@ th, td {
     vertical-align: middle;
     padding: 1px 4px;
 }
+.spinner {
+    padding: 4px;
+}
+.spinner-previous, .spinner-next {
+    color: #888;
+    border: solid 1px #AAA;
+}
+.spinner-current {
+    border: solid 1px #333;
+}
+.spinner-current, .spinner-previous, .spinner-next {
+    padding: 2px 4px;
+}
+.spinner-previous {
+    -moz-transform: rotateX(30deg);
+}
+.spinner-next {
+    -moz-transform: rotateX(-30deg);
+}

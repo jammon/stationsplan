@@ -46,9 +46,17 @@ Können alles was Department Leader können auf Company-Ebene.
 - Wenn man "nächsten Monat" klickt, soll der erstellt oder geladen werden.
 - Man soll die Personen bearbeiten können
 - Man soll die Stationen/Dienst bearbeiten können
+- Wenn Urlaub oder Krank eingetragen wird, sollen die bisherigen Verpflichtungen nach dem Urlaub weiterlaufen.
+
+- Funktionen (=Stationen) können durchlaufen (Stationsversorgung, Urlaub) oder nicht (Nachtdienst, Tagdienst)
+- Bei Urlaub oder Krank behält die Person ihre Funktionen, sie werden aber für diesen Tag nicht angezeigt.
+- Bei Nachtdienst werden für diesen Tag alle anderen Funktionen nicht angezeigt, für den Folgetag nur die dazu Passenden (wieder Nachtdienst), die anderen nicht.
+- Ablauf:
+    + When on_leave or yesterdays nightshift is added: the person is unavailable for all staffings of the day.
+    + When yesterdays ward with reduced availability for the next day is added: the person is unavailable for all non-fitting staffings of the day.
+    + When on_leave or yesterdays nightshift or yesterdays ward with reduced availability for the next day is removed: the availability of the person must be calculated newly.
 
 ## TODO
-- Reihenfolge der Stationen vorgeben
 - Wie sollen neue User angelegt werden? Admins könnten die User für das eigene Department anlegen
 - Benutzer müssen nur bestimmte Stationen bearbeiten können.
 - Wenn eine Planung finalisiert ist, kann sie nur noch von bestimmten Berechtigten bearbeitet werden.
@@ -59,6 +67,11 @@ Können alles was Department Leader können auf Company-Ebene.
 - Berechtigungen implementieren
 - Abfragen auf die Departments einschränken
 - Customize the default error views 
+- Im ChangeStaffView Tag und Station ändern lassen. Dauer des Einsatzes in Tagen oder Endedatum angeben lassen.
+- Zukünftige Monate planen
+- Wenn jemand für 'krank' oder 'Urlaub' eingetragen wird, bleiden die Duties vorhanden, er ist aber nicht für die Stationen eingetragen?
+- Man soll festlegen können, dass nach einem Dienst nur bestimmte Funktionen ausgeübt werden können.
+- Der Kurzname einer Funktion sollte kein Komma enthalten
 
 ## Done
 - Es soll in /plan immer das Department des Users dargestellt werden
@@ -69,3 +82,4 @@ Können alles was Department Leader können auf Company-Ebene.
 - Logging einrichten
     + Jede Besetzungsänderung soll ein Logging folgender Art auslösen: "$User: $Person ist ab/am $Datum für $Station [nicht mehr] eingeteilt" oder 
 - Personen können nur bestimmte Funktionen ausüben
+- Reihenfolge der Stationen vorgeben

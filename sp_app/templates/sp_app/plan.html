@@ -18,7 +18,7 @@
 
 {% block extracontent %}
 <!-- Modal dialog for changing staff -->
-<div class="modal fade" id="changestaff" tabindex="-1" role="dialog">
+<div class="modal" id="changestaff" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-sm" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -27,7 +27,12 @@
         <p><span class="changedate"></span>, <span class="changeward"></span></p>
       </div>
       <div class="modal-body">
-        <table id="changestafftable"></table>
+        <table>
+          <tr>
+            <td><table id="changestafftable"></table></td>
+            <td id="spinners"></td>
+          </tr>
+        </table>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
@@ -38,15 +43,37 @@
 {% endblock extracontent %}
 
 {% block extrascripts %}
-    <script type="text/javascript">
-      var persons_init = {{ persons|safe }};
-      var wards_init = {{ wards|safe }};
-      var past_changes = {{ past_changes|safe }};
-      var changes = {{ changes|safe }};
-      var curr_year = {{ year }};
-      var curr_month = {{ month }};
-      var can_change = {{ can_change }}==1;
-
+    <!-- Template for the change person line
+      Parameters:
+      action - 'add' or 'remove'
+      type - 'info' or 'primary' for 'add' or 'remove'
+      name - the name of the person
+      shortname - the short name of the person
+      duties - the duties of the person as a string
+    -->
+    <script type="text/template" id="change_person_template">
+      <tr>
+        <td>
+          <button type="button" class="btn btn-<%= type %> btn-block changestaff" 
+                  data-shortname="<%= shortname %>" data-action="<%= action %>">
+            <%= name %>
+          </button>
+        </td>
+        <td><%= duties %></td>
+      </tr>
+    </script>
+    <!-- Template for the spinner
+      Parameters:
+      current - the currently selected option
+      next - the next option
+      previous - the previous option
+    -->
+    <script type="text/template" id="spinner_template">
+      <div class="spinner">
+        <div class="spinner-previous"><%= previous %></div>
+        <div class="spinner-current"><%= current %></div>
+        <div class="spinner-next"><%= next %></div>
+      </div>
     </script>
   {% compress js %}
     <script src="{% static 'vendor/underscore.js' %}"></script>
@@ -57,6 +84,17 @@
     <script src="{% static 'js/views.js' %}?version=0.2"></script>
     <script src="{% static 'js/main.js' %}?version=0.2"></script>
   {% endcompress %}
+    <script>
+      var persons_init = {{ persons|safe }};
+      var wards_init = {{ wards|safe }};
+      var past_changes = {{ past_changes|safe }};
+      var changes = {{ changes|safe }};
+      var curr_year = {{ year }};
+      var curr_month = {{ month }};
+      var can_change = {{ can_change }}==1;
+      sp.initialize_site(persons_init, wards_init, past_changes, changes, 
+                         curr_year, curr_month, can_change);
+    </script>
 {% endblock extrascripts %}
   </body>
 </html>

@@ -55,29 +55,27 @@ function add_month_days(year, month) {
 
 function add_month(year, month) {
     var month_days = add_month_days(year, month);
-    var content = $("#main-content");
 
-    var month_names = ['Januar', 'Februar', 'März', 'April', 'Mai',
-        'Juni', 'Juli', 'August', 'September', 'Oktober',
-        'November', 'Dezember'];
-    content.append($('<h2/>', { text: month_names[month]+' '+year }));
+    function heading() {
+        var month_names = ['Januar', 'Februar', 'März', 'April', 'Mai',
+            'Juni', 'Juli', 'August', 'September', 'Oktober',
+            'November', 'Dezember'];
+        return $('<h2/>', { text: month_names[month]+' '+year })
+    }
 
-    var table = $('<table/>', {border: 1, 'class': 'plan'});
-
-    // Construct title row
-    var titlerow = $('<tr/>', {'class': 'titlerow'}).append($('<th/>'));
-    var d_i_m = days_in_month(month, year);
-    var month_string = '.'+(month+1)+'.';
-    var i;
-    var day_names = ['So.<br>', 'Mo.<br>', 'Di.<br>', 'Mi.<br>',
-                     'Do.<br>', 'Fr.<br>', 'Sa.<br>'];
-    _.each(month_days, function(day) {
-        var date = day.get('date');
-        var title = day_names[date.getDay()] + date.getDate() + '.';
-        titlerow.append($('<th/>', { html: title }));
-    });
-    table.append(titlerow);
-
+    function titlerow() {
+        var tr = $('<tr/>', {'class': 'titlerow'}).append($('<th/>'));
+        var month_string = '.'+(month+1)+'.';
+        var i;
+        var day_names = ['So.<br>', 'Mo.<br>', 'Di.<br>', 'Mi.<br>',
+                         'Do.<br>', 'Fr.<br>', 'Sa.<br>'];
+        _.each(month_days, function(day) {
+            var date = day.get('date');
+            var title = day_names[date.getDay()] + date.getDate() + '.';
+            tr.append($('<th/>', { html: title }));
+        });
+        return tr;
+    }
     // Construct rows for wards and persons
     function construct_row(model) {
         var row, collection, cell;
@@ -90,27 +88,37 @@ function add_month(year, month) {
                 '<td></td>';
             row.append(cell);
         });
-        table.append(row);
+        return row;
     }
+
+    var content = $("#main-content");
+    var table = $('<table/>', {border: 1, 'class': 'plan'});
+    var inner = $('<div/>', {'class': 'inner'});
+
+    content.append(heading());
+    table.append(titlerow());
+
     // first the wards
     sp.wards.each(function(ward) {
-        construct_row(ward);
+        table.append(construct_row(ward));
     });
 
     // then the persons
     var first_of_month = new Date(year, month, 1);
-    var last_of_month = new Date(year, month, d_i_m);
+    var last_of_month = new Date(year, month, days_in_month(month, year));
     sp.persons.each(function(person) {
         if (person.is_available(first_of_month) ||
             person.is_available(last_of_month)) {
-            construct_row(person);
+            table.append(construct_row(person));
         }
     });
 
-    content.append(table);
+    inner.append(table);
+    content.append(inner);
 }
 
-function initialize() {
+sp.initialize_site = function (persons_init, wards_init, past_changes, changes,
+                    curr_year, curr_month, can_change) {
     var next_month_btn = $('#next_month');
     var next_year, next_month;
 
@@ -154,8 +162,7 @@ function initialize() {
         next_month = 0;
       }
     });
-}
-initialize();
+};
 
 })($, _, Backbone);
 

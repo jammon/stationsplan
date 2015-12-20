@@ -16,24 +16,38 @@ class HomePageView(TemplateView):
 
 
 @login_required
-def plan(request):
+def plan(request, month):
     department_ids = request.session.get('department_ids')
-    first_of_month = date.today().replace(day=1)
+    try:
+        first_of_month = datetime.strptime(month, '%Y%m').date()
+    except (TypeError, ValueError):
+        first_of_month = date.today().replace(day=1)
     # Get all Persons who worked here from last month to in one year
     persons = Person.objects.filter(
         start_date__lt=first_of_month.replace(year=first_of_month.year+1),
         end_date__gt=first_of_month.replace(month=1),
         departments__id__in=department_ids
     ).prefetch_related('functions')
-    wards = Ward.objects.filter(departments__id__in=department_ids)
-    wards_list = list(wards.values())
-    for ward in wards_list:
+    wards = dict(
+        (ward['id'], ward) for ward in
+        Ward.objects.filter(departments__id__in=department_ids).values())
+    for ward in wards.values():
         if ward['approved']:
             ward['approved'] = date_to_json(ward['approved'])
+    special_duties = Ward.after_this.through.objects.filter(
+        from_ward__company_id=request.session['company_id'])
+    for sp in special_duties:
+        ward = wards.get(sp.from_ward.id)
+        if ward:
+            aft = ward.get('after_this')
+            if aft:
+                ward['after_this'] = ','.join((aft, sp.to_ward.shortname))
+            else:
+                ward['after_this'] = sp.to_ward.shortname
     name = request.user.get_full_name() or request.user.get_username()
     data = {
         'persons': json.dumps([p.toJson() for p in persons]),
-        'wards': json.dumps(wards_list),
+        'wards': json.dumps(wards.values()),
         'past_changes': json.dumps(get_past_changes(first_of_month, wards)),
         'changes': json.dumps(changes_for_month(first_of_month, wards)),
         'year': first_of_month.year,
@@ -49,9 +63,9 @@ def plan(request):
 def month(request):
     department_ids = request.session.get('department_ids')
     wards = Ward.objects.filter(departments__id__in=department_ids)
-    year = request.GET['year']
-    month = request.GET['month']
-    data = changes_for_month(date(int(year), int(month), 1), wards)
+    year = int(request.GET['year'])
+    month = int(request.GET['month'])
+    data = changes_for_month(date(year, month, 1), wards)
     # data['can_change'] = request.user.has_perm('sp_app.add_changingstaff')
     return JsonResponse(data, safe=False)
 

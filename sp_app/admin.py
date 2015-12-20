@@ -127,14 +127,17 @@ class WardAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
             (('name', 'shortname', 'position'),
              ('max', 'min', 'approved'),
              ('nightshift', 'everyday', 'freedays', 'continued', 'on_leave',),
-             'departments', 'staff'))
+             'departments',
+             'staff',
+             'after_this'))
         }),
     )
-    filter_horizontal = ('departments', )
+    filter_horizontal = ('departments', 'after_this')
     list_filter = (DepartmentsListFilter, )
     ordering = ('position', 'name',)
     list_display = ('name', 'shortname', 'position')
     list_editable = ('position',)
+
 
 class DepartmentAdmin(CompanyRestrictedMixin, admin.ModelAdmin):
     pass

@@ -74,6 +74,9 @@ class Ward(models.Model):
     approved = models.DateField(
         null=True, blank=True,
         help_text=_('The date until which the plan is approved'))
+    after_this = models.ManyToManyField(
+        'self', symmetrical=False, blank=True,
+        help_text=_('if not empty, only these functions can be planned on the next day'))
 
     class Meta:
         verbose_name = _('Task')

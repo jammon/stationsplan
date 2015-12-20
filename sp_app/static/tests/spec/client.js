@@ -8,6 +8,8 @@ var wards_init = [
   { name: 'Nightshift', shortname: 'N', min: 0, max: 1, nightshift: true, everyday: true },
   { name: 'Leave', shortname: 'L', min: 0, max: 10, on_leave: true, continued: true },
   { name: 'Free days', shortname: 'F', min: 0, max: 10, freedays: true, continued: true },
+  { name: 'One day task', shortname: 'O', min: 0, max: 10, continued: false },
+  { name: 'Special', shortname: 'S', min: 0, max: 10, continued: false, after_this: 'S,A' },
 ];
 function init_hospital() {
     sp.initialize_wards(wards_init);
@@ -30,7 +32,7 @@ describe("Initializing data", function() {
     it("should have the persons and wards set", function() {
         init_hospital();
         expect(sp.persons.length).toBe(2);
-        expect(sp.wards.length).toBe(5);
+        expect(sp.wards.length).toBe(7);
         var person_a = sp.persons.get('A');
         expect(person_a.get('name')).toBe('Anton');
         var ward_a = sp.wards.get('A');
@@ -113,10 +115,10 @@ describe("Day", function() {
             });
             var ward_a = sp.wards.get('A');
             var ward_f = sp.wards.get('F');
-            expect(sunday.needs_staffing(ward_a)).toBeFalsy();
-            expect(sunday.needs_staffing(ward_f)).toBeTruthy();
-            expect(monday.needs_staffing(ward_a)).toBeTruthy();
-            expect(monday.needs_staffing(ward_f)).toBeFalsy();
+            expect(sunday.ward_staffings['A'].no_staffing).toBeTruthy();
+            expect(sunday.ward_staffings['F'].no_staffing).toBeFalsy();
+            expect(monday.ward_staffings['A'].no_staffing).toBeFalsy();
+            expect(monday.ward_staffings['F'].no_staffing).toBeTruthy();
         });
     });
     describe("interaction with previous planning", function() {
@@ -145,14 +147,45 @@ describe("Day", function() {
             expect(today.yesterdays_nightshift(person_a)).toBe(true);
             expect(today.yesterdays_nightshift(person_b)).toBe(false);
         });
-        it("should strike off yesterdays nightshift for today", function() {
+        it("should strike off yesterdays nightshift for today, "+
+            "and continue the duties tomorrow, "+
+            "if they are to be continued", function() {
+            function test_staffing (staffing, total, displayed) {
+                expect(staffing.length).toBe(total);
+                expect(staffing.displayed.length).toBe(displayed);
+            }
             yesterday.ward_staffings.A.add(person_a);
+            yesterday.ward_staffings.O.add(person_a);
             yesterday.ward_staffings.N.add(person_a);
-            expect(yesterday.ward_staffings.A.length).toBe(1);
-            expect(today.ward_staffings.A.length).toBe(0);
-            expect(tomorrow.ward_staffings.A.length).toBe(1);
+            test_staffing(yesterday.ward_staffings.A, 1, 1);
+            test_staffing(yesterday.ward_staffings.O, 1, 1);
+            test_staffing(yesterday.ward_staffings.N, 1, 1);
+            test_staffing(today.ward_staffings.A, 1, 0);
+            test_staffing(today.ward_staffings.O, 0, 0);
+            test_staffing(today.ward_staffings.N, 0, 0);
+            test_staffing(tomorrow.ward_staffings.A, 1, 1);
+            test_staffing(tomorrow.ward_staffings.O, 0, 0);
+            test_staffing(tomorrow.ward_staffings.N, 0, 0);
             yesterday.ward_staffings.N.remove(person_a);
-            expect(today.ward_staffings.A.length).toBe(1);
+            test_staffing(today.ward_staffings.A, 1, 1);
+            test_staffing(today.ward_staffings.O, 0, 0);
+        });
+        it("should strike off persons for wards, "+
+            "that are not possible after their yesterdays duties", function() {
+            function test_staffing (staffing, total, displayed) {
+                expect(staffing.length).toBe(total);
+                expect(staffing.displayed.length).toBe(displayed);
+            }
+            yesterday.ward_staffings.A.add(person_a);
+            yesterday.ward_staffings.S.add(person_a);
+            yesterday.ward_staffings.B.add(person_b);
+            yesterday.ward_staffings.S.add(person_b);
+            test_staffing(yesterday.ward_staffings.A, 1, 1);
+            test_staffing(yesterday.ward_staffings.B, 1, 1);
+            test_staffing(today.ward_staffings.A, 1, 1);
+            test_staffing(today.ward_staffings.B, 1, 0);
+            test_staffing(tomorrow.ward_staffings.A, 1, 1);
+            test_staffing(tomorrow.ward_staffings.B, 1, 1);
         });
         it("should continue yesterdays planning", function() {
             yesterday.ward_staffings.A.add(person_a);
@@ -164,6 +197,7 @@ describe("Day", function() {
             yesterday.ward_staffings.L.add(person_b);
             expect(today.ward_staffings.L.length).toBe(1);
             expect(today.ward_staffings.L.models[0].id).toBe('B');
+            expect(tomorrow.ward_staffings.L.length).toBe(1);
             today.ward_staffings.L.remove(person_b);
             expect(today.ward_staffings.L.length).toBe(0);
             expect(tomorrow.ward_staffings.L.length).toBe(0);
@@ -190,6 +224,23 @@ describe("Day", function() {
             expect(yesterday.get_available(ward_a).length).toBe(1);
             expect(today.get_available(ward_a).length).toBe(2);
             expect(tomorrow.get_available(ward_a).length).toBe(2);
+        });
+        it("should continue a persons duties after the vacation ends", function() {
+            // A is on ward A
+            yesterday.ward_staffings.A.add(person_a);
+            yesterday.ward_staffings.A.add(person_b);
+            expect(yesterday.persons_duties.A.length).toBe(1);
+            // on leave since today
+            today.ward_staffings.L.add(person_a);
+            expect(today.ward_staffings.A.length).toBe(2);
+            expect(today.ward_staffings.A.displayed.length).toBe(1);
+            expect(today.persons_duties.A.pluck('shortname')).toEqual(['A', 'L']);
+            // back tomorrow
+            tomorrow.ward_staffings.L.remove(person_a);
+            expect(tomorrow.ward_staffings.A.length).toBe(2);
+            expect(tomorrow.ward_staffings.A.displayed.length).toBe(2);
+            expect(tomorrow.persons_duties.A.pluck('shortname')).toEqual(['A']);
+            expect(tomorrow.persons_duties.A.length).toBe(1);
         });
         it("should continue the staffings if a day is added", function() {
             var tdat;

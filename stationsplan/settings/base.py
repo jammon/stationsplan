@@ -39,11 +39,14 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'compressor',
+    'debug_toolbar',
+    'debug_panel',
     'django_nose',
     'sp_app',
 )
 
 MIDDLEWARE_CLASSES = (
+    'debug_panel.middleware.DebugPanelMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -148,3 +151,5 @@ def read_secret(secret_file_name, content_description,
     error_message = ("Please create a file named '%s' with %s!"
                      % (secret_file_name, content_description))
     raise Exception(error_message)
+
+DEBUG_TOOLBAR_PATCH_SETTINGS = False
