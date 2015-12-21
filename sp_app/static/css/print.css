@@ -1,5 +1,9 @@
 #next_month,
 .addstaff,
-.select_person {
+.select_person,
+.logout {
     display: none;
+}
+.container {
+    width: 100%;
 }
