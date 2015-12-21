@@ -204,3 +204,21 @@ class Employee(models.Model):
             self.user.get_full_name() or self.user.get_username(),
             ', '.join([d.name for d in self.departments.all()]),
             self.company.name)
+
+
+@python_2_unicode_compatible
+class StatusEntry(models.Model):
+    """ Saves some detail about the current status of the planning
+    or the program
+    """
+    name = models.CharField(max_length=30)
+    content = models.CharField(max_length=255)
+    department = models.ForeignKey(
+        Department, related_name='status_entries', null=True, blank=True,
+        help_text=_('Can be empty'))
+    company = models.ForeignKey(
+        Company, related_name='status_entries', null=True, blank=True,
+        help_text=_('Can be empty'))
+
+    def __str__(self):
+        return "{}: {}".format(self.name, self.content)
