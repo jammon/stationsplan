@@ -13,7 +13,7 @@ def get_past_changes(first_of_month, wards):
         ward__in=wards,
         ward__continued=True,
         person__end_date__gt=first_of_month,
-    ).order_by('day')
+    ).order_by('day').select_related('person', 'ward')
     for c in queryset:
         if c.added:
             past_changes.add((c.person, c.ward))
@@ -29,7 +29,7 @@ def changes_for_month(first_of_month, wards):
         day__gte=first_of_month,
         day__lte=last_day_of_month(first_of_month),
         ward__in=wards,
-    ).order_by('day')
+    ).order_by('day').select_related('person', 'ward')
     return [c.toJson() for c in queryset]
 
 

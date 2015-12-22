@@ -6,11 +6,24 @@
       <div class="logout">{{ name }}, <a href="/logout">Abmelden</a></div>
       <div role="main" id="main-content">
         <h1>Stationsplan</h1>
-      </div>
-      <div class="next_month">
-        <button type="button" id="next_month" class="btn btn-primary">
-          nächster Monat
-        </button>
+        <h2 class="month-heading">
+          {{ first_of_month|date:"F Y" }}
+          <span class="btn-group" role="group">
+            {% if prev_month %}
+            <a class="btn btn-default prev-month" aria-label="Voriger Monat"
+              title="Voriger Monat" href="/plan/{{ prev_month }}">
+              <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+            </a>
+            {% endif %}
+            <a class="btn btn-default next-month" aria-label="Nächster Monat"
+              title="Nächster Monat" href="/plan/{{ next_month }}">
+              <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+            </a>
+          </span>
+        </h2>
+        <div class="inner">
+          <table class="plan" border="1"></table>
+        </div>
       </div>
       <div id="log"></div>
       <div id="errors"></div>

@@ -56,13 +56,6 @@ function add_month_days(year, month) {
 function add_month(year, month) {
     var month_days = add_month_days(year, month);
 
-    function heading() {
-        var month_names = ['Januar', 'Februar', 'März', 'April', 'Mai',
-            'Juni', 'Juli', 'August', 'September', 'Oktober',
-            'November', 'Dezember'];
-        return $('<h2/>', { text: month_names[month]+' '+year })
-    }
-
     function titlerow() {
         var tr = $('<tr/>', {'class': 'titlerow'}).append($('<th/>'));
         var month_string = '.'+(month+1)+'.';
@@ -91,30 +84,16 @@ function add_month(year, month) {
         return row;
     }
 
-    var content = $("#main-content");
-    var table = $('<table/>', {border: 1, 'class': 'plan'});
-    var inner = $('<div/>', {'class': 'inner'});
-
-    content.append(heading());
+    var table = $('table.plan');
     table.append(titlerow());
-
     // first the wards
     sp.wards.each(function(ward) {
         table.append(construct_row(ward));
     });
-
     // then the persons
-    var first_of_month = new Date(year, month, 1);
-    var last_of_month = new Date(year, month, days_in_month(month, year));
     sp.persons.each(function(person) {
-        if (person.is_available(first_of_month) ||
-            person.is_available(last_of_month)) {
-            table.append(construct_row(person));
-        }
+        table.append(construct_row(person));
     });
-
-    inner.append(table);
-    content.append(inner);
 }
 
 sp.initialize_site = function (persons_init, wards_init, past_changes, changes,

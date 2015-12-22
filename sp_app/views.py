@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import json
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.views.generic.base import TemplateView
@@ -21,10 +21,10 @@ def plan(request, month):
         first_of_month = datetime.strptime(month, '%Y%m').date()
     except (TypeError, ValueError):
         first_of_month = date.today().replace(day=1)
-    # Get all Persons who worked here from last month to in one year
+    # Get all Persons who worked here in this month
     persons = Person.objects.filter(
-        start_date__lt=first_of_month.replace(year=first_of_month.year+1),
-        end_date__gt=first_of_month.replace(month=1),
+        start_date__lt=(first_of_month+timedelta(32)).replace(day=1),
+        end_date__gte=first_of_month,
         departments__id__in=department_ids
     ).prefetch_related('functions')
     wards = dict(
@@ -54,7 +54,12 @@ def plan(request, month):
         'user': request.user,
         'name': name,
         'can_change': 1 if request.user.has_perm('sp_app.add_changingstaff') else 0,
+        'next_month': (first_of_month + timedelta(32)).strftime('%Y%m'),
+        'month_heading': first_of_month.strftime('%B %Y'),
+        'first_of_month': first_of_month,
     }
+    if first_of_month > date.today():
+        data['prev_month'] = (first_of_month - timedelta(1)).strftime('%Y%m')
     return render(request, 'sp_app/plan.html', data)
 
 
