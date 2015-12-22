@@ -34,7 +34,8 @@ def plan(request, month):
         if ward['approved']:
             ward['approved'] = date_to_json(ward['approved'])
     special_duties = Ward.after_this.through.objects.filter(
-        from_ward__company_id=request.session['company_id'])
+        from_ward__company_id=request.session['company_id']
+    ).select_related('from_ward', 'to_ward')
     for sp in special_duties:
         ward = wards.get(sp.from_ward.id)
         if ward:
