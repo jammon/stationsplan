@@ -3,19 +3,20 @@ from __future__ import unicode_literals
 import json
 from datetime import datetime, date, timedelta
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
-from django.views.generic.base import TemplateView
+from django.shortcuts import render, redirect
 
 from .models import Person, Ward, date_to_json
 from .utils import get_past_changes, changes_for_month
 
 
-class HomePageView(TemplateView):
-    template_name = "sp_app/index.html"
+def home(request):
+    if request.user.is_authenticated():
+        return redirect('plan')
+    return render(request, "sp_app/index.html")
 
 
 @login_required
-def plan(request, month):
+def plan(request, month=''):
     department_ids = request.session.get('department_ids')
     try:
         first_of_month = datetime.strptime(month, '%Y%m').date()

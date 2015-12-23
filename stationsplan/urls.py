@@ -27,7 +27,7 @@ urlpatterns = [
     url(r'^config/', include(config_site.urls)),
     url('^logout/', auth_views.logout, {'next_page': '/'}),
     url('^', include('django.contrib.auth.urls')),
-    url(r'^$', sp_views.HomePageView.as_view(), name='home'),
+    url(r'^$', sp_views.home, name='home'),
     url(r'^change$', sp_ajax.change, name='change'),
     url(r'^month$', sp_ajax.month, name='month'),
     url(r'^plan(/(?P<month>[0-9]+))?$', sp_views.plan, name='plan'),
