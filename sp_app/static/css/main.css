@@ -6,11 +6,9 @@
     background: #fff;
 }
 
-.logout {
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin: 5px 5px 0 0;
+.account-details {
+    float: right;
+    margin: 10px 5px 0 0;
 }
 
 th, td {
@@ -40,6 +38,10 @@ th, td {
 #changestafftable td {
     vertical-align: middle;
     padding: 1px 4px;
+}
+.errorlist {
+    list-style-type: none;
+    padding-left: 0;
 }
 .spinner {
     padding: 4px;

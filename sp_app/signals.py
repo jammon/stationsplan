@@ -11,8 +11,11 @@ def write_department_id_to_session(sender, **kwargs):
     request.session['department_ids'] = list(
         employee.departments.values_list('id', flat=True))
     request.session['can_config'] = user.has_perm('sp_app.add_person')
+    request.session['user_name'] = user.get_full_name() or user.get_username()
     # User with editing rights should have their sessions expired
     # when the browser is closed.
+    # They can change their passwords
     if (user.has_perm('sp_app.add_changingstaff') or
-        user.has_perm('sp_app.add_person')):
+            user.has_perm('sp_app.add_person')):
         request.session.set_expiry(0)
+        request.session['can_change_password'] = True

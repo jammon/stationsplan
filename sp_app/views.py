@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 import json
 from datetime import datetime, date, timedelta
+from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
@@ -63,6 +64,14 @@ def plan(request, month=''):
     if first_of_month > date.today():
         data['prev_month'] = (first_of_month - timedelta(1)).strftime('%Y%m')
     return render(request, 'sp_app/plan.html', data)
+
+
+@login_required
+def password_change(request):
+    # return auth_views.password_change(request)
+    return auth_views.password_change(
+        request, template_name='registration/password_change.html',
+        post_change_redirect='/plan')
 
 
 def tests(request):

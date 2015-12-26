@@ -23,15 +23,17 @@ from sp_app import ajax as sp_ajax
 from sp_app.admin import config_site
 
 urlpatterns = [
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^config/', include(config_site.urls)),
-    url('^logout/', auth_views.logout, {'next_page': '/'}),
-    url('^', include('django.contrib.auth.urls')),
     url(r'^$', sp_views.home, name='home'),
     url(r'^change$', sp_ajax.change, name='change'),
     url(r'^month$', sp_ajax.month, name='month'),
     url(r'^plan(/(?P<month>[0-9]+))?$', sp_views.plan, name='plan'),
     url(r'^tests$', TemplateView.as_view(template_name="sp_app/tests.html"), name='tests'),
+    url(r'^password_change', sp_views.password_change, name='password_change'),
+    # url(r'^admin/password_change', sp_views.password_change),
+    url(r'^admin/', include(admin.site.urls)),
+    url(r'^config/', include(config_site.urls)),
+    url('^logout/', auth_views.logout, {'next_page': '/'}),
+    url('^', include('django.contrib.auth.urls')),
 ]
 
 if settings.DEBUG:

@@ -18,6 +18,21 @@
   </head>
   <body>
     <div class="container">
+      {% if user.is_authenticated %}
+        <div class="account-details dropdown">
+          {% firstof user.get_full_name user.get_username %} 
+          <a id="account-label" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" href="#">
+            <span class="glyphicon glyphicon-cog"></span>
+            <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="account-label">
+            <li><a href="/logout">Abmelden</a></li>
+            {% if request.session.can_change_password %}
+            <li><a href="/password_change">Passwort ändern</a></li>
+            {% endif %}
+          </ul>
+        </div>
+      {% endif %}
         {% block content %}
             
         {% endblock content %}
