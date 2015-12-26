@@ -28,6 +28,8 @@ DJANGO_TEMPLATES['OPTIONS']['loaders'] = [
     ]),
 ]
 
+INSTALLED_APPS += ('gunicorn',)
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
