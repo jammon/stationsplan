@@ -98,8 +98,6 @@ function add_month(year, month) {
 
 sp.initialize_site = function (persons_init, wards_init, past_changes, changes,
                     curr_year, curr_month, can_change) {
-    var next_month_btn = $('#next_month');
-    var next_year, next_month;
 
     sp.initialize_wards(wards_init);
     sp.persons.reset(persons_init);
@@ -107,40 +105,6 @@ sp.initialize_site = function (persons_init, wards_init, past_changes, changes,
     _.each(past_changes, sp.apply_change);
     _.each(changes, sp.apply_change);
 
-    if (curr_month==12) {
-      next_year = curr_year+1;
-      next_month = 0;
-    } else {
-      next_year = curr_year;
-      next_month = curr_month;
-    }
-    next_month_btn.on('click', function () {
-      add_month(next_year, next_month);
-      // TODO: read changes!!
-      $.ajax('/month', {
-          data: {
-              month: next_month+1,
-              year: next_year,
-          },
-          method: 'GET',
-          error: function(jqXHR, textStatus, errorThrown) {
-              sp.store_error(textStatus, 'error');
-              // sp.display_error(jqXHR.responseText);
-          },
-          success: function(data, textStatus, jqXHR) {
-              if (data.warning) {
-                  sp.store_error(data.warning, 'warning');
-              } else {
-                _.each(data, sp.apply_change);
-              }
-          },
-      });
-      next_month += 1;
-      if (next_month==12) {
-        next_year += 1;
-        next_month = 0;
-      }
-    });
 };
 
 })($, _, Backbone);
