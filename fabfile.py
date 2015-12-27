@@ -39,6 +39,10 @@ def migrate():
         run("source ~/priv/venv/bin/activate && ./manage.py migrate")
 
 
+def copy_htaccess():
+    run('cp ~/priv/stationsplan/htaccess ~/htdocs/.htaccess')
+
+
 def restart_server():
     run("touch ~/htdocs/app.wsgi")
 
@@ -47,4 +51,5 @@ def deploy():
     server_pull()
     staticfiles()
     migrate()
+    copy_htaccess()
     restart_server()
