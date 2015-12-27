@@ -6,7 +6,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['.stationsplan.de']
 STATIC_ROOT = '/var/www/stationsplan/htdocs/static/'
-
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 SECRETS_DIR = os.path.join(PARENT_OF_BASE_DIR, "secrets")
 # Database
