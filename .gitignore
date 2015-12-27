@@ -4,3 +4,5 @@ venv*/*
 cover/*
 .coverage
 db.sqlite3
+dev_static/*
+debug.log

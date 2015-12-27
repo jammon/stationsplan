@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% load staticfiles %}
-{% load compress %}
 
 {% block content %}
       <div role="main" id="main-content">
@@ -87,15 +86,13 @@
         <div class="spinner-next"><%= next %></div>
       </div>
     </script>
-  {% compress js %}
     <script src="{% static 'vendor/underscore.js' %}"></script>
     <script src="{% static 'vendor/backbone.js' %}"></script>
 
     <script src="{% static 'vendor/bootstrap.modalform.js' %}"></script>
-    <script src="{% static 'js/models.js' %}?version=0.2"></script>
-    <script src="{% static 'js/views.js' %}?version=0.2"></script>
-    <script src="{% static 'js/main.js' %}?version=0.2"></script>
-  {% endcompress %}
+    <script src="{% static 'js/models.js' %}"></script>
+    <script src="{% static 'js/views.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
     <script>
       var persons_init = {{ persons|safe }};
       var wards_init = {{ wards|safe }};
