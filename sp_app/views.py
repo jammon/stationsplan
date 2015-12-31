@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from .models import Person, Ward, date_to_json
-from .utils import get_past_changes, changes_for_month
+from .utils import get_past_changes, changes_for_month_as_json
 
 
 def home(request):
@@ -51,12 +51,12 @@ def plan(request, month=''):
         'persons': json.dumps([p.toJson() for p in persons]),
         'wards': json.dumps(wards.values()),
         'past_changes': json.dumps(get_past_changes(first_of_month, wards)),
-        'changes': json.dumps(changes_for_month(first_of_month, wards)),
+        'changes': changes_for_month_as_json(first_of_month, wards),
         'year': first_of_month.year,
         'month': first_of_month.month,
         'user': request.user,
         'name': name,
-        'can_change': 1 if request.user.has_perm('sp_app.add_changingstaff') else 0,
+        'can_change': 1 if request.user.has_perm('sp_app.add_changelogging') else 0,
         'next_month': (first_of_month + timedelta(32)).strftime('%Y%m'),
         'month_heading': first_of_month.strftime('%B %Y'),
         'first_of_month': first_of_month,

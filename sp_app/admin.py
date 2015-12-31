@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
-from .models import (Person, Ward, ChangingStaff, ChangeLogging, Department,
+from .models import (Person, Ward, ChangeLogging, Department,
                      Company, Employee, StatusEntry)
 from .forms import WardForm
 
@@ -82,15 +82,6 @@ class PersonListFilter(PersonWardListFilter):
     model = Person
 
 
-class ChangingStaffAdmin(RestrictFields, admin.ModelAdmin):
-    date_hierarchy = 'day'
-    list_filter = (WardListFilter, PersonListFilter)
-
-    def get_queryset(self, request):
-        qs = super(ChangingStaffAdmin, self).get_queryset(request)
-        return qs.filter(person__company__id=request.session.get('company_id'))
-
-
 class DepartmentsListFilter(admin.SimpleListFilter):
     # Human-readable title which will be displayed in the
     # right admin sidebar just above the filter options.
@@ -143,14 +134,17 @@ class DepartmentAdmin(CompanyRestrictedMixin, admin.ModelAdmin):
     pass
 
 
-admin.site.register(ChangingStaff, ChangingStaffAdmin)
+class ChangeLoggingAdmin(admin.ModelAdmin):
+    date_hierarchy = 'day'
+
+
 admin.site.register(Person, PersonAdmin)
 admin.site.register(Ward, WardAdmin)
 
 admin.site.register(Department)
 admin.site.register(Company)
 admin.site.register(Employee)
-admin.site.register(ChangeLogging)
+admin.site.register(ChangeLogging, ChangeLoggingAdmin)
 admin.site.register(StatusEntry)
 
 

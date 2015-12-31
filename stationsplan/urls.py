@@ -25,7 +25,6 @@ from sp_app.admin import config_site
 urlpatterns = [
     url(r'^$', sp_views.home, name='home'),
     url(r'^change$', sp_ajax.change, name='change'),
-    url(r'^month$', sp_ajax.month, name='month'),
     url(r'^plan(/(?P<month>[0-9]+))?$', sp_views.plan, name='plan'),
     url(r'^tests$', TemplateView.as_view(template_name="sp_app/tests.html"), name='tests'),
     url(r'^password_change', sp_views.password_change, name='password_change'),

@@ -6,7 +6,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 STATIC_ROOT = os.path.join(BASE_DIR, "dev_static")
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+# STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases

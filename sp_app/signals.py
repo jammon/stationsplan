@@ -15,7 +15,7 @@ def write_department_id_to_session(sender, **kwargs):
     # User with editing rights should have their sessions expired
     # when the browser is closed.
     # They can change their passwords
-    if (user.has_perm('sp_app.add_changingstaff') or
+    if (user.has_perm('sp_app.add_changelogging') or
             user.has_perm('sp_app.add_person')):
         request.session.set_expiry(0)
         request.session['can_change_password'] = True

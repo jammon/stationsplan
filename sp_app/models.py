@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import json
 from datetime import date
 from django.contrib.auth.models import User
 from django.db import models
@@ -125,16 +126,18 @@ class Person(models.Model):
 
 
 @python_2_unicode_compatible
-class ChangingStaff(models.Model):
-    """*One person* is
-    *added* to or *removed*
-    on *one day*
-    from the staffing of *one ward*
+class ChangeLogging(models.Model):
+    """ Logs who has made which changes.
     """
+    company = models.ForeignKey(Company)
+    user = models.ForeignKey(User)
     person = models.ForeignKey(Person)
     ward = models.ForeignKey(Ward)
     day = models.DateField()
     added = models.BooleanField()
+    description = models.CharField(max_length=255)
+    json = models.CharField(max_length=255)
+    change_time = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['day']
@@ -147,46 +150,24 @@ class ChangingStaff(models.Model):
             'action': 'add' if self.added else 'remove',
         }
 
-    def __str__(self):
-        template = ("Add {} to {} on {}" if self.added
-                    else "Remove {} from {} on {}")
-        return template.format(self.person.name, self.ward.name,
-                               self.day.strftime('%Y-%m-%d'))
-
-
-@python_2_unicode_compatible
-class ChangeLogging(models.Model):
-    """ Logs who has made which changes.
-    Contains essentially the same information as ChangingStaff,
-    but is handled differently.
-    """
-    company = models.ForeignKey(Company)
-    user = models.ForeignKey(User)
-    person = models.ForeignKey(Person)
-    ward = models.ForeignKey(Ward)
-    day = models.DateField()
-    added = models.BooleanField()
-    user_name = models.CharField(max_length=20)
-    person_name = models.CharField(max_length=20)
-    ward_name = models.CharField(max_length=20)
-    ward_continued = models.BooleanField()
-
     def save(self, *args, **kwargs):
-        self.user_name = self.user.get_full_name() or self.user.get_username()
-        self.person_name = self.person.name
-        self.ward_name = self.ward.name
-        self.ward_continued = self.ward.continued
+        self.make_description()
+        self.json = json.dumps(self.toJson())
         super(ChangeLogging, self).save(*args, **kwargs)
 
-    def __str__(self):
+    def make_description(self):
         template = (
-            "{self.user_name}: {self.person_name} ist {relation} {date} für "
-            "{self.ward_name} {added}eingeteilt")
-        return template.format(
+            "{user_name}: {self.person.name} ist {relation} {date} für "
+            "{self.ward.name} {added}eingeteilt")
+        self.description = template.format(
+            user_name=self.user.last_name or self.user.get_username(),
             self=self,
-            relation="ab" if self.ward_continued else "am",
-            date=self.day.strftime('%Y-%m-%d'),
+            relation="ab" if self.ward.continued else "am",
+            date=self.day.strftime('%d.%m.%Y'),
             added="" if self.added else "nicht mehr ")
+
+    def __str__(self):
+        return self.description
 
 
 @python_2_unicode_compatible

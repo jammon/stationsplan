@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 from datetime import date
 
-from .models import Person, ChangingStaff
+from .models import Person, ChangeLogging
 from .utils import PopulatedTestCase
 
 
@@ -24,9 +24,10 @@ class Test_ToJson(PopulatedTestCase):
                           'position': 1, })
 
     def test_to_json(self):
-        c = ChangingStaff(
+        c = ChangeLogging(
             person=self.person, ward=self.ward_a, day=date(2015, 10, 2),
-            added=True)
+            added=True,)
+            # company_id=0, user_id=0)
         expected = {'person': "Mül", 'ward': "A", 'day': "20151002",
                     'action': "add", }
         self.assertEqual(c.toJson(), expected)

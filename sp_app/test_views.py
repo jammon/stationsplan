@@ -7,7 +7,7 @@ class TestViewsAnonymously(TestCase):
 
     def test_view_redirects_to_login(self):
         c = Client()
-        for url in ('change', 'month', 'plan'):
+        for url in ('change', 'plan'):
             response = c.get(reverse(url))
             self.assertEqual(response.status_code, 302, msg=url)
             response = c.get(reverse(url), follow=True)
