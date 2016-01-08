@@ -15,6 +15,13 @@
   </head>
   <body>
     <div class="container">
+    <noscript>
+      <div class="row">
+        <div class="col">
+          <div class="alert alert-danger">Ihr Browser scheint Javascript nicht zu unterstützen. Ohne Javascript funktioniert diese App aber nicht.</div>
+        </div>
+      </div>
+    </noscript>
       {% if user.is_authenticated %}
         <div class="account-details dropdown">
           {% firstof user.get_full_name user.get_username %} 

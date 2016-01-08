@@ -59,23 +59,11 @@ sp.ChangeStaffView = Backbone.View.extend({
             duties: day.persons_duties[person.id].pluck('shortname').join(', '),
         }));
     },
-    // get_dayspinner: function(day) {
-    //     var date = day.get('date');
-    //     var day_spinner = new sp.DaySpinnerView({
-    //         previous: 
-    //         current: datestr(date),
-    //         next
-    //     });
-    //     this.listenTo(day_spinner, "click .spinner-previous", function() {});
-    // },
     render: function() {
         var ward = this.staffing.ward;
         var day = this.staffing.day;
         var available = day.get_available(ward);
         var changestafftable = this.$("#changestafftable").empty();
-        // var spinners = this.$("#spinners").empty();
-        
-        // var ward_spinner = new sp.WardSpinnerView({ward: ward});
         var that = this;
         this.$(".changedate").text(datestr(day.get('date')));
         this.$(".changeward").text(ward.get('name'));
@@ -85,8 +73,6 @@ sp.ChangeStaffView = Backbone.View.extend({
         _.each(available, function(person) {
             that.add_person_html(person, 'add', changestafftable, day);
         });
-        // spinners.append(day_spinner.render().$el);
-        // spinners.append(ward_spinner.render().$el);
         return this;
     },
     show: function(staffing) {
@@ -99,58 +85,6 @@ sp.changestaffview = new sp.ChangeStaffView({
     el: $("#changestaff"),
 });
 
-// sp.SpinnerView = Backbone.View.extend({
-//     events: {
-//         "click .previous": "select_previous",
-//         "click .next": "select_next",
-//     },
-//     template: _.template($('#spinner_template').html()),
-//     initialize: function(options) {
-//         // options should have:
-//         // previous, next, current
-//         this.options = options;
-//     },
-//     render: function() {
-//         var html = this.template(this.options);
-//         this.$el.html(html);
-//         return this;
-//     },
-// });
-// sp.DaySpinnerView = sp.SpinnerView.extend({
-//     initialize: function(options) {
-//         this.day = options.day;
-//         this.date = this.day.get('date');
-//     },
-//     previous: function() {
-//         var yesterday = new Date(this.date.getTime() - ONE_DAY);
-//         return datestr(yesterday);
-//     },
-//     next: function() {
-//         var tomorrow = new Date(this.date.getTime() + ONE_DAY);
-//         return datestr(tomorrow);
-//     },
-//     current: function() {
-//         return datestr(this.date);
-//     },
-// });
-
-// sp.WardSpinnerView = sp.SpinnerView.extend({
-//     initialize: function(options) {
-//         this.ward = options.ward;
-//         this.index = sp.wards.indexOf(this.ward);
-//     },
-//     previous: function() {
-//         var previous = sp.wards.at(this.index-1);
-//         return previous.get('name');
-//     },
-//     next: function() {
-//         var next = sp.wards.at(this.index+1);
-//         return next.get('name');
-//     },
-//     current: function() {
-//         return this.ward.get('name');
-//     },
-// });
 
 sp.DutiesView = Backbone.View.extend({
     tagName: 'td',

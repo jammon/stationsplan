@@ -43,22 +43,15 @@ th, td {
     list-style-type: none;
     padding-left: 0;
 }
-.spinner {
-    padding: 4px;
+.glyphicon .spinning {
+    animation: spin 1s infinite linear;
+    -webkit-animation: spin2 1s infinite linear;
 }
-.spinner-previous, .spinner-next {
-    color: #888;
-    border: solid 1px #AAA;
+@keyframes spin {
+    from { transform: scale(1) rotate(0deg); }
+    to { transform: scale(1) rotate(360deg); }
 }
-.spinner-current {
-    border: solid 1px #333;
-}
-.spinner-current, .spinner-previous, .spinner-next {
-    padding: 2px 4px;
-}
-.spinner-previous {
-    -moz-transform: rotateX(30deg);
-}
-.spinner-next {
-    -moz-transform: rotateX(-30deg);
+@-webkit-keyframes spin2 {
+    from { -webkit-transform: rotate(0deg); }
+    to { -webkit-transform: rotate(360deg); }
 }

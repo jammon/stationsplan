@@ -58,20 +58,20 @@ Können alles was Department Leader können auf Company-Ebene.
 
 ## TODO
 - Wie sollen neue User angelegt werden? Admins könnten die User für das eigene Department anlegen
-- Benutzer müssen nur bestimmte Stationen bearbeiten können.
-- Wenn eine Planung finalisiert ist, kann sie nur noch von bestimmten Berechtigten bearbeitet werden.
 - Nur finalisierte Planungen sind für Benutzer ohne besondere Berechtigung sichtbar.
 - Angemeldete Nutzer sollen gleich nach /plan kommen.
-- In admin sollten nur die Personen/Wards angeboten werden, die zur eigenen Abteilung gehören
-- In Person/Ward sollte die eigene Abteilung/Company bei der Auswahl bzw. beim Hinzufügen vorbelegt sein.
-- Berechtigungen implementieren
-- Abfragen auf die Departments einschränken
 - Customize the default error views 
-- Im ChangeStaffView Tag und Station ändern lassen. Dauer des Einsatzes in Tagen oder Endedatum angeben lassen.
-- Zukünftige Monate planen
-- Wenn jemand für 'krank' oder 'Urlaub' eingetragen wird, bleiden die Duties vorhanden, er ist aber nicht für die Stationen eingetragen?
-- Man soll festlegen können, dass nach einem Dienst nur bestimmte Funktionen ausgeübt werden können.
-- Der Kurzname einer Funktion sollte kein Komma enthalten
+- Der Kurzname einer Funktion sollte kein Komma enthalten.
+- Unter "/" sollte man entweder den Begrüßungsbildschirm oder den Plan sehen, je nach Anmeldestatus.
+- Logging anzeigen
+- Wochenendtage mit stärkerem Rand
+- Auch Ärzte von Fremdabteilungen sollen angezeigt werden, wenn sie in den angezeigten Funktionen Dienst tun. Sollen dann nicht bearbeitbar sein.
+- Das "dataset"-Attribut ist im IE10 nicht implementiert.
+- Kommentare an Änderungen anhängen
+- Kommentare oder Nachrichten unabhängig von Änderungen
+- Dienstwünsche eingeben, für jede Person müsste ein User erstellt werden (z.B. 'amm-bot')
+- View für nur die Dienste
+
 
 ## Done
 - Es soll in /plan immer das Department des Users dargestellt werden
@@ -83,3 +83,10 @@ Können alles was Department Leader können auf Company-Ebene.
     + Jede Besetzungsänderung soll ein Logging folgender Art auslösen: "$User: $Person ist ab/am $Datum für $Station [nicht mehr] eingeteilt" oder 
 - Personen können nur bestimmte Funktionen ausüben
 - Reihenfolge der Stationen vorgeben
+- In admin sollten nur die Personen/Wards angeboten werden, die zur eigenen Abteilung gehören
+- In Person/Ward sollte die eigene Abteilung/Company bei der Auswahl bzw. beim Hinzufügen vorbelegt sein.
+- Berechtigungen implementieren
+- Abfragen auf die Departments einschränken
+- Wenn jemand für 'krank' oder 'Urlaub' eingetragen wird, bleiden die Duties vorhanden, er ist aber nicht für die Stationen eingetragen?
+- Man soll festlegen können, dass nach einem Dienst nur bestimmte Funktionen ausgeübt werden können.
+- Meldungen für noscript und loading

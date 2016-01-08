@@ -20,6 +20,7 @@
           </span>
         </h2>
         <div class="inner">
+          <div id="loading-message" class="well">Die Planungsdaten werden geladen <span class="glyphicon glyphicon-refresh spinning"></span></div>
           <table class="plan" border="1"></table>
         </div>
       </div>
@@ -38,12 +39,7 @@
         <p><span class="changedate"></span>, <span class="changeward"></span></p>
       </div>
       <div class="modal-body">
-        <table>
-          <tr>
-            <td><table id="changestafftable"></table></td>
-            <td id="spinners"></td>
-          </tr>
-        </table>
+        <table id="changestafftable"></table>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
@@ -72,19 +68,6 @@
         </td>
         <td><%= duties %></td>
       </tr>
-    </script>
-    <!-- Template for the spinner
-      Parameters:
-      current - the currently selected option
-      next - the next option
-      previous - the previous option
-    -->
-    <script type="text/template" id="spinner_template">
-      <div class="spinner">
-        <div class="spinner-previous"><%= previous %></div>
-        <div class="spinner-current"><%= current %></div>
-        <div class="spinner-next"><%= next %></div>
-      </div>
     </script>
     <script src="{% static 'vendor/underscore.js' %}"></script>
     <script src="{% static 'vendor/backbone.js' %}"></script>

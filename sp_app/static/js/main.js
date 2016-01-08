@@ -94,6 +94,7 @@ function add_month(year, month) {
     sp.persons.each(function(person) {
         table.append(construct_row(person));
     });
+    $('#loading-message').toggle(false);
 }
 
 sp.initialize_site = function (persons_init, wards_init, past_changes, changes,
