@@ -1,17 +1,17 @@
 from __future__ import unicode_literals
 import json
-from datetime import timedelta
+from datetime import timedelta, datetime, date
 from django.shortcuts import get_object_or_404
 from django.test import TestCase
 from .models import ChangeLogging, Ward, Company, Department
 
 
-def get_past_changes(first_of_month, wards):
+def get_past_changes(first_of_month, wards_ids):
     past_changes = set()
     changes = ChangeLogging.objects.filter(
         day__gt=first_of_month-timedelta(days=92),  # three months back
         day__lt=first_of_month,
-        ward__in=wards,
+        ward_id__in=wards_ids,
         ward__continued=True,
         person__end_date__gt=first_of_month,
     ).order_by('change_time').values_list('json', flat=True)
@@ -26,14 +26,24 @@ def get_past_changes(first_of_month, wards):
             for person, ward in past_changes]
 
 
-def changes_for_month_as_json(first_of_month, wards):
+def changes_for_month_as_json(first_of_month, wards_ids):
     changes = ChangeLogging.objects.filter(
         day__gte=first_of_month,
         day__lte=last_day_of_month(first_of_month),
-        ward__in=wards,
+        ward_id__in=wards_ids,
     ).order_by('change_time').values_list('json', flat=True)
     return '[' + ','.join(changes) + ']'
 
+
+def get_first_of_month(month=''):
+    """ Returns a date.
+    'month' should be a string in the form of 'YYYYMM'.
+    If 'month' is not given, it returns the current month.
+    """
+    try:
+        return datetime.strptime(month, '%Y%m').date()
+    except (TypeError, ValueError):
+        return date.today().replace(day=1)
 
 def last_day_of_month(date):
     return (date.replace(day=31)

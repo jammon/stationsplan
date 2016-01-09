@@ -12,7 +12,6 @@ class CompanyRestrictedMixin(object):
     """ Limits access to objects, that have their "company" field set
     to the users company.
     """
-    # readonly_fields = ('company',)  # just for testing
     exclude = ('company',)
 
     def save_model(self, request, obj, form, change):
@@ -120,7 +119,8 @@ class WardAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
              ('nightshift', 'everyday', 'freedays', 'continued', 'on_leave',),
              'departments',
              'staff',
-             'after_this'))
+             'after_this',
+             ))
         }),
     )
     filter_horizontal = ('departments', 'after_this')
@@ -160,7 +160,6 @@ class ConfigSite(admin.sites.AdminSite):
 
 
 config_site = ConfigSite(name='config')
-
 
 config_site.register(Department, DepartmentAdmin)
 config_site.register(Ward, WardAdmin)

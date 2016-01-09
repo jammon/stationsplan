@@ -78,6 +78,7 @@ class Ward(models.Model):
     after_this = models.ManyToManyField(
         'self', symmetrical=False, blank=True,
         help_text=_('if not empty, only these functions can be planned on the next day'))
+    json = models.CharField(max_length=511)
 
     class Meta:
         verbose_name = _('Task')
@@ -86,11 +87,33 @@ class Ward(models.Model):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        self.json = json.dumps(self.toJson())
+        super(Ward, self).save(*args, **kwargs)
+
+    def toJson(self):
+        return {'name': self.name,
+                'shortname': self.shortname,
+                'min': self.min,
+                'max': self.max,
+                'nightshift': self.nightshift,
+                'everyday': self.everyday,
+                'freedays': self.freedays,
+                'continued': self.continued,
+                'on_leave': self.on_leave,
+                'company_id': self.company_id,
+                'position': self.position,
+                'approved': date_to_json(self.approved) if self.approved else None,
+                'id': self.id,
+                'after_this': '' if not self.pk else ','.join(
+                    self.after_this.values_list('shortname', flat=True)),
+                }
+
 
 @python_2_unicode_compatible
 class Person(models.Model):
-    """ A person (worker) who can be planned for work
-    """
+    ''' A person (worker) who can be planned for work
+    '''
     name = models.CharField(_('Name'), max_length=50)
     shortname = models.CharField(_('Short Name'), max_length=10)
     start_date = models.DateField(_('start date'), default=date(2015, 1, 1),
@@ -127,8 +150,8 @@ class Person(models.Model):
 
 @python_2_unicode_compatible
 class ChangeLogging(models.Model):
-    """ Logs who has made which changes.
-    """
+    ''' Logs who has made which changes.
+    '''
     company = models.ForeignKey(Company)
     user = models.ForeignKey(User)
     person = models.ForeignKey(Person)
@@ -157,14 +180,14 @@ class ChangeLogging(models.Model):
 
     def make_description(self):
         template = (
-            "{user_name}: {self.person.name} ist {relation} {date} für "
-            "{self.ward.name} {added}eingeteilt")
+            '{user_name}: {self.person.name} ist {relation} {date} für '
+            '{self.ward.name} {added}eingeteilt')
         self.description = template.format(
             user_name=self.user.last_name or self.user.get_username(),
             self=self,
-            relation="ab" if self.ward.continued else "am",
+            relation='ab' if self.ward.continued else 'am',
             date=self.day.strftime('%d.%m.%Y'),
-            added="" if self.added else "nicht mehr ")
+            added='' if self.added else 'nicht mehr ')
 
     def __str__(self):
         return self.description
@@ -172,16 +195,16 @@ class ChangeLogging(models.Model):
 
 @python_2_unicode_compatible
 class Employee(models.Model):
-    """ Somebody who uses the plan.
+    ''' Somebody who uses the plan.
     Can be anyone who works there, but also other involved personnel,
     like management etc.
-    """
+    '''
     user = models.OneToOneField(User, related_name='employee')
     departments = models.ManyToManyField(Department, related_name='employees')
     company = models.ForeignKey(Company, related_name='employees')
 
     def __str__(self):
-        return "{}, {}, {}".format(
+        return '{}, {}, {}'.format(
             self.user.get_full_name() or self.user.get_username(),
             ', '.join([d.name for d in self.departments.all()]),
             self.company.name)
@@ -189,9 +212,9 @@ class Employee(models.Model):
 
 @python_2_unicode_compatible
 class StatusEntry(models.Model):
-    """ Saves some detail about the current status of the planning
+    ''' Saves some detail about the current status of the planning
     or the program
-    """
+    '''
     name = models.CharField(max_length=30)
     content = models.CharField(max_length=255)
     department = models.ForeignKey(
@@ -202,4 +225,4 @@ class StatusEntry(models.Model):
         help_text=_('Can be empty'))
 
     def __str__(self):
-        return "{}: {}".format(self.name, self.content)
+        return '{}: {}'.format(self.name, self.content)

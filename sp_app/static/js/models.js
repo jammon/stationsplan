@@ -72,7 +72,7 @@ sp.Ward = Backbone.Model.extend({
         var start = this.get('approved') || [2015, 0, 1];
         var after_this = this.get('after_this');
         this.set('approved', new Date(start[0], start[1], start[2]));
-        if (after_this!==undefined) {
+        if (after_this) {
             this.set('after_this', after_this.split(','));
         }
     },

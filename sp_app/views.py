@@ -7,7 +7,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from .models import Person, Ward, date_to_json
-from .utils import get_past_changes, changes_for_month_as_json
+from .utils import (get_past_changes, changes_for_month_as_json,
+    get_first_of_month)
 
 
 def home(request):
@@ -19,39 +20,24 @@ def home(request):
 @login_required
 def plan(request, month=''):
     department_ids = request.session.get('department_ids')
-    try:
-        first_of_month = datetime.strptime(month, '%Y%m').date()
-    except (TypeError, ValueError):
-        first_of_month = date.today().replace(day=1)
     # Get all Persons who worked here in this month
+    first_of_month = get_first_of_month(month)
     persons = Person.objects.filter(
         start_date__lt=(first_of_month+timedelta(32)).replace(day=1),
         end_date__gte=first_of_month,
         departments__id__in=department_ids
     ).prefetch_related('functions')
-    wards = dict(
-        (ward['id'], ward) for ward in
-        Ward.objects.filter(departments__id__in=department_ids).values())
-    for ward in wards.values():
-        if ward['approved']:
-            ward['approved'] = date_to_json(ward['approved'])
-    special_duties = Ward.after_this.through.objects.filter(
-        from_ward__company_id=request.session['company_id']
-    ).select_related('from_ward', 'to_ward')
-    for sp in special_duties:
-        ward = wards.get(sp.from_ward.id)
-        if ward:
-            aft = ward.get('after_this')
-            if aft:
-                ward['after_this'] = ','.join((aft, sp.to_ward.shortname))
-            else:
-                ward['after_this'] = sp.to_ward.shortname
+    wards = (
+        Ward.objects.filter(departments__id__in=department_ids)
+            .values('id', 'json'))
+    wards_ids = [w['id'] for w in wards]
+    wards_json = '[' + ', '.join(w['json'] for w in wards) + ']'
     name = request.user.get_full_name() or request.user.get_username()
     data = {
         'persons': json.dumps([p.toJson() for p in persons]),
-        'wards': json.dumps(wards.values()),
-        'past_changes': json.dumps(get_past_changes(first_of_month, wards)),
-        'changes': changes_for_month_as_json(first_of_month, wards),
+        'wards': wards_json,
+        'past_changes': json.dumps(get_past_changes(first_of_month, wards_ids)),
+        'changes': changes_for_month_as_json(first_of_month, wards_ids),
         'year': first_of_month.year,
         'month': first_of_month.month,
         'user': request.user,

@@ -1,5 +1,8 @@
 from django.contrib.auth.signals import user_logged_in
+from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
+
+from .models import Ward
 
 
 @receiver(user_logged_in)
@@ -19,3 +22,11 @@ def write_department_id_to_session(sender, **kwargs):
             user.has_perm('sp_app.add_person')):
         request.session.set_expiry(0)
         request.session['can_change_password'] = True
+
+
+@receiver(m2m_changed, sender=Ward.after_this.through)
+def save_ward(sender, **kwargs):
+    """ If Ward.after_this changes, the json of ward has to be updated
+    """
+    if kwargs['action'].startswith('post_'):
+        kwargs['instance'].save()
