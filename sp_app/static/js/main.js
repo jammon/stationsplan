@@ -30,31 +30,36 @@ $.ajaxSetup({
     }
 });
 
-sp.days = {};
-sp.months = {};
+sp.days = {};  // Dictionary of Days indexed by their id
+sp.months = {};  //  Dictionary of (Arrays of Days) indexed by month_id
+sp.month_days = [];  // Array with the Days of the current month
 
 function days_in_month (month, year) {
     var days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     return (month == 1) ? (year % 4 ? 28 : 29) : days[month];
 }
 
-function add_month_days(year, month) {
-    var month_days = [], i;
+function make_month_days(year, month) {
+    var month_id = sp.get_month_id(year, month);
+    if (sp.months[month_id]) {
+        sp.month_days = sp.months[month_id];
+        return;
+    }
     var d_i_m = days_in_month(month, year);
-    for (i = 0; i < d_i_m; i++) {
+    for (var i = 0; i < d_i_m; i++) {
         var new_day = new sp.Day({
             date: new Date(year, month, i+1),
             yesterday: sp.last_day,
         });
-        month_days[i] = sp.days[new_day.id] = sp.last_day = new_day;
+        sp.month_days[i] = sp.days[new_day.id] = sp.last_day = new_day;
     }
-
-    sp.months[sp.get_month_id(year, month)] = month_days;
-    return month_days;
+    sp.months[month_id] = sp.month_days;
 }
 
-function add_month(year, month) {
-    var month_days = add_month_days(year, month);
+function display_month(year, month) {
+    $('#loading-message').toggle(true);
+
+    make_month_days(year, month);
 
     function titlerow() {
         var tr = $('<tr/>', {'class': 'titlerow'}).append($('<th/>'));
@@ -62,7 +67,7 @@ function add_month(year, month) {
         var i;
         var day_names = ['So.<br>', 'Mo.<br>', 'Di.<br>', 'Mi.<br>',
                          'Do.<br>', 'Fr.<br>', 'Sa.<br>'];
-        _.each(month_days, function(day) {
+        _.each(sp.month_days, function(day) {
             var date = day.get('date');
             var title = day_names[date.getDay()] + date.getDate() + '.';
             tr.append($('<th/>', { html: title }));
@@ -74,7 +79,7 @@ function add_month(year, month) {
         var row, collection, cell;
         row = $('<tr/>', {'class': model.row_class()});
         row.append($('<th/>', { text: model.get('name')}));
-        _.each(month_days, function(day) {
+        _.each(sp.month_days, function(day) {
             collection = day[model.collection_array][model.id];
             cell = collection ?
                 (new model.row_view({collection: collection})).render().$el :
@@ -102,7 +107,7 @@ sp.initialize_site = function (persons_init, wards_init, past_changes, changes,
 
     sp.initialize_wards(wards_init);
     sp.persons.reset(persons_init);
-    add_month(curr_year, curr_month-1);
+    display_month(curr_year, curr_month);
     _.each(past_changes, sp.apply_change);
     _.each(changes, sp.apply_change);
 
