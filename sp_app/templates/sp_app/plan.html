@@ -84,9 +84,9 @@
       var curr_year = {{ year }};
       var curr_month = {{ month }} - 1;
       var can_change = {{ can_change }}==1;
-      var ward_selection = {{ ward_selection }};
+      var ward_selection = '{{ ward_selection }}';
       sp.initialize_site(persons_init, wards_init, past_changes, changes, 
-                         curr_year, curr_month, can_change);
+                         curr_year, curr_month, can_change, ward_selection);
     </script>
 {% endblock extrascripts %}
   </body>

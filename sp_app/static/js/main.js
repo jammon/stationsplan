@@ -47,6 +47,8 @@ function make_month_days(year, month) {
     }
     var d_i_m = days_in_month(month, year);
     for (var i = 0; i < d_i_m; i++) {
+        // sp.last_day is undefined or the last generated day
+        // this breaks, when a month is generated after a later one.
         var new_day = new sp.Day({
             date: new Date(year, month, i+1),
             yesterday: sp.last_day,
@@ -56,24 +58,26 @@ function make_month_days(year, month) {
     sp.months[month_id] = sp.month_days;
 }
 
+function titlerow(collection, get_content) {
+    var tr = $('<tr/>', {'class': 'titlerow'}).append($('<th/>'));
+    function get_cell(model) {
+        tr.append($('<th/>', {'html': get_content(model)}));
+    }
+    if (collection.each) {collection.each(get_cell); } 
+    else {_.each(collection, get_cell); }
+    return tr;
+}
+
 function display_month(year, month) {
     $('#loading-message').toggle(true);
+    var table = $('table.plan').empty();
+    var day_names = ['So.<br>', 'Mo.<br>', 'Di.<br>', 'Mi.<br>',
+                     'Do.<br>', 'Fr.<br>', 'Sa.<br>'];
+    table.append(titlerow(sp.month_days, function(day) {
+        var date = day.get('date');
+        return day_names[date.getDay()] + date.getDate() + '.';
+    }));
 
-    make_month_days(year, month);
-
-    function titlerow() {
-        var tr = $('<tr/>', {'class': 'titlerow'}).append($('<th/>'));
-        var month_string = '.'+(month+1)+'.';
-        var i;
-        var day_names = ['So.<br>', 'Mo.<br>', 'Di.<br>', 'Mi.<br>',
-                         'Do.<br>', 'Fr.<br>', 'Sa.<br>'];
-        _.each(sp.month_days, function(day) {
-            var date = day.get('date');
-            var title = day_names[date.getDay()] + date.getDate() + '.';
-            tr.append($('<th/>', { html: title }));
-        });
-        return tr;
-    }
     // Construct rows for wards and persons
     function construct_row(model) {
         var row, collection, cell;
@@ -89,8 +93,6 @@ function display_month(year, month) {
         return row;
     }
 
-    var table = $('table.plan');
-    table.append(titlerow());
     // first the wards
     sp.wards.each(function(ward) {
         table.append(construct_row(ward));
@@ -102,12 +104,52 @@ function display_month(year, month) {
     $('#loading-message').toggle(false);
 }
 
+function get_staffing_view (ward, day) {
+    var collection = day.ward_staffings[ward.id];
+    return collection && (new sp.StaffingView({
+        collection: collection,
+        display_long_name: true,
+    }));
+}
+
+function display_month_vertical(year, month) {
+    $('#loading-message').toggle(true);
+
+    var month_string = '.'+(month+1)+'.';
+    var day_names = ['So. ', 'Mo. ', 'Di. ', 'Mi. ',
+                     'Do. ', 'Fr. ', 'Sa. '];
+
+    var table = $('table.plan').empty();
+    table.append(titlerow(sp.wards, function(ward) {
+        return ward.get('name');
+    }));
+
+    _.each(sp.month_days, function(day) {
+        var date = day.get('date');
+        var title = day_names[date.getDay()] + date.getDate() + month_string;
+        var row = $('<tr/>');
+        row.append($('<th/>', { html: title }));
+        sp.wards.each(function(ward) {
+            var view = get_staffing_view(ward, day);
+            row.append(view ? view.render().$el : '<td></td>');
+        });
+        table.append(row);
+    });
+    $('#loading-message').toggle(false);
+}
+
+
 sp.initialize_site = function (persons_init, wards_init, past_changes, changes,
-                    curr_year, curr_month, can_change) {
+                    curr_year, curr_month, can_change, ward_selection) {
 
     sp.initialize_wards(wards_init);
     sp.persons.reset(persons_init);
-    display_month(curr_year, curr_month);
+    make_month_days(curr_year, curr_month);
+    if (ward_selection=='noncontinued') {
+        display_month_vertical(curr_year, curr_month);
+    } else {
+        display_month(curr_year, curr_month);
+    }
     _.each(past_changes, sp.apply_change);
     _.each(changes, sp.apply_change);
 

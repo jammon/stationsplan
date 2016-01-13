@@ -18,7 +18,7 @@ def home(request):
 
 
 @login_required
-def plan(request, month=''):
+def plan(request, month='', ward_selection=''):
     department_ids = request.session.get('department_ids')
     # Get all Persons who worked here in this month
     first_of_month = get_first_of_month(month)
@@ -27,9 +27,10 @@ def plan(request, month=''):
         end_date__gte=first_of_month,
         departments__id__in=department_ids
     ).prefetch_related('functions')
-    wards = (
-        Ward.objects.filter(departments__id__in=department_ids)
-            .values('id', 'json'))
+    wards = Ward.objects.filter(departments__id__in=department_ids
+               ).values('id', 'json')
+    if ward_selection=='noncontinued':
+        wards = wards.filter(continued=False)
     wards_ids = [w['id'] for w in wards]
     wards_json = '[' + ', '.join(w['json'] for w in wards) + ']'
     name = request.user.get_full_name() or request.user.get_username()
@@ -46,6 +47,7 @@ def plan(request, month=''):
         'next_month': (first_of_month + timedelta(32)).strftime('%Y%m'),
         'month_heading': first_of_month.strftime('%B %Y'),
         'first_of_month': first_of_month,
+        'ward_selection': ward_selection,
     }
     if first_of_month > date.today():
         data['prev_month'] = (first_of_month - timedelta(1)).strftime('%Y%m')

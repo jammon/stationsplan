@@ -6,16 +6,19 @@ sp.StaffingView = Backbone.View.extend({
     events: {
         "click": "addstaff",
     },
-    initialize: function() {
+    initialize: function(options) {
         this.listenTo(this.collection.displayed, "update", this.render);
+        if (options)
+            this.display_long_name = options.display_long_name
     },
     render: function() {
         var el = this.$el;
+        var that = this;
         el.empty();
         if (!this.collection.no_staffing) {
             this.collection.displayed.each(function(person) {
                 el.append($('<div/>', {
-                    text: person.id,
+                    text: that.display_long_name ? person.get('name') : person.id,
                     'class': 'staff',
                 }));
             });
