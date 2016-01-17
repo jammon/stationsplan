@@ -1,6 +1,16 @@
 .plan {
     font-size: 12px;
 }
+.plan td, .plan th {
+    border: 1px solid #CCC;
+}
+.horizontal .free-day {
+    border-left-color: #999;
+    border-right-color: #999;
+}
+.vertical .free-day {
+    font-weight: bold;
+}
 .container {
     position: relative;
     background: #fff;
@@ -16,20 +26,19 @@ th, td {
     vertical-align: top;
 }
 
-.lacking {
-    background-color: #FCC;
-}
-
 .personrow {
     background-color: #DDD;
 }
-.nightshiftrow,
-.freedaysrow {
+.on-call {
     background-color: #CCF;
 }
 .leaverow {
     background-color: #EEE;
 }
+.lacking {
+    background-color: #FCC;
+}
+
 
 .select_person {
     position: absolute;

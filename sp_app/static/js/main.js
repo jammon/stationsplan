@@ -73,6 +73,7 @@ function display_month(year, month) {
     var table = $('table.plan').empty();
     var day_names = ['So.<br>', 'Mo.<br>', 'Di.<br>', 'Mi.<br>',
                      'Do.<br>', 'Fr.<br>', 'Sa.<br>'];
+    table.addClass('horizontal');
     table.append(titlerow(sp.month_days, function(day) {
         var date = day.get('date');
         return day_names[date.getDay()] + date.getDate() + '.';
@@ -80,15 +81,19 @@ function display_month(year, month) {
 
     // Construct rows for wards and persons
     function construct_row(model) {
-        var row, collection, cell;
-        row = $('<tr/>', {'class': model.row_class()});
+        var row = $('<tr/>', {'class': model.row_class()});
         row.append($('<th/>', { text: model.get('name')}));
         _.each(sp.month_days, function(day) {
-            collection = day[model.collection_array][model.id];
-            cell = collection ?
-                (new model.row_view({collection: collection})).render().$el :
-                '<td></td>';
-            row.append(cell);
+            var collection = day[model.collection_array][model.id];
+            var view;
+            if (collection) {
+                view = new model.row_view({
+                    collection: collection,
+                });
+                row.append(view.render().$el)
+            } else {
+                row.append('<td></td>');
+            }
         });
         return row;
     }
@@ -120,6 +125,7 @@ function display_month_vertical(year, month) {
                      'Do. ', 'Fr. ', 'Sa. '];
 
     var table = $('table.plan').empty();
+    table.addClass('vertical');
     table.append(titlerow(sp.wards, function(ward) {
         return ward.get('name');
     }));
@@ -127,7 +133,7 @@ function display_month_vertical(year, month) {
     _.each(sp.month_days, function(day) {
         var date = day.get('date');
         var title = day_names[date.getDay()] + date.getDate() + month_string;
-        var row = $('<tr/>');
+        var row = $('<tr/>', {'class': sp.is_free(date) ? 'free-day' : ''});
         row.append($('<th/>', { html: title }));
         sp.wards.each(function(ward) {
             var view = get_staffing_view(ward, day);

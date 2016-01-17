@@ -80,7 +80,7 @@ sp.Ward = Backbone.Model.extend({
     collection_array: 'ward_staffings',
     row_class: function() {
         if (this.get('nightshift')) return 'nightshiftrow';
-        if (this.get('freedays')) return 'freedaysrow';
+        if (!this.get('continued')) return 'non-continued-row';
         if (this.get('on_leave')) return 'leaverow';
         return 'wardrow';
     },
@@ -184,10 +184,10 @@ sp.Staffing = Backbone.Collection.extend({
         this[action](person);
     },
     lacking: function() {
-        return this.length<this.ward.get('min');
+        return this.displayed.length<this.ward.get('min');
     },
     room_for_more: function() {
-        return this.length<this.ward.get('max');
+        return this.displayed.length<this.ward.get('max');
     },
     needs_staffing: function() {
         var ward = this.ward;
