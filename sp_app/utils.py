@@ -14,7 +14,7 @@ def get_past_changes(first_of_month, wards_ids):
         ward_id__in=wards_ids,
         ward__continued=True,
         person__end_date__gt=first_of_month,
-    ).order_by('change_time').values_list('json', flat=True)
+    ).order_by('change_time', 'id').values_list('json', flat=True)
     for c_json in changes:
         c = json.loads(c_json)
         if c['action']=='add':
@@ -31,7 +31,7 @@ def changes_for_month_as_json(first_of_month, wards_ids):
         day__gte=first_of_month,
         day__lte=last_day_of_month(first_of_month),
         ward_id__in=wards_ids,
-    ).order_by('change_time').values_list('json', flat=True)
+    ).order_by('change_time', 'id').values_list('json', flat=True)
     return '[' + ','.join(changes) + ']'
 
 
