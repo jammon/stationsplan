@@ -61,7 +61,8 @@ class Ward(models.Model):
     continued = models.BooleanField(
         _('continued'),
         default=True,
-        help_text=_('if True, then todays staffing will be planned for tomorrow'))
+        help_text=_('if True, '
+                    'then todays staffing will be planned for tomorrow'))
     on_leave = models.BooleanField(
         _('on_leave'),
         default=False,
@@ -77,7 +78,8 @@ class Ward(models.Model):
         help_text=_('The date until which the plan is approved'))
     after_this = models.ManyToManyField(
         'self', symmetrical=False, blank=True,
-        help_text=_('if not empty, only these functions can be planned on the next day'))
+        help_text=_('if not empty, '
+                    'only these functions can be planned on the next day'))
     json = models.CharField(max_length=511)
 
     class Meta:
@@ -103,7 +105,8 @@ class Ward(models.Model):
                 'on_leave': self.on_leave,
                 'company_id': self.company_id,
                 'position': self.position,
-                'approved': date_to_json(self.approved) if self.approved else None,
+                'approved': date_to_json(self.approved)
+                            if self.approved else None,
                 'id': self.id,
                 'after_this': '' if not self.pk else ','.join(
                     self.after_this.values_list('shortname', flat=True)),

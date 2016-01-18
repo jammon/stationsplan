@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from datetime import datetime, date
+from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseNotAllowed, JsonResponse
-from django.views.generic.base import TemplateView
 
 from .models import Person, Ward, ChangeLogging
 from .utils import get_for_company

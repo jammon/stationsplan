@@ -17,7 +17,7 @@ def get_past_changes(first_of_month, wards_ids):
     ).order_by('change_time', 'id').values_list('json', flat=True)
     for c_json in changes:
         c = json.loads(c_json)
-        if c['action']=='add':
+        if c['action'] == 'add':
             past_changes.add((c['person'], c['ward']))
         else:
             past_changes.discard((c['person'], c['ward']))
@@ -44,6 +44,7 @@ def get_first_of_month(month=''):
         return datetime.strptime(month, '%Y%m').date()
     except (TypeError, ValueError):
         return date.today().replace(day=1)
+
 
 def last_day_of_month(date):
     return (date.replace(day=31)

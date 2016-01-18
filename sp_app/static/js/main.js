@@ -90,7 +90,7 @@ function display_month(year, month) {
                 view = new model.row_view({
                     collection: collection,
                 });
-                row.append(view.render().$el)
+                row.append(view.render().$el);
             } else {
                 row.append('<td></td>');
             }

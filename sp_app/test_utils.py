@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from unittest import TestCase
 from datetime import date
 
-from .utils import (get_past_changes, last_day_of_month, 
+from .utils import (get_past_changes, last_day_of_month,
                     changes_for_month_as_json,
                     get_for_company, PopulatedTestCase)
 from .models import Company, Person, Ward, ChangeLogging
@@ -64,7 +64,6 @@ class TestChanges(PopulatedTestCase):
             ChangeLogging.objects.create(
                 person=person, ward=ward, day=day, added=added,
                 company=self.company, user=user)
-        
 
     def test_changes_for_month(self):
         result = changes_for_month_as_json(date(2015, 10, 1), [self.ward_a])
@@ -76,21 +75,26 @@ class TestChanges(PopulatedTestCase):
              ])
 
     def test_get_past_changes(self):
-        result = get_past_changes(date(2015, 10, 1), [self.ward_a, self.nightshift])
+        result = get_past_changes(
+            date(2015, 10, 1), [self.ward_a, self.nightshift])
         self.assertEqual(
             result,
-            [{'person': "P-A", 'ward': "A", 'day': "20151001", 'action': "add"}])
+            [{'person': "P-A", 'ward': "A", 'day': "20151001",
+              'action': "add"}])
 
     def test_description(self):
         c = ChangeLogging.objects.get(ward=self.nightshift)
         self.assertEqual(
-            c.description, "Mr. User: Person A ist am 14.09.2015 für Nightshift eingeteilt")
+            c.description,
+            "Mr. User: Person A ist am 14.09.2015 für Nightshift eingeteilt")
         c = ChangeLogging.objects.get(day=date(2015, 10, 31))
         self.assertEqual(
-            c.description, "Mr. User: Person A ist ab 31.10.2015 für Ward A eingeteilt")
+            c.description,
+            "Mr. User: Person A ist ab 31.10.2015 für Ward A eingeteilt")
         c = ChangeLogging.objects.get(day=date(2015, 11, 6))
         self.assertEqual(
-            c.description, "Mr. User: Person B ist ab 06.11.2015 für Ward A nicht mehr eingeteilt")
+            c.description,
+            "Mr. User: Person B ist ab 06.11.2015 für Ward A nicht mehr eingeteilt")
 
 
 class TestGetForCompany(TestCase):

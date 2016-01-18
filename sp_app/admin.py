@@ -65,7 +65,8 @@ class PersonWardListFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         value = self.value()
         if value:
-            return queryset.filter(**{"{}_id".format(self.parameter_name): int(value)})
+            return queryset.filter(**{
+                "{}_id".format(self.parameter_name): int(value)})
         return queryset
 
 

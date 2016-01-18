@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import json
-from datetime import datetime, date, timedelta
+from datetime import date, timedelta
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
-from .models import Person, Ward, date_to_json
+from .models import Person, Ward
 from .utils import (get_past_changes, changes_for_month_as_json,
-    get_first_of_month)
+                    get_first_of_month)
 
 
 def home(request):
@@ -28,8 +28,8 @@ def plan(request, month='', ward_selection=''):
         departments__id__in=department_ids
     ).prefetch_related('functions')
     wards = Ward.objects.filter(departments__id__in=department_ids
-               ).values('id', 'json')
-    if ward_selection=='noncontinued':
+                               ).values('id', 'json')
+    if ward_selection == 'noncontinued':
         wards = wards.filter(continued=False)
     wards_ids = [w['id'] for w in wards]
     wards_json = '[' + ', '.join(w['json'] for w in wards) + ']'
@@ -43,7 +43,8 @@ def plan(request, month='', ward_selection=''):
         'month': first_of_month.month,
         'user': request.user,
         'name': name,
-        'can_change': 1 if request.user.has_perm('sp_app.add_changelogging') else 0,
+        'can_change': 1 if request.user.has_perm('sp_app.add_changelogging')
+                        else 0,
         'next_month': (first_of_month + timedelta(32)).strftime('%Y%m'),
         'month_heading': first_of_month.strftime('%B %Y'),
         'first_of_month': first_of_month,

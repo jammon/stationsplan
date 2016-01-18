@@ -115,10 +115,10 @@ describe("Day", function() {
             });
             var ward_a = sp.wards.get('A');
             var ward_f = sp.wards.get('F');
-            expect(sunday.ward_staffings['A'].no_staffing).toBeTruthy();
-            expect(sunday.ward_staffings['F'].no_staffing).toBeFalsy();
-            expect(monday.ward_staffings['A'].no_staffing).toBeFalsy();
-            expect(monday.ward_staffings['F'].no_staffing).toBeTruthy();
+            expect(sunday.ward_staffings.A.no_staffing).toBeTruthy();
+            expect(sunday.ward_staffings.F.no_staffing).toBeFalsy();
+            expect(monday.ward_staffings.A.no_staffing).toBeFalsy();
+            expect(monday.ward_staffings.F.no_staffing).toBeTruthy();
         });
     });
     describe("interaction with previous planning", function() {

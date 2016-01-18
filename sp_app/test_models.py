@@ -27,7 +27,6 @@ class Test_ToJson(PopulatedTestCase):
         c = ChangeLogging(
             person=self.person, ward=self.ward_a, day=date(2015, 10, 2),
             added=True,)
-            # company_id=0, user_id=0)
         expected = {'person': "Mül", 'ward': "A", 'day': "20151002",
                     'action': "add", }
         self.assertEqual(c.toJson(), expected)

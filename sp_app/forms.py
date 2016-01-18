@@ -19,8 +19,9 @@ class WardForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(WardForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
-            #if this is not a new object, we load related staff
-            self.initial['staff'] = self.instance.staff.values_list('pk', flat=True)
+            # if this is not a new object, we load related staff
+            self.initial['staff'] = self.instance.staff.values_list(
+                'pk', flat=True)
             self.fields['staff'].queryset = Person.objects.filter(
                 company_id=self.instance.company_id)
         else:

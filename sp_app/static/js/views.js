@@ -9,7 +9,7 @@ sp.StaffingView = Backbone.View.extend({
     initialize: function(options) {
         this.listenTo(this.collection.displayed, "update", this.render);
         if (options)
-            this.display_long_name = options.display_long_name
+            this.display_long_name = options.display_long_name;
         if (!this.collection.ward.get('continued') && !this.collection.no_staffing)
             this.$el.addClass('on-call');
     },
