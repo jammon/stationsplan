@@ -130,6 +130,10 @@ sp.Staffing = Backbone.Collection.extend({
             'remove': this.person_removed }, this);
         this.comparator = 'name';
         this.no_staffing = !this.needs_staffing();
+        this.add_issued = false;  // will be set to true
+        // when an "add" change is issued for this day
+        // so that a continued "remove" change on a *previous* day
+        // won't delete this planning.
     },
     can_be_planned: function(person) {
         if (this.ward.get('on_leave')) return true;
@@ -198,6 +202,13 @@ sp.Staffing = Backbone.Collection.extend({
         var day_is_free = sp.is_free(this.day.get('date'));
         var for_free_days = (ward.get('freedays') || false);
         return day_is_free == for_free_days;
+    },
+    apply_change: function(change) {
+        var person = sp.persons.get(change.person);
+        if (person) {
+            this[change.action](person, { continued: change.continued });
+            this.add_issued = change.action==="add";
+        }
     },
 });
 
@@ -396,13 +407,12 @@ sp.change_and_store = function(person_id, staffing, action) {
 };
 
 sp.apply_change = function(change) {
-    var person = sp.persons.get(change.person);
     var day = sp.days[change.day];
     var staffing;
-    if (day && person) {
+    if (day) {
         staffing = day.ward_staffings[change.ward];
         if (staffing) {
-            staffing[change.action](person);
+            staffing.apply_change(change);
             return;
         }
     }
