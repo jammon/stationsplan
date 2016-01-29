@@ -27,8 +27,8 @@ def plan(request, month='', ward_selection=''):
         end_date__gte=first_of_month,
         departments__id__in=department_ids
     ).prefetch_related('functions')
-    wards = Ward.objects.filter(departments__id__in=department_ids
-                               ).values('id', 'json')
+    wards = Ward.objects.filter(
+        departments__id__in=department_ids).values('id', 'json')
     if ward_selection == 'noncontinued':
         wards = wards.filter(continued=False)
     wards_ids = [w['id'] for w in wards]
@@ -37,7 +37,8 @@ def plan(request, month='', ward_selection=''):
     data = {
         'persons': json.dumps([p.toJson() for p in persons]),
         'wards': wards_json,
-        'past_changes': json.dumps(get_past_changes(first_of_month, wards_ids)),
+        'past_changes': 
+            json.dumps(get_past_changes(first_of_month, wards_ids)),
         'changes': changes_for_month_as_json(first_of_month, wards_ids),
         'year': first_of_month.year,
         'month': first_of_month.month,

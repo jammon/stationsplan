@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import json
 from django.db import migrations, models
 
+from ..models import date_to_json
 
 def toJson(ward):
     return {'name': ward.name,

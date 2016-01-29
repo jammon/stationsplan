@@ -2,36 +2,36 @@
 {% load staticfiles %}
 
 {% block content %}
-      <div role="main" id="main-content">
-        <h1>Stationsplan</h1>
-        <h2 class="month-heading">
-          {{ first_of_month|date:"F Y" }}
-          <span class="btn-group" role="group">
-            {% if prev_month %}
-            <a class="btn btn-default prev-month" aria-label="Voriger Monat"
-              title="Voriger Monat" href="/plan/{{ prev_month }}">
-              <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-            </a>
-            {% endif %}
-            <a class="btn btn-default next-month" aria-label="Nächster Monat"
-              title="Nächster Monat" href="/plan/{{ next_month }}">
-              <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-            </a>
-          </span>
-        </h2>
-        <div class="inner">
-          <div id="loading-message" class="well">Die Planungsdaten werden geladen <span class="glyphicon glyphicon-refresh spinning"></span></div>
-          <table class="plan"></table>
-        </div>
-      </div>
-      <div id="log"></div>
-      <div id="errors"></div>
+  <div role="main" id="main-content">
+    <h1>Stationsplan</h1>
+    <h2 class="month-heading">
+      {{ first_of_month|date:"F Y" }}
+      <span class="btn-group" role="group">
+        {% if prev_month %}
+        <a class="btn btn-default prev-month" aria-label="Voriger Monat"
+          title="Voriger Monat" href="/plan/{{ prev_month }}">
+          <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+        </a>
+        {% endif %}
+        <a class="btn btn-default next-month" aria-label="Nächster Monat"
+          title="Nächster Monat" href="/plan/{{ next_month }}">
+          <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+        </a>
+      </span>
+    </h2>
+    <div class="inner">
+      <div id="loading-message" class="well">Die Planungsdaten werden geladen <span class="glyphicon glyphicon-refresh spinning"></span></div>
+      <table class="plan"></table>
+    </div>
+  </div>
+  <div id="log"></div>
+  <div id="errors"></div>
 {% endblock content %}
 
 {% block extracontent %}
 <!-- Modal dialog for changing staff -->
 <div class="modal" id="changestaff" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-sm" role="document">
+  <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -39,10 +39,16 @@
         <p><span class="changedate"></span>, <span class="changeward"></span></p>
       </div>
       <div class="modal-body">
-        <table id="changestafftable"></table>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+        <div class="row">
+          <div class="col-sm-8">
+            <table id="changestafftable"></table>
+          </div>
+          <div class="col-sm-4">
+            <div><button type="button" class="btn btn-primary" id="one-day">Ein Tag</button></div>
+            <div><button type="button" class="btn btn-primary" id="continued">Fortsetzen</button></div>
+            <div><button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -59,15 +65,12 @@
       duties - the duties of the person as a string
     -->
     <script type="text/template" id="change_person_template">
-      <tr>
-        <td>
-          <button type="button" class="btn btn-<%= type %> btn-block changestaff" 
-                  data-shortname="<%= shortname %>" data-action="<%= action %>">
-            <%= name %>
-          </button>
-        </td>
-        <td><%= duties %></td>
-      </tr>
+      <td>
+        <button class="btn btn-block changestaff">
+          <%= name %>
+        </button>
+      </td>
+      <td><%= duties %></td>
     </script>
     <script src="{% static 'vendor/underscore.js' %}"></script>
     <script src="{% static 'vendor/backbone.js' %}"></script>

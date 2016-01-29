@@ -63,7 +63,7 @@ sp.persons = new sp.Persons();
 //     - nightshift = if truthy, staffing can not be planned on the next day.
 //     - everyday = if truthy, is to be planned also on free days.
 //     - freedays = if truthy, is to be planned only on free days.
-//     - continued = if truthy, then todays staffing will be planned for tomorrow
+//     - continued = if truthy, then todays staffing will usually be continued tomorrow
 //     - on_leave = if truthy, then persons planned for this are on leave
 //     - approved = The date until which the plan is approved
 //     - after_this = an Array of wards, that can be planned after this one
@@ -175,13 +175,14 @@ sp.Staffing = Backbone.Collection.extend({
         this.continue_yesterday('add', person, options);
     },
     removed_yesterday: function(person, staffing, options) {
-        this.continue_yesterday('remove', person, options);
+        if (!this.add_issued)
+            this.continue_yesterday('remove', person, options);
     },
     continue_yesterday: function(action, person, options) {
         // continue yesterdays planning
-        if (options.no_continue) return;
+        if (!options.continued) return;
         if (person.get('end_date')<this.day.get('date')) return;
-        this[action](person);
+        this[action](person, options);
     },
     lacking: function() {
         return this.displayed.length<this.ward.get('min');
@@ -243,18 +244,17 @@ sp.Day = Backbone.Model.extend({
     },
     make_staffing: function(ward) {
         var staffing = new sp.Staffing([], { ward: ward, day: this });
-        var yesterdays_staffing;
+        var yesterdays_staffing = this.yesterdays_staffing(ward);
         var date = this.get('date');
-        if (ward.get('continued')) {
-            yesterdays_staffing = this.yesterdays_staffing(ward);
-            if (yesterdays_staffing) {
+        if (yesterdays_staffing) {
+            yesterdays_staffing.on({
+                'add': staffing.added_yesterday,
+                'remove': staffing.removed_yesterday,
+            }, staffing);
+            if (ward.get('continued')) {
                 staffing.reset(yesterdays_staffing.filter(function(person) {
                     return person.get('end_date') >= date;
                 }));
-                yesterdays_staffing.on({
-                    'add': staffing.added_yesterday,
-                    'remove': staffing.removed_yesterday,
-                }, staffing);
             }
         }
         this.ward_staffings[ward.id] = staffing;
@@ -281,12 +281,17 @@ sp.Day = Backbone.Model.extend({
             this.persons_available[person.id] = sp.on_leave;
         }
     },
-    get_available: function(ward) { //ändern
+    get_available: function(ward) {
+        // Get all the persons, that can be planned for this ward
+        // and are not planned already
         var unavailable = {};
         var available;
         var yesterday = this.get('yesterday');
         var date = this.get('date');
 
+        if (ward.get('on_leave')) {  // everybody can be on leave
+            return sp.persons.models;
+        }
         function get_unavailables (staffing) {
             if (staffing)
                 staffing.each(function(person) {
@@ -303,8 +308,6 @@ sp.Day = Backbone.Model.extend({
         sp.on_leave.each(function(ward) {
             get_unavailables(this.ward_staffings[ward.id]);
         }, this);
-        // persons planned for this ward
-        get_unavailables(this.ward_staffings[ward.id]);
 
         available = sp.persons.filter(function(person) {
             return !unavailable[person.id] &&
@@ -373,14 +376,14 @@ sp.get_month_id = function(year, month) {
 sp.change_and_store = function(person_id, staffing, action) {
     var person = sp.persons.get(person_id);
     staffing[action](person);
-    $.ajax('/change', {
+    $.post({
+        url: '/change', 
         data: {
             person: person_id,
             ward: staffing.ward.get('shortname'),
             day: staffing.day.id,
             action: action,
         },
-        method: 'POST',
         error: function(jqXHR, textStatus, errorThrown) {
             sp.store_error(textStatus, 'error');
         },

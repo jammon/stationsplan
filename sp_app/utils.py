@@ -12,7 +12,7 @@ def get_past_changes(first_of_month, wards_ids):
         day__gt=first_of_month-timedelta(days=92),  # three months back
         day__lt=first_of_month,
         ward_id__in=wards_ids,
-        ward__continued=True,
+        continued=True,
         person__end_date__gt=first_of_month,
     ).order_by('change_time', 'id').values_list('json', flat=True)
     for c_json in changes:
@@ -22,7 +22,7 @@ def get_past_changes(first_of_month, wards_ids):
         else:
             past_changes.discard((c['person'], c['ward']))
     fom = first_of_month.strftime('%Y%m%d')
-    return [dict(person=person, ward=ward, day=fom, action='add')
+    return [dict(person=person, ward=ward, day=fom, action='add', continued=True)
             for person, ward in past_changes]
 
 

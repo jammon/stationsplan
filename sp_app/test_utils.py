@@ -94,7 +94,7 @@ class TestChanges(PopulatedTestCase):
         c = ChangeLogging.objects.get(day=date(2015, 11, 6))
         self.assertEqual(
             c.description,
-            "Mr. User: Person B ist ab 06.11.2015 für Ward A nicht mehr eingeteilt")
+            "Mr. User: Person B ist ab 06.11.2015 nicht mehr für Ward A eingeteilt")
 
 
 class TestGetForCompany(TestCase):

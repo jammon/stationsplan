@@ -74,12 +74,6 @@ describe("Day", function() {
             check_availability(function(today, yesterday) {},
             2);
         });
-        it("who is planned for a ward isn't available any more", function() {
-            check_availability(function(today, yesterday) {
-                today.ward_staffings.A.add(person_a);
-            },
-            1, 'B');
-        });
         it("who is on leave isn't available", function() {
             check_availability(function(today, yesterday) {
                 today.ward_staffings.L.add(person_a);
@@ -154,7 +148,7 @@ describe("Day", function() {
                 expect(staffing.length).toBe(total);
                 expect(staffing.displayed.length).toBe(displayed);
             }
-            yesterday.ward_staffings.A.add(person_a);
+            yesterday.ward_staffings.A.add(person_a, {continued: true});
             yesterday.ward_staffings.O.add(person_a);
             yesterday.ward_staffings.N.add(person_a);
             test_staffing(yesterday.ward_staffings.A, 1, 1);
@@ -176,9 +170,9 @@ describe("Day", function() {
                 expect(staffing.length).toBe(total);
                 expect(staffing.displayed.length).toBe(displayed);
             }
-            yesterday.ward_staffings.A.add(person_a);
+            yesterday.ward_staffings.A.add(person_a, {continued: true});
             yesterday.ward_staffings.S.add(person_a);
-            yesterday.ward_staffings.B.add(person_b);
+            yesterday.ward_staffings.B.add(person_b, {continued: true});
             yesterday.ward_staffings.S.add(person_b);
             test_staffing(yesterday.ward_staffings.A, 1, 1);
             test_staffing(yesterday.ward_staffings.B, 1, 1);
@@ -188,17 +182,17 @@ describe("Day", function() {
             test_staffing(tomorrow.ward_staffings.B, 1, 1);
         });
         it("should continue yesterdays planning", function() {
-            yesterday.ward_staffings.A.add(person_a);
+            yesterday.ward_staffings.A.add(person_a, {continued: true});
             expect(today.ward_staffings.A.length).toBe(1);
             expect(today.ward_staffings.A.models[0].id).toBe('A');
             expect(today.ward_staffings.B.length).toBe(0);
         });
         it("should continue yesterdays planning for leave", function() {
-            yesterday.ward_staffings.L.add(person_b);
+            yesterday.ward_staffings.L.add(person_b, {continued: true});
             expect(today.ward_staffings.L.length).toBe(1);
             expect(today.ward_staffings.L.models[0].id).toBe('B');
             expect(tomorrow.ward_staffings.L.length).toBe(1);
-            today.ward_staffings.L.remove(person_b);
+            today.ward_staffings.L.remove(person_b, {continued: true});
             expect(today.ward_staffings.L.length).toBe(0);
             expect(tomorrow.ward_staffings.L.length).toBe(0);
         });
@@ -215,28 +209,28 @@ describe("Day", function() {
             expect(today.get_available(ward_a).length).toBe(2);
             expect(tomorrow.get_available(ward_a).length).toBe(2);
             // on leave since yesterday
-            yesterday.ward_staffings.L.add(person_a);
+            yesterday.ward_staffings.L.add(person_a, {continued: true});
             expect(yesterday.get_available(ward_a).length).toBe(1);
             expect(today.get_available(ward_a).length).toBe(1);
             expect(tomorrow.get_available(ward_a).length).toBe(1);
             // back today
-            today.ward_staffings.L.remove(person_a);
+            today.ward_staffings.L.remove(person_a, {continued: true});
             expect(yesterday.get_available(ward_a).length).toBe(1);
             expect(today.get_available(ward_a).length).toBe(2);
             expect(tomorrow.get_available(ward_a).length).toBe(2);
         });
         it("should continue a persons duties after the vacation ends", function() {
             // A is on ward A
-            yesterday.ward_staffings.A.add(person_a);
-            yesterday.ward_staffings.A.add(person_b);
+            yesterday.ward_staffings.A.add(person_a, {continued: true});
+            yesterday.ward_staffings.A.add(person_b, {continued: true});
             expect(yesterday.persons_duties.A.length).toBe(1);
             // on leave since today
-            today.ward_staffings.L.add(person_a);
+            today.ward_staffings.L.add(person_a, {continued: true});
             expect(today.ward_staffings.A.length).toBe(2);
             expect(today.ward_staffings.A.displayed.length).toBe(1);
             expect(today.persons_duties.A.pluck('shortname')).toEqual(['A', 'L']);
             // back tomorrow
-            tomorrow.ward_staffings.L.remove(person_a);
+            tomorrow.ward_staffings.L.remove(person_a, {continued: true});
             expect(tomorrow.ward_staffings.A.length).toBe(2);
             expect(tomorrow.ward_staffings.A.displayed.length).toBe(2);
             expect(tomorrow.persons_duties.A.pluck('shortname')).toEqual(['A']);
@@ -244,7 +238,7 @@ describe("Day", function() {
         });
         it("should continue the staffings if a day is added", function() {
             var tdat;
-            today.ward_staffings.A.add(person_a);
+            today.ward_staffings.A.add(person_a, {continued: true});
             tdat = new sp.Day({
                 date: new Date(2015, 7, 6),
                 yesterday: tomorrow,
@@ -255,7 +249,7 @@ describe("Day", function() {
         });
         it("should calculate a persons duties if a day is added", function() {
             var tdat;
-            today.ward_staffings.A.add(person_a);
+            today.ward_staffings.A.add(person_a, {continued: true});
             tdat = new sp.Day({
                 date: new Date(2015, 7, 6),
                 yesterday: tomorrow,
@@ -302,5 +296,79 @@ describe("Person", function() {
         expect(p2.is_available(d2)).toBe(true);
         expect(p2.is_available(d3)).toBe(true);
         expect(p2.is_available(d4)).toBe(false);
+    });
+});
+describe("Changes", function() {
+    beforeEach(function() {
+        var last_day = sp.days['20150803'] = new sp.Day({
+            date: new Date(2015, 7, 3),
+        });
+        last_day = sp.days['20150804'] = new sp.Day({
+            date: new Date(2015, 7, 4),
+            yesterday: last_day,
+        });
+        last_day = sp.days['20150805'] = new sp.Day({
+            date: new Date(2015, 7, 5),
+            yesterday: last_day,
+        });
+    });
+    it("should apply changes", function() {
+        var yesterday = sp.days['20150803'];
+        var today = sp.days['20150804'];
+        var tomorrow = sp.days['20150805'];
+        sp.apply_change({
+            person: 'A', ward: 'A',
+            day: '20150804', action: 'add',
+            continued: true,
+        });
+        expect(yesterday.ward_staffings.A.length).toBe(0);
+        expect(yesterday.persons_duties.A.length).toBe(0);
+        expect(today.ward_staffings.A.length).toBe(1);
+        expect(today.ward_staffings.A.pluck('id')).toEqual(['A']);
+        expect(today.persons_duties.A.pluck('shortname')).toEqual(['A']);
+        expect(tomorrow.ward_staffings.A.pluck('id')).toEqual(['A']);
+        expect(tomorrow.persons_duties.A.pluck('shortname')).toEqual(['A']);
+    });
+    it("should preserve a later planning, " +
+        "if a previous duty is started", function() {
+        var tomorrow = sp.days['20150805'];
+        sp.apply_change({  // add from today
+            person: 'A', ward: 'A',
+            day: '20150804', action: 'add',
+            continued: true,
+        });
+        sp.apply_change({  // remove tomorrow
+            person: 'A', ward: 'A',
+            day: '20150805', action: 'remove',
+            continued: true,
+        });
+        sp.apply_change({  // add from yesterday
+            person: 'A', ward: 'A',
+            day: '20150803', action: 'add',
+            continued: true,
+        });
+        expect(tomorrow.ward_staffings.A.length).toEqual(0);
+        expect(tomorrow.persons_duties.A.length).toEqual(0);
+    });
+    it("should preserve a later planning, " +
+        "if a previous duty ends", function() {
+        var tomorrow = sp.days['20150805'];
+        sp.apply_change({  // add from tomorrow
+            person: 'A', ward: 'A',
+            day: '20150805', action: 'add',
+            continued: true,
+        });
+        sp.apply_change({  // add from yesterday
+            person: 'A', ward: 'A',
+            day: '20150803', action: 'add',
+            continued: true,
+        });
+        sp.apply_change({  // remove today
+            person: 'A', ward: 'A',
+            day: '20150804', action: 'remove',
+            continued: true,
+        });
+        expect(tomorrow.ward_staffings.A.pluck('id')).toEqual(['A']);
+        expect(tomorrow.persons_duties.A.pluck('shortname')).toEqual(['A']);
     });
 });

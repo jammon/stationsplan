@@ -105,8 +105,8 @@ class Ward(models.Model):
                 'on_leave': self.on_leave,
                 'company_id': self.company_id,
                 'position': self.position,
-                'approved': date_to_json(self.approved)
-                            if self.approved else None,
+                'approved': date_to_json(self.approved) if self.approved
+                else None,
                 'id': self.id,
                 'after_this': '' if not self.pk else ','.join(
                     self.after_this.values_list('shortname', flat=True)),
@@ -161,9 +161,12 @@ class ChangeLogging(models.Model):
     ward = models.ForeignKey(Ward)
     day = models.DateField()
     added = models.BooleanField()
+    continued = models.BooleanField(default=True)
     description = models.CharField(max_length=255)
     json = models.CharField(max_length=255)
     change_time = models.DateTimeField(auto_now=True)
+    version = models.IntegerField(default=0)
+    current_version = 1
 
     class Meta:
         ordering = ['day']
@@ -174,17 +177,23 @@ class ChangeLogging(models.Model):
             'ward': self.ward.shortname,
             'day': self.day.strftime('%Y%m%d'),
             'action': 'add' if self.added else 'remove',
+            'continued': self.continued,
         }
 
-    def save(self, *args, **kwargs):
+    def calc_data(self):
         self.make_description()
         self.json = json.dumps(self.toJson())
+        self.version = self.current_version
+        return self
+
+    def save(self, *args, **kwargs):
+        self.calc_data()
         super(ChangeLogging, self).save(*args, **kwargs)
 
     def make_description(self):
         template = (
-            '{user_name}: {self.person.name} ist {relation} {date} für '
-            '{self.ward.name} {added}eingeteilt')
+            '{user_name}: {self.person.name} ist {relation} {date} '
+            '{added}für {self.ward.name} eingeteilt')
         self.description = template.format(
             user_name=self.user.last_name or self.user.get_username(),
             self=self,

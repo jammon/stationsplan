@@ -137,6 +137,7 @@ class DepartmentAdmin(CompanyRestrictedMixin, admin.ModelAdmin):
 
 class ChangeLoggingAdmin(admin.ModelAdmin):
     date_hierarchy = 'day'
+    list_filter = (DepartmentsListFilter, PersonListFilter, WardListFilter, 'continued')
 
 
 admin.site.register(Person, PersonAdmin)
