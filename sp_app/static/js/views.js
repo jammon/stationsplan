@@ -1,7 +1,11 @@
-(function($, _, Backbone) {
 "use strict";
 
-sp.StaffingView = Backbone.View.extend({
+var $ = require('jquery');
+var _ = require('underscore');
+var Backbone = require('backbone');
+var models = require('./models.js');
+
+var StaffingView = Backbone.View.extend({
     tagName: 'td',
     events: {
         "click": "addstaff",
@@ -30,16 +34,16 @@ sp.StaffingView = Backbone.View.extend({
     },
     addstaff: function() {
         if (!can_change || this.collection.no_staffing) return;
-        sp.changestaffview.show(this.collection);
+        changestaffview.show(this.collection);
     },
 });
-sp.Ward.prototype.row_view = sp.StaffingView;
+models.Ward.prototype.row_view = StaffingView;
 
 function datestr(date) {
     return date.getDate()+'.'+(date.getMonth()+1)+'.'+date.getFullYear();
 }
 var ONE_DAY = 24*60*60*1000; // in msec
-sp.ChangeStaffView = Backbone.View.extend({
+var ChangeStaffView = Backbone.View.extend({
     events: {
         "click #one-day": "one_day",
         "click #continued": "continued",
@@ -59,10 +63,10 @@ sp.ChangeStaffView = Backbone.View.extend({
             url: '/change_more', 
             data: JSON.stringify(data),
             error: function(jqXHR, textStatus, errorThrown) {
-                sp.store_error(textStatus, 'error');
+                models.store_error(textStatus, 'error');
             },
             success: function(data, textStatus, jqXHR) {
-                _.each(data, sp.apply_change);
+                _.each(data, models.apply_change);
             },
         });
         this.$el.modal('hide');
@@ -99,7 +103,7 @@ sp.ChangeStaffView = Backbone.View.extend({
         this.change_person_views = _.map(
             day.get_available(staffing.ward),
             function(person) {
-                var view = new sp.ChangePersonView({
+                var view = new ChangePersonView({
                     person: person,
                     staffing: staffing,
                     day: day,
@@ -116,11 +120,11 @@ sp.ChangeStaffView = Backbone.View.extend({
         this.$el.modal('show');
     },
 });
-sp.changestaffview = new sp.ChangeStaffView({
+var changestaffview = new ChangeStaffView({
     el: $("#changestaff"),
 });
 
-sp.ChangePersonView = Backbone.View.extend({
+var ChangePersonView = Backbone.View.extend({
     tagName: 'tr',
     events: {
         "click .changestaff": "toggle_planned",
@@ -153,7 +157,7 @@ sp.ChangePersonView = Backbone.View.extend({
     }
 });
 
-sp.DutiesView = Backbone.View.extend({
+var DutiesView = Backbone.View.extend({
     tagName: 'td',
     initialize: function() {
         this.listenTo(this.collection, "update", this.render);
@@ -163,6 +167,12 @@ sp.DutiesView = Backbone.View.extend({
         return this;
     },
 });
-sp.Person.prototype.row_view = sp.DutiesView;
+models.Person.prototype.row_view = DutiesView;
 
-})($, _, Backbone);
+module.exports = {
+    StaffingView: StaffingView,
+    ChangeStaffView: ChangeStaffView,
+    changestaffview: changestaffview,
+    ChangePersonView: ChangePersonView,
+    DutiesView: DutiesView,
+};

@@ -72,14 +72,9 @@
       </td>
       <td><%= duties %></td>
     </script>
-    <script src="{% static 'vendor/underscore.js' %}"></script>
-    <script src="{% static 'vendor/backbone.js' %}"></script>
-
     <script src="{% static 'vendor/bootstrap.modalform.js' %}"></script>
-    <script src="{% static 'js/models.js' %}"></script>
-    <script src="{% static 'js/views.js' %}"></script>
-    <script src="{% static 'js/main.js' %}"></script>
     <script>
+      // TODO: Get rid of all these global variables
       var persons_init = {{ persons|safe }};
       var wards_init = {{ wards|safe }};
       var past_changes = {{ past_changes|safe }};
@@ -88,9 +83,8 @@
       var curr_month = {{ month }} - 1;
       var can_change = {{ can_change }}==1;
       var ward_selection = '{{ ward_selection }}';
-      sp.initialize_site(persons_init, wards_init, past_changes, changes, 
-                         curr_year, curr_month, can_change, ward_selection);
     </script>
+    <script src="{% static 'js/bundle.js' %}"></script>
 {% endblock extrascripts %}
   </body>
 </html>

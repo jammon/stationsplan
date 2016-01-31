@@ -1,5 +1,10 @@
-(function($, _, Backbone) {
 "use strict";
+
+var $ = require('jquery');
+var _ = require('underscore');
+var Backbone = require('backbone');
+var models = require('./models.js');
+var views = require('./views.js');
 
 // Implement the js part of csrf protection
 function getCookie(name) {
@@ -30,32 +35,32 @@ $.ajaxSetup({
     }
 });
 
-sp.days = {};  // Dictionary of Days indexed by their id
-sp.months = {};  //  Dictionary of (Arrays of Days) indexed by month_id
-sp.month_days = [];  // Array with the Days of the current month
+var months = {};  //  Dictionary of (Arrays of Days) indexed by month_id
+var month_days = [];  // Array with the Days of the current month
+var last_day;
 
 function days_in_month (month, year) {
-    var days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    return (month == 1) ? (year % 4 ? 28 : 29) : days[month];
+    var day_count = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    return (month == 1) ? (year % 4 ? 28 : 29) : day_count[month];
 }
 
 function make_month_days(year, month) {
-    var month_id = sp.get_month_id(year, month);
-    if (sp.months[month_id]) {
-        sp.month_days = sp.months[month_id];
+    var month_id = models.get_month_id(year, month);
+    if (months[month_id]) {
+        month_days = months[month_id];
         return;
     }
     var d_i_m = days_in_month(month, year);
     for (var i = 0; i < d_i_m; i++) {
-        // sp.last_day is undefined or the last generated day
+        // last_day is undefined or the last generated day
         // this breaks, when a month is generated after a later one.
-        var new_day = new sp.Day({
+        var new_day = new models.Day({
             date: new Date(year, month, i+1),
-            yesterday: sp.last_day,
+            yesterday: last_day,
         });
-        sp.month_days[i] = sp.days[new_day.id] = sp.last_day = new_day;
+        month_days[i] = models.days[new_day.id] = last_day = new_day;
     }
-    sp.months[month_id] = sp.month_days;
+    months[month_id] = month_days;
 }
 
 function titlerow(collection, get_content) {
@@ -74,7 +79,7 @@ function display_month(year, month) {
     var day_names = ['So.<br>', 'Mo.<br>', 'Di.<br>', 'Mi.<br>',
                      'Do.<br>', 'Fr.<br>', 'Sa.<br>'];
     table.addClass('horizontal');
-    table.append(titlerow(sp.month_days, function(day) {
+    table.append(titlerow(month_days, function(day) {
         var date = day.get('date');
         return day_names[date.getDay()] + date.getDate() + '.';
     }));
@@ -83,7 +88,7 @@ function display_month(year, month) {
     function construct_row(model) {
         var row = $('<tr/>', {'class': model.row_class()});
         row.append($('<th/>', { text: model.get('name')}));
-        _.each(sp.month_days, function(day) {
+        _.each(month_days, function(day) {
             var collection = day[model.collection_array][model.id];
             var view;
             if (collection) {
@@ -99,11 +104,11 @@ function display_month(year, month) {
     }
 
     // first the wards
-    sp.wards.each(function(ward) {
+    models.wards.each(function(ward) {
         table.append(construct_row(ward));
     });
     // then the persons
-    sp.persons.each(function(person) {
+    models.persons.each(function(person) {
         table.append(construct_row(person));
     });
     $('#loading-message').toggle(false);
@@ -111,7 +116,7 @@ function display_month(year, month) {
 
 function get_staffing_view (ward, day) {
     var collection = day.ward_staffings[ward.id];
-    return collection && (new sp.StaffingView({
+    return collection && (new views.StaffingView({
         collection: collection,
         display_long_name: true,
     }));
@@ -126,16 +131,16 @@ function display_month_vertical(year, month) {
 
     var table = $('table.plan').empty();
     table.addClass('vertical');
-    table.append(titlerow(sp.wards, function(ward) {
+    table.append(titlerow(models.wards, function(ward) {
         return ward.get('name');
     }));
 
-    _.each(sp.month_days, function(day) {
+    _.each(month_days, function(day) {
         var date = day.get('date');
         var title = day_names[date.getDay()] + date.getDate() + month_string;
-        var row = $('<tr/>', {'class': sp.is_free(date) ? 'free-day' : ''});
+        var row = $('<tr/>', {'class': models.is_free(date) ? 'free-day' : ''});
         row.append($('<th/>', { html: title }));
-        sp.wards.each(function(ward) {
+        models.wards.each(function(ward) {
             var view = get_staffing_view(ward, day);
             row.append(view ? view.render().$el : '<td></td>');
         });
@@ -145,21 +150,21 @@ function display_month_vertical(year, month) {
 }
 
 
-sp.initialize_site = function (persons_init, wards_init, past_changes, changes,
+function initialize_site(persons_init, wards_init, past_changes, changes,
                     curr_year, curr_month, can_change, ward_selection) {
 
-    sp.initialize_wards(wards_init);
-    sp.persons.reset(persons_init);
+    models.initialize_wards(wards_init);
+    models.persons.reset(persons_init);
     make_month_days(curr_year, curr_month);
     if (ward_selection=='noncontinued') {
         display_month_vertical(curr_year, curr_month);
     } else {
         display_month(curr_year, curr_month);
     }
-    _.each(past_changes, sp.apply_change);
-    _.each(changes, sp.apply_change);
+    _.each(past_changes, models.apply_change);
+    _.each(changes, models.apply_change);
 
-};
+}
 
-})($, _, Backbone);
-
+initialize_site(persons_init, wards_init, past_changes, changes, 
+                curr_year, curr_month, can_change, ward_selection);

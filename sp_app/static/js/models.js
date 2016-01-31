@@ -1,6 +1,8 @@
-var sp = (function($, _, Backbone) {
 "use strict";
-var sp = {};
+
+var $ = require('jquery');
+var _ = require('underscore');
+var Backbone = require('backbone');
 
 var free_dates = [
     '2015.10.3',
@@ -11,7 +13,7 @@ var free_dates = [
     '2015.12.31',
     '2016.1.1',
 ];
-sp.is_free = function (date) {
+var is_free = function (date) {
     var weekday = date.getDay();
     if (weekday===6 || weekday===0) {
         return true;
@@ -26,7 +28,7 @@ sp.is_free = function (date) {
 //     - id    = short form of the name
 //     - start_date = begin of job
 //     - end_date = end of job
-sp.Person = Backbone.Model.extend({
+var Person = Backbone.Model.extend({
     initialize: function() {
         var start = this.get('start_date') || [2015, 0, 1];
         this.set('start_date', new Date(start[0], start[1], start[2]));
@@ -46,13 +48,13 @@ sp.Person = Backbone.Model.extend({
     }
 });
 
-sp.Persons = Backbone.Collection.extend({
-    model: sp.Person,
+var Persons = Backbone.Collection.extend({
+    model: Person,
     comparator: function(person) {
         return person.get('position') + person.get('name');
     },
 });
-sp.persons = new sp.Persons();
+var persons = new Persons();
 
 // A ward can be a usual ward, a task or a shift.
 // It has a 
@@ -67,7 +69,7 @@ sp.persons = new sp.Persons();
 //     - on_leave = if truthy, then persons planned for this are on leave
 //     - approved = The date until which the plan is approved
 //     - after_this = an Array of wards, that can be planned after this one
-sp.Ward = Backbone.Model.extend({
+var Ward = Backbone.Model.extend({
     initialize: function() {
         var start = this.get('approved') || [2015, 0, 1];
         var after_this = this.get('after_this');
@@ -87,8 +89,8 @@ sp.Ward = Backbone.Model.extend({
 });
 
 
-sp.Wards = Backbone.Collection.extend({
-    model: sp.Ward,
+var Wards = Backbone.Collection.extend({
+    model: Ward,
     comparator: function(ward) {
         var res = (ward.get('on_leave') ? '1' : '0') +  // on_leave last
             (ward.get('continued') ? '0' : '1') +  // normal wards first
@@ -97,16 +99,16 @@ sp.Wards = Backbone.Collection.extend({
         return res;
     },
 });
-sp.wards = new sp.Wards();
-sp.nightshifts = new Backbone.Collection();
-sp.on_leave = new Backbone.Collection();
-sp.special_duties = new Backbone.Collection();
+var wards = new Wards();
+var nightshifts = new Backbone.Collection();
+var on_leave = new Backbone.Collection();
+var special_duties = new Backbone.Collection();
 
-sp.initialize_wards = function (wards_init) {
-    sp.wards.reset(wards_init);
-    sp.nightshifts.reset(sp.wards.where({'nightshift': true}));
-    sp.on_leave.reset(sp.wards.where({'on_leave': true}));
-    sp.special_duties.reset(sp.wards.filter(function(ward) {
+var initialize_wards = function (wards_init) {
+    wards.reset(wards_init);
+    nightshifts.reset(wards.where({'nightshift': true}));
+    on_leave.reset(wards.where({'on_leave': true}));
+    special_duties.reset(wards.filter(function(ward) {
         return ward.get('after_this')!==undefined;
     }));
 };
@@ -116,12 +118,12 @@ sp.initialize_wards = function (wards_init) {
 // It has
 //     - ward
 //     - day
-sp.Staffing = Backbone.Collection.extend({
-    model: sp.Person,
+var Staffing = Backbone.Collection.extend({
+    model: Person,
     initialize: function(models, options) {
         this.day = options.day;
         this.ward = options.ward;
-        this.displayed = new Backbone.Collection(null, { model: sp.Person });
+        this.displayed = new Backbone.Collection(null, { model: Person });
         this.on({
             'add': this.day.person_added,
             'remove': this.day.person_removed }, this.day);
@@ -199,12 +201,12 @@ sp.Staffing = Backbone.Collection.extend({
         if (ward.get('everyday') || ward.get('on_leave')) {
             return true;
         }
-        var day_is_free = sp.is_free(this.day.get('date'));
+        var day_is_free = is_free(this.day.get('date'));
         var for_free_days = (ward.get('freedays') || false);
         return day_is_free == for_free_days;
     },
     apply_change: function(change) {
-        var person = sp.persons.get(change.person);
+        var person = persons.get(change.person);
         if (person) {
             this[change.action](person, { continued: change.continued });
             this.add_issued = change.action==="add";
@@ -213,8 +215,8 @@ sp.Staffing = Backbone.Collection.extend({
 });
 
 // Duties are the duties of one person on one day
-sp.Duties = Backbone.Collection.extend({
-    model: sp.Ward,
+var Duties = Backbone.Collection.extend({
+    model: Ward,
 });
 
 
@@ -227,20 +229,20 @@ sp.Duties = Backbone.Collection.extend({
 //     All changes should be done on the staffings and are reflected in the duties.
 // this.persons_duties:  
 //     an Array with duties for each person
-sp.Day = Backbone.Model.extend({
+var Day = Backbone.Model.extend({
 
     initialize: function() {
         var that = this;
         var yesterday = this.get('yesterday');
-        this.id = sp.Day.get_id(this.get('date'));
+        this.id = Day.get_id(this.get('date'));
 
         var ward_staffings = this.ward_staffings = {};
-        sp.wards.each(this.make_staffing, this);
+        wards.each(this.make_staffing, this);
 
         this.persons_duties = {};
-        sp.persons.each(this.make_duties, this);
+        persons.each(this.make_duties, this);
 
-        sp.wards.each(function(ward) {
+        wards.each(function(ward) {
             if (ward_staffings[ward.id])
                 ward_staffings[ward.id].calc_displayed();
         });
@@ -254,7 +256,7 @@ sp.Day = Backbone.Model.extend({
         }
     },
     make_staffing: function(ward) {
-        var staffing = new sp.Staffing([], { ward: ward, day: this });
+        var staffing = new Staffing([], { ward: ward, day: this });
         var yesterdays_staffing = this.yesterdays_staffing(ward);
         var date = this.get('date');
         if (yesterdays_staffing) {
@@ -271,9 +273,9 @@ sp.Day = Backbone.Model.extend({
         this.ward_staffings[ward.id] = staffing;
     },
     make_duties: function(person) {
-        var duties = new sp.Duties();
+        var duties = new Duties();
         var ward_staffings = this.ward_staffings;
-        sp.wards.each(function(ward) {
+        wards.each(function(ward) {
             var staffing = ward_staffings[ward.id];
             if (staffing && staffing.get(person)) {
                 duties.add(ward);
@@ -289,7 +291,7 @@ sp.Day = Backbone.Model.extend({
         }) || yesterday.persons_duties[person.id].any(function(ward) {
             return ward.get('nightshift');
         })) {
-            this.persons_available[person.id] = sp.on_leave;
+            this.persons_available[person.id] = on_leave;
         }
     },
     get_available: function(ward) {
@@ -301,7 +303,7 @@ sp.Day = Backbone.Model.extend({
         var date = this.get('date');
 
         if (ward.get('on_leave')) {  // everybody can be on leave
-            return sp.persons.models;
+            return persons.models;
         }
         function get_unavailables (staffing) {
             if (staffing)
@@ -311,16 +313,16 @@ sp.Day = Backbone.Model.extend({
         }
         // yesterdays nightshift
         if (yesterday) {
-            sp.nightshifts.each(function(ward) {
+            nightshifts.each(function(ward) {
                 get_unavailables(yesterday.ward_staffings[ward.id]);
             });
         }
         // persons on leave
-        sp.on_leave.each(function(ward) {
+        on_leave.each(function(ward) {
             get_unavailables(this.ward_staffings[ward.id]);
         }, this);
 
-        available = sp.persons.filter(function(person) {
+        available = persons.filter(function(person) {
             return !unavailable[person.id] &&
                 person.is_available(date) &&
                 person.can_work_on(ward);
@@ -372,20 +374,22 @@ sp.Day = Backbone.Model.extend({
         });
     },
 });
-sp.padStr = function (i) {
+function padStr(i) {
     return (i < 10) ? "0" + i : i;
 };
-sp.Day.get_id = function(date) {
+Day.get_id = function(date) {
     return "" + date.getFullYear() +
-                sp.padStr(1 + date.getMonth()) +
-                sp.padStr(date.getDate());
+                padStr(1 + date.getMonth()) +
+                padStr(date.getDate());
 };
-sp.get_month_id = function(year, month) {
-    return "" + year + sp.padStr(1 + month);
+var days = {};
+
+var get_month_id = function(year, month) {
+    return "" + year + padStr(1 + month);
 };
 
-sp.change_and_store = function(person_id, staffing, action) {
-    var person = sp.persons.get(person_id);
+var change_and_store = function(person_id, staffing, action) {
+    var person = persons.get(person_id);
     staffing[action](person);
     $.post({
         url: '/change', 
@@ -396,18 +400,18 @@ sp.change_and_store = function(person_id, staffing, action) {
             action: action,
         },
         error: function(jqXHR, textStatus, errorThrown) {
-            sp.store_error(textStatus, 'error');
+            store_error(textStatus, 'error');
         },
         success: function(data, textStatus, jqXHR) {
             if (data.warning) {
-                sp.store_error(data.warning, 'warning');
+                store_error(data.warning, 'warning');
             }
         },
     });
 };
 
-sp.apply_change = function(change) {
-    var day = sp.days[change.day];
+var apply_change = function(change) {
+    var day = days[change.day];
     var staffing;
     if (day) {
         staffing = day.ward_staffings[change.ward];
@@ -421,13 +425,27 @@ sp.apply_change = function(change) {
     console.log(change);
 };
 
-sp.store_error = function(error, type) {
+var store_error = function(error, type) {
     $('#log').append($('<p/>', { text: error, 'class': type }));
 };
 
-sp.display_error = function(msg) {
-    $('#errors').append($('<div/>', { html: msg }));
+module.exports = {
+    is_free: is_free,
+    Person: Person,
+    Persons: Persons,
+    Ward: Ward,
+    Wards: Wards,
+    persons: persons,
+    wards: wards,
+    nightshifts: nightshifts,
+    on_leave: on_leave,
+    special_duties: special_duties,
+    initialize_wards: initialize_wards,
+    Staffing: Staffing,
+    Duties: Duties,
+    Day: Day,
+    days: days,
+    get_month_id: get_month_id,
+    apply_change: apply_change, //
+    store_error: store_error, //
 };
-
-return sp;
-})($, _, Backbone);
