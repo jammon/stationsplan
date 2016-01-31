@@ -44,8 +44,17 @@ th, td {
     position: absolute;
 }
 
+#changestafftable {
+    margin-bottom: 2ex;
+}
 #changestafftable td {
     vertical-align: middle;
+    padding: 1px 4px;
+}
+#changestafftable .changed {
+    box-shadow: 0 0 5px 2px #ff4406;
+}
+.submitbuttons > div {
     padding: 1px 4px;
 }
 .errorlist {

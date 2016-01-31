@@ -59,19 +59,20 @@ Können alles was Department Leader können auf Company-Ebene.
 ## TODO
 - Wie sollen neue User angelegt werden? Admins könnten die User für das eigene Department anlegen
 - Nur finalisierte Planungen sind für Benutzer ohne besondere Berechtigung sichtbar.
-- Angemeldete Nutzer sollen gleich nach /plan kommen.
+- Single page app schreiben
+    + Angemeldete Nutzer sollen gleich nach /plan kommen.
+    + Unter "/" sollte man entweder den Begrüßungsbildschirm oder den Plan sehen, je nach Anmeldestatus.
+    + View für nur die Dienste
 - Customize the default error views 
 - Der Kurzname einer Funktion sollte kein Komma enthalten.
-- Unter "/" sollte man entweder den Begrüßungsbildschirm oder den Plan sehen, je nach Anmeldestatus.
 - Logging anzeigen
 - Wochenendtage mit stärkerem Rand
 - Auch Ärzte von Fremdabteilungen sollen angezeigt werden, wenn sie in den angezeigten Funktionen Dienst tun. Sollen dann nicht bearbeitbar sein.
-- Das "dataset"-Attribut ist im IE10 nicht implementiert.
 - Kommentare an Änderungen anhängen
 - Kommentare oder Nachrichten unabhängig von Änderungen
 - Dienstwünsche eingeben, für jede Person müsste ein User erstellt werden (z.B. 'amm-bot')
-- View für nur die Dienste
-
+- Markierung für fehlende Personen fixen
+- wann ist collection.no_staffing und wann ist collection===undefined?
 
 ## Done
 - Es soll in /plan immer das Department des Users dargestellt werden
@@ -90,3 +91,6 @@ Können alles was Department Leader können auf Company-Ebene.
 - Wenn jemand für 'krank' oder 'Urlaub' eingetragen wird, bleiden die Duties vorhanden, er ist aber nicht für die Stationen eingetragen?
 - Man soll festlegen können, dass nach einem Dienst nur bestimmte Funktionen ausgeübt werden können.
 - Meldungen für noscript und loading
+- Wenn man eine frühere Planung beendet, wurde dadurch eine spätere Planung unsichtbar (fixed in 06b164179c7bc08c202859ad2db515e09e4bc4d4)
+- Das "dataset"-Attribut ist im IE10 nicht implementiert.
+- im ChangeStaffView soll mehr als eine Veränderung gemacht werden können und angegeben werden können, ob diese für einen oder viele Tage gelten soll.
