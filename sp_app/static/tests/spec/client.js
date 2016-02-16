@@ -12,30 +12,30 @@ var wards_init = [
   { name: 'Special', shortname: 'S', min: 0, max: 10, continued: false, after_this: 'S,A' },
 ];
 function init_hospital() {
-    sp.initialize_wards(wards_init);
-    sp.persons.reset(persons_init);
+    models.initialize_wards(wards_init);
+    models.persons.reset(persons_init);
 }
 
 describe("function is_free", function() {
     it("should identify weekdays", function() {
-        expect(sp.is_free(new Date(2015, 7, 7))).toBe(false);  // Friday
-        expect(sp.is_free(new Date(2015, 7, 8))).toBe(true);  // Saturday
-        expect(sp.is_free(new Date(2015, 7, 9))).toBe(true);  // Sunday
-        expect(sp.is_free(new Date(2015, 7, 10))).toBe(false);  // Monday
+        expect(models.is_free(new Date(2015, 7, 7))).toBe(false);  // Friday
+        expect(models.is_free(new Date(2015, 7, 8))).toBe(true);  // Saturday
+        expect(models.is_free(new Date(2015, 7, 9))).toBe(true);  // Sunday
+        expect(models.is_free(new Date(2015, 7, 10))).toBe(false);  // Monday
     });
     it("should identify special holidays", function() {
-        expect(sp.is_free(new Date(2015, 9, 3))).toBe(true);
-        expect(sp.is_free(new Date(2015, 11, 24))).toBe(true);
+        expect(models.is_free(new Date(2015, 9, 3))).toBe(true);
+        expect(models.is_free(new Date(2015, 11, 24))).toBe(true);
     });
 });
 describe("Initializing data", function() {
     it("should have the persons and wards set", function() {
         init_hospital();
-        expect(sp.persons.length).toBe(2);
-        expect(sp.wards.length).toBe(7);
-        var person_a = sp.persons.get('A');
+        expect(models.persons.length).toBe(2);
+        expect(models.wards.length).toBe(7);
+        var person_a = models.persons.get('A');
         expect(person_a.get('name')).toBe('Anton');
-        var ward_a = sp.wards.get('A');
+        var ward_a = models.wards.get('A');
         expect(ward_a.get('name')).toBe('Ward A');
         expect(ward_a.get('min')).toBe(1);
         expect(ward_a.get('max')).toBe(2);
@@ -44,11 +44,11 @@ describe("Initializing data", function() {
 });
 describe("Day", function() {
     init_hospital();
-    var person_a = sp.persons.get('A');
-    var person_b = sp.persons.get('B');
-    var ward_a = sp.wards.get('A');
+    var person_a = models.persons.get('A');
+    var person_b = models.persons.get('B');
+    var ward_a = models.wards.get('A');
     it("should be initialized properly", function() {
-        var today = new sp.Day({ date: new Date(2015, 7, 7) });
+        var today = new models.Day({ date: new Date(2015, 7, 7) });
         expect(today.persons_duties).not.toEqual(undefined);
         expect(today.persons_duties.A.length).toBe(0);
         expect(today.ward_staffings).not.toEqual(undefined);
@@ -56,10 +56,10 @@ describe("Day", function() {
     });
     describe("check availability:", function() {
         function check_availability (action, nr_avail, first_avail) {
-            var yesterday = new sp.Day({
+            var yesterday = new models.Day({
                 date: new Date(2015, 7, 6),  // Thursday
             });
-            var today = new sp.Day({
+            var today = new models.Day({
                 date: new Date(2015, 7, 7),  // Friday
                 yesterday: yesterday,
             });
@@ -101,14 +101,14 @@ describe("Day", function() {
     });
     describe("need for staffing", function() {
         it("should respect free days", function() {
-            var sunday = new sp.Day({
+            var sunday = new models.Day({
                 date: new Date(2015, 7, 2),
             });
-            var monday = new sp.Day({
+            var monday = new models.Day({
                 date: new Date(2015, 7, 3),
             });
-            var ward_a = sp.wards.get('A');
-            var ward_f = sp.wards.get('F');
+            var ward_a = models.wards.get('A');
+            var ward_f = models.wards.get('F');
             expect(sunday.ward_staffings.A.no_staffing).toBeTruthy();
             expect(sunday.ward_staffings.F.no_staffing).toBeFalsy();
             expect(monday.ward_staffings.A.no_staffing).toBeFalsy();
@@ -118,14 +118,14 @@ describe("Day", function() {
     describe("interaction with previous planning", function() {
         var yesterday, today, tomorrow;
         beforeEach(function() {
-            yesterday = new sp.Day({
+            yesterday = new models.Day({
                 date: new Date(2015, 7, 3),
             });
-            today = new sp.Day({
+            today = new models.Day({
                 date: new Date(2015, 7, 4),
                 yesterday: yesterday,
             });
-            tomorrow = new sp.Day({
+            tomorrow = new models.Day({
                 date: new Date(2015, 7, 5),
                 yesterday: today,
             });
@@ -239,7 +239,7 @@ describe("Day", function() {
         it("should continue the staffings if a day is added", function() {
             var tdat;
             today.ward_staffings.A.add(person_a, {continued: true});
-            tdat = new sp.Day({
+            tdat = new models.Day({
                 date: new Date(2015, 7, 6),
                 yesterday: tomorrow,
             });
@@ -250,7 +250,7 @@ describe("Day", function() {
         it("should calculate a persons duties if a day is added", function() {
             var tdat;
             today.ward_staffings.A.add(person_a, {continued: true});
-            tdat = new sp.Day({
+            tdat = new models.Day({
                 date: new Date(2015, 7, 6),
                 yesterday: tomorrow,
             });
@@ -261,24 +261,24 @@ describe("Day", function() {
     });
     describe("calculating the id of the day", function() {
         it("should calculate usual date to an id", function() {
-            expect(sp.Day.get_id(new Date(2015, 0, 1)))
-                .toBe("20150101");
-            expect(sp.Day.get_id(new Date(2015, 7, 30)))
-                .toBe("20150830");
-            expect(sp.Day.get_id(new Date(2015, 11, 31)))
-                .toBe("20151231");
-            expect(sp.Day.get_id(new Date(1999, 11, 31)))
-                .toBe("19991231");
+            var day = new models.Day({date: new Date(2015, 0, 1)});
+            expect(day.get_id()).toBe("20150101");
+            day.set({date: new Date(2015, 7, 30)});
+            expect(day.get_id()).toBe("20150830");
+            day.set({date: new Date(2015, 11, 31)});
+            expect(day.get_id()).toBe("20151231");
+            day.set({date: new Date(1999, 11, 31)});
+            expect(day.get_id()).toBe("19991231");
         });
     });
 });
 describe("Person", function() {
     it("should know, if they are available", function() {
-        var p1 = new sp.Person({
+        var p1 = new models.Person({
             name: "Test Test",
             id: "test",
         });
-        var p2 = new sp.Person({
+        var p2 = new models.Person({
             name: "Test Test2",
             id: "test2",
             start_date: [2015, 1, 1],
@@ -300,23 +300,23 @@ describe("Person", function() {
 });
 describe("Changes", function() {
     beforeEach(function() {
-        var last_day = sp.days['20150803'] = new sp.Day({
+        var last_day = models.days['20150803'] = new models.Day({
             date: new Date(2015, 7, 3),
         });
-        last_day = sp.days['20150804'] = new sp.Day({
+        last_day = models.days['20150804'] = new models.Day({
             date: new Date(2015, 7, 4),
             yesterday: last_day,
         });
-        last_day = sp.days['20150805'] = new sp.Day({
+        last_day = models.days['20150805'] = new models.Day({
             date: new Date(2015, 7, 5),
             yesterday: last_day,
         });
     });
     it("should apply changes", function() {
-        var yesterday = sp.days['20150803'];
-        var today = sp.days['20150804'];
-        var tomorrow = sp.days['20150805'];
-        sp.apply_change({
+        var yesterday = models.days['20150803'];
+        var today = models.days['20150804'];
+        var tomorrow = models.days['20150805'];
+        models.apply_change({
             person: 'A', ward: 'A',
             day: '20150804', action: 'add',
             continued: true,
@@ -331,18 +331,18 @@ describe("Changes", function() {
     });
     it("should preserve a later planning, " +
         "if a previous duty is started", function() {
-        var tomorrow = sp.days['20150805'];
-        sp.apply_change({  // add from today
+        var tomorrow = models.days['20150805'];
+        models.apply_change({  // add from today
             person: 'A', ward: 'A',
             day: '20150804', action: 'add',
             continued: true,
         });
-        sp.apply_change({  // remove tomorrow
+        models.apply_change({  // remove tomorrow
             person: 'A', ward: 'A',
             day: '20150805', action: 'remove',
             continued: true,
         });
-        sp.apply_change({  // add from yesterday
+        models.apply_change({  // add from yesterday
             person: 'A', ward: 'A',
             day: '20150803', action: 'add',
             continued: true,
@@ -352,18 +352,18 @@ describe("Changes", function() {
     });
     it("should preserve a later planning, " +
         "if a previous duty ends", function() {
-        var tomorrow = sp.days['20150805'];
-        sp.apply_change({  // add from tomorrow
+        var tomorrow = models.days['20150805'];
+        models.apply_change({  // add from tomorrow
             person: 'A', ward: 'A',
             day: '20150805', action: 'add',
             continued: true,
         });
-        sp.apply_change({  // add from yesterday
+        models.apply_change({  // add from yesterday
             person: 'A', ward: 'A',
             day: '20150803', action: 'add',
             continued: true,
         });
-        sp.apply_change({  // remove today
+        models.apply_change({  // remove today
             person: 'A', ward: 'A',
             day: '20150804', action: 'remove',
             continued: true,
@@ -372,3 +372,5 @@ describe("Changes", function() {
         expect(tomorrow.persons_duties.A.pluck('shortname')).toEqual(['A']);
     });
 });
+describe("days_in_month");
+describe("Views");

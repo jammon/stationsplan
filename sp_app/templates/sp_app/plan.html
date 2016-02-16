@@ -4,25 +4,7 @@
 {% block content %}
   <div role="main" id="main-content">
     <h1>Stationsplan</h1>
-    <h2 class="month-heading">
-      {{ first_of_month|date:"F Y" }}
-      <span class="btn-group" role="group">
-        {% if prev_month %}
-        <a class="btn btn-default prev-month" aria-label="Voriger Monat"
-          title="Voriger Monat" href="/plan/{{ prev_month }}">
-          <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-        </a>
-        {% endif %}
-        <a class="btn btn-default next-month" aria-label="Nächster Monat"
-          title="Nächster Monat" href="/plan/{{ next_month }}">
-          <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-        </a>
-      </span>
-    </h2>
-    <div class="inner">
-      <div id="loading-message" class="well">Die Planungsdaten werden geladen <span class="glyphicon glyphicon-refresh spinning"></span></div>
-      <table class="plan"></table>
-    </div>
+    <div class="plans"></div>
   </div>
   <div id="log"></div>
   <div id="errors"></div>
@@ -56,6 +38,27 @@
 {% endblock extracontent %}
 
 {% block extrascripts %}
+<!-- Template for the big table with all the persons and wards
+-->
+<script type="text/template" id="big-table">
+  <h2 class="month-heading">
+    <%= month_name %> <%= year %>
+    <span class="btn-group" role="group">
+      <a class="btn btn-default prev-month" aria-label="Voriger Monat"
+        title="Voriger Monat">
+        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+      </a>
+      <a class="btn btn-default next-month" aria-label="Nächster Monat"
+        title="Nächster Monat">
+        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+      </a>
+    </span>
+  </h2>
+  <div class="inner">
+    <div class="loading-message well">Die Planungsdaten werden geladen <span class="glyphicon glyphicon-refresh spinning"></span></div>
+    <table class="plan"></table>
+  </div>
+</script>
     <!-- Template for the change person line
       Parameters:
       action - 'add' or 'remove'
@@ -88,8 +91,8 @@
       var curr_month = {{ month }} - 1;
       var can_change = {{ can_change }}==1;
       var ward_selection = '{{ ward_selection }}';
-      sp.initialize_site(persons_init, wards_init, past_changes, changes, 
-                         curr_year, curr_month, can_change, ward_selection);
+      main.initialize_site(persons_init, wards_init, past_changes,
+        changes, curr_year, curr_month, can_change, ward_selection);
     </script>
 {% endblock extrascripts %}
   </body>

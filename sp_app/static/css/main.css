@@ -4,6 +4,19 @@
 .plan td, .plan th {
     border: 1px solid #CCC;
 }
+.month_plan {
+    position: absolute;
+    transition: all 0.5s ease;
+}
+.month_plan[data-time=past] {
+    transform: translate(-150%, 0);
+}
+.month_plan[data-time=present] {
+    transform: translate(0, 0);
+}
+.month_plan[data-time=future] {
+    transform: translate(150%, 0);
+}
 .horizontal .free-day {
     border-left-color: #999;
     border-right-color: #999;
