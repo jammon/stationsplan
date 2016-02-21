@@ -98,7 +98,7 @@ class DepartmentsListFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         qs = queryset.filter(company_id=request.session.get('company_id'))
         value = self.value()
-        if value != None:
+        if value is not None:
             qs = qs.filter(departments__id=int(value))
         return qs
 
@@ -137,7 +137,8 @@ class DepartmentAdmin(CompanyRestrictedMixin, admin.ModelAdmin):
 
 class ChangeLoggingAdmin(admin.ModelAdmin):
     date_hierarchy = 'day'
-    list_filter = (DepartmentsListFilter, PersonListFilter, WardListFilter, 'continued')
+    list_filter = (DepartmentsListFilter, PersonListFilter, WardListFilter,
+                   'continued')
 
 
 admin.site.register(Person, PersonAdmin)

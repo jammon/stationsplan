@@ -261,14 +261,14 @@ describe("Day", function() {
     });
     describe("calculating the id of the day", function() {
         it("should calculate usual date to an id", function() {
-            var day = new models.Day({date: new Date(2015, 0, 1)});
-            expect(day.get_id()).toBe("20150101");
-            day.set({date: new Date(2015, 7, 30)});
-            expect(day.get_id()).toBe("20150830");
-            day.set({date: new Date(2015, 11, 31)});
-            expect(day.get_id()).toBe("20151231");
-            day.set({date: new Date(1999, 11, 31)});
-            expect(day.get_id()).toBe("19991231");
+            function test_get_day_id(year, month, day, id) {
+                expect(models.get_day_id(year, month, day)).toBe(id);
+                expect(models.get_day_id(new Date(year, month, day))).toBe(id);
+            }
+            test_get_day_id(2015, 0, 1, "20150101");
+            test_get_day_id(2015, 7, 30, "20150830");
+            test_get_day_id(2015, 11, 31, "20151231");
+            test_get_day_id(1999, 11, 31, "19991231");
         });
     });
 });
@@ -372,5 +372,13 @@ describe("Changes", function() {
         expect(tomorrow.persons_duties.A.pluck('shortname')).toEqual(['A']);
     });
 });
-describe("days_in_month");
-describe("Views");
+describe("days_in_month", function() {
+    it("should calculate the days per month", function() {
+        expect(models.days_in_month(0, 2016)).toBe(31);
+        expect(models.days_in_month(1, 2016)).toBe(29);
+        expect(models.days_in_month(1, 2017)).toBe(28);
+        expect(models.days_in_month(1, 2100)).toBe(29); // Sorry, that's wrong.
+        // But I don't expect the software to run that long.
+    });
+});
+// describe("Views");

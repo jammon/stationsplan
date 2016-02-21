@@ -122,19 +122,19 @@ var Staffing = Backbone.Collection.extend({
         this.ward = options.ward;
         this.displayed = new Backbone.Collection(null, { model: Person });
         this.on({
-            'add': this.day.person_added,
-            'remove': this.day.person_removed }, this.day);
-        this.on({
             'add': this.person_added,
             'remove': this.person_removed }, this);
+        this.on({
+            'add': this.day.person_added,
+            'remove': this.day.person_removed }, this.day);
         this.comparator = 'name';
         this.no_staffing = !this.needs_staffing();
-        this.add_issued = false;  // will be set to true
-        // when an "add" change is issued for this day
+        this.added_today = [];  // holds the ids of the persons added on this day
         // so that a continued "remove" change on a *previous* day
         // won't delete this planning.
     },
     can_be_planned: function(person) {
+        // a vacation can always be planned
         if (this.ward.get('on_leave')) return true;
         // is she/he on leave?
         if (this.day.persons_duties[person.id].any(function(ward) {
@@ -178,7 +178,7 @@ var Staffing = Backbone.Collection.extend({
         this.continue_yesterday('add', person, options);
     },
     removed_yesterday: function(person, staffing, options) {
-        if (!this.add_issued)
+        if (this.added_today.indexOf(person.id)==-1)
             this.continue_yesterday('remove', person, options);
     },
     continue_yesterday: function(action, person, options) {
@@ -206,7 +206,15 @@ var Staffing = Backbone.Collection.extend({
         var person = persons.get(change.person);
         if (person) {
             this[change.action](person, { continued: change.continued });
-            this.add_issued = change.action==="add";
+            if (change.action==="add") {
+                this.added_today.push(person.id);
+            } else {
+                // remove person.id from this.added_today
+                var i = this.added_today.indexOf(person.id);
+                if (i!=-1) {
+                    this.added_today.splice(i, 1);
+                }
+            }
         }
     },
 });
@@ -214,6 +222,19 @@ var Staffing = Backbone.Collection.extend({
 // Duties are the duties of one person on one day
 var Duties = Backbone.Collection.extend({
     model: Ward,
+    initialize: function(models, options) {
+        this.person = options.person;
+        this.day = options.day;
+        this.displayed = new Backbone.Collection(null, {model: Ward});
+    },
+    calc_displayed: function() {
+        var that = this;
+        this.displayed.reset(_.pluck(
+            this.filter(function(ward) {
+                return that.day.ward_staffings[ward.id].displayed.get(that.person);
+            }),
+            'ward'));
+    },
 });
 
 
@@ -229,56 +250,51 @@ var Duties = Backbone.Collection.extend({
 var Day = Backbone.Model.extend({
 
     initialize: function() {
-        var that = this;
         var yesterday = this.get('yesterday');
         this.id = get_day_id(this.get('date'));
 
         var ward_staffings = this.ward_staffings = {};
-        wards.each(this.make_staffing, this);
-
         this.persons_duties = {};
-        persons.each(this.make_duties, this);
 
         wards.each(function(ward) {
-            if (ward_staffings[ward.id])
-                ward_staffings[ward.id].calc_displayed();
-        });
+            this.ward_staffings[ward.id] = new Staffing([], 
+                { ward: ward, day: this });
+        }, this);
+        persons.each(function(person) {
+            this.persons_duties[person.id] = new Duties([], 
+                { person: person, day: this });
+        }, this);
 
         this.persons_available = {};
-
         this.on('on_leave-changed', this.calc_persons_display, this);
         if (yesterday) {
             yesterday.on('nightshift-changed', this.calc_persons_display, this);
             yesterday.on('special-duty-changed', this.calc_persons_display, this);
+            this.continue_yesterdays_staffings();
         }
+
+
     },
-    make_staffing: function(ward) {
-        var staffing = new Staffing([], { ward: ward, day: this });
-        var yesterdays_staffing = this.yesterdays_staffing(ward);
+    continue_yesterdays_staffings: function() {
         var date = this.get('date');
-        if (yesterdays_staffing) {
-            yesterdays_staffing.on({
-                'add': staffing.added_yesterday,
-                'remove': staffing.removed_yesterday,
-            }, staffing);
-            if (ward.get('continued')) {
-                staffing.reset(yesterdays_staffing.filter(function(person) {
-                    return person.get('end_date') >= date;
-                }));
-            }
-        }
-        this.ward_staffings[ward.id] = staffing;
-    },
-    make_duties: function(person) {
-        var duties = new Duties();
-        var ward_staffings = this.ward_staffings;
         wards.each(function(ward) {
-            var staffing = ward_staffings[ward.id];
-            if (staffing && staffing.get(person)) {
-                duties.add(ward);
+            var staffing = this.ward_staffings[ward.id];
+            var yesterdays_staffing = this.yesterdays_staffing(ward);
+            if (yesterdays_staffing) {
+                yesterdays_staffing.on({
+                    'add': staffing.added_yesterday,
+                    'remove': staffing.removed_yesterday,
+                }, staffing);
+                if (ward.get('continued')) {
+                    yesterdays_staffing.each(function(person) {
+                        if (person.get('end_date') >= date) {
+                            staffing.add(person);
+                        }
+                    });
+                }
             }
-        });
-        this.persons_duties[person.id] = duties;
+        }, this);
+        
     },
     calc_availability: function(person) {
         var that = this;
@@ -363,6 +379,7 @@ var Day = Backbone.Model.extend({
         if (ward.get('after_this')!==undefined) {
             this.trigger('special-duty-changed', person, ward, action);
         }
+        this.persons_duties[person.id].calc_displayed();
     },
     calc_persons_display: function(person) {
         var ward_staffings = this.ward_staffings;
@@ -465,6 +482,7 @@ return {
     Duties: Duties,
     Day: Day,
     days: days,
+    days_in_month: days_in_month,
     get_month_days: get_month_days,
     get_day_id: get_day_id,
     get_month_id: get_month_id,
