@@ -64,7 +64,7 @@ var MonthView = Backbone.View.extend({
         this.month_days = models.get_month_days(this.year, this.month);
         this.prev_month_view = options.prev_month_view;
         if (this.prev_month_view) {
-            this.prev_month_view.set_next_month_view(this);
+            this.prev_month_view.next_month_view = this;
         }
     },
     render: function() {
@@ -77,7 +77,7 @@ var MonthView = Backbone.View.extend({
         _.each(this.month_days, function(day) {
             var date = day.get('date');
             titlerow.append($('<th/>', {'html': 
-                day_names[date.getDay()] + '<br>' + date.getDate() + '.'}))
+                day_names[date.getDay()] + '<br>' + date.getDate() + '.'}));
         });
         table.append(titlerow);
 
@@ -108,8 +108,7 @@ var MonthView = Backbone.View.extend({
         models.persons.each(function(person) {
             table.append(construct_row(person));
         });
-        this.$('.prev-month').toggle(this.prev_month_view);
-        this.$('.next-month').toggle(this.next_month_view);
+        if (!this.prev_month_view) this.$('.prev-month').hide();
         this.$('.loading-message').hide();
         $(".plans").append(this.$el);
         return this;
@@ -119,13 +118,24 @@ var MonthView = Backbone.View.extend({
         this.el.dataset.time = direction;
         return this;
     },
-    set_next_month_view: function(view) {
-        this.next_month_view = view;
-        this.$('.next-month').show();
-    },
     next_month: function() {
-        if (this.next_month_view)
-            this.move_to('past').next_month_view.move_to('present');
+        var month, year;
+        if (!this.next_month_view) {
+            month = this.month + 1;
+            year = this.year;
+            if (month == 11) {
+                year++;
+                month = 0;
+            }
+            this.next_month_view = new MonthView({
+                year: year,
+                month: month,
+                prev_month_view: this,
+            });
+            this.next_month_view.render().move_to('future')
+            $(".plans").append(this.next_month_view.$el);
+        }
+        this.move_to('past').next_month_view.move_to('present');
     },
     prev_month: function() {
         if (this.prev_month_view)

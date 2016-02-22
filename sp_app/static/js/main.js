@@ -85,20 +85,12 @@ function initialize_site(persons_init, wards_init, past_changes, changes,
     models.initialize_wards(wards_init);
     models.persons.reset(persons_init);
     models.set_changes(past_changes.concat(changes));
-    var month_view;
-    for (var i = 0; i < 3; i++) {
-        if (curr_month == 12) {
-            curr_year++;
-            curr_month = 0;
-        }
-        month_view = new views.MonthView({
+    var month_view = new views.MonthView({
             year: curr_year,
             month: curr_month,
             prev_month_view: month_view,
         });
-        $(".plans").append(month_view.render().move_to(i ? 'future' : 'present').$el);
-        curr_month += 1;
-    }
+    $(".plans").append(month_view.render().move_to('present').$el);
     // if (ward_selection=='noncontinued') {
     //     display_month_vertical(curr_year, curr_month);
     // } else {
