@@ -130,17 +130,6 @@ describe("Day", function() {
                 yesterday: today,
             });
         });
-        it("should check if on leave", function() {
-            expect(today.is_on_leave(person_a)).toBe(false);
-            today.ward_staffings.L.add(person_a);
-            expect(today.is_on_leave(person_a)).toBe(true);
-        });
-        it("should check if somebody is on yesterdays nightshift", function() {
-            expect(today.yesterdays_nightshift(person_a)).toBe(false);
-            yesterday.ward_staffings.N.add(person_a);
-            expect(today.yesterdays_nightshift(person_a)).toBe(true);
-            expect(today.yesterdays_nightshift(person_b)).toBe(false);
-        });
         it("should strike off yesterdays nightshift for today, "+
             "and continue the duties tomorrow, "+
             "if they are to be continued", function() {

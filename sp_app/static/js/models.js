@@ -296,17 +296,6 @@ var Day = Backbone.Model.extend({
         }, this);
         
     },
-    calc_availability: function(person) {
-        var that = this;
-        var yesterday = this.get('yesterday');
-        if (this.persons_duties[person.id].any(function(ward) {
-            return ward.get('on_leave');
-        }) || yesterday.persons_duties[person.id].any(function(ward) {
-            return ward.get('nightshift');
-        })) {
-            this.persons_available[person.id] = on_leave;
-        }
-    },
     get_available: function(ward) {
         // Get all the persons, that can be planned for this ward
         // and are not planned already
@@ -341,18 +330,6 @@ var Day = Backbone.Model.extend({
                 person.can_work_on(ward);
         });
         return available;
-    },
-    is_on_leave: function(person) {
-        return this.persons_duties[person.id].any(function(ward) {
-            return ward.get('on_leave');
-        });
-    },
-    yesterdays_nightshift: function(person) {
-        var yesterday = this.get('yesterday');
-        if (!yesterday) return false;
-        return yesterday.persons_duties[person.id].any(function(ward) {
-            return ward.get('nightshift');
-        });
     },
 
     yesterdays_staffing: function(ward) {

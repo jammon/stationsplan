@@ -143,11 +143,6 @@ var MonthView = Backbone.View.extend({
     },
 });
 
-var month_views = [];
-function add_month_view() {
-    // body...
-}
-
 function datestr(date) {
     return date.getDate()+'.'+(date.getMonth()+1)+'.'+date.getFullYear();
 }
@@ -194,15 +189,6 @@ var ChangeStaffView = Backbone.View.extend({
             },
             []);
     },
-    add_person_html: function(person, action, changestafftable, day) {
-        changestafftable.append(this.template({
-            shortname: person.id,
-            name: person.get('name'),
-            type: (action=='add' ? 'info' : 'primary'),
-            action: action,
-            duties: day.persons_duties[person.id].pluck('shortname').join(', '),
-        }));
-    },
     render: function() {
         var staffing = this.staffing;
         var day = this.staffing.day;
@@ -225,8 +211,7 @@ var ChangeStaffView = Backbone.View.extend({
     },
     show: function(staffing) {
         this.staffing = staffing;
-        this.render();
-        this.$el.modal('show');
+        this.render().$el.modal('show');
     },
 });
 var changestaffview = new ChangeStaffView({
