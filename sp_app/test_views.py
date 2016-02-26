@@ -52,14 +52,14 @@ class TestChangeMore(PopulatedTestCase):
 
     def test_with_valid_data(self):
         data = {'day': '20160120',
-             'ward': 'A',
-             'continued': False,
-             'persons': [
-                {'id': 'A', 'action': 'add', },
-                {'id': 'B', 'action': 'remove', },
-             ]}
+                'ward': 'A',
+                'continued': False,
+                'persons': [
+                   {'id': 'A', 'action': 'add', },
+                   {'id': 'B', 'action': 'remove', },
+                ]}
         self.client.login(username='user', password='password')
-        response = self.client.post(
+        self.client.post(
             reverse('change_more'),
             json.dumps(data),
             "text/json",
@@ -79,7 +79,8 @@ class TestChangeMore(PopulatedTestCase):
             'user: Person A ist ab 20.01.2016 für Ward A eingeteilt')
         self.assertEqual(
             json.loads(cl.json),
-            {"action": "add", "person": "A", "ward": "A", "day": "20160120"})
+            {"action": "add", "person": "A", "ward": "A", "day": "20160120",
+             "continued": False})
         self.assertEqual(cl.version, 1)
         cl = cls[1]
         self.assertEqual(cl.person, self.person_b)
@@ -92,5 +93,6 @@ class TestChangeMore(PopulatedTestCase):
             'user: Person B ist ab 20.01.2016 nicht mehr für Ward A eingeteilt')
         self.assertEqual(
             json.loads(cl.json),
-            {"action": "remove", "person": "B", "ward": "A", "day": "20160120"})
+            {"action": "remove", "person": "B", "ward": "A", "day": "20160120",
+             "continued": False})
         self.assertEqual(cl.version, 1)

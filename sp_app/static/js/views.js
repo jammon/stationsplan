@@ -256,7 +256,6 @@ return {
     DutiesView: DutiesView,
     MonthView: MonthView,
     ChangeStaffView: ChangeStaffView,
-    changestaffview: changestaffview,
     ChangePersonView: ChangePersonView,
 };
 })($, _, Backbone);

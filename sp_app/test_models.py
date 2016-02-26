@@ -28,7 +28,7 @@ class Test_ToJson(PopulatedTestCase):
             person=self.person, ward=self.ward_a, day=date(2015, 10, 2),
             added=True,)
         expected = {'person': "Mül", 'ward': "A", 'day': "20151002",
-                    'action': "add", }
+                    'continued': True, 'action': "add", }
         self.assertEqual(c.toJson(), expected)
         c.added = False
         expected['action'] = "remove"

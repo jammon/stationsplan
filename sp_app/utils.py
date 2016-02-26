@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 import json
+from collections import defaultdict
 from datetime import timedelta, datetime, date
 from django.shortcuts import get_object_or_404
 from django.test import TestCase
@@ -7,23 +8,33 @@ from .models import ChangeLogging, Ward, Company, Department
 
 
 def get_past_changes(first_of_month, wards_ids):
-    past_changes = set()
     changes = ChangeLogging.objects.filter(
-        day__gt=first_of_month-timedelta(days=92),  # three months back
+        day__gt=first_of_month-timedelta(days=153),  # five months back
         day__lt=first_of_month,
         ward_id__in=wards_ids,
-        continued=True,
         person__end_date__gt=first_of_month,
-    ).order_by('change_time', 'id').values_list('json', flat=True)
-    for c_json in changes:
-        c = json.loads(c_json)
-        if c['action'] == 'add':
-            past_changes.add((c['person'], c['ward']))
-        else:
-            past_changes.discard((c['person'], c['ward']))
-    fom = first_of_month.strftime('%Y%m%d')
-    return [dict(person=person, ward=ward, day=fom, action='add', continued=True)
-            for person, ward in past_changes]
+    ).order_by('change_time', 'id').values(
+        'person__shortname', 'ward__shortname', 'day', 'added', 'continued')
+    # hold the last time, a person was added to a ward
+    past_changes = defaultdict(list)
+    for c in changes:
+        past_changes[(c['person__shortname'], c['ward__shortname'])].append(c)
+    for l in past_changes.values():
+        # sort by day
+        l.sort(key=lambda x: x['day'])
+        # delete changes that cancel themselves out
+        while (len(l) > 1 and l[-2]['day'] == l[-2]['day'] and
+               l[-2]['continued'] == l[-2]['continued']):
+            del l[-2:]
+
+    f_o_m = first_of_month.strftime('%Y%m%d')
+    return [{'person': person,
+             'ward': ward,
+             'day': f_o_m,
+             'action': 'add',
+             'continued': True}
+            for ((person, ward), c) in past_changes.items()
+            if len(c)>0 and c[-1]['added'] == c[-1]['continued']]
 
 
 def changes_for_month_as_json(first_of_month, wards_ids):

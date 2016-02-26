@@ -33,56 +33,94 @@ class TestChanges(PopulatedTestCase):
 
     def setUp(self):
         super(TestChanges, self).setUp()
-        person_a = Person.objects.create(
+        self.person_a = Person.objects.create(
             name="Person A", shortname="P-A", company=self.company)
-        person_a.departments.add(self.department)
-        person_b = Person.objects.create(
+        self.person_a.departments.add(self.department)
+        self.person_b = Person.objects.create(
             name="Person B", shortname="P-B", company=self.company)
-        person_b.departments.add(self.department)
-        person_c = Person.objects.create(
+        self.person_b.departments.add(self.department)
+        self.person_c = Person.objects.create(
             name="Person C", shortname="P-C", company=self.company,
             end_date=date(2015, 9, 30))
-        person_c.departments.add(self.department)
+        self.person_c.departments.add(self.department)
         self.nightshift = Ward.objects.create(
             name="Nightshift", shortname="N", max=1, min=1,
             nightshift=True, everyday=True, continued=False, on_leave=False,
             company=self.company)
-        user = User.objects.create(username='Mr. User', password='123456')
-        data = (
-            (person_a, self.ward_a, date(2015, 9, 7), True),
-            (person_b, self.ward_a, date(2015, 9, 7), True),  # add to ward a
-            (person_b, self.ward_a, date(2015, 9, 9), False),  # and remove
-            (person_c, self.ward_a, date(2015, 9, 7), True),  # leaving in Sept.
-            (person_a, self.nightshift, date(2015, 9, 14), True),  # not to be continued
-            (person_a, self.ward_a, date(2015, 10, 1), False),
-            (person_a, self.ward_b, date(2015, 10, 5), True),
-            (person_b, self.ward_a, date(2015, 10, 5), True),
-            (person_a, self.ward_a, date(2015, 10, 31), True),
-            (person_b, self.ward_a, date(2015, 11, 6), False),
-        )
-        for (person, ward, day, added) in data:
+        self.user = User.objects.create(username='Mr. User', password='123456')
+
+    def create_cl(self, *data):
+        for (person, ward, day, added, continued) in data:
             ChangeLogging.objects.create(
                 person=person, ward=ward, day=day, added=added,
-                company=self.company, user=user)
+                continued=continued, company=self.company, user=self.user)
 
     def test_changes_for_month(self):
+        self.create_cl(
+            (self.person_a, self.ward_a, date(2015, 9, 7), True, True),
+            # add to ward a:
+            (self.person_b, self.ward_a, date(2015, 9, 7), True, True),
+            # and remove:
+            (self.person_b, self.ward_a, date(2015, 9, 9), False, True),
+            # leaving in Sept.:
+            (self.person_c, self.ward_a, date(2015, 9, 7), True, True),
+            # not to be continued:
+            (self.person_a, self.nightshift, date(2015, 9, 14), True, False),
+            (self.person_a, self.ward_a, date(2015, 10, 1), False, True),
+            (self.person_a, self.ward_b, date(2015, 10, 5), True, True),
+            (self.person_b, self.ward_a, date(2015, 10, 5), True, True),
+            (self.person_a, self.ward_a, date(2015, 10, 31), True, True),
+            (self.person_b, self.ward_a, date(2015, 11, 6), False, True),
+        )
         result = changes_for_month_as_json(date(2015, 10, 1), [self.ward_a])
         self.assertEqual(
             json.loads(result),
-            [{'person': "P-A", 'ward': "A", 'day': "20151001", 'action': "remove"},
-             {'person': "P-B", 'ward': "A", 'day': "20151005", 'action': "add"},
-             {'person': "P-A", 'ward': "A", 'day': "20151031", 'action': "add"},
+            [{'person': "P-A", 'ward': "A", 'day': "20151001",
+              'continued': True, 'action': "remove"},
+             {'person': "P-B", 'ward': "A", 'day': "20151005",
+              'continued': True, 'action': "add"},
+             {'person': "P-A", 'ward': "A", 'day': "20151031",
+              'continued': True, 'action': "add"},
              ])
 
     def test_get_past_changes(self):
-        result = get_past_changes(
-            date(2015, 10, 1), [self.ward_a, self.nightshift])
+        self.create_cl(
+            (self.person_a, self.ward_a, date(2015, 9, 7), True, True),
+            # add to ward a:
+            (self.person_b, self.ward_a, date(2015, 9, 7), True, True),
+            # and remove:
+            (self.person_b, self.ward_a, date(2015, 9, 9), False, True),
+            # leaving in Sept.:
+            (self.person_c, self.ward_a, date(2015, 9, 7), True, True),
+            # not to be continued:
+            (self.person_a, self.nightshift, date(2015, 9, 14), True, False),
+            (self.person_a, self.ward_a, date(2015, 10, 1), False, True),
+            (self.person_a, self.ward_b, date(2015, 10, 5), True, True),
+        )
         self.assertEqual(
-            result,
+            get_past_changes(date(2015, 10, 1),
+                             [self.ward_a, self.nightshift]),
             [{'person': "P-A", 'ward': "A", 'day': "20151001",
-              'action': "add"}])
+              'continued': True, 'action': "add"}])
 
-    def test_description(self):
+    def test_get_past_changes2(self):
+        self.create_cl(
+            (self.person_a, self.ward_a, date(2015, 9, 20), True, True),
+            (self.person_a, self.ward_a, date(2015, 9, 7), True, True),
+            (self.person_a, self.ward_a, date(2015, 9, 10), False, True),
+        )
+        self.assertEqual(
+            get_past_changes(date(2015, 10, 1),
+                             [self.ward_a, self.nightshift]),
+            [{'person': "P-A", 'ward': "A", 'day': "20151001",
+              'continued': True, 'action': "add"}])
+
+    def test_description(self):  # gehört nach test_models
+        self.create_cl(
+            (self.person_a, self.nightshift, date(2015, 9, 14), True, True),
+            (self.person_a, self.ward_a, date(2015, 10, 31), True, True),
+            (self.person_b, self.ward_a, date(2015, 11, 6), False, True),
+        )
         c = ChangeLogging.objects.get(ward=self.nightshift)
         self.assertEqual(
             c.description,
@@ -95,7 +133,6 @@ class TestChanges(PopulatedTestCase):
         self.assertEqual(
             c.description,
             "Mr. User: Person B ist ab 06.11.2015 nicht mehr für Ward A eingeteilt")
-
 
 class TestGetForCompany(TestCase):
 
