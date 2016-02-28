@@ -1,21 +1,3 @@
-var persons_init = [
-  { name: 'Anton', id: 'A', functions: ['A', 'B']},
-  { name: 'Berta', id: 'B', functions: ['A', 'B']},
-];
-var wards_init = [
-  { name: 'Ward A', shortname: 'A', min: 1, max: 2, continued: true },
-  { name: 'Ward B', shortname: 'B', min: 2, max: 2, continued: true },
-  { name: 'Nightshift', shortname: 'N', min: 0, max: 1, nightshift: true, everyday: true },
-  { name: 'Leave', shortname: 'L', min: 0, max: 10, on_leave: true, continued: true },
-  { name: 'Free days', shortname: 'F', min: 0, max: 10, freedays: true, continued: true },
-  { name: 'One day task', shortname: 'O', min: 0, max: 10, continued: false },
-  { name: 'Special', shortname: 'S', min: 0, max: 10, continued: false, after_this: 'S,A' },
-];
-function init_hospital() {
-    models.initialize_wards(wards_init);
-    models.persons.reset(persons_init);
-}
-
 describe("function is_free", function() {
     it("should identify weekdays", function() {
         expect(models.is_free(new Date(2015, 7, 7))).toBe(false);  // Friday
@@ -130,60 +112,130 @@ describe("Day", function() {
                 yesterday: today,
             });
         });
+        function test_staffing (day, staffing, total, displayed) {
+            var st = day.ward_staffings[staffing];
+            expect(st.length).toBe(total);
+            expect(st.displayed.length).toBe(displayed);
+        }
         it("should strike off yesterdays nightshift for today, "+
             "and continue the duties tomorrow, "+
             "if they are to be continued", function() {
-            function test_staffing (staffing, total, displayed) {
-                expect(staffing.length).toBe(total);
-                expect(staffing.displayed.length).toBe(displayed);
-            }
             yesterday.ward_staffings.A.add(person_a, {continued: true});
-            yesterday.ward_staffings.O.add(person_a);
-            yesterday.ward_staffings.N.add(person_a);
-            test_staffing(yesterday.ward_staffings.A, 1, 1);
-            test_staffing(yesterday.ward_staffings.O, 1, 1);
-            test_staffing(yesterday.ward_staffings.N, 1, 1);
-            test_staffing(today.ward_staffings.A, 1, 0);
-            test_staffing(today.ward_staffings.O, 0, 0);
-            test_staffing(today.ward_staffings.N, 0, 0);
-            test_staffing(tomorrow.ward_staffings.A, 1, 1);
-            test_staffing(tomorrow.ward_staffings.O, 0, 0);
-            test_staffing(tomorrow.ward_staffings.N, 0, 0);
+            yesterday.ward_staffings.O.add(person_a, {continued: false});
+            yesterday.ward_staffings.N.add(person_a, {continued: false});
+            test_staffing(yesterday, 'A', 1, 1);
+            test_staffing(yesterday, 'O', 1, 1);
+            test_staffing(yesterday, 'N', 1, 1);
+            test_staffing(today,     'A', 1, 0);
+            test_staffing(today,     'O', 0, 0);
+            test_staffing(today,     'N', 0, 0);
+            test_staffing(tomorrow,  'A', 1, 1);
+            test_staffing(tomorrow,  'O', 0, 0);
+            test_staffing(tomorrow,  'N', 0, 0);
             yesterday.ward_staffings.N.remove(person_a);
-            test_staffing(today.ward_staffings.A, 1, 1);
-            test_staffing(today.ward_staffings.O, 0, 0);
+            test_staffing(today,     'A', 1, 1);
+            test_staffing(today,     'O', 0, 0);
         });
         it("should strike off persons for wards, "+
             "that are not possible after their yesterdays duties", function() {
-            function test_staffing (staffing, total, displayed) {
-                expect(staffing.length).toBe(total);
-                expect(staffing.displayed.length).toBe(displayed);
-            }
             yesterday.ward_staffings.A.add(person_a, {continued: true});
             yesterday.ward_staffings.S.add(person_a);
             yesterday.ward_staffings.B.add(person_b, {continued: true});
             yesterday.ward_staffings.S.add(person_b);
-            test_staffing(yesterday.ward_staffings.A, 1, 1);
-            test_staffing(yesterday.ward_staffings.B, 1, 1);
-            test_staffing(today.ward_staffings.A, 1, 1);
-            test_staffing(today.ward_staffings.B, 1, 0);
-            test_staffing(tomorrow.ward_staffings.A, 1, 1);
-            test_staffing(tomorrow.ward_staffings.B, 1, 1);
+            test_staffing(yesterday, 'A', 1, 1);
+            test_staffing(yesterday, 'B', 1, 1);
+            test_staffing(today,     'A', 1, 1);
+            test_staffing(today,     'B', 1, 0);
+            test_staffing(tomorrow,  'A', 1, 1);
+            test_staffing(tomorrow,  'B', 1, 1);
         });
         it("should continue yesterdays planning", function() {
             yesterday.ward_staffings.A.add(person_a, {continued: true});
             expect(today.ward_staffings.A.length).toBe(1);
             expect(today.ward_staffings.A.models[0].id).toBe('A');
             expect(today.ward_staffings.B.length).toBe(0);
+            today.ward_staffings.A.remove(person_a, {continued: true});
+            expect(today.ward_staffings.A.length).toBe(0);
+            expect(tomorrow.ward_staffings.A.length).toBe(0);
         });
-        it("should continue yesterdays planning for leave", function() {
-            yesterday.ward_staffings.L.add(person_b, {continued: true});
-            expect(today.ward_staffings.L.length).toBe(1);
-            expect(today.ward_staffings.L.models[0].id).toBe('B');
-            expect(tomorrow.ward_staffings.L.length).toBe(1);
-            today.ward_staffings.L.remove(person_b, {continued: true});
-            expect(today.ward_staffings.L.length).toBe(0);
-            expect(tomorrow.ward_staffings.L.length).toBe(0);
+        describe("combination of previous plannings", function() {
+            var template = _.template(
+                "'<%= action1 %> <%= cont1 %>' <%= relation %> " +
+                "'<%= action2 %> <%= cont2 %>' <%= change %> '<%= result %>' " +
+                "(<%= sensible %>sensible change)");
+            function do_test(action1, cont1, relation, action2, cont2, 
+                             change, result, sensible) {
+                
+                it(template({
+                        action1: action1, 
+                        cont1: cont1,
+                        relation: relation,
+                        action2: action2, 
+                        cont2: cont2,
+                        change: change,
+                        result: result,
+                        sensible: sensible ? '' : 'not ',
+                    }),
+                   function () {
+                        (relation == 'then' ? yesterday : today).
+                            ward_staffings.A[action1=='add' ? 'add' : 'remove'](
+                                person_a, {continued: cont1=='cont'});
+                        var previous = tomorrow.ward_staffings.A.length;
+                        (relation == 'then' ? today : yesterday).
+                            ward_staffings.A[action2=='add' ? 'add' : 'remove'](
+                                person_a, {continued: cont2=='cont'});
+                        expect(tomorrow.ward_staffings.A.length).toBe(
+                            result=='planned' ? 1 : 0);
+                        if (change=='stays')
+                            expect(tomorrow.ward_staffings.A.length)
+                                .toBe(previous);
+                        else
+                            expect(tomorrow.ward_staffings.A.length)
+                                .not.toBe(previous);
+                    });
+            }
+            do_test('add','cont','then','add','cont','stays',     'planned',    false);
+            do_test('add','cont','then','add','once','stays',     'planned',    false);
+            do_test('add','cont','then','rem','cont','changes to','not planned',true);
+            do_test('add','cont','then','rem','once','stays',     'planned',    true);
+
+            do_test('add','once','then','add','cont','changes to','planned',    true);
+            do_test('add','once','then','add','once','stays',     'not planned',true);
+            do_test('add','once','then','rem','cont','stays',     'not planned',false);
+            do_test('add','once','then','rem','once','stays',     'not planned',false);
+
+            do_test('rem','cont','then','add','cont','changes to','planned',    true);
+            do_test('rem','cont','then','add','once','stays',     'not planned',true);
+            do_test('rem','cont','then','rem','cont','stays',     'not planned',false);
+            do_test('rem','cont','then','rem','once','stays',     'not planned',false);
+
+            // To start with 'rem once' always seems unsensible
+            do_test('rem','once','then','add','cont','changes to','planned',    false);
+            do_test('rem','once','then','add','once','stays',     'not planned',false);
+            do_test('rem','once','then','rem','cont','stays',     'not planned',false);
+            do_test('rem','once','then','rem','once','stays',     'not planned',false);
+
+            do_test('add','cont','then earlier','add','cont','stays',     'planned',    false);
+            do_test('add','cont','then earlier','add','once','stays',     'planned',    true);
+            do_test('add','cont','then earlier','rem','cont','stays',     'planned',    true);
+            do_test('add','cont','then earlier','rem','once','stays',     'planned',    true);
+
+            do_test('add','once','then earlier','add','cont','stays',     'not planned',true);
+            do_test('add','once','then earlier','add','once','stays',     'not planned',true);
+            do_test('add','once','then earlier','rem','cont','stays',     'not planned',false);
+            do_test('add','once','then earlier','rem','once','stays',     'not planned',false);
+
+            do_test('rem','cont','then earlier','add','cont','changes to','planned',    true);
+            do_test('rem','cont','then earlier','add','once','stays',     'not planned',true);
+            do_test('rem','cont','then earlier','rem','cont','stays',     'not planned',true);
+            do_test('rem','cont','then earlier','rem','once','stays',     'not planned',true);
+
+            // To start with 'rem once' always seems unsensible
+            do_test('rem','once','then earlier','add','cont','changes to','planned',    false);
+            do_test('rem','once','then earlier','add','once','stays',     'not planned',false);
+            do_test('rem','once','then earlier','rem','cont','stays',     'not planned',false);
+            do_test('rem','once','then earlier','rem','once','stays',     'not planned',false);
+
         });
         it("should set a persons duties", function() {
             expect(today.persons_duties.A.length).toBe(0);
