@@ -24,9 +24,9 @@ def prepare_deploy():
     push()
 
 
-def server_pull():
+def server_pull(branch='master'):
     with cd(code_dir):
-        run("git pull origin master")
+        run("git pull origin " + branch)
 
 
 def staticfiles():
@@ -47,8 +47,8 @@ def restart_server():
     run("touch ~/htdocs/app.wsgi")
 
 
-def deploy():
-    server_pull()
+def deploy(branch='master'):
+    server_pull(branch)
     staticfiles()
     migrate()
     copy_htaccess()
