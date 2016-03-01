@@ -164,7 +164,7 @@ var ChangeStaffView = Backbone.View.extend({
         };
         $.ajax({
             type: "POST",
-            url: '/change_more', 
+            url: '/changes', 
             data: JSON.stringify(data),
             error: function(jqXHR, textStatus, errorThrown) {
                 models.store_error(textStatus, 'error');

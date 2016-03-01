@@ -60,7 +60,7 @@ class TestChangeMore(PopulatedTestCase):
                 ]}
         self.client.login(username='user', password='password')
         self.client.post(
-            reverse('change_more'),
+            reverse('changes'),
             json.dumps(data),
             "text/json",
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')

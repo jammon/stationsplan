@@ -24,8 +24,7 @@ from sp_app.admin import config_site
 
 urlpatterns = [
     url(r'^$', sp_views.home, name='home'),
-    url(r'^change$', sp_ajax.change, name='change'),
-    url(r'^change_more$', sp_ajax.change_more, name='change_more'),
+    url(r'^changes$', sp_ajax.changes, name='changes'),
     url(r'^plan(/(?P<month>[0-9]+))?$', sp_views.plan, name='plan'),
     url(r'^dienste(/(?P<month>[0-9]+))?$', sp_views.plan,
         {'ward_selection': 'noncontinued'}, name='dienste'),
