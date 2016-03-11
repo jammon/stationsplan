@@ -40,9 +40,9 @@ def plan(request, month='', ward_selection=''):
         'wards': json_array(wards),
         'plannings': json_array(plannings),
         'user': request.user,
-        'can_change': 'true' 
-            if request.user.has_perm('sp_app.add_changelogging')
-            else 'false',
+        'can_change': 'true'
+                      if request.user.has_perm('sp_app.add_changelogging')
+                      else 'false',
         'first_of_month': first_of_month,
         'ward_selection': ward_selection,
     }
