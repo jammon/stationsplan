@@ -53,7 +53,6 @@ def plan(request, month='', ward_selection=''):
 
 @login_required
 def password_change(request):
-    # return auth_views.password_change(request)
     return auth_views.password_change(
         request, template_name='registration/password_change.html',
         post_change_redirect='/plan')

@@ -171,9 +171,6 @@ class ChangeLogging(models.Model):
     version = models.IntegerField(default=0)
     current_version = 1
 
-    # class Meta:
-    #     ordering = ['day']
-
     def toJson(self):
         return {
             'person': self.person.shortname,
@@ -264,7 +261,7 @@ def process_change(cl):
     return cl.json
 
 
-# @python_2_unicode_compatible
+@python_2_unicode_compatible
 class Planning(models.Model):
     """ One time period, where one person is planned for one ward.
 
