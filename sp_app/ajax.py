@@ -6,7 +6,7 @@ from django.http import (HttpResponseNotAllowed, JsonResponse)
 
 import json
 
-from .models import Person, Ward, ChangeLogging
+from .models import Person, Ward, ChangeLogging, process_change
 from .utils import get_for_company
 
 
@@ -33,32 +33,28 @@ def changes(request):
     if request.method != 'POST':
         return HttpResponseNotAllowed(['POST'])
     company_id = request.session['company_id']
-    try:
-        print(request.body)
-        data = json.loads(request.body)
-        print(data)
-        print(repr(data))
-        day = datetime.strptime(data['day'], '%Y%m%d').date()
-        ward = get_for_company(Ward, request, shortname=data['ward'])
-        persons = dict(
-            (person.shortname, person) for person in
-            Person.objects.filter(
-                company__id=company_id,
-                shortname__in=(p['id'] for p in data['persons'])))
-        for p in data['persons']:
-            if p['id'] not in persons:
-                return JsonResponse({
-                    'error': "Person '{}' not found".format(p['id'])})
-        cls = []
-        for p in data['persons']:
-            cls.append(ChangeLogging.objects.create(
+    data = json.loads(request.body)
+    day = datetime.strptime(data['day'], '%Y%m%d').date()
+    ward = get_for_company(Ward, request, shortname=data['ward'])
+    persons = {person.shortname: person
+               for person in Person.objects.filter(
+                    company__id=company_id,
+                    shortname__in=(p['id'] for p in data['persons']))}
+    for p in data['persons']:
+        if p['id'] not in persons:
+            return JsonResponse({'error': "Person not found",
+                                 'person': p['id']})
+    cls = []
+    for p in data['persons']:
+        cl = ChangeLogging.objects.create(
                 company_id=company_id,
                 user=request.user,
                 person=persons[p['id']],
                 ward=ward,
                 day=day,
                 added=p['action'] == 'add',
-                continued=data['continued']))
-        return JsonResponse([json.loads(cl.json) for cl in cls], safe=False)
-    except ValueError as e:
-        raise e
+                continued=data['continued'])
+        cls.append(process_change(cl))
+    return JsonResponse([c for c in cls if c], safe=False)
+
+

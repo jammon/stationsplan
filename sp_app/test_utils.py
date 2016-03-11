@@ -33,14 +33,8 @@ class TestChanges(PopulatedTestCase):
 
     def setUp(self):
         super(TestChanges, self).setUp()
-        self.person_a = Person.objects.create(
-            name="Person A", shortname="P-A", company=self.company)
-        self.person_a.departments.add(self.department)
-        self.person_b = Person.objects.create(
-            name="Person B", shortname="P-B", company=self.company)
-        self.person_b.departments.add(self.department)
         self.person_c = Person.objects.create(
-            name="Person C", shortname="P-C", company=self.company,
+            name="Person C", shortname="C", company=self.company,
             end_date=date(2015, 9, 30))
         self.person_c.departments.add(self.department)
         self.nightshift = Ward.objects.create(
@@ -75,11 +69,11 @@ class TestChanges(PopulatedTestCase):
         result = changes_for_month_as_json(date(2015, 10, 1), [self.ward_a])
         self.assertEqual(
             json.loads(result),
-            [{'person': "P-A", 'ward': "A", 'day': "20151001",
+            [{'person': "A", 'ward': "A", 'day': "20151001",
               'continued': True, 'action': "remove"},
-             {'person': "P-B", 'ward': "A", 'day': "20151005",
+             {'person': "B", 'ward': "A", 'day': "20151005",
               'continued': True, 'action': "add"},
-             {'person': "P-A", 'ward': "A", 'day': "20151031",
+             {'person': "A", 'ward': "A", 'day': "20151031",
               'continued': True, 'action': "add"},
              ])
 
@@ -100,7 +94,7 @@ class TestChanges(PopulatedTestCase):
         self.assertEqual(
             get_past_changes(date(2015, 10, 1),
                              [self.ward_a, self.nightshift]),
-            [{'person': "P-A", 'ward': "A", 'day': "20151001",
+            [{'person': "A", 'ward': "A", 'day': "20151001",
               'continued': True, 'action': "add"}])
 
     def test_get_past_changes2(self):
@@ -112,7 +106,7 @@ class TestChanges(PopulatedTestCase):
         self.assertEqual(
             get_past_changes(date(2015, 10, 1),
                              [self.ward_a, self.nightshift]),
-            [{'person': "P-A", 'ward': "A", 'day': "20151001",
+            [{'person': "A", 'ward': "A", 'day': "20151001",
               'continued': True, 'action': "add"}])
 
     def test_description(self):  # gehört nach test_models
@@ -133,6 +127,7 @@ class TestChanges(PopulatedTestCase):
         self.assertEqual(
             c.description,
             "Mr. User: Person B ist ab 06.11.2015 nicht mehr für Ward A eingeteilt")
+
 
 class TestGetForCompany(TestCase):
 

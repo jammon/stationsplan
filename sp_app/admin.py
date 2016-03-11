@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
-from .models import (Person, Ward, ChangeLogging, Department,
+from .models import (Person, Ward, ChangeLogging, Planning, Department,
                      Company, Employee, StatusEntry)
 from .forms import WardForm
 
@@ -141,6 +141,11 @@ class ChangeLoggingAdmin(admin.ModelAdmin):
                    'continued')
 
 
+class PlanningAdmin(admin.ModelAdmin):
+    date_hierarchy = 'start'
+    list_filter = (PersonListFilter, WardListFilter)
+
+
 admin.site.register(Person, PersonAdmin)
 admin.site.register(Ward, WardAdmin)
 
@@ -148,6 +153,7 @@ admin.site.register(Department)
 admin.site.register(Company)
 admin.site.register(Employee)
 admin.site.register(ChangeLogging, ChangeLoggingAdmin)
+admin.site.register(Planning, PlanningAdmin)
 admin.site.register(StatusEntry)
 
 

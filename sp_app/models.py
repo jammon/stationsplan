@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import json
-from datetime import date
+from datetime import date, timedelta
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import ugettext as _
@@ -10,6 +10,9 @@ from django.utils.encoding import python_2_unicode_compatible
 
 def date_to_json(date):
     return [date.year, date.month-1, date.day]
+
+FAR_FUTURE = date(2099, 12, 31)
+ONE_DAY = timedelta(days=1)
 
 
 @python_2_unicode_compatible
@@ -168,8 +171,8 @@ class ChangeLogging(models.Model):
     version = models.IntegerField(default=0)
     current_version = 1
 
-    class Meta:
-        ordering = ['day']
+    # class Meta:
+    #     ordering = ['day']
 
     def toJson(self):
         return {
@@ -203,6 +206,102 @@ class ChangeLogging(models.Model):
 
     def __str__(self):
         return self.description
+
+
+def process_change(cl):
+    """ Weave the change into the existing Plannings.
+
+    Return the json dict of the change to be returned to the client.
+    """
+    plannings = Planning.objects.filter(person_id=cl.person_id, ward_id=cl.ward_id)
+    planning_data = dict(person_id=cl.person_id, ward_id=cl.ward_id)
+    if cl.added:
+        if cl.continued:
+            plannings = plannings.filter(end__gte=cl.day).order_by('start')
+            if len(plannings)==0:
+                end = FAR_FUTURE
+            else:
+                next_planning = plannings[0]
+                if cl.day < next_planning.start:
+                    end = next_planning.start - ONE_DAY
+                else:
+                    return {}  # change is in an existing planning
+            Planning.objects.create(start=cl.day, end=end, **planning_data)
+        else:  # not continued, one day
+            plannings = plannings.filter(start__lte=cl.day, end__gte=cl.day)
+            if len(plannings) == 0:
+                Planning.objects.create(start=cl.day, end=cl.day,
+                                        **planning_data)
+            else:
+                return {}  # change is contained in a Planning
+
+    else:  # removed
+        plannings = plannings.filter(start__lte=cl.day, end__gte=cl.day)
+        if len(plannings) == 0:
+            return {}
+        if cl.continued:
+            for pl in plannings:  # should be only one planning
+                if pl.start == cl.day:
+                    pl.delete()
+                else:
+                    pl.end = cl.day - ONE_DAY
+                    pl.save()
+        else:  # not continued, one day
+            for pl in plannings:
+                if pl.start == pl.end:  # pl is one day
+                    pl.delete()
+                elif pl.start == cl.day:  # cut off first day
+                    pl.start = cl.day + ONE_DAY
+                    pl.save()
+                else:
+                    if not pl.end == cl.day:
+                        Planning.objects.create(start=cl.day + ONE_DAY,
+                                                end=pl.end,
+                                                **planning_data)
+                    pl.end = cl.day - ONE_DAY
+                    pl.save()
+
+    return cl.json
+
+
+# @python_2_unicode_compatible
+class Planning(models.Model):
+    """ One time period, where one person is planned for one ward.
+
+    Plannings for the same person and ward should not overlap.
+    The time period includes 'start' and 'end',
+    i.e. a planning for one day has 'start' and 'end' set to the same date.
+    """
+    company = models.ForeignKey(Company)
+    person = models.ForeignKey(Person)
+    ward = models.ForeignKey(Ward)
+    start = models.DateField()
+    end = models.DateField(default=FAR_FUTURE)
+    json = models.CharField(max_length=255)
+    version = models.IntegerField(default=0)
+    current_version = 1
+
+    def toJson(self):
+        return {
+            'person': self.person.shortname,
+            'ward': self.ward.shortname,
+            'start': self.start.strftime('%Y%m%d'),
+            'end': self.end.strftime('%Y%m%d'),
+        }
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.company_id = self.person.company_id
+        self.json = json.dumps(self.toJson())
+        self.version = self.current_version
+        super(Planning, self).save(*args, **kwargs)
+
+    def __str__(self):
+        one_sided = "{0.person.name} ist ab {0.start:%d.%m.%Y} für {0.ward.name} geplant."
+        two_sided = "{0.person.name} ist von {0.start:%d.%m.%Y} bis {0.end:%d.%m.%Y} für {0.ward.name} geplant."
+        if self.end==FAR_FUTURE:
+            return one_sided.format(self)
+        return two_sided.format(self)
 
 
 @python_2_unicode_compatible

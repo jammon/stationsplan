@@ -280,8 +280,11 @@ var Day = Backbone.Model.extend({
             yesterday.on('special-duty-changed', this.calc_persons_display, this);
             this.continue_yesterdays_staffings();
         }
-
-
+    },
+    roster: function(person_id, ward_id) {
+        this.ward_staffings[ward_id].add(persons.get(person_id), {
+            continued: false
+        });
     },
     continue_yesterdays_staffings: function() {
         var date = this.get('date');
@@ -315,22 +318,20 @@ var Day = Backbone.Model.extend({
         if (ward.get('on_leave')) {  // everybody can be on leave
             return persons.models;
         }
-        function get_unavailables (staffing) {
-            if (staffing)
-                staffing.each(function(person) {
-                    unavailable[person.id] = true;
-                });
-        }
-        // yesterdays nightshift
-        if (yesterday) {
-            nightshifts.each(function(ward) {
-                get_unavailables(yesterday.ward_staffings[ward.id]);
+        function get_unavailables (day, wards) {
+            wards.each(function(ward) {
+                var staffing = day.ward_staffings[ward.id];
+                if (staffing) {
+                    staffing.each(function(person) {
+                        unavailable[person.id] = true;
+                    });
+                }
             });
         }
+        // yesterdays nightshift
+        if (yesterday) get_unavailables(yesterday, nightshifts);
         // persons on leave
-        on_leave.each(function(ward) {
-            get_unavailables(this.ward_staffings[ward.id]);
-        }, this);
+        get_unavailables(this, on_leave);
 
         available = persons.filter(function(person) {
             return !unavailable[person.id] &&
@@ -372,6 +373,10 @@ var Day = Backbone.Model.extend({
             ward_staffings[ward.id].calc_displayed(person);
         });
     },
+    apply_planning: function(planning) {
+        if (this.id>=planning.start && this.id<=planning.end)
+            this.roster(planning.person, planning.ward);
+    }
 });
 function padStr(i) {
     return (i < 10) ? "0" + i : i;
@@ -391,7 +396,7 @@ function get_month_id(year, month) {
 
 var days = {};  // Dictionary of Days indexed by their id
 var last_day;  // the last generated day
-var changes;  // Array of changes to be applied
+var plannings;  // Array of plannings to be applied
 
 function days_in_month (month, year) {
     var days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
@@ -420,17 +425,21 @@ function get_month_days(year, month) {
         month_days.push(last_day);
     }
     var month_id = get_month_id(year, month);
-    _.each(changes, function(change) {
-        if (change.day.slice(0, 6)==month_id) {
-            apply_change(change);
+    _.each(plannings, function(planning) {
+        if (planning.start.slice(0, 6)<=month_id &&
+            planning.end.slice(0, 6)>=month_id) {
+            _.each(month_days, function(day) {
+                day.apply_planning(planning);
+            })
         }
     });
     return month_days;
 }
 
-function set_changes(c) {
-    changes = c;
+function set_plannings(p) {
+    plannings = p;
 }
+
 
 function apply_change(change) {
     var changed_day = days[change.day];
@@ -443,7 +452,6 @@ function apply_change(change) {
         }
     }
     // Something went wrong
-    // TODO: This can happen when the first of month is a weekend day
     console.log(change);
 }
 
@@ -471,7 +479,7 @@ return {
     get_month_days: get_month_days,
     get_day_id: get_day_id,
     get_month_id: get_month_id,
-    set_changes: set_changes,
+    set_plannings: set_plannings,
     apply_change: apply_change,
     store_error: store_error,
 };

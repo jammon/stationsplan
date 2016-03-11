@@ -85,13 +85,12 @@
     <script>
       var persons_init = {{ persons|safe }};
       var wards_init = {{ wards|safe }};
-      var past_changes = {{ past_changes|safe }};
-      var changes = {{ changes|safe }};
-      var curr_year = {{ year }};
-      var curr_month = {{ month }} - 1;
-      var can_change = {{ can_change }}==1;
+      var plannings = {{ plannings|safe }};
+      var curr_year = {{ first_of_month|date:'Y' }};
+      var curr_month = {{ first_of_month|date:'n' }} - 1;
+      var can_change = {{ can_change }};
       var ward_selection = '{{ ward_selection }}';
-      main.initialize_site(persons_init, wards_init, past_changes,
-        changes, curr_year, curr_month, can_change, ward_selection);
+      main.initialize_site(persons_init, wards_init, plannings,
+        curr_year, curr_month, can_change, ward_selection);
     </script>
 {% endblock extrascripts %}

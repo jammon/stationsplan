@@ -6,9 +6,8 @@ from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
-from .models import Person, Ward
-from .utils import (get_past_changes, changes_for_month_as_json,
-                    get_first_of_month)
+from .models import Person, Ward, Planning
+from .utils import (get_first_of_month, last_day_of_month, json_array)
 
 
 def home(request):
@@ -22,32 +21,28 @@ def plan(request, month='', ward_selection=''):
     department_ids = request.session.get('department_ids')
     # Get all Persons who worked here in this month
     first_of_month = get_first_of_month(month)
+    last_of_month = last_day_of_month(first_of_month)
     persons = Person.objects.filter(
         start_date__lt=(first_of_month+timedelta(32)).replace(day=1),
         end_date__gte=first_of_month,
         departments__id__in=department_ids
     ).prefetch_related('functions')
-    wards = Ward.objects.filter(
-        departments__id__in=department_ids).values('id', 'json')
+    wards = Ward.objects.filter(departments__id__in=department_ids)
     if ward_selection == 'noncontinued':
         wards = wards.filter(continued=False)
-    wards_ids = [w['id'] for w in wards]
-    wards_json = '[' + ', '.join(w['json'] for w in wards) + ']'
-    name = request.user.get_full_name() or request.user.get_username()
+    wards_ids = [w.id for w in wards]
+    plannings = Planning.objects.filter(
+        ward__id__in=wards_ids,
+        start__lte=last_of_month,
+        end__gte=first_of_month)
     data = {
         'persons': json.dumps([p.toJson() for p in persons]),
-        'wards': wards_json,
-        'past_changes': 
-            json.dumps(get_past_changes(first_of_month, wards_ids)),
-        'changes': changes_for_month_as_json(first_of_month, wards_ids),
-        'year': first_of_month.year,
-        'month': first_of_month.month,
+        'wards': json_array(wards),
+        'plannings': json_array(plannings),
         'user': request.user,
-        'name': name,
-        'can_change': 1 if request.user.has_perm('sp_app.add_changelogging')
-                        else 0,
-        'next_month': (first_of_month + timedelta(32)).strftime('%Y%m'),
-        'month_heading': first_of_month.strftime('%B %Y'),
+        'can_change': 'true' 
+            if request.user.has_perm('sp_app.add_changelogging')
+            else 'false',
         'first_of_month': first_of_month,
         'ward_selection': ward_selection,
     }

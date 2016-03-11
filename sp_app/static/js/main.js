@@ -79,16 +79,15 @@ function display_month_vertical(year, month) {
 }
 
 
-function initialize_site(persons_init, wards_init, past_changes, changes,
-                    curr_year, curr_month, can_change, ward_selection) {
+function initialize_site(persons, wards, plannings, year, month,
+                         can_change, ward_selection) {
 
-    models.initialize_wards(wards_init);
-    models.persons.reset(persons_init);
-    models.set_changes(past_changes.concat(changes));
+    models.initialize_wards(wards);
+    models.persons.reset(persons);
+    models.set_plannings(plannings);
     var month_view = new views.MonthView({
-            year: curr_year,
-            month: curr_month,
-            prev_month_view: month_view,
+            year: year,
+            month: month,
         });
     $(".plans").append(month_view.render().move_to('present').$el);
     // if (ward_selection=='noncontinued') {

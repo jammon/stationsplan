@@ -158,7 +158,7 @@ describe("Day", function() {
             expect(today.ward_staffings.A.length).toBe(0);
             expect(tomorrow.ward_staffings.A.length).toBe(0);
         });
-        describe("combination of previous plannings", function() {
+        describe("combination of previous changes", function() {
             var template = _.template(
                 "'<%= action1 %> <%= cont1 %>' <%= relation %> " +
                 "'<%= action2 %> <%= cont2 %>' <%= change %> '<%= result %>' " +
@@ -312,6 +312,45 @@ describe("Day", function() {
             test_get_day_id(1999, 11, 31, "19991231");
         });
     });
+    describe("apply plannings", function() {
+        it("should apply plannings for the day", function() {
+            var day = new models.Day({
+                date: new Date(2016, 2, 10),
+            });
+            day.apply_planning({ person: 'A', ward: 'A',
+                start: '20160310',
+                end: '20160310',
+            });
+            day.apply_planning({ person: 'A', ward: 'B',
+                start: '20160301',
+                end: '20160320',
+            });
+            day.apply_planning({ person: 'B', ward: 'A',
+                start: '20160301',
+                end: '20160310',
+            });
+            day.apply_planning({ person: 'B', ward: 'B',
+                start: '20160310',
+                end: '20160320',
+            });
+            expect(day.ward_staffings.A.pluck('id')).toEqual(['A', 'B']);
+            expect(day.ward_staffings.B.pluck('id')).toEqual(['A', 'B']);
+        });
+        it("should not apply plannings for other days", function() {
+            var day = new models.Day({
+                date: new Date(2016, 2, 10),
+            });
+            day.apply_planning({ person: 'A', ward: 'A',
+                start: '20160210',
+                end: '20160210',
+            });
+            day.apply_planning({ person: 'B', ward: 'A',
+                start: '20160311',
+                end: '20160320',
+            });
+            expect(day.ward_staffings.A.length).toBe(0);
+        });
+    });
 });
 describe("Person", function() {
     it("should know, if they are available", function() {
@@ -375,18 +414,15 @@ describe("Changes", function() {
         var tomorrow = models.days['20150805'];
         models.apply_change({  // add from today
             person: 'A', ward: 'A',
-            day: '20150804', action: 'add',
-            continued: true,
+            day: '20150804', action: 'add', continued: true,
         });
         models.apply_change({  // remove tomorrow
             person: 'A', ward: 'A',
-            day: '20150805', action: 'remove',
-            continued: true,
+            day: '20150805', action: 'remove', continued: true,
         });
         models.apply_change({  // add from yesterday
             person: 'A', ward: 'A',
-            day: '20150803', action: 'add',
-            continued: true,
+            day: '20150803', action: 'add', continued: true,
         });
         expect(tomorrow.ward_staffings.A.length).toEqual(0);
         expect(tomorrow.persons_duties.A.length).toEqual(0);
@@ -396,18 +432,15 @@ describe("Changes", function() {
         var tomorrow = models.days['20150805'];
         models.apply_change({  // add from tomorrow
             person: 'A', ward: 'A',
-            day: '20150805', action: 'add',
-            continued: true,
+            day: '20150805', action: 'add', continued: true,
         });
         models.apply_change({  // add from yesterday
             person: 'A', ward: 'A',
-            day: '20150803', action: 'add',
-            continued: true,
+            day: '20150803', action: 'add', continued: true,
         });
         models.apply_change({  // remove today
             person: 'A', ward: 'A',
-            day: '20150804', action: 'remove',
-            continued: true,
+            day: '20150804', action: 'remove', continued: true,
         });
         expect(tomorrow.ward_staffings.A.pluck('id')).toEqual(['A']);
         expect(tomorrow.persons_duties.A.pluck('shortname')).toEqual(['A']);

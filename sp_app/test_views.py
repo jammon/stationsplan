@@ -14,7 +14,7 @@ class TestViewsAnonymously(TestCase):
 
     def test_view_redirects_to_login(self):
         c = Client()
-        for url in ('change', 'plan'):
+        for url in ('changes', 'plan'):
             response = c.get(reverse(url))
             self.assertEqual(response.status_code, 302, msg=url)
             response = c.get(reverse(url), follow=True)
@@ -41,14 +41,6 @@ class TestChangeMore(PopulatedTestCase):
         self.employee = Employee.objects.create(
             user=self.user, company=self.company)
         self.employee.departments.add(self.department)
-        self.person_a = Person.objects.create(
-            name="Person A", shortname="A", company=self.company)
-        self.person_b = Person.objects.create(
-            name="Person B", shortname="B", company=self.company)
-        self.person_a.departments.add(self.department)
-        self.person_b.departments.add(self.department)
-        self.person_a.functions.add(self.ward_a, self.ward_b)
-        self.person_b.functions.add(self.ward_a, self.ward_b)
 
     def test_with_valid_data(self):
         data = {'day': '20160120',
