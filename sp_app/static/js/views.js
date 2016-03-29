@@ -115,7 +115,10 @@ var MonthView = Backbone.View.extend({
     },
     move_to: function(direction) {
     // direction should be 'past', 'present' or 'future'
-        this.el.dataset.time = direction;
+        if (this.time)
+            this.$el.removeClass(this.time);
+        this.time = direction;
+        this.$el.addClass(direction);
         return this;
     },
     next_month: function() {

@@ -8,13 +8,13 @@
     position: absolute;
     transition: all 0.5s ease;
 }
-.month_plan[data-time=past] {
+.month_plan.past {
     transform: translate(-150%, 0);
 }
-.month_plan[data-time=present] {
+.month_plan.present {
     transform: translate(0, 0);
 }
-.month_plan[data-time=future] {
+.month_plan.future {
     transform: translate(150%, 0);
 }
 .horizontal .free-day {
