@@ -208,14 +208,15 @@ class ChangeLogging(models.Model):
 def process_change(cl):
     """ Weave the change into the existing Plannings.
 
-    Return the json dict of the change to be returned to the client.
+    Return the json dict of the effective change to be returned to the client.
     """
-    plannings = Planning.objects.filter(person_id=cl.person_id, ward_id=cl.ward_id)
+    plannings = Planning.objects.filter(person_id=cl.person_id,
+                                        ward_id=cl.ward_id)
     planning_data = dict(person_id=cl.person_id, ward_id=cl.ward_id)
     if cl.added:
         if cl.continued:
             plannings = plannings.filter(end__gte=cl.day).order_by('start')
-            if len(plannings)==0:
+            if len(plannings) == 0:
                 end = FAR_FUTURE
             else:
                 next_planning = plannings[0]
@@ -296,7 +297,7 @@ class Planning(models.Model):
     def __str__(self):
         one_sided = "{0.person.name} ist ab {0.start:%d.%m.%Y} für {0.ward.name} geplant."
         two_sided = "{0.person.name} ist von {0.start:%d.%m.%Y} bis {0.end:%d.%m.%Y} für {0.ward.name} geplant."
-        if self.end==FAR_FUTURE:
+        if self.end == FAR_FUTURE:
             return one_sided.format(self)
         return two_sided.format(self)
 
