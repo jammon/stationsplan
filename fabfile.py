@@ -31,7 +31,7 @@ def server_pull(branch='master'):
 
 def staticfiles():
     with cd(code_dir):
-        run("source ~/priv/venv/bin/activate && ./manage.py collectstatic")
+        run("source ~/priv/venv/bin/activate && ./manage.py collectstatic --noinput")
 
 
 def migrate():
