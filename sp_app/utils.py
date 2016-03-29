@@ -1,8 +1,12 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
 from datetime import timedelta, datetime, date
+from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.test import TestCase
-from .models import Ward, Person, Company, Department
+from .models import (Ward, Person, Company, Department, ChangeLogging,
+                     process_change)
 
 
 def json_array(data):
@@ -28,9 +32,43 @@ def last_day_of_month(date):
             else date.replace(month=date.month+1, day=1) - timedelta(days=1))
 
 
-def get_for_company(klass, request, **kwargs):
+def get_for_company(klass, request=None, company_id='', **kwargs):
+    if request is None:
+        return get_object_or_404(
+            klass, company__id=company_id, **kwargs)
     return get_object_or_404(
         klass, company__id=request.session['company_id'], **kwargs)
+
+
+def apply_changes(user, company_id, day, ward, continued, persons):
+    """ Apply changes for this day and ward.
+    Return a list of dicts of effective changes to be returned to the client
+    'persons' is a list of dicts like
+    {'id': <shortname>,
+     'action': ‘add'|'remove'}
+    """
+    ward = get_for_company(Ward, company_id=company_id, shortname=ward)
+    assert ward is not None
+    known_persons = {
+        person.shortname: person for person in Person.objects.filter(
+            company__id=company_id,
+            shortname__in=(p['id'] for p in persons))}
+    cls = []
+    for p in persons:
+        assert p['id'] in known_persons, \
+            "%s is not in the persons database" % p['id']
+        cl = ChangeLogging.objects.create(
+                company_id=company_id,
+                user=user,
+                person=known_persons[p['id']],
+                ward=ward,
+                day=datetime.strptime(day, '%Y%m%d').date(),
+                added=p['action'] == 'add',
+                continued=continued)
+        cl_dict = process_change(cl)
+        if cl_dict:
+            cls.append(cl_dict)
+    return cls
 
 
 class PopulatedTestCase(TestCase):
@@ -59,3 +97,4 @@ class PopulatedTestCase(TestCase):
         self.person_b.departments.add(self.department)
         self.person_a.functions.add(self.ward_a, self.ward_b)
         self.person_b.functions.add(self.ward_a, self.ward_b)
+        self.user = User.objects.create(username='Mr. User', password='123456')

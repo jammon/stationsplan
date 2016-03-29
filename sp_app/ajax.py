@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.http import (HttpResponseNotAllowed, JsonResponse)
 
 import json
 
-from .models import Person, Ward, ChangeLogging, process_change
-from .utils import get_for_company
+from .utils import apply_changes
 
 
 @login_required
@@ -32,29 +30,6 @@ def changes(request):
     """
     if request.method != 'POST':
         return HttpResponseNotAllowed(['POST'])
-    company_id = request.session['company_id']
     data = json.loads(request.body)
-    day = datetime.strptime(data['day'], '%Y%m%d').date()
-    ward = get_for_company(Ward, request, shortname=data['ward'])
-    persons = {person.shortname: person
-               for person in Person.objects.filter(
-                    company__id=company_id,
-                    shortname__in=(p['id'] for p in data['persons']))}
-    for p in data['persons']:
-        if p['id'] not in persons:
-            return JsonResponse({'error': "Person not found",
-                                 'person': p['id']})
-    cls = []
-    for p in data['persons']:
-        cl = ChangeLogging.objects.create(
-                company_id=company_id,
-                user=request.user,
-                person=persons[p['id']],
-                ward=ward,
-                day=day,
-                added=p['action'] == 'add',
-                continued=data['continued'])
-        cls.append(process_change(cl))
-    return JsonResponse([c for c in cls if c], safe=False)
-
-
+    cls = apply_changes(request.user, request.session['company_id'], **data)
+    return JsonResponse(cls, safe=False)
