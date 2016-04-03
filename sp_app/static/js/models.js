@@ -28,6 +28,9 @@ function is_free(date) {
 }
 
 
+var default_start_for_person = [2015, 0, 1];
+var default_end_for_person = [2099, 11, 31];
+
 // A person has a
 //     - name
 //     - id    = short form of the name
@@ -114,7 +117,7 @@ function initialize_wards (wards_init) {
     nightshifts.reset(wards.where({'nightshift': true}));
     on_leave.reset(wards.where({'on_leave': true}));
     special_duties.reset(wards.filter(function(ward) {
-        return ward.get('after_this')!==undefined;
+        return ward.get('after_this') !== void 0;
     }));
 }
 
@@ -125,6 +128,7 @@ function initialize_wards (wards_init) {
 //     - day
 var Staffing = Backbone.Collection.extend({
     model: Person,
+    comparator: 'name',
     initialize: function(models, options) {
         this.day = options.day;
         this.ward = options.ward;
@@ -135,7 +139,6 @@ var Staffing = Backbone.Collection.extend({
         this.on({
             'add': this.day.person_added,
             'remove': this.day.person_removed }, this.day);
-        this.comparator = 'name';
         this.no_staffing = !this.needs_staffing();
         this.added_today = [];  // holds the ids of the persons added on this day
         // so that a continued "remove" change on a *previous* day
@@ -260,6 +263,7 @@ var Day = Backbone.Model.extend({
     initialize: function() {
         var yesterday = this.get('yesterday');
         this.id = get_day_id(this.get('date'));
+        this.set({'id': this.id});
 
         var ward_staffings = this.ward_staffings = {};
         this.persons_duties = {};
@@ -280,11 +284,6 @@ var Day = Backbone.Model.extend({
             yesterday.on('special-duty-changed', this.calc_persons_display, this);
             this.continue_yesterdays_staffings();
         }
-    },
-    roster: function(person_id, ward_id) {
-        this.ward_staffings[ward_id].add(persons.get(person_id), {
-            continued: false
-        });
     },
     continue_yesterdays_staffings: function() {
         var date = this.get('date');
@@ -362,7 +361,7 @@ var Day = Backbone.Model.extend({
         if (ward.get('nightshift')) {
             this.trigger('nightshift-changed', person, action);
         }
-        if (ward.get('after_this')!==undefined) {
+        if (ward.get('after_this') !== void 0) {
             this.trigger('special-duty-changed', person, ward, action);
         }
         this.persons_duties[person.id].calc_displayed();
@@ -373,66 +372,94 @@ var Day = Backbone.Model.extend({
             ward_staffings[ward.id].calc_displayed(person);
         });
     },
-    apply_planning: function(planning) {
-        if (this.id>=planning.start && this.id<=planning.end)
-            this.roster(planning.person, planning.ward);
-    }
+    apply_planning: function(pl) {
+        if (this.id>=pl.start && this.id<=pl.end) {
+            this.ward_staffings[pl.ward].add(persons.get(pl.person), {
+                continued: false
+            });
+            return true;
+        }
+        return false;
+    },
+    get_next_day: function() {
+        var date = this.get('date');
+        var next_day = days.add({
+            date: new Date(date.getFullYear(), date.getMonth(), date.getDate()+1),
+            yesterday: this
+        });
+        // remove all plannings, that have ended
+        current_plannings = _.filter(current_plannings, function(planning) {
+            if (planning.end<next_day.id) {
+                next_day.ward_staffings[planning.ward].remove(
+                    persons.get(planning.person));
+                return false;
+            }
+            return true;
+        });
+        // add all plannings, that start on this day
+        _.each(plannings, function(planning) {
+            if (planning.start==next_day.id) {
+                next_day.apply_planning(planning);
+                current_plannings.push(planning);
+            }
+        });
+        return next_day;
+    },
 });
-function padStr(i) {
-    return (i < 10) ? "0" + i : i;
-}
-function get_day_id (date_or_year, month, day) {
-    if (month===undefined) {
-        return "" + date_or_year.getFullYear() +
-                    padStr(1 + date_or_year.getMonth()) +
-                    padStr(date_or_year.getDate());
-    } else {
-        return "" + date_or_year + padStr(1 + month) + padStr(day);
-    }
-}
-function get_month_id(year, month) {
-    return "" + year + padStr(1 + month);
-}
 
-var days = {};  // Dictionary of Days indexed by their id
-var last_day;  // the last generated day
 var plannings;  // Array of plannings to be applied
+var current_plannings = [];
 
-function days_in_month (month, year) {
-    var days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    return (month == 1) ? (year % 4 ? 28 : 29) : days[month];
+var Days = Backbone.Collection.extend({
+    model: Day,
+    get_day: function(year, month, day) {
+        var result, day_id;
+        if (this.length===0) {
+            // Start day chain
+            result = this.add({ date: new Date(year, month, day) });
+            // Start application of the plannings
+            current_plannings = _.filter(plannings, result.apply_planning, result);
+            return result;
+        }
+        // Retrieve result, if it exists already
+        day_id = get_day_id(year, month, day);
+        result = this.get(day_id);
+        if (result) 
+            return result;
+        // Build new days 
+        result = this.last();
+        if (day_id < result.id) {
+            // requested day is before the start of the day chain
+            // should not happen
+            return void 0;
+        }
+        while (result.id < day_id) {
+            result = result.get_next_day();
+        }
+        return result;
+    },    
+});
+
+var days = new Days();
+
+function get_day_id (date_or_year, month, day) {
+    var date = (month === void 0) ? date_or_year :
+                                     new Date(date_or_year, month, day);
+    return "" + (date.getFullYear()*10000 +
+                 (date.getMonth()+1)*100 +
+                 date.getDate());
 }
+
 
 // Returns Array with the Days of the current month
 // This should only be called in sequence
 function get_month_days(year, month) {
-    var d_i_m = days_in_month(month, year);
     var month_days = [];
-    if (last_day) {
-        var l_date = last_day.get('date');
-        if (month>0 ?
-            (year!=l_date.getFullYear() || month!=l_date.getMonth()+1) :
-            (year!=l_date.getFullYear()+1 || 11!=l_date.getMonth()))
-            throw new Error('get_month_days should only be called in sequence');
-    }
-    for (var i = 0; i < d_i_m; i++) {
-        // last_day is undefined or the last generated day
-        last_day = new models.Day({
-            date: new Date(year, month, i+1),
-            yesterday: last_day,
-        });
-        days[last_day.id] = last_day;
-        month_days.push(last_day);
-    }
-    var month_id = get_month_id(year, month);
-    _.each(plannings, function(planning) {
-        if (planning.start.slice(0, 6)<=month_id &&
-            planning.end.slice(0, 6)>=month_id) {
-            _.each(month_days, function(day) {
-                day.apply_planning(planning);
-            })
-        }
-    });
+    var next_day = days.get_day(year, month, 1);
+    do {
+        month_days.push(next_day);
+        next_day = next_day.get_next_day();
+    } while (next_day.get('date').getMonth()===month);
     return month_days;
 }
 
@@ -442,7 +469,7 @@ function set_plannings(p) {
 
 
 function apply_change(change) {
-    var changed_day = days[change.day];
+    var changed_day = days.get(change.day);
     var staffing;
     if (changed_day) {
         staffing = changed_day.ward_staffings[change.ward];
@@ -457,6 +484,16 @@ function apply_change(change) {
 
 function store_error(error, type) {
     $('#log').append($('<p/>', { text: error, 'class': type }));
+}
+
+function reset_data() {
+    // for testing
+    persons.reset(null);
+    wards.reset(null);
+    nightshifts.reset(null);
+    on_leave.reset(null);
+    special_duties.reset(null);
+    days.reset();
 }
 
 return {
@@ -475,12 +512,12 @@ return {
     Duties: Duties,
     Day: Day,
     days: days,
-    days_in_month: days_in_month,
     get_month_days: get_month_days,
     get_day_id: get_day_id,
-    get_month_id: get_month_id,
+    // get_day: get_day,
     set_plannings: set_plannings,
     apply_change: apply_change,
     store_error: store_error,
+    reset_data: reset_data,
 };
 })($, _, Backbone);

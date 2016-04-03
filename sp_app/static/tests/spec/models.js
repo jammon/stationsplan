@@ -39,9 +39,10 @@ describe("Person", function() {
 describe("Day", function() {
     it("should be initialized properly", function() {
         var today = new models.Day({ date: new Date(2015, 7, 7) });
-        expect(today.persons_duties).not.toEqual(undefined);
+        expect(today.id).toEqual('20150807');
+        expect(today.persons_duties).toBeDefined();
         expect(today.persons_duties.A.length).toBe(0);
-        expect(today.ward_staffings).not.toEqual(undefined);
+        expect(today.ward_staffings).toBeDefined();
         expect(today.ward_staffings.A.length).toBe(0);
     });
     describe("check availability:", function() {
@@ -318,30 +319,21 @@ describe("Day", function() {
             expect(tdat.persons_duties.B.length).toBe(0);
         });
     });
-    describe("calculating the id of the day", function() {
-        it("should calculate usual date to an id", function() {
-            function test_get_day_id(year, month, day, id) {
-                expect(models.get_day_id(year, month, day)).toBe(id);
-                expect(models.get_day_id(new Date(year, month, day))).toBe(id);
-            }
-            test_get_day_id(2015, 0, 1, "20150101");
-            test_get_day_id(2015, 7, 30, "20150830");
-            test_get_day_id(2015, 11, 31, "20151231");
-            test_get_day_id(1999, 11, 31, "19991231");
+    describe("get_day and Day.get_next_day", function() {
+        it("should start the day chain", function() {
+            expect(models.days.length).toBe(0);
+            var day = models.days.get_day(2016, 2, 24);
+            expect(day).toBeDefined();
+            expect(models.days.get('20160324')).toEqual(day);
+            var next_day = day.get_next_day();
+            expect(models.days.get('20160325')).toEqual(next_day);
+            var future_day = models.days.get_day(2016, 2, 27);
+            models.days.get('20160326').get('yesterday').marker = 'testmarker';
+            expect(next_day.marker).toEqual('testmarker');
+            // Why does this fail?
+            expect(models.days.get('20160326').get('yesterday')).toBe(next_day);
         });
     });
-    // describe("get_day and Day.get_next_day", function() {
-    //     it("should start the day chain", function() {
-    //         expect(_.isEmpty(models.days)).toBeTruthy();
-    //         var day = models.get_day(2016, 2, 24);
-    //         expect(day).not.toBe(undefined);
-    //         expect(models.days['20160324']).toEqual(day);
-    //         var next_day = day.get_next_day();
-    //         expect(models.days['20160325']).toEqual(next_day);
-    //         models.get_day(2016, 2, 27);
-    //         expect(models.days['20160326'].get('yesterday')).toEqual(next_day);
-    //     });
-    // });
     describe("apply plannings", function() {
         it("should apply plannings for the day", function() {
             var day = new models.Day({
@@ -382,6 +374,35 @@ describe("Day", function() {
         });
     });
 });
+describe("get_month_days", function() {
+    beforeEach(function() {
+        models.days.reset();
+    });
+    afterEach(function() {
+        models.days.reset();
+    });
+    it("should return the right days", function() {
+        expect(models.days.length).toBe(0);
+        month_days = models.get_month_days(2016, 3);
+        expect(month_days.length).toBe(30);
+        expect(models.days.length).toBe(31);
+        expect(month_days[0].id).toEqual('20160401');
+        expect(month_days[29].id).toEqual('20160430');
+        expect(models.days.get('20160501')).toBeDefined();
+    });
+});
+describe("calculating the id of the day (get_day_id)", function() {
+    it("should calculate usual date to an id", function() {
+        function test_get_day_id(year, month, day, id) {
+            expect(models.get_day_id(year, month, day)).toBe(id);
+            expect(models.get_day_id(new Date(year, month, day))).toBe(id);
+        }
+        test_get_day_id(2015, 0, 1, "20150101");
+        test_get_day_id(2015, 7, 30, "20150830");
+        test_get_day_id(2015, 11, 31, "20151231");
+        test_get_day_id(1999, 11, 31, "19991231");
+    });
+});
 describe("Person", function() {
     it("should know, if they are available", function() {
         var p1 = new models.Person({
@@ -410,22 +431,18 @@ describe("Person", function() {
 });
 describe("Changes", function() {
     beforeEach(function() {
-        var last_day = models.days['20150803'] = new models.Day({
-            date: new Date(2015, 7, 3),
-        });
-        last_day = models.days['20150804'] = new models.Day({
-            date: new Date(2015, 7, 4),
-            yesterday: last_day,
-        });
-        last_day = models.days['20150805'] = new models.Day({
-            date: new Date(2015, 7, 5),
-            yesterday: last_day,
-        });
+        // initialize August 3 through 5
+        models.days.reset();
+        models.days.get_day(2015, 7, 3);
+        models.days.get_day(2015, 7, 5);
+    });
+    afterEach(function() {
+        models.days.reset();
     });
     it("should apply changes", function() {
-        var yesterday = models.days['20150803'];
-        var today = models.days['20150804'];
-        var tomorrow = models.days['20150805'];
+        var yesterday = models.days.get('20150803');
+        var today = models.days.get('20150804');
+        var tomorrow = models.days.get('20150805');
         models.apply_change({
             person: 'A', ward: 'A',
             day: '20150804', action: 'add',
@@ -441,7 +458,7 @@ describe("Changes", function() {
     });
     it("should preserve a later planning, " +
         "if a previous duty is started", function() {
-        var tomorrow = models.days['20150805'];
+        var tomorrow = models.days.get('20150805');
         models.apply_change({  // add from today
             person: 'A', ward: 'A',
             day: '20150804', action: 'add', continued: true,
@@ -459,7 +476,7 @@ describe("Changes", function() {
     });
     it("should preserve a later planning, " +
         "if a previous duty ends", function() {
-        var tomorrow = models.days['20150805'];
+        var tomorrow = models.days.get('20150805');
         models.apply_change({  // add from tomorrow
             person: 'A', ward: 'A',
             day: '20150805', action: 'add', continued: true,
