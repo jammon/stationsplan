@@ -89,7 +89,7 @@ class TestApplyChanges(PopulatedTestCase):
                             continued=continued, persons=persons)
         self.assertEqual(len(cls), 1)
         self.assertEqual(
-            json.loads(cls[0]),
+            cls[0],
             {"person": "A", "ward": "A",
              "action": "add", "continued": True, "day": "20160328"})
 
@@ -103,11 +103,11 @@ class TestApplyChanges(PopulatedTestCase):
                             continued=continued, persons=persons)
         self.assertEqual(len(cls), 2)
         self.assertEqual(
-            json.loads(cls[0]),
+            cls[0],
             {"person": "A", "ward": "A",
              "action": "add", "continued": True, "day": "20160328"})
         self.assertEqual(
-            json.loads(cls[1]),
+            cls[1],
             {"person": "B", "ward": "A",
              "action": "add", "continued": True, "day": "20160328"})
 
@@ -123,6 +123,6 @@ class TestApplyChanges(PopulatedTestCase):
                             continued=continued, persons=persons)
         self.assertEqual(len(cls), 1)
         self.assertEqual(
-            json.loads(cls[0]),
+            cls[0],
             {"person": "A", "ward": "A",
              "action": "add", "continued": True, "day": "20160328"})

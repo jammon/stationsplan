@@ -197,7 +197,7 @@ class ChangeLogging(models.Model):
         self.description = template.format(
             user_name=self.user.last_name or self.user.get_username(),
             self=self,
-            relation='ab' if self.ward.continued else 'am',
+            relation='ab' if self.continued else 'am',
             date=self.day.strftime('%d.%m.%Y'),
             added='' if self.added else 'nicht mehr ')
 
@@ -259,7 +259,7 @@ def process_change(cl):
                     pl.end = cl.day - ONE_DAY
                     pl.save()
 
-    return cl.json
+    return json.loads(cl.json)
 
 
 @python_2_unicode_compatible
@@ -295,8 +295,10 @@ class Planning(models.Model):
         super(Planning, self).save(*args, **kwargs)
 
     def __str__(self):
-        one_sided = "{0.person.name} ist ab {0.start:%d.%m.%Y} für {0.ward.name} geplant."
-        two_sided = "{0.person.name} ist von {0.start:%d.%m.%Y} bis {0.end:%d.%m.%Y} für {0.ward.name} geplant."
+        one_sided = ("{0.person.name} ist ab {0.start:%d.%m.%Y} "
+                     "für {0.ward.name} geplant.")
+        two_sided = ("{0.person.name} ist von {0.start:%d.%m.%Y} bis "
+                     "{0.end:%d.%m.%Y} für {0.ward.name} geplant.")
         if self.end == FAR_FUTURE:
             return one_sided.format(self)
         return two_sided.format(self)

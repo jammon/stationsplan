@@ -7,7 +7,7 @@ from django.contrib.auth.models import User, Permission
 import json
 
 from .utils import PopulatedTestCase
-from .models import Employee, Person, ChangeLogging
+from .models import Employee, ChangeLogging, Planning
 
 
 class TestViewsAnonymously(TestCase):
@@ -26,7 +26,48 @@ class TestViewsAnonymously(TestCase):
 
     def test_status_post(self):
         c = Client()
-        self.assertEqual(c.post('/change/', {}).status_code, 404)
+        response = c.post(reverse('changes'), {})
+        self.assertEqual(response.status_code, 302)
+
+
+class TestPlan(PopulatedTestCase):
+
+    def setUp(self):
+        super(TestPlan, self).setUp()
+        self.user = User.objects.create_user(
+            'user', 'user@domain.tld', 'password')
+        self.employee = Employee.objects.create(
+            user=self.user, company=self.company)
+        self.employee.departments.add(self.department)
+
+    def test_plan(self):
+        month = '201604'
+        for start, end in (
+                (date(2016, 1, 1), date(2016, 3, 31)),
+                (date(2016, 1, 1), date(2016, 4, 15)),
+                (date(2016, 1, 1), date(2016, 5, 31)),
+                (date(2016, 4, 1), date(2016, 4, 30)),
+                (date(2016, 4, 1), date(2016, 5, 31)),
+                (date(2016, 5, 1), date(2016, 5, 31)),
+                ):
+            Planning.objects.create(
+                company=self.company, person=self.person_a,
+                ward=self.ward_a, start=start, end=end)
+        self.client.login(username='user', password='password')
+        response = self.client.get(reverse('plan'), args=[month])
+        self.assertEqual(response.status_code, 200)
+        plannings = json.loads(response.context['plannings'])
+        for value, expected in zip(plannings, (
+                {'start': '20160101', 'end': '20160415'},
+                {'start': '20160101', 'end': '20160531'},
+                {'start': '20160401', 'end': '20160430'},
+                {'start': '20160401', 'end': '20160531'},
+                {'start': '20160501', 'end': '20160531'},
+                )):
+            self.assertEqual(value['person'], 'A')
+            self.assertEqual(value['ward'], 'A')
+            self.assertEqual(value['start'], expected['start'])
+            self.assertEqual(value['end'], expected['end'])
 
 
 class TestChangeMore(PopulatedTestCase):

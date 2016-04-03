@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from .models import Person, Ward, Planning
-from .utils import (get_first_of_month, last_day_of_month, json_array)
+from .utils import (get_first_of_month, json_array)
 
 
 def home(request):
@@ -21,7 +21,6 @@ def plan(request, month='', ward_selection=''):
     department_ids = request.session.get('department_ids')
     # Get all Persons who worked here in this month
     first_of_month = get_first_of_month(month)
-    last_of_month = last_day_of_month(first_of_month)
     persons = Person.objects.filter(
         start_date__lt=(first_of_month+timedelta(32)).replace(day=1),
         end_date__gte=first_of_month,
@@ -30,10 +29,9 @@ def plan(request, month='', ward_selection=''):
     wards = Ward.objects.filter(departments__id__in=department_ids)
     if ward_selection == 'noncontinued':
         wards = wards.filter(continued=False)
-    wards_ids = [w.id for w in wards]
+    # wards_ids = [w.id for w in wards]
     plannings = Planning.objects.filter(
-        ward__id__in=wards_ids,
-        start__lte=last_of_month,
+        ward__in=wards,
         end__gte=first_of_month)
     data = {
         'persons': json.dumps([p.toJson() for p in persons]),
