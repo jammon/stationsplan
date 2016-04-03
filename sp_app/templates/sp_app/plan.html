@@ -59,6 +59,28 @@
     <table class="plan"></table>
   </div>
 </script>
+
+<!-- Template for the table of on-call services
+-->
+<script type="text/template" id="on-call-table">
+  <h2 class="on-call-heading">
+    <%= month_name %> <%= year %>
+    <span class="btn-group" role="group">
+      <a class="btn btn-default prev-month" aria-label="Voriger Monat"
+        title="Voriger Monat">
+        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+      </a>
+      <a class="btn btn-default next-month" aria-label="Nächster Monat"
+        title="Nächster Monat">
+        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+      </a>
+    </span>
+  </h2>
+  <div class="inner">
+    <table class="plan"></table>
+  </div>
+</script>
+
     <!-- Template for the change person line
       Parameters:
       action - 'add' or 'remove'

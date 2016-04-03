@@ -90,9 +90,7 @@ var MonthView = Backbone.View.extend({
                 var collection = day[model.collection_array][model.id];
                 var view;
                 if (collection) {
-                    view = new model.row_view({
-                        collection: collection,
-                    });
+                    view = new model.row_view({ collection: collection });
                     row.append(view.render().$el);
                 } else {
                     row.append('<td></td>');
@@ -135,7 +133,7 @@ var MonthView = Backbone.View.extend({
                 month: month,
                 prev_month_view: this,
             });
-            this.next_month_view.render().move_to('future')
+            this.next_month_view.render().move_to('future');
             $(".plans").append(this.next_month_view.$el);
         }
         this.move_to('past').next_month_view.move_to('present');
@@ -145,6 +143,57 @@ var MonthView = Backbone.View.extend({
             this.move_to('future').prev_month_view.move_to('present');
     },
 });
+
+var OnCallView = MonthView.extend({
+    className: 'on_call_plan',
+    template: _.template($('#on-call-table').html()),
+    render: function() {
+        this.$el.html(this.template({
+            month_name: month_names[this.month],
+            year: this.year,
+        }));
+        var table = this.$(".plan");
+        var tasks = models.wards.filter(function(ward) {
+            return !ward.get('continued');
+        });
+        var titlerow = $('<tr/>', {'class': 'titlerow'}).append($('<th/>'));
+        _.each(tasks, function(task) {
+            titlerow.append($('<th/>', {text: task.get('name')}));
+        });
+        table.append(titlerow);
+
+        var that = this;
+        // Construct rows for every day
+        function construct_row(model) {
+            var row = $('<tr/>', {'class': model.row_class()});
+            row.append($('<th/>', { text: model.get('name')}));
+            _.each(that.month_days, function(day) {
+                var collection = day[model.collection_array][model.id];
+                var view;
+                if (collection) {
+                    view = new model.row_view({ collection: collection });
+                    row.append(view.render().$el);
+                } else {
+                    row.append('<td></td>');
+                }
+            });
+            return row;
+        }
+        // first the wards
+        models.wards.each(function(ward) {
+            table.append(construct_row(ward));
+        });
+        // then the persons
+        models.persons.each(function(person) {
+            table.append(construct_row(person));
+        });
+        if (!this.prev_month_view) this.$('.prev-month').hide();
+        this.$('.loading-message').hide();
+        $(".plans").append(this.$el);
+        return this;
+    },
+});
+
 
 function datestr(date) {
     return date.getDate()+'.'+(date.getMonth()+1)+'.'+date.getFullYear();
@@ -169,6 +218,7 @@ var ChangeStaffView = Backbone.View.extend({
             type: "POST",
             url: '/changes', 
             data: JSON.stringify(data),
+            dataType: "json",
             error: function(jqXHR, textStatus, errorThrown) {
                 models.store_error(textStatus, 'error');
             },
