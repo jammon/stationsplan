@@ -26,14 +26,29 @@ describe("Initializing data", function() {
 });
 describe("Person", function() {
     it("should calculate availability", function() {
-        var person = new models.Person({
+        var person_a = new models.Person({
             start_date: [2016, 2, 1],
             end_date: [2016, 2, 31],
         });
-        expect(person.is_available(new Date(2016, 1, 29))).toBe(false);
-        expect(person.is_available(new Date(2016, 2, 1))).toBe(true);
-        expect(person.is_available(new Date(2016, 2, 31))).toBe(true);
-        expect(person.is_available(new Date(2016, 3, 1))).toBe(false);
+        expect(person_a.is_available(new Date(2016, 1, 29))).toBe(false);
+        expect(person_a.is_available(new Date(2016, 2, 1))).toBe(true);
+        expect(person_a.is_available(new Date(2016, 2, 31))).toBe(true);
+        expect(person_a.is_available(new Date(2016, 3, 1))).toBe(false);
+        var person_b = new models.Person({ start_date: [2016, 2, 1] });
+        expect(person_b.is_available(new Date(2016, 1, 29))).toBe(false);
+        expect(person_b.is_available(new Date(2016, 2, 1))).toBe(true);
+        expect(person_b.is_available(new Date(2016, 2, 31))).toBe(true);
+        expect(person_b.is_available(new Date(2016, 3, 1))).toBe(true);
+        var person_c = new models.Person({ end_date: [2016, 2, 31] });
+        expect(person_c.is_available(new Date(2016, 1, 29))).toBe(true);
+        expect(person_c.is_available(new Date(2016, 2, 1))).toBe(true);
+        expect(person_c.is_available(new Date(2016, 2, 31))).toBe(true);
+        expect(person_c.is_available(new Date(2016, 3, 1))).toBe(false);
+        var person_d = new models.Person();
+        expect(person_d.is_available(new Date(2016, 1, 29))).toBe(true);
+        expect(person_d.is_available(new Date(2016, 2, 1))).toBe(true);
+        expect(person_d.is_available(new Date(2016, 2, 31))).toBe(true);
+        expect(person_d.is_available(new Date(2016, 3, 1))).toBe(true);
     });
 });
 describe("Day", function() {
