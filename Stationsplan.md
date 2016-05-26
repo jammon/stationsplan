@@ -76,6 +76,7 @@ Können alles was Department Leader können auf Company-Ebene.
 - Dienstwünsche eingeben, für jede Person müsste ein User erstellt werden (z.B. 'amm-bot')
 - Markierung für fehlende Personen fixen
 - wann ist collection.no_staffing und wann ist collection===undefined?
+- Ward.continued sollte rein deklarativ sein und keine Auswirkung auf das Verhalten haben.
 
 ## Done
 - Es soll in /plan immer das Department des Users dargestellt werden

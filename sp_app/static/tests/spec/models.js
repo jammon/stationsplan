@@ -26,29 +26,33 @@ describe("Initializing data", function() {
 });
 describe("Person", function() {
     it("should calculate availability", function() {
-        var person_a = new models.Person({
+        var before = new Date(2016, 1, 29);
+        var firstday = new Date(2016, 2, 1);
+        var lastday = new Date(2016, 2, 31);
+        var after = new Date(2016, 3, 1);
+        var person = new models.Person({
             start_date: [2016, 2, 1],
             end_date: [2016, 2, 31],
         });
-        expect(person_a.is_available(new Date(2016, 1, 29))).toBe(false);
-        expect(person_a.is_available(new Date(2016, 2, 1))).toBe(true);
-        expect(person_a.is_available(new Date(2016, 2, 31))).toBe(true);
-        expect(person_a.is_available(new Date(2016, 3, 1))).toBe(false);
-        var person_b = new models.Person({ start_date: [2016, 2, 1] });
-        expect(person_b.is_available(new Date(2016, 1, 29))).toBe(false);
-        expect(person_b.is_available(new Date(2016, 2, 1))).toBe(true);
-        expect(person_b.is_available(new Date(2016, 2, 31))).toBe(true);
-        expect(person_b.is_available(new Date(2016, 3, 1))).toBe(true);
-        var person_c = new models.Person({ end_date: [2016, 2, 31] });
-        expect(person_c.is_available(new Date(2016, 1, 29))).toBe(true);
-        expect(person_c.is_available(new Date(2016, 2, 1))).toBe(true);
-        expect(person_c.is_available(new Date(2016, 2, 31))).toBe(true);
-        expect(person_c.is_available(new Date(2016, 3, 1))).toBe(false);
-        var person_d = new models.Person();
-        expect(person_d.is_available(new Date(2016, 1, 29))).toBe(true);
-        expect(person_d.is_available(new Date(2016, 2, 1))).toBe(true);
-        expect(person_d.is_available(new Date(2016, 2, 31))).toBe(true);
-        expect(person_d.is_available(new Date(2016, 3, 1))).toBe(true);
+        expect(person.is_available(before  )).toBe(false);
+        expect(person.is_available(firstday)).toBe(true);
+        expect(person.is_available(lastday )).toBe(true);
+        expect(person.is_available(after   )).toBe(false);
+        person = new models.Person({ start_date: [2016, 2, 1] });
+        expect(person.is_available(before  )).toBe(false);
+        expect(person.is_available(firstday)).toBe(true);
+        expect(person.is_available(lastday )).toBe(true);
+        expect(person.is_available(after   )).toBe(true);
+        person = new models.Person({ end_date: [2016, 2, 31] });
+        expect(person.is_available(before  )).toBe(true);
+        expect(person.is_available(firstday)).toBe(true);
+        expect(person.is_available(lastday )).toBe(true);
+        expect(person.is_available(after   )).toBe(false);
+        person = new models.Person();
+        expect(person.is_available(before  )).toBe(true);
+        expect(person.is_available(firstday)).toBe(true);
+        expect(person.is_available(lastday )).toBe(true);
+        expect(person.is_available(after   )).toBe(true);
     });
 });
 describe("Day", function() {
@@ -183,6 +187,9 @@ describe("Day", function() {
             today.ward_staffings.A.remove(person_a, {continued: true});
             expect(today.ward_staffings.A.length).toBe(0);
             expect(tomorrow.ward_staffings.A.length).toBe(0);
+            // same thing for non-continued ward
+            yesterday.ward_staffings.O.add(person_a, {continued: true});
+            expect(today.ward_staffings.O.length).toBe(1);
         });
         describe("combination of previous changes", function() {
             var template = _.template(
@@ -313,12 +320,16 @@ describe("Day", function() {
             var tdat;
             today.ward_staffings.A.add(models.persons.get('A'),
                 {continued: true});
+            // same thing for non-continued ward
+            today.ward_staffings.O.add(models.persons.get('A'),
+                {continued: true});
             tdat = new models.Day({
                 date: new Date(2015, 7, 6),
                 yesterday: tomorrow,
             });
             expect(tdat.ward_staffings.A.length).toBe(1);
             expect(tdat.ward_staffings.A.models[0].id).toBe('A');
+            expect(tdat.ward_staffings.O.length).toBe(1);
             expect(tdat.ward_staffings.B.length).toBe(0);
         });
         it("should calculate a persons duties if a day is added", function() {
@@ -416,32 +427,6 @@ describe("calculating the id of the day (get_day_id)", function() {
         test_get_day_id(2015, 7, 30, "20150830");
         test_get_day_id(2015, 11, 31, "20151231");
         test_get_day_id(1999, 11, 31, "19991231");
-    });
-});
-describe("Person", function() {
-    it("should know, if they are available", function() {
-        var p1 = new models.Person({
-            name: "Test Test",
-            id: "test",
-        });
-        var p2 = new models.Person({
-            name: "Test Test2",
-            id: "test2",
-            start_date: [2015, 1, 1],
-            end_date: [2015, 11, 31],
-        });
-        var d1 = new Date(2015, 0, 31);
-        var d2 = new Date(2015, 1, 1);
-        var d3 = new Date(2015, 11, 31);
-        var d4 = new Date(2016, 0, 1);
-        expect(p1.is_available(d1)).toBe(true);
-        expect(p1.is_available(d2)).toBe(true);
-        expect(p1.is_available(d3)).toBe(true);
-        expect(p1.is_available(d4)).toBe(true);
-        expect(p2.is_available(d1)).toBe(false);
-        expect(p2.is_available(d2)).toBe(true);
-        expect(p2.is_available(d3)).toBe(true);
-        expect(p2.is_available(d4)).toBe(false);
     });
 });
 describe("Changes", function() {

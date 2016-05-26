@@ -295,13 +295,11 @@ var Day = Backbone.Model.extend({
                     'add': staffing.added_yesterday,
                     'remove': staffing.removed_yesterday,
                 }, staffing);
-                if (ward.get('continued')) {
-                    yesterdays_staffing.each(function(person) {
-                        if (person.get('end_date') >= date) {
-                            staffing.add(person);
-                        }
-                    });
-                }
+                yesterdays_staffing.each(function(person) {
+                    if (person.get('end_date') >= date) {
+                        staffing.add(person);
+                    }
+                });
             }
         }, this);
         

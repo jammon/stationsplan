@@ -204,7 +204,6 @@ var ChangeStaffView = Backbone.View.extend({
         "click #one-day": "one_day",
         "click #continued": "continued",
     },
-    template: _.template($('#change_person_template').html()),
     one_day: function() { this.save(false); },
     continued: function() { this.save(true); },
     save: function(continued) {
