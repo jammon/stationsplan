@@ -41,7 +41,6 @@ class TestPlan(PopulatedTestCase):
         self.employee.departments.add(self.department)
 
     def test_plan(self):
-        month = '201604'
         for start, end in (
                 (date(2016, 1, 1), date(2016, 3, 31)),
                 (date(2016, 1, 1), date(2016, 4, 15)),
@@ -54,7 +53,8 @@ class TestPlan(PopulatedTestCase):
                 company=self.company, person=self.person_a,
                 ward=self.ward_a, start=start, end=end)
         self.client.login(username='user', password='password')
-        response = self.client.get(reverse('plan'), args=[month])
+        # response = self.client.get(reverse('plan', kwargs={'month': '201604'}))
+        response = self.client.get('/plan/201604')
         self.assertEqual(response.status_code, 200)
         plannings = json.loads(response.context['plannings'])
         for value, expected in zip(plannings, (
@@ -109,7 +109,7 @@ class TestChangeMore(PopulatedTestCase):
         self.assertEqual(cl.continued, False)
         self.assertEqual(
             cl.description,
-            'user: Person A ist ab 20.01.2016 für Ward A eingeteilt')
+            'user: Person A ist am 20.01.2016 für Ward A eingeteilt')
         self.assertEqual(
             json.loads(cl.json),
             {"action": "add", "person": "A", "ward": "A", "day": "20160120",
@@ -123,7 +123,7 @@ class TestChangeMore(PopulatedTestCase):
         self.assertEqual(cl.continued, False)
         self.assertEqual(
             cl.description,
-            'user: Person B ist ab 20.01.2016 nicht mehr für Ward A eingeteilt')
+            'user: Person B ist am 20.01.2016 nicht mehr für Ward A eingeteilt')
         self.assertEqual(
             json.loads(cl.json),
             {"action": "remove", "person": "B", "ward": "A", "day": "20160120",

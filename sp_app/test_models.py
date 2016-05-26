@@ -7,7 +7,7 @@ from .models import (Person, ChangeLogging, Planning, process_change,
 from .utils import PopulatedTestCase
 
 
-class Test_ToJson(PopulatedTestCase):
+class TestChanges(PopulatedTestCase):
 
     def test_person(self):
         person = Person.objects.create(name="Heinz Müller", shortname="Mül",
@@ -32,6 +32,23 @@ class Test_ToJson(PopulatedTestCase):
         c.added = False
         expected['action'] = "remove"
         self.assertEqual(c.toJson(), expected)
+
+    def test_description(self):  # gehört nach test_models
+        testdata = (
+            (self.person_a, self.ward_a, date(2015, 9, 14), True, False,
+             "Mr. User: Person A ist am 14.09.2015 für Ward A eingeteilt"),
+            (self.person_a, self.ward_a, date(2015, 10, 31), True, True,
+             "Mr. User: Person A ist ab 31.10.2015 für Ward A eingeteilt"),
+            (self.person_b, self.ward_a, date(2015, 11, 6), False, True,
+             "Mr. User: Person B ist ab 06.11.2015 nicht mehr für Ward A "
+             "eingeteilt"))
+
+        for (person, ward, day, added, continued, expected) in testdata:
+            cl = ChangeLogging(
+                person=person, ward=ward, day=day, added=added,
+                continued=continued, company=self.company, user=self.user)
+            cl.make_description()
+            self.assertEqual(cl.description, expected)
 
 
 class Process_Change_Testcase(PopulatedTestCase):
