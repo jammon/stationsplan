@@ -53,8 +53,7 @@ class TestPlan(PopulatedTestCase):
                 company=self.company, person=self.person_a,
                 ward=self.ward_a, start=start, end=end)
         self.client.login(username='user', password='password')
-        # response = self.client.get(reverse('plan', kwargs={'month': '201604'}))
-        response = self.client.get('/plan/201604')
+        response = self.client.get(reverse('plan', kwargs={'month': '201604'}))
         self.assertEqual(response.status_code, 200)
         plannings = json.loads(response.context['plannings'])
         for value, expected in zip(plannings, (
