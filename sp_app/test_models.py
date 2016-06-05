@@ -7,7 +7,7 @@ from .models import (Person, ChangeLogging, Planning, process_change,
 from .utils import PopulatedTestCase
 
 
-class TestChanges(PopulatedTestCase):
+class TestPerson(PopulatedTestCase):
 
     def test_person(self):
         person = Person.objects.create(name="Heinz Müller", shortname="Mül",
@@ -21,6 +21,31 @@ class TestChanges(PopulatedTestCase):
                           'end_date': [2015, 11, 31],
                           'functions': [],
                           'position': 1, })
+
+    def test_persons_leave_terminates_planning(self):
+        person = Person.objects.create(name="Heinz Müller", shortname="Mül",
+                                       start_date=date(2015, 1, 1),
+                                       company=self.company)
+        planning = Planning.objects.create(
+            person=person, ward=self.ward_a,
+            start=date(2016, 6, 1), end=FAR_FUTURE)
+        person.end_date = date(2016, 6, 30)
+        person.save()
+        planning = Planning.objects.get(person=person)
+        self.assertEqual(planning.end, date(2016, 6, 30))
+
+    def test_planning_does_not_exceed_persons_time(self):
+        person = Person.objects.create(name="Heinz Müller", shortname="Mül",
+                                       start_date=date(2015, 1, 1),
+                                       end_date=date(2016, 6, 30),
+                                       company=self.company)
+        planning = Planning.objects.create(
+            person=person, ward=self.ward_a,
+            start=date(2016, 6, 1), end=FAR_FUTURE)
+        self.assertEqual(planning.end, date(2016, 6, 30))
+
+
+class TestChanges(PopulatedTestCase):
 
     def test_change_logging(self):
         c = ChangeLogging(person=self.person_a, ward=self.ward_a,

@@ -76,7 +76,6 @@ Können alles was Department Leader können auf Company-Ebene.
 - Dienstwünsche eingeben, für jede Person müsste ein User erstellt werden (z.B. 'amm-bot')
 - Markierung für fehlende Personen fixen
 - wann ist collection.no_staffing und wann ist collection===undefined?
-- Ward.continued sollte rein deklarativ sein und keine Auswirkung auf das Verhalten haben.
 
 ## Done
 - Es soll in /plan immer das Department des Users dargestellt werden
@@ -98,3 +97,5 @@ Können alles was Department Leader können auf Company-Ebene.
 - Wenn man eine frühere Planung beendet, wurde dadurch eine spätere Planung unsichtbar (fixed in 06b164179c7bc08c202859ad2db515e09e4bc4d4)
 - Das "dataset"-Attribut ist im IE10 nicht implementiert.
 - im ChangeStaffView soll mehr als eine Veränderung gemacht werden können und angegeben werden können, ob diese für einen oder viele Tage gelten soll.
+- Ward.continued sollte rein deklarativ sein und keine Auswirkung auf das Verhalten haben.
+- Wenn ein Mitarbeiter aufhört, sollen seine Planungen enden.

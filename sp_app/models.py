@@ -124,7 +124,7 @@ class Person(models.Model):
     shortname = models.CharField(_('Short Name'), max_length=10)
     start_date = models.DateField(_('start date'), default=date(2015, 1, 1),
                                   help_text=_('begin of job'))
-    end_date = models.DateField(_('end date'), default=date(2099, 12, 31),
+    end_date = models.DateField(_('end date'), default=FAR_FUTURE,
                                 help_text=_('end of job'))
     departments = models.ManyToManyField(
         Department, verbose_name=_('Departments'), related_name='persons')
@@ -152,6 +152,14 @@ class Person(models.Model):
                 'functions': [f.shortname for f in self.functions.all()],
                 'position': self.position,
                 }
+
+    def save(self, *args, **kwargs):
+        super(Person, self).save(*args, **kwargs)
+        # when a person leaves, their plannings should stop
+        if self.end_date < FAR_FUTURE:
+            Planning.objects.filter(
+                person=self,
+                end__gt=self.end_date).update(end=self.end_date)
 
 
 @python_2_unicode_compatible
@@ -292,6 +300,8 @@ class Planning(models.Model):
             self.company_id = self.person.company_id
         self.json = json.dumps(self.toJson())
         self.version = self.current_version
+        # the planning should not exceed the persons stay
+        self.end = min(self.end, self.person.end_date)
         super(Planning, self).save(*args, **kwargs)
 
     def __str__(self):

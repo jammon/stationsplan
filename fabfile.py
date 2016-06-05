@@ -24,6 +24,7 @@ def prepare_deploy():
     push()
 
 
+# call with: `fab server_pull:my_branch`
 def server_pull(branch='master'):
     with cd(code_dir):
         run("git pull origin " + branch)
@@ -47,6 +48,7 @@ def restart_server():
     run("touch ~/htdocs/app.wsgi")
 
 
+# call with: `fab deploy:my_branch`
 def deploy(branch='master'):
     server_pull(branch)
     staticfiles()
