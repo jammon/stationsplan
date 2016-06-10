@@ -1,0 +1,83 @@
+.container {
+    position: relative;
+    background: #fff;
+}
+
+// Anmeldung
+.account-details {
+    float: right;
+    margin: 10px 5px 0 0;
+}
+
+// Dienst- / Stationsplan
+.plan {
+    font-size: 12px;
+    td, th {
+        border: 1px solid #CCC;
+        padding: 0 2px;
+        vertical-align: top;
+    }
+}
+.month_plan {
+    .past, .future {
+        display: none;
+    }
+    .present {
+        display: block;
+    }
+}
+.personrow {
+    background-color: #DDD;
+}
+.on-call {
+    background-color: #CCF;
+}
+.leaverow {
+    background-color: #EEE;
+}
+.lacking {
+    background-color: #FCC;
+}
+.horizontal .free-day {
+    border-left-color: #999;
+    border-right-color: #999;
+}
+.vertical .free-day {
+    font-weight: bold;
+}
+
+// Bearbeitungsdialoge
+#changestafftable {
+    margin-bottom: 2ex;
+    td {
+        vertical-align: middle;
+        padding: 1px 4px;
+    }
+    .changed {
+        box-shadow: 0 0 5px 2px #ff4406;
+    }
+}
+.submitbuttons > div {
+    padding: 1px 4px;
+}
+.errorlist {
+    list-style-type: none;
+    padding-left: 0;
+}
+.glyphicon .spinning {
+    animation: spin 1s infinite linear;
+    -moz-animation: spin2 1s infinite linear;
+    -webkit-animation: spin2 1s infinite linear;
+}
+@keyframes spin {
+    from { transform: scale(1) rotate(0deg); }
+    to { transform: scale(1) rotate(360deg); }
+}
+@-moz-keyframes spin2 {
+    from { -moz-transform: rotate(0deg); }
+    to { -moz-transform: rotate(360deg); }
+}
+@-webkit-keyframes spin2 {
+    from { -webkit-transform: rotate(0deg); }
+    to { -webkit-transform: rotate(360deg); }
+}

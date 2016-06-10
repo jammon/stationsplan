@@ -1,93 +1,76 @@
-.plan {
-    font-size: 12px;
-}
-.plan td, .plan th {
-    border: 1px solid #CCC;
-}
-.month_plan {
-    position: absolute;
-    transition: all 0.5s ease;
-}
-.month_plan.past {
-    transform: translate(-150%, 0);
-}
-.month_plan.present {
-    transform: translate(0, 0);
-}
-.month_plan.future {
-    transform: translate(150%, 0);
-}
-.horizontal .free-day {
-    border-left-color: #999;
-    border-right-color: #999;
-}
-.vertical .free-day {
-    font-weight: bold;
-}
 .container {
-    position: relative;
-    background: #fff;
-}
+  position: relative;
+  background: #fff; }
 
 .account-details {
-    float: right;
-    margin: 10px 5px 0 0;
-}
+  float: right;
+  margin: 10px 5px 0 0; }
 
-th, td {
+.plan {
+  font-size: 12px; }
+  .plan td, .plan th {
+    border: 1px solid #CCC;
     padding: 0 2px;
-    vertical-align: top;
-}
+    vertical-align: top; }
+
+.month_plan .past, .month_plan .future {
+  display: none; }
+.month_plan .present {
+  display: block; }
 
 .personrow {
-    background-color: #DDD;
-}
+  background-color: #DDD; }
+
 .on-call {
-    background-color: #CCF;
-}
+  background-color: #CCF; }
+
 .leaverow {
-    background-color: #EEE;
-}
+  background-color: #EEE; }
+
 .lacking {
-    background-color: #FCC;
-}
+  background-color: #FCC; }
 
+.horizontal .free-day {
+  border-left-color: #999;
+  border-right-color: #999; }
 
-.select_person {
-    position: absolute;
-}
+.vertical .free-day {
+  font-weight: bold; }
 
 #changestafftable {
-    margin-bottom: 2ex;
-}
-#changestafftable td {
+  margin-bottom: 2ex; }
+  #changestafftable td {
     vertical-align: middle;
-    padding: 1px 4px;
-}
-#changestafftable .changed {
-    box-shadow: 0 0 5px 2px #ff4406;
-}
+    padding: 1px 4px; }
+  #changestafftable .changed {
+    box-shadow: 0 0 5px 2px #ff4406; }
+
 .submitbuttons > div {
-    padding: 1px 4px;
-}
+  padding: 1px 4px; }
+
 .errorlist {
-    list-style-type: none;
-    padding-left: 0;
-}
+  list-style-type: none;
+  padding-left: 0; }
+
 .glyphicon .spinning {
-    animation: spin 1s infinite linear;
-    -moz-animation: spin2 1s infinite linear;
-    -webkit-animation: spin2 1s infinite linear;
-}
+  animation: spin 1s infinite linear;
+  -moz-animation: spin2 1s infinite linear;
+  -webkit-animation: spin2 1s infinite linear; }
+
 @keyframes spin {
-    from { transform: scale(1) rotate(0deg); }
-    to { transform: scale(1) rotate(360deg); }
-}
+  from {
+    transform: scale(1) rotate(0deg); }
+  to {
+    transform: scale(1) rotate(360deg); } }
 @-moz-keyframes spin2 {
-    from { -moz-transform: rotate(0deg); }
-    to { -moz-transform: rotate(360deg); }
-}
+  from {
+    -moz-transform: rotate(0deg); }
+  to {
+    -moz-transform: rotate(360deg); } }
 @-webkit-keyframes spin2 {
-    from { -webkit-transform: rotate(0deg); }
-    to { -webkit-transform: rotate(360deg); }
-}
+  from {
+    -webkit-transform: rotate(0deg); }
+  to {
+    -webkit-transform: rotate(360deg); } }
+
+/*# sourceMappingURL=main.css.map */

@@ -10,6 +10,10 @@ def test():
     local("./manage.py test sp_app")
 
 
+def sass():
+    local("sass sp_app/static/css/main.{scss,css}")
+
+
 def commit():
     local("git add -p && git commit")
 
@@ -32,7 +36,8 @@ def server_pull(branch='master'):
 
 def staticfiles():
     with cd(code_dir):
-        run("source ~/priv/venv/bin/activate && ./manage.py collectstatic --noinput")
+        run("source ~/priv/venv/bin/activate && ./manage.py "
+            "collectstatic --noinput")
 
 
 def migrate():
