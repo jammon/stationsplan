@@ -14,34 +14,42 @@ describe("models", function() {
         });
     });
     describe("Person", function() {
-        it("should calculate availability", function() {
+        describe("calculating availability", function() {
             var before = new Date(2016, 1, 29);
             var firstday = new Date(2016, 2, 1);
             var lastday = new Date(2016, 2, 31);
             var after = new Date(2016, 3, 1);
-            var person = new models.Person({
-                start_date: [2016, 2, 1],
-                end_date: [2016, 2, 31],
+            var start_date = [2016, 2, 1];
+            var end_date = [2016, 2, 31];
+            var person;
+            it("should calculate availability for a person with start_date and end_date", function() {
+                person = new models.Person({start_date: start_date, end_date: end_date, });
+                expect(person.is_available(before  )).toBe(false);
+                expect(person.is_available(firstday)).toBe(true);
+                expect(person.is_available(lastday )).toBe(true);
+                expect(person.is_available(after   )).toBe(false);
             });
-            expect(person.is_available(before  )).toBe(false);
-            expect(person.is_available(firstday)).toBe(true);
-            expect(person.is_available(lastday )).toBe(true);
-            expect(person.is_available(after   )).toBe(false);
-            person = new models.Person({ start_date: [2016, 2, 1] });
-            expect(person.is_available(before  )).toBe(false);
-            expect(person.is_available(firstday)).toBe(true);
-            expect(person.is_available(lastday )).toBe(true);
-            expect(person.is_available(after   )).toBe(true);
-            person = new models.Person({ end_date: [2016, 2, 31] });
-            expect(person.is_available(before  )).toBe(true);
-            expect(person.is_available(firstday)).toBe(true);
-            expect(person.is_available(lastday )).toBe(true);
-            expect(person.is_available(after   )).toBe(false);
-            person = new models.Person();
-            expect(person.is_available(before  )).toBe(true);
-            expect(person.is_available(firstday)).toBe(true);
-            expect(person.is_available(lastday )).toBe(true);
-            expect(person.is_available(after   )).toBe(true);
+            it("should calculate availability for a person with start_date", function() {
+                person = new models.Person({ start_date: start_date });
+                expect(person.is_available(before  )).toBe(false);
+                expect(person.is_available(firstday)).toBe(true);
+                expect(person.is_available(lastday )).toBe(true);
+                expect(person.is_available(after   )).toBe(true);
+            });
+            it("should calculate availability for a person with end_date", function() {
+                person = new models.Person({ end_date: end_date });
+                expect(person.is_available(before  )).toBe(true);
+                expect(person.is_available(firstday)).toBe(true);
+                expect(person.is_available(lastday )).toBe(true);
+                expect(person.is_available(after   )).toBe(false);
+            });
+            it("should calculate availability for a person without start_date or end_date", function() {
+                person = new models.Person();
+                expect(person.is_available(before  )).toBe(true);
+                expect(person.is_available(firstday)).toBe(true);
+                expect(person.is_available(lastday )).toBe(true);
+                expect(person.is_available(after   )).toBe(true);
+            });
         });
     });
     describe("Day", function() {
