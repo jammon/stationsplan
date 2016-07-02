@@ -38,7 +38,8 @@ models.Ward.prototype.row_view = StaffingView;
 var DutiesView = Backbone.View.extend({
     tagName: 'td',
     initialize: function() {
-        this.listenTo(this.collection, "update", this.render);
+        this.listenTo(this.collection.displayed, "update", this.render);
+        this.listenTo(this.collection.displayed, "reset", this.render);
     },
     render: function() {
         this.$el.html(this.collection.displayed.pluck('shortname').join(', '));

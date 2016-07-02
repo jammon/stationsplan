@@ -105,7 +105,10 @@ var Staffing = Backbone.Collection.extend({
     initialize: function(models, options) {
         this.day = options.day;
         this.ward = options.ward;
-        this.displayed = new Backbone.Collection(null, { model: Person });
+        this.displayed = new Backbone.Collection(null, { 
+            model: Person,
+            comparator: 'name',
+        });
         this.on({
             'add': this.person_added,
             'remove': this.person_removed }, this);
