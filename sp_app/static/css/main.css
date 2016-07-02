@@ -13,10 +13,10 @@
     padding: 0 2px;
     vertical-align: top; }
 
-.month_plan .past, .month_plan .future {
+.monthview {
   display: none; }
-.month_plan .present {
-  display: block; }
+  .monthview.current {
+    display: block; }
 
 .personrow {
   background-color: #DDD; }
