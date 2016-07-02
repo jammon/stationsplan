@@ -213,11 +213,10 @@ var Duties = Backbone.Collection.extend({
     },
     calc_displayed: function() {
         var that = this;
-        this.displayed.reset(_.pluck(
+        this.displayed.reset(
             this.filter(function(ward) {
                 return that.day.ward_staffings[ward.id].displayed.get(that.person);
-            }),
-            'ward'));
+            }));
     },
 });
 

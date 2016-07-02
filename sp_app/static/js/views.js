@@ -41,7 +41,7 @@ var DutiesView = Backbone.View.extend({
         this.listenTo(this.collection, "update", this.render);
     },
     render: function() {
-        this.$el.html(this.collection.pluck('shortname').join(', '));
+        this.$el.html(this.collection.displayed.pluck('shortname').join(', '));
         return this;
     },
 });
