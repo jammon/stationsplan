@@ -44,11 +44,42 @@ function get_day_id (date_or_year, month, day) {
 function get_month_id (year, month) {
     return "" + (year*100 + (month+1));
 }
+function get_previous_month_id(month_id) {
+    var m = get_year_month(month_id);
+    if (m.month===0) {
+        return get_month_id(m.year-1, 11);
+    } else {
+        return get_month_id(m.year, m.month-1);
+    }
+}
+function get_next_month_id(month_id) {
+    var m = get_year_month(month_id);
+    if (m.month===11) {
+        return get_month_id(m.year+1, 0);
+    } else {
+        return get_month_id(m.year, m.month+1);
+    }
+}
+
+function get_year_month (month_id) {
+    return {
+        year: parseInt(month_id.slice(0, 4), 10),
+        month: parseInt(month_id.slice(4, 6), 10) - 1,
+    };
+}
+
+function datestr(date) {
+    return date.getDate()+'.'+(date.getMonth()+1)+'.'+date.getFullYear();
+}
 
 return {
     is_free: is_free,
     get_next_month: get_next_month,
     get_day_id: get_day_id,
     get_month_id: get_month_id,
+    get_previous_month_id: get_previous_month_id,
+    get_next_month_id: get_next_month_id,
+    get_year_month: get_year_month,
+    datestr: datestr,
 };
 })($, _, Backbone);

@@ -18,12 +18,14 @@ def home(request):
 
 @login_required
 def plan(request, month='', ward_selection=''):
+    # month is '' or 'YYYYMM'
     department_ids = request.session.get('department_ids')
     # Get all Persons who worked here in this month
     first_of_month = get_first_of_month(month)
+    # start_of_data should be three months earlier
+    start_of_data = (first_of_month - timedelta(88)).replace(day=1)
     persons = Person.objects.filter(
-        start_date__lt=(first_of_month+timedelta(32)).replace(day=1),
-        end_date__gte=first_of_month,
+        end_date__gte=start_of_data,
         departments__id__in=department_ids
     ).prefetch_related('functions')
     wards = Ward.objects.filter(departments__id__in=department_ids)
@@ -32,7 +34,7 @@ def plan(request, month='', ward_selection=''):
     # wards_ids = [w.id for w in wards]
     plannings = Planning.objects.filter(
         ward__in=wards,
-        end__gte=first_of_month)
+        end__gte=start_of_data)
     data = {
         'persons': json.dumps([p.toJson() for p in persons]),
         'wards': json_array(wards),
@@ -42,11 +44,17 @@ def plan(request, month='', ward_selection=''):
                       if request.user.has_perm('sp_app.add_changelogging')
                       else 'false',
         'first_of_month': first_of_month,
+        'start_of_data': start_of_data,
         'ward_selection': ward_selection,
     }
     if first_of_month > date.today():
         data['prev_month'] = (first_of_month - timedelta(1)).strftime('%Y%m')
     return render(request, 'sp_app/plan.html', data)
+
+
+@login_required
+def previous_months(request):
+    pass
 
 
 @login_required

@@ -30,7 +30,7 @@ var StaffingView = Backbone.View.extend({
     },
     addstaff: function() {
         if (!can_change || this.collection.no_staffing) return;
-        changestaffview.show(this.collection);
+        changeviews.staff.show(this.collection);
     },
 });
 models.Ward.prototype.row_view = StaffingView;
@@ -56,23 +56,24 @@ var MonthView = Backbone.View.extend({
         "click .prev-month": "prev_month",
         "click .next-month": "next_month",
     },
-    className: 'month_plan',
+    base_class: 'month_plan',
+    slug: 'plan',
+    className: function() {
+        return ['monthview', this.base_class, this.month_id].join(' ');
+    },
     template: _.template($('#big-table').html()),
     initialize: function(options) {
-        this.year = options.year;
-        this.month = options.month;
-        this.month_days = models.get_month_days(this.year, this.month);
-        this.prev_month_view = options.prev_month_view;
-        if (this.prev_month_view) {
-            this.prev_month_view.next_month_view = this;
+        // options can be { year: 2016, month: 5 } or { month_id: '201606' }
+        // options.month is 0..11 like in javascript
+        _.extend(this, _.pick(options, 'year', 'month', 'month_id'));
+        if (this.month_id === void 0) {
+            this.month_id = utils.get_month_id(this.year, this.month);
+        } else if (this.year === void 0) {
+            _.extend(this, utils.get_year_month(this.month_id));
         }
+        this.month_days = models.get_month_days(this.year, this.month);
     },
-    render: function() {
-        this.$el.html(this.template({
-            month_name: month_names[this.month],
-            year: this.year,
-        }));
-        var table = this.$(".plan");
+    build_table: function(table) {
         var titlerow = $('<tr/>', {'class': 'titlerow'}).append($('<th/>'));
         _.each(this.month_days, function(day) {
             var date = day.get('date');
@@ -106,53 +107,36 @@ var MonthView = Backbone.View.extend({
         models.persons.each(function(person) {
             table.append(construct_row(person));
         });
-        if (!this.prev_month_view) this.$('.prev-month').hide();
-        this.$('.loading-message').hide();
-        $(".plans").append(this.$el);
-        return this;
     },
-    move_to: function(direction) {
-    // direction should be 'past', 'present' or 'future'
-        if (this.time)
-            this.$el.removeClass(this.time);
-        this.time = direction;
-        this.$el.addClass(direction);
-        return this;
-    },
-    next_month: function() {
-        var month, year;
-        if (!this.next_month_view) {
-            month = this.month + 1;
-            year = this.year;
-            if (month == 11) {
-                year++;
-                month = 0;
-            }
-            this.next_month_view = new MonthView({
-                year: year,
-                month: month,
-                prev_month_view: this,
-            });
-            this.next_month_view.render().move_to('future');
-            $(".plans").append(this.next_month_view.$el);
-        }
-        this.move_to('past').next_month_view.move_to('present');
-    },
-    prev_month: function() {
-        if (this.prev_month_view)
-            this.move_to('future').prev_month_view.move_to('present');
-    },
-});
-
-var OnCallView = MonthView.extend({
-    className: 'on_call_plan',
-    template: _.template($('#on-call-table').html()),
     render: function() {
         this.$el.html(this.template({
             month_name: month_names[this.month],
             year: this.year,
         }));
-        var table = this.$(".plan");
+        this.build_table(this.$(".plan"));
+
+        // display only the currently loaded days
+        if (models.days.first().get_month_id()===this.month_id) {
+            this.$(".prev-month").hide();
+        }
+        $(".plans").append(this.$el);
+        return this;
+    },
+    prev_month: function() {
+        router.navigate(this.slug+'/'+utils.get_previous_month_id(this.month_id),
+            {trigger: true});
+    },
+    next_month: function() {
+        router.navigate(this.slug+'/'+utils.get_next_month_id(this.month_id),
+            {trigger: true});
+    },
+});
+
+var OnCallView = MonthView.extend({
+    base_class: 'on_call_plan',
+    slug: 'dienste',
+    template: _.template($('#on-call-table').html()),
+    build_table: function(table) {
         var tasks = models.wards.filter(function(ward) {
             return !ward.get('continued');
         });
@@ -164,150 +148,104 @@ var OnCallView = MonthView.extend({
 
         var that = this;
         // Construct rows for every day
-        function construct_row(model) {
-            var row = $('<tr/>', {'class': model.row_class()});
-            row.append($('<th/>', { text: model.get('name')}));
-            _.each(that.month_days, function(day) {
-                var collection = day[model.collection_array][model.id];
-                var view;
-                if (collection) {
-                    view = new model.row_view({ collection: collection });
-                    row.append(view.render().$el);
-                } else {
-                    row.append('<td></td>');
-                }
+        var day_label = _.template(
+            "<%= name %> <%= date %>.<%= month %>.");
+        function get_day_label(date) {
+            return day_label({
+                name: day_names[date.getDay()],
+                date: date.getDate(),
+                month: date.getMonth()+1
             });
-            return row;
         }
-        // first the wards
-        models.wards.each(function(ward) {
-            table.append(construct_row(ward));
-        });
-        // then the persons
-        models.persons.each(function(person) {
-            table.append(construct_row(person));
-        });
-        if (!this.prev_month_view) this.$('.prev-month').hide();
-        this.$('.loading-message').hide();
-        $(".plans").append(this.$el);
-        return this;
-    },
-});
+        _.each(that.month_days, function(day) {
+            var date = day.get('date');
+            var row = $('<tr/>');
+            if (utils.is_free(date)) row.addClass('free-day');
+            row.append($('<th/>', { text: get_day_label(date) }));
 
-
-function datestr(date) {
-    return date.getDate()+'.'+(date.getMonth()+1)+'.'+date.getFullYear();
-}
-var ONE_DAY = 24*60*60*1000; // in msec
-var ChangeStaffView = Backbone.View.extend({
-    events: {
-        "click #one-day": "one_day",
-        "click #continued": "continued",
-    },
-    one_day: function() { this.save(false); },
-    continued: function() { this.save(true); },
-    save: function(continued) {
-        var data = {
-            day: this.staffing.day.id,
-            ward: this.staffing.ward.get('shortname'),
-            continued: continued,
-            persons: this.collect_changes(),
-        };
-        $.ajax({
-            type: "POST",
-            url: '/changes', 
-            data: JSON.stringify(data),
-            dataType: "json",
-            error: function(jqXHR, textStatus, errorThrown) {
-                models.store_error(textStatus, 'error');
-            },
-            success: function(data, textStatus, jqXHR) {
-                _.each(data, models.apply_change);
-            },
-        });
-        this.$el.modal('hide');
-    },
-    collect_changes: function() {
-        return _.reduce(
-            this.change_person_views,
-            function(memo, cpv) { 
-                if (cpv.is_changed) {
-                    memo.push({
-                       id: cpv.person.id,
-                       action: cpv.is_planned ? 'add' : 'remove',
-                    });
-                }
-                return memo;
-            },
-            []);
-    },
-    render: function() {
-        var staffing = this.staffing;
-        var day = this.staffing.day;
-        var changestafftable = this.$("#changestafftable").empty();
-        this.$(".changedate").text(datestr(day.get('date')));
-        this.$(".changeward").text(staffing.ward.get('name'));
-        this.change_person_views = _.map(
-            day.get_available(staffing.ward),
-            function(person) {
-                var view = new ChangePersonView({
-                    person: person,
-                    staffing: staffing,
-                    day: day,
-                });
-                view.render();
-                view.$el.appendTo(changestafftable);
-                return view;
+            _.each(tasks, function(task) {
+                var collection = day.ward_staffings[task.id];
+                var view = collection ?
+                    (new StaffingView({ 
+                        collection: collection,
+                        display_long_name: true,
+                    })).render().$el :
+                    '<td></td>';
+                row.append(view);
             });
-        return this;
+            table.append(row);
+        });
     },
-    show: function(staffing) {
-        this.staffing = staffing;
-        this.render().$el.modal('show');
-    },
-});
-var changestaffview = new ChangeStaffView({
-    el: $("#changestaff"),
 });
 
-var ChangePersonView = Backbone.View.extend({
-    tagName: 'tr',
-    events: {
-        "click .changestaff": "toggle_planned",
+var current_month_id;
+
+function MonthViews(klass) {
+    this.klass = klass;
+    this.get_view = function(options) {
+        var month_id = options.year ?
+            utils.get_month_id(options.year, options.month) :
+            (options.month_id || current_month_id);
+        if (!_.has(this, month_id)) {
+            this[month_id] = (new klass(options)).render();
+        }
+        current_month_id = month_id;
+        return this[month_id];
+    };
+}
+var month_views = new MonthViews(MonthView);
+var on_call_views = new MonthViews(OnCallView);
+
+var Router = Backbone.Router.extend({
+    routes: {
+        "plan(/:month_id)": "plan",    // #plan
+        "dienste(/:month_id)": "dienste",    // #dienste
     },
-    template: _.template($('#change_person_template').html()),
-    initialize: function(options) {
-        this.person = options.person;
-        this.staffing = options.staffing;
-        this.duties = options.day.persons_duties[this.person.id];
-        this.is_planned = this.staffing.contains(this.person);
-        this.is_changed = false;
+    plan: function(month_id) {
+        this.call_view(month_views, month_id);
     },
-    render: function() {
-        this.$el.empty().append(this.template({
-            name: this.person.get('name'),
-            duties: this.duties.pluck('shortname').join(', '),
-        }));
-        this.toggleClasses();
+    dienste: function(month_id) {
+        this.call_view(on_call_views, month_id);
     },
-    toggleClasses: function() {
-        this.$('.changestaff')
-            .toggleClass('btn-info', !this.is_planned)
-            .toggleClass('btn-primary', this.is_planned)
-            .toggleClass('changed', this.is_changed);
+    call_view: function(klass, month_id) {
+        var options, view;
+        if (month_id) {
+            options = { month_id: month_id };
+        } else {
+            var today = new Date();
+            options = {
+                year: today.getFullYear(), 
+                month: today.getMonth(),
+            };
+        }
+        view = klass.get_view(options);
+        // find current view and hide it
+        $('.monthview.current').removeClass('current');
+        // show new view
+        view.$el.addClass('current');
     },
-    toggle_planned: function() {
-        this.is_planned = !this.is_planned;
-        this.is_changed = !this.is_changed;
-        this.toggleClasses();
-    }
 });
+var router = new Router();
+
+var NavView = Backbone.View.extend({
+    events: {
+        "click #nav-stationen": "stationen",
+        "click #nav-dienste": "dienste",
+    },
+    stationen: function(event) {
+        router.navigate("plan/" + current_month_id, {trigger: true});
+    },
+    dienste: function(event) {
+        router.navigate("dienste/" + current_month_id, {trigger: true});
+    },
+});
+
+var nav_view = new NavView({el: $(".nav")});
 
 return {
     StaffingView: StaffingView,
     DutiesView: DutiesView,
     MonthView: MonthView,
-    ChangeStaffView: ChangeStaffView,
-    ChangePersonView: ChangePersonView,
+    router: router,
 };
 })($, _, Backbone);

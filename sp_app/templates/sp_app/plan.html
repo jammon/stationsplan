@@ -1,6 +1,41 @@
 {% extends "base.html" %}
 {% load staticfiles %}
 
+{% block navigation %}
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Toggle for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#stationsplan-navbar-collapse" aria-expanded="false">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="stationsplan-navbar-collapse">
+      <ul class="nav navbar-nav navbar-right">
+        <li id="nav-stationen"><a>Stationen</a></li>
+        <li id="nav-dienste"><a>Dienste</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+            <span class="glyphicon glyphicon-cog"></span>
+            <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="/logout">Abmelden</a></li>
+            {% if request.session.can_change_password %}
+            <li><a href="/password_change">Passwort ändern</a></li>
+            {% endif %}
+          </ul>
+        </li>
+        <p class="navbar-text">{% firstof user.get_full_name user.get_username %}</p>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+{% endblock navigation %}
 {% block content %}
   <div role="main" id="main-content">
     <h1>Stationsplan</h1>
@@ -38,71 +73,14 @@
 {% endblock extracontent %}
 
 {% block extrascripts %}
-<!-- Template for the big table with all the persons and wards
--->
-<script type="text/template" id="big-table">
-  <h2 class="month-heading">
-    <%= month_name %> <%= year %>
-    <span class="btn-group" role="group">
-      <a class="btn btn-default prev-month" aria-label="Voriger Monat"
-        title="Voriger Monat">
-        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-      </a>
-      <a class="btn btn-default next-month" aria-label="Nächster Monat"
-        title="Nächster Monat">
-        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-      </a>
-    </span>
-  </h2>
-  <div class="inner">
-    <div class="loading-message well">Die Planungsdaten werden geladen <span class="glyphicon glyphicon-refresh spinning"></span></div>
-    <table class="plan"></table>
-  </div>
-</script>
-
-<!-- Template for the table of on-call services
--->
-<script type="text/template" id="on-call-table">
-  <h2 class="on-call-heading">
-    <%= month_name %> <%= year %>
-    <span class="btn-group" role="group">
-      <a class="btn btn-default prev-month" aria-label="Voriger Monat"
-        title="Voriger Monat">
-        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-      </a>
-      <a class="btn btn-default next-month" aria-label="Nächster Monat"
-        title="Nächster Monat">
-        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-      </a>
-    </span>
-  </h2>
-  <div class="inner">
-    <table class="plan"></table>
-  </div>
-</script>
-
-    <!-- Template for the change person line
-      Parameters:
-      action - 'add' or 'remove'
-      type - 'info' or 'primary' for 'add' or 'remove'
-      name - the name of the person
-      shortname - the short name of the person
-      duties - the duties of the person as a string
-    -->
-    <script type="text/template" id="change_person_template">
-      <td>
-        <button class="btn btn-block changestaff">
-          <%= name %>
-        </button>
-      </td>
-      <td><%= duties %></td>
-    </script>
+  {% include 'sp_app/templates.html' %}
     <script src="{% static 'vendor/underscore.js' %}"></script>
     <script src="{% static 'vendor/backbone.js' %}"></script>
 
     <script src="{% static 'vendor/bootstrap.modalform.js' %}"></script>
     <script src="{% static 'js/utils.js' %}"></script>
     <script src="{% static 'js/models.js' %}"></script>
+    <script src="{% static 'js/changeviews.js' %}"></script>
     <script src="{% static 'js/views.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
     <script>
@@ -111,9 +89,15 @@
       var plannings = {{ plannings|safe }};
       var curr_year = {{ first_of_month|date:'Y' }};
       var curr_month = {{ first_of_month|date:'n' }} - 1;
+      var start_of_data = new Date({{ start_of_data|date:'Y'}}, 
+        {{ start_of_data|date:'n' }}-1, 1)
       var can_change = {{ can_change }};
       var ward_selection = '{{ ward_selection }}';
-      main.initialize_site(persons_init, wards_init, plannings,
-        curr_year, curr_month, can_change, ward_selection);
+      $(function(){
+        main.initialize_site(persons_init, wards_init, plannings,
+          curr_year, curr_month, start_of_data,
+          can_change, ward_selection);
+      });
+
     </script>
 {% endblock extrascripts %}

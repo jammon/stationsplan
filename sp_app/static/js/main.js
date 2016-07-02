@@ -34,17 +34,16 @@ function setupCsrfProtection() {
 
 
 function initialize_site(persons, wards, plannings, year, month,
-                         can_change, ward_selection) {
+                         start_of_data, can_change, ward_selection) {
     setupCsrfProtection();
     models.initialize_wards(wards);
     models.persons.reset(persons);
-    models.set_plannings(plannings);
-    var month_view = new views.MonthView({
-            year: year,
-            month: month,
-        });
-    $(".plans").append(month_view.render().move_to('present').$el);
+    models.set_plannings(plannings); 
+    models.start_day_chain(start_of_data.getFullYear(),
+        start_of_data.getMonth());
+    Backbone.history.start({ pushState: true });
 }
+
 
 return {
     initialize_site: initialize_site,

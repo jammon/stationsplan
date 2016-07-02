@@ -352,10 +352,11 @@ var Day = Backbone.Model.extend({
         }
         return false;
     },
-    get_next_day: function() {
+    make_next_day: function() {
         var date = this.get('date');
         var next_day = days.add({
-            date: new Date(date.getFullYear(), date.getMonth(), date.getDate()+1),
+            date: new Date(date.getFullYear(), date.getMonth(),
+                           date.getDate()+1),
             yesterday: this
         });
         // remove all plannings, that have ended
@@ -376,6 +377,9 @@ var Day = Backbone.Model.extend({
         });
         return next_day;
     },
+    get_month_id: function() {
+        return  this.id.slice(0, 6);
+    },
 });
 
 var plannings;  // Array of plannings to be applied
@@ -384,6 +388,7 @@ var current_plannings = [];
 var Days = Backbone.Collection.extend({
     model: Day,
     get_day: function(year, month, day) {
+        // month is 0..11 like in javascript
         var result, day_id;
         if (this.length===0) {
             // Start day chain
@@ -405,7 +410,7 @@ var Days = Backbone.Collection.extend({
             return void 0;
         }
         while (result.id < day_id) {
-            result = result.get_next_day();
+            result = result.make_next_day();
         }
         return result;
     },    
@@ -413,18 +418,24 @@ var Days = Backbone.Collection.extend({
 
 var days = new Days();
 
+function start_day_chain(year, month) {
+    days.get_day(year, month, 1);
+}
 
 // Returns Array with the Days of the current month
 // This should only be called in sequence
 function get_month_days(year, month) {
+    // month is 0..11 like in javascript
     var month_days = [];
-    var next_day = days.get_day(year, month, 1);
+    var i = 1;
+    var next_day = days.get_day(year, month, i);
     do {
         month_days.push(next_day);
-        next_day = next_day.get_next_day();
+        next_day = days.get_day(year, month, ++i);
     } while (next_day.get('date').getMonth()===month);
     return month_days;
 }
+
 
 function set_plannings(p) {
     plannings = p;
@@ -474,6 +485,7 @@ return {
     Duties: Duties,
     Day: Day,
     days: days,
+    start_day_chain: start_day_chain,
     get_month_days: get_month_days,
     // get_day: get_day,
     set_plannings: set_plannings,

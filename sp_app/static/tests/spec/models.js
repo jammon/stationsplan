@@ -334,13 +334,13 @@ describe("models", function() {
                 expect(tdat.persons_duties.B.length).toBe(0);
             });
         });
-        describe("get_day and Day.get_next_day", function() {
+        describe("get_day and Day.make_next_day", function() {
             it("should start the day chain", function() {
                 expect(models.days.length).toBe(0);
                 var day = models.days.get_day(2016, 2, 24);
                 expect(day).toBeDefined();
                 expect(models.days.get('20160324')).toEqual(day);
-                var next_day = day.get_next_day();
+                var next_day = day.make_next_day();
                 expect(models.days.get('20160325')).toEqual(next_day);
                 var future_day = models.days.get_day(2016, 2, 27);
                 models.days.get('20160326').get('yesterday').marker = 'testmarker';
@@ -386,6 +386,14 @@ describe("models", function() {
                     end: '20160320',
                 });
                 expect(day.ward_staffings.A.length).toBe(0);
+            });
+        });
+        describe("get_month_id", function() {
+            it("should return the right month_id", function() {
+                var day = new models.Day({
+                    date: new Date(2016, 2, 10),
+                });
+                expect(day.get_month_id()).toBe('201603');
             });
         });
     });
@@ -471,4 +479,3 @@ describe("models", function() {
         });
     });
 });
-// describe("Views");

@@ -60,11 +60,11 @@ Können alles was Department Leader können auf Company-Ebene.
 - Wie sollen neue User angelegt werden? Admins könnten die User für das eigene Department anlegen
 - Nur finalisierte Planungen sind für Benutzer ohne besondere Berechtigung sichtbar.
 - Single page app schreiben
-    + Angemeldete Nutzer sollen gleich nach /plan kommen.
-    + Unter "/" sollte man entweder den Begrüßungsbildschirm oder den Plan sehen, je nach Anmeldestatus.
-    + View für nur die Dienste
-    + Es sollen immer alle Changes geladen werden, die Monate werden erstellt und nach Bedarf angezeigt.
-    + Changes für abgelaufene Monate werden konsolidiert als Ausgangspunkt für die Planung.
+    + View für Planung:
+        * Die Diensttuenden werden aufgelistet.
+        * sie können mit drag-n-drop auf Dienste gezogen werden und werden dann dort eingeplant.
+        * sie können nur auf Dienste gezogen werden, wo sie planbar sind.
+        * Die Zahl der Dienste wird mitgezählt.
     + Abgelaufene Monate werden als Plan bzw. HTML gespeichert.
 - Customize the default error views 
 - Der Kurzname einer Funktion sollte kein Komma enthalten.
@@ -99,3 +99,10 @@ Können alles was Department Leader können auf Company-Ebene.
 - im ChangeStaffView soll mehr als eine Veränderung gemacht werden können und angegeben werden können, ob diese für einen oder viele Tage gelten soll.
 - Ward.continued sollte rein deklarativ sein und keine Auswirkung auf das Verhalten haben.
 - Wenn ein Mitarbeiter aufhört, sollen seine Planungen enden.
+- Single page app schreiben
+    + Angemeldete Nutzer sollen gleich nach /plan kommen.
+    + Unter "/" sollte man entweder den Begrüßungsbildschirm oder den Plan sehen, je nach Anmeldestatus.
+    + Es sollen immer alle Changes geladen werden, die Monate werden erstellt und nach Bedarf angezeigt.
+    + Changes für abgelaufene Monate werden konsolidiert als Ausgangspunkt für die Planung.
+    + die Views werden über den Router erstellt, der wird nur initial aufgerufen.
+    + View für nur die Dienste

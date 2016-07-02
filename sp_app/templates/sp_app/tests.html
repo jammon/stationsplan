@@ -12,6 +12,11 @@
   <script src="{% static 'tests/lib/jasmine-2.0.0/jasmine-html.js' %}"></script>
   <script src="{% static 'tests/lib/jasmine-2.0.0/boot.js' %}"></script>
 
+</head>
+
+<body>
+  {% include 'sp_app/templates.html' %}
+
   <!-- include source files here... -->
   <script src="{% static 'vendor/jquery-2.1.0.min.js' %}"></script>
   <script src="{% static 'tests/lib/jasmine-jquery.js' %}"></script>
@@ -27,8 +32,5 @@
   <script src="{% static 'tests/spec/utils.js' %}"></script>
   <script src="{% static 'tests/spec/models.js' %}"></script>
 
-</head>
-
-<body>
 </body>
 </html>

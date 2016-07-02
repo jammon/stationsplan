@@ -18,11 +18,9 @@
         vertical-align: top;
     }
 }
-.month_plan {
-    .past, .future {
-        display: none;
-    }
-    .present {
+.monthview {
+    display: none;
+    &.current {
         display: block;
     }
 }

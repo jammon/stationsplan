@@ -1,0 +1,58 @@
+<!-- Template for the big table with all the persons and wards
+-->
+<script type="text/template" id="big-table">
+  <h2 class="month-heading">
+    <%= month_name %> <%= year %>
+    <span class="btn-group" role="group">
+      <a class="btn btn-default prev-month" aria-label="Voriger Monat"
+        title="Voriger Monat">
+        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+      </a>
+      <a class="btn btn-default next-month" aria-label="Nächster Monat"
+        title="Nächster Monat">
+        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+      </a>
+    </span>
+  </h2>
+  <div class="inner">
+    <table class="plan"></table>
+  </div>
+</script>
+
+<!-- Template for the table of on-call services
+-->
+<script type="text/template" id="on-call-table">
+  <h2 class="on-call-heading">
+    <%= month_name %> <%= year %>
+    <span class="btn-group" role="group">
+      <a class="btn btn-default prev-month" aria-label="Voriger Monat"
+        title="Voriger Monat">
+        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+      </a>
+      <a class="btn btn-default next-month" aria-label="Nächster Monat"
+        title="Nächster Monat">
+        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+      </a>
+    </span>
+  </h2>
+  <div class="inner">
+    <table class="plan"></table>
+  </div>
+</script>
+
+<!-- Template for the change person line
+  Parameters:
+  action - 'add' or 'remove'
+  type - 'info' or 'primary' for 'add' or 'remove'
+  name - the name of the person
+  shortname - the short name of the person
+  duties - the duties of the person as a string
+-->
+<script type="text/template" id="change_person_template">
+  <td>
+    <button class="btn btn-block changestaff">
+      <%= name %>
+    </button>
+  </td>
+  <td><%= duties %></td>
+</script>
