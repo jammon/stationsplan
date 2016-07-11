@@ -21,6 +21,7 @@ var ChangeStaffView = Backbone.View.extend({
             url: '/changes', 
             data: JSON.stringify(data),
             dataType: "json",
+            contentType: "application/json; charset=utf-8",
             error: function(jqXHR, textStatus, errorThrown) {
                 models.store_error(textStatus, 'error');
             },

@@ -179,7 +179,7 @@ var OnCallView = MonthView.extend({
     },
 });
 
-var current_month_id;
+var current_month_id = "";
 
 function MonthViews(klass) {
     this.klass = klass;
