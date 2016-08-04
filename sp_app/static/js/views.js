@@ -92,7 +92,10 @@ var MonthView = Backbone.View.extend({
                 var collection = day[model.collection_array][model.id];
                 var view;
                 if (collection) {
-                    view = new model.row_view({ collection: collection });
+                    view = new model.row_view({ 
+                        collection: collection,
+                        className: day.get('is_free') ? 'free-day' : '',
+                    });
                     row.append(view.render().$el);
                 } else {
                     row.append('<td></td>');
@@ -161,7 +164,7 @@ var OnCallView = MonthView.extend({
         _.each(that.month_days, function(day) {
             var date = day.get('date');
             var row = $('<tr/>');
-            if (utils.is_free(date)) row.addClass('free-day');
+            if (day.get('is_free')) row.addClass('free-day');
             row.append($('<th/>', { text: get_day_label(date) }));
 
             _.each(tasks, function(task) {

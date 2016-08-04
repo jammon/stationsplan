@@ -185,7 +185,7 @@ var Staffing = Backbone.Collection.extend({
         if (ward.get('everyday') || ward.get('on_leave')) {
             return true;
         }
-        var day_is_free = utils.is_free(this.day.get('date'));
+        var day_is_free = this.day.get('is_free');
         var for_free_days = (ward.get('freedays') || false);
         return day_is_free == for_free_days;
     },
@@ -239,6 +239,7 @@ var Day = Backbone.Model.extend({
         var yesterday = this.get('yesterday');
         this.id = utils.get_day_id(this.get('date'));
         this.set({'id': this.id});
+        this.set({'is_free': utils.is_free(this.get('date'))});
 
         var ward_staffings = this.ward_staffings = {};
         this.persons_duties = {};

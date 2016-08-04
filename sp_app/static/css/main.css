@@ -34,7 +34,8 @@
   border-left-color: #999;
   border-right-color: #999; }
 
-.vertical .free-day {
+.vertical .free-day,
+td.free-day {
   font-weight: bold; }
 
 #changestafftable {
