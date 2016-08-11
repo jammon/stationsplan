@@ -1,0 +1,27 @@
+x 2016-07-30 Es soll in /plan immer das Department des Users dargestellt werden
+x 2016-07-30 in /monat sollen die Changes aus dem Department des Users übermittelt werden.
+x 2016-07-30 login und logout implementieren
+x 2016-07-30 Jeder User muss ein Department haben
+x 2016-07-30 im "Nächsten Monat" sollen nur die Personen dargestellt werden, die dann noch tätig sind.
+x 2016-07-30 Jede Besetzungsänderung soll ein +Logging auslösen
+x 2016-07-30 Personen können nur bestimmte Funktionen ausüben
+x 2016-07-30 Reihenfolge der Stationen vorgeben
+x 2016-07-30 In admin sollten nur die Personen/Wards angeboten werden, die zur eigenen Abteilung gehören
+x 2016-07-30 In Person/Ward sollte die eigene Abteilung/Company bei der Auswahl bzw. beim Hinzufügen vorbelegt sein.
+x 2016-07-30 Berechtigungen implementieren
+x 2016-07-30 Abfragen auf die Departments einschränken
+x 2016-07-30 Wenn jemand für 'krank' oder 'Urlaub' eingetragen wird, bleiden die Duties vorhanden, er ist aber nicht für die Stationen eingetragen?
+x 2016-07-30 Man soll festlegen können, dass nach einem Dienst nur bestimmte Funktionen ausgeübt werden können.
+x 2016-07-30 Meldungen für noscript und loading
+x 2016-07-30 Wenn man eine frühere Planung beendet, wurde dadurch eine spätere Planung unsichtbar (fixed in 06b164179c7bc08c202859ad2db515e09e4bc4d4)
+x 2016-07-30 Das "dataset"-Attribut ist im IE10 nicht implementiert.
+x 2016-07-30 im ChangeStaffView soll mehr als eine Veränderung gemacht werden können und angegeben werden können, ob diese für einen oder viele Tage gelten soll.
+x 2016-07-30 Ward.continued sollte rein deklarativ sein und keine Auswirkung auf das Verhalten haben.
+x 2016-07-30 Wenn ein Mitarbeiter aufhört, sollen seine Planungen enden.
+x 2016-07-30 Angemeldete Nutzer sollen gleich nach /plan kommen. +SPA
+x 2016-07-30 Unter "/" sollte man entweder den Begrüßungsbildschirm oder den Plan sehen, je nach Anmeldestatus. +SPA
+x 2016-07-30 Es sollen immer alle Changes geladen werden, die Monate werden erstellt und nach Bedarf angezeigt. +SPA
+x 2016-07-30 Changes für abgelaufene Monate werden konsolidiert als Ausgangspunkt für die Planung. +SPA
+x 2016-07-30 die Views werden über den Router erstellt, der wird nur initial aufgerufen. +SPA
+x 2016-07-30 View für nur die Dienste +SPA
+x 2016-08-04 Wochenendtage mit stärkerem Rand
