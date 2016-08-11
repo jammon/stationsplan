@@ -246,10 +246,23 @@ var NavView = Backbone.View.extend({
 
 var nav_view = new NavView({el: $(".nav")});
 
+var ErrorView = Backbone.View.extend({
+    initialize: function() {
+        this.listenTo(this.collection, "add", this.addError);
+    },
+    addError: function(error) {
+        var tr = $("<tr/>");
+        tr.append("<td/>", { text: error.textStatus });
+        tr.append("<td/>", { text: error.errorThrown.toString() });
+        this.$el.append(tr);
+    },
+});
+var error_view = new ErrorView({ el: $("#errors")});
+
 return {
-    StaffingView: StaffingView,
-    DutiesView: DutiesView,
-    MonthView: MonthView,
-    router: router,
+    // StaffingView: StaffingView,
+    // DutiesView: DutiesView,
+    // MonthView: MonthView,
+    // router: router,
 };
 })($, _, Backbone);

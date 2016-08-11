@@ -459,9 +459,7 @@ function apply_change(change) {
     console.log(change);
 }
 
-function store_error(error, type) {
-    $('#log').append($('<p/>', { text: error, 'class': type }));
-}
+var errors = new Backbone.Collection();
 
 function reset_data() {
     // for testing
@@ -490,10 +488,9 @@ return {
     days: days,
     start_day_chain: start_day_chain,
     get_month_days: get_month_days,
-    // get_day: get_day,
     set_plannings: set_plannings,
     apply_change: apply_change,
-    store_error: store_error,
+    errors: errors,
     reset_data: reset_data,
 };
 })($, _, Backbone);
