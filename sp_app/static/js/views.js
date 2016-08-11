@@ -248,12 +248,12 @@ var nav_view = new NavView({el: $(".nav")});
 
 var ErrorView = Backbone.View.extend({
     initialize: function() {
-        this.listenTo(this.collection, "add", this.addError);
+        this.listenTo(models.errors, "add", this.addError);
     },
     addError: function(error) {
         var tr = $("<tr/>");
-        tr.append("<td/>", { text: error.textStatus });
-        tr.append("<td/>", { text: error.errorThrown.toString() });
+        tr.append("<td/>", { text: error.get('textStatus') });
+        tr.append("<td/>", { text: error.get('errorThrown').toString() });
         this.$el.append(tr);
     },
 });
