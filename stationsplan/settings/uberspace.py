@@ -7,7 +7,7 @@ ALLOWED_HOSTS = [
     '.stationsplan.de',
     'django.jammon.lynx.uberspace.de',
 ]
-STATIC_ROOT = '/var/www/stationsplan/htdocs/static/'
+STATIC_ROOT = '/home/jammon/projects/stationsplan/static/'
 STATICFILES_STORAGE = \
     'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
