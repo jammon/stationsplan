@@ -2,7 +2,7 @@ init_hospital();
 describe("models", function() {
     describe("Initializing data", function() {
         it("should have the persons and wards set", function() {
-            expect(models.persons.length).toBe(2);
+            expect(models.persons.length).toBe(3);
             expect(models.wards.length).toBe(7);
             var person_a = models.persons.get('A');
             expect(person_a.get('name')).toBe('Anton');
@@ -52,6 +52,47 @@ describe("models", function() {
             });
         });
     });
+    describe("Staffing", function() {
+        describe("calculate who can be planned", function() {
+            var today, yesterday, staffing_a, person_a;
+            beforeEach(function() {
+                yesterday = new models.Day({ date: new Date(2016, 8, 19) });
+                today = new models.Day({ 
+                    date: new Date(2016, 8, 20),
+                    yesterday: yesterday,
+                });
+                staffing_a = today.ward_staffings.A;
+                person_a = models.persons.get('A');
+            });
+            it("usually persons can be planned", function() {
+                expect(staffing_a.can_be_planned(person_a)).toBeTruthy();
+            });
+            it("who is on leave, cannot be planned", function() {
+                today.ward_staffings.L.add(person_a);
+                expect(staffing_a.can_be_planned(person_a)).toBeFalsy();
+            });
+            it("who was on call last night, cannot be planned", function() {
+                yesterday.ward_staffings.N.add(person_a);
+                expect(staffing_a.can_be_planned(person_a)).toBeFalsy();
+            });
+            it("for 'on leave', everyone can be planned", function() {
+                var staffing_l = today.ward_staffings.L;
+                expect(staffing_l.can_be_planned(person_a)).toBeTruthy();
+                // nightshift yesterday
+                yesterday.ward_staffings.N.add(person_a);
+                expect(staffing_l.can_be_planned(person_a)).toBeTruthy();
+                // on leave
+                today.ward_staffings.L.add(person_a);
+                expect(staffing_l.can_be_planned(person_a)).toBeTruthy();
+            });
+            it("'anonymous' persons can be planned afer a call shift", function() {
+                var anon = models.persons.get('Other');
+                expect(staffing_a.can_be_planned(anon)).toBeTruthy();
+                yesterday.ward_staffings.N.add(anon);
+                expect(staffing_a.can_be_planned(anon)).toBeTruthy();
+            });
+        });
+    });
     describe("Day", function() {
         it("should be initialized properly", function() {
             var today = new models.Day({ date: new Date(2015, 7, 7) });
@@ -63,6 +104,9 @@ describe("models", function() {
         });
         describe("check availability:", function() {
             function check_availability (action, nr_avail, first_avail) {
+                // perform an action
+                // then check the number of available persons 
+                // and the name of the first available (if given)
                 var yesterday = new models.Day({
                     date: new Date(2015, 7, 6),  // Thursday
                 });
@@ -79,31 +123,31 @@ describe("models", function() {
             }
             it("usually everybody is available", function() {
                 check_availability(function(today, yesterday) {},
-                2);
+                3);
             });
             it("who is on leave isn't available", function() {
                 check_availability(function(today, yesterday) {
                     today.ward_staffings.L.add(models.persons.get('A'));
                 },
-                1, 'B');
+                2, 'B');
             });
             it("who was on nightshift yesterday isn't available", function() {
                 check_availability(function(today, yesterday) {
                     yesterday.ward_staffings.N.add(models.persons.get('A'));
                 },
-                1, 'B');
+                2, 'B');
             });
             it("who is on nightshift today is available", function() {
                 check_availability(function(today, yesterday) {
                     today.ward_staffings.N.add(models.persons.get('A'));
                 },
-                2);
+                3);
             });
             it("who is planned for a different ward today is available", function() {
                 check_availability(function(today, yesterday) {
                     today.ward_staffings.B.add(models.persons.get('A'));
                 },
-                2);
+                3);
             });
         });
         describe("need for staffing", function() {
@@ -280,19 +324,19 @@ describe("models", function() {
             it("should make a person available after the vacation ends", function() {
                 var person_a = models.persons.get('A');
                 var ward_a = models.wards.get('A');
+                expect(yesterday.get_available(ward_a).length).toBe(3);
+                expect(today.get_available(ward_a).length).toBe(3);
+                expect(tomorrow.get_available(ward_a).length).toBe(3);
+                // on leave since yesterday
+                yesterday.ward_staffings.L.add(person_a, {continued: true});
                 expect(yesterday.get_available(ward_a).length).toBe(2);
                 expect(today.get_available(ward_a).length).toBe(2);
                 expect(tomorrow.get_available(ward_a).length).toBe(2);
-                // on leave since yesterday
-                yesterday.ward_staffings.L.add(person_a, {continued: true});
-                expect(yesterday.get_available(ward_a).length).toBe(1);
-                expect(today.get_available(ward_a).length).toBe(1);
-                expect(tomorrow.get_available(ward_a).length).toBe(1);
                 // back today
                 today.ward_staffings.L.remove(person_a, {continued: true});
-                expect(yesterday.get_available(ward_a).length).toBe(1);
-                expect(today.get_available(ward_a).length).toBe(2);
-                expect(tomorrow.get_available(ward_a).length).toBe(2);
+                expect(yesterday.get_available(ward_a).length).toBe(2);
+                expect(today.get_available(ward_a).length).toBe(3);
+                expect(tomorrow.get_available(ward_a).length).toBe(3);
             });
             it("should continue a persons duties after the vacation ends", function() {
                 var person_a = models.persons.get('A');

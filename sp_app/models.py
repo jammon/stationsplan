@@ -136,6 +136,11 @@ class Person(models.Model):
         _('position'),
         default=1,
         help_text=_('Ordering in the display'))
+    anonymous = models.BooleanField(
+        _('Anonymous'),
+        default=False,
+        help_text=_('if True this person represents multiple other persons, '
+                    'e.g. an appartment'))
 
     class Meta:
         verbose_name = _('Person')
@@ -151,6 +156,7 @@ class Person(models.Model):
                 'end_date': date_to_json(self.end_date),
                 'functions': [f.shortname for f in self.functions.all()],
                 'position': self.position,
+                'anonymous': self.anonymous,
                 }
 
     def save(self, *args, **kwargs):

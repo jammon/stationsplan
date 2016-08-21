@@ -1,6 +1,7 @@
 var persons_init = [
   { name: 'Anton', id: 'A', functions: ['A', 'B']},
   { name: 'Berta', id: 'B', functions: ['A', 'B']},
+  { name: 'Other', id: 'Other', functions: ['A', 'B'], anonymous: true}
 ];
 var wards_init = [
   { name: 'Ward A', shortname: 'A', min: 1, max: 2, continued: true },

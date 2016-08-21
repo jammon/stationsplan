@@ -127,18 +127,20 @@ var Staffing = Backbone.Collection.extend({
         if (this.day.persons_duties[person.id].any(function(ward) {
             return ward.get('on_leave');
         })) return false;
-        // does yesterdays planning allow this?
-        var yesterday = this.day.get('yesterday');
-        var current_ward_id = this.ward.id;
-        if (yesterday) {
-            return yesterday.persons_duties[person.id].every(function(ward) {
-                if (ward.get('nightshift')) return false;
-                var after_this = ward.get('after_this');
-                if (after_this && !_.contains(after_this, current_ward_id)) {
-                    return false;
-                }
-                return true;
-            });
+        if (!person.get('anonymous')) {
+            // does yesterdays planning allow this?
+            var yesterday = this.day.get('yesterday');
+            var current_ward_id = this.ward.id;
+            if (yesterday) {
+                return yesterday.persons_duties[person.id].every(function(ward) {
+                    if (ward.get('nightshift')) return false;
+                    var after_this = ward.get('after_this');
+                    if (after_this && !_.contains(after_this, current_ward_id)) {
+                        return false;
+                    }
+                    return true;
+                });
+            }
         }
         return true;
     },
@@ -253,7 +255,6 @@ var Day = Backbone.Model.extend({
                 { person: person, day: this });
         }, this);
 
-        this.persons_available = {};
         this.on('on_leave-changed', this.calc_persons_display, this);
         if (yesterday) {
             yesterday.on('nightshift-changed', this.calc_persons_display, this);
