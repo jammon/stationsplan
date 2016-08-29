@@ -41,8 +41,9 @@
   <div role="main" id="main-content">
     <div class="plans"></div>
   </div>
-  <div> <table id="log"></table> </div>
-  <div> <table id="errors"></table> </div>
+{% if user.is_staff %}
+  <div> <table id="errors" class="table"></table> </div>
+{% endif %}
 {% endblock content %}
 
 {% block extracontent %}

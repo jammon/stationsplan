@@ -252,8 +252,8 @@ var ErrorView = Backbone.View.extend({
     },
     addError: function(error) {
         var tr = $("<tr/>");
-        tr.append("<td/>", { text: error.get('textStatus') });
-        tr.append("<td/>", { text: error.get('errorThrown').toString() });
+        tr.append($("<td/>", { text: error.get('textStatus') }));
+        tr.append($("<td/>", { text: error.get('errorThrown').toString() }));
         this.$el.append(tr);
     },
 });
