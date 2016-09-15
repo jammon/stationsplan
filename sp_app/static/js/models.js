@@ -9,6 +9,9 @@ var default_end_for_person = [2099, 11, 31];
 //     - id    = short form of the name
 //     - start_date = begin of job
 //     - end_date = end of job
+//     - functions = Array of Wards/Tasks that can be done
+//     - position = position in the listing
+//     - anonymous = true if it represents a different department
 var Person = Backbone.Model.extend({
     initialize: function() {
         var start = this.get('start_date') || [2015, 0, 1];
@@ -84,6 +87,7 @@ var wards = new Wards();
 var nightshifts = new Backbone.Collection();
 var on_leave = new Backbone.Collection();
 var special_duties = new Backbone.Collection();
+var on_call = new Backbone.Collection();
 
 function initialize_wards (wards_init) {
     wards.reset(wards_init);
@@ -91,6 +95,9 @@ function initialize_wards (wards_init) {
     on_leave.reset(wards.where({'on_leave': true}));
     special_duties.reset(wards.filter(function(ward) {
         return ward.get('after_this') !== void 0;
+    }));
+    on_call.reset(wards.filter(function(ward) {
+        return !ward.get('continued');
     }));
 }
 
@@ -104,11 +111,11 @@ var Staffing = Backbone.Collection.extend({
     comparator: 'name',
     initialize: function(models, options) {
         this.day = options.day;
-        this.ward = options.ward;
         this.displayed = new Backbone.Collection(null, { 
             model: Person,
             comparator: 'name',
         });
+        this.ward = this.displayed.ward = options.ward;
         this.on({
             'add': this.person_added,
             'remove': this.person_removed }, this);
@@ -121,12 +128,15 @@ var Staffing = Backbone.Collection.extend({
         // won't delete this planning.
     },
     can_be_planned: function(person) {
+        if (!person) return false;
         // a vacation can always be planned
         if (this.ward.get('on_leave')) return true;
         // is she/he on leave?
         if (this.day.persons_duties[person.id].any(function(ward) {
             return ward.get('on_leave');
         })) return false;
+        // Is this ward in their portfolio?
+        if (!person.can_work_on(this.ward)) return false;
         if (!person.get('anonymous')) {
             // does yesterdays planning allow this?
             var yesterday = this.day.get('yesterday');
@@ -243,7 +253,7 @@ var Day = Backbone.Model.extend({
         this.set({'id': this.id});
         this.set({'is_free': utils.is_free(this.get('date'))});
 
-        var ward_staffings = this.ward_staffings = {};
+        this.ward_staffings = {};
         this.persons_duties = {};
 
         wards.each(function(ward) {
@@ -426,7 +436,36 @@ function start_day_chain(year, month) {
     days.get_day(year, month, 1);
 }
 
-// Returns Array with the Days of the current month
+// the 'Day's of one month.
+// is used as event dispatcher for the CallTallies
+var MonthDays = Backbone.Collection.extend({
+    initialize: function(models, options) {
+        // 'models' should be a sorted array of 'Day's
+        Backbone.Collection.prototype.initialize.call(this, models, options);
+        var calltallies = this.calltallies = new CallTallies();
+        var last = _.last(models).get('date');
+        var first = models[0].get('date');
+        persons.each(function(person) {
+            if (person.get('start_date') <= last &&
+                person.get('end_date') >= first)
+                calltallies.add({ id: person.id, name: person.get('name') });
+        });
+        _.each(models, function(day) {
+            on_call.each(function(ward) {
+                var displayed = day.ward_staffings[ward.id].displayed;
+                displayed.each(function(person) {
+                    calltallies.on_call_added(person, displayed);
+                });
+                displayed.on(
+                    'add', calltallies.on_call_added, calltallies);
+                displayed.on(
+                    'remove', calltallies.on_call_removed, calltallies);
+            });
+        });
+    },
+});
+
+// Returns Collection with the Days of the current month
 // This should only be called in sequence
 function get_month_days(year, month) {
     // month is 0..11 like in javascript
@@ -437,9 +476,71 @@ function get_month_days(year, month) {
         month_days.push(next_day);
         next_day = days.get_day(year, month, ++i);
     } while (next_day.get('date').getMonth()===month);
-    return month_days;
+    return new MonthDays(month_days);
 }
 
+
+// CallTally counts the number of call-shifts for one person
+// per month
+var CallTally = Backbone.Model.extend({
+    add_shift: function(ward) {
+        var ward_shortname = '_' + ward.get('shortname');
+        this.set(ward_shortname, (this.get(ward_shortname) || 0) + 1);
+    },
+    subtract_shift: function(ward) {
+        var ward_shortname = '_' + ward.get('shortname');
+        this.set(ward_shortname, this.get(ward_shortname) - 1);
+    },
+    get_tally: function(ward) {
+        return this.get('_' + ward.get('shortname')) || 0;
+    },
+});
+
+// One CallTally per person
+var CallTallies = Backbone.Collection.extend({
+    model: CallTally,
+    on_call_added: function(person, staffing, options) {
+        this.get(person.id).add_shift(staffing.ward);
+    },
+    on_call_removed: function(person, staffing, options) {
+        this.get(person.id).subtract_shift(staffing.ward);
+    },
+});
+
+
+function save_change(data) {
+    // data should have these attributes: 
+    //   day: a models.Day or its id
+    //   ward: a models.Ward
+    //   continued: a Boolean
+    //   persons: an Array of {
+    //       id: a persons id,
+    //       action: 'add' or 'remove'
+    //   }
+    function error (jqXHR, textStatus, errorThrown) {
+        models.errors.add({
+            textStatus: textStatus, 
+            errorThrown: errorThrown,
+        });
+    }
+    function success (data, textStatus, jqXHR) {
+        _.each(data, models.apply_change);
+    }
+    $.ajax({
+        type: "POST",
+        url: '/changes', 
+        data: JSON.stringify({
+            day: data.day.id || data.day,
+            ward: data.ward.id || data.ward,
+            continued: data.continued,
+            persons: data.persons,
+        }),
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+        error: data.error || error,
+        success: data.success || success,
+    });
+}
 
 function set_plannings(p) {
     plannings = p;
@@ -482,6 +583,7 @@ return {
     nightshifts: nightshifts,
     on_leave: on_leave,
     special_duties: special_duties,
+    on_call: on_call,
     initialize_wards: initialize_wards,
     Staffing: Staffing,
     Duties: Duties,
@@ -489,6 +591,9 @@ return {
     days: days,
     start_day_chain: start_day_chain,
     get_month_days: get_month_days,
+    CallTally: CallTally,
+    CallTallies: CallTallies,
+    save_change: save_change,
     set_plannings: set_plannings,
     apply_change: apply_change,
     errors: errors,

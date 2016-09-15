@@ -1,9 +1,5 @@
 (B) Admins sollen nur User für das eigene Department anlegen können
 (C) Nur finalisierte Planungen sollen für Benutzer ohne besondere Berechtigung sichtbar sein
-(A) Die Diensttuenden werden im +Planungsview aufgelistet +SPA
-(A) Die Diensttuenden können im +Planungsview mit drag-n-drop auf Dienste gezogen werden und werden dann dort eingeplant. +SPA
-(A) Die Diensttuenden können im +Planungsview nur auf Dienste gezogen werden, wo sie planbar sind. +SPA
-(A) Im +Planungsview wird die Zahl der Dienste mitgezählt. +SPA
 (A) Customize the default error views 
 (C) Der Kurzname einer Funktion sollte kein Komma enthalten.
 (A) Logging anzeigen
@@ -12,3 +8,6 @@
 (C) Kommentare oder Nachrichten unabhängig von Änderungen
 (C) Dienstwünsche eingeben, für jede Person müsste ein User erstellt werden (z.B. 'amm-bot')
 (B) wann ist collection.no_staffing und wann ist collection===undefined?
+(C) A ward should not have the shortname id
+(B) Nach uberspace portieren
+Anonyme Personen sollten nicht für Krank oder Urlaub geplant werden können

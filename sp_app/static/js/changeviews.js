@@ -10,27 +10,11 @@ var ChangeStaffView = Backbone.View.extend({
     one_day: function() { this.save(false); },
     continued: function() { this.save(true); },
     save: function(continued) {
-        var data = {
+        models.save_change({
             day: this.staffing.day.id,
-            ward: this.staffing.ward.get('shortname'),
+            ward: this.staffing.ward,
             continued: continued,
             persons: this.collect_changes(),
-        };
-        $.ajax({
-            type: "POST",
-            url: '/changes', 
-            data: JSON.stringify(data),
-            dataType: "json",
-            contentType: "application/json; charset=utf-8",
-            error: function(jqXHR, textStatus, errorThrown) {
-                models.errors.add({
-                    textStatus: textStatus, 
-                    errorThrown: errorThrown,
-                });
-            },
-            success: function(data, textStatus, jqXHR) {
-                _.each(data, models.apply_change);
-            },
         });
         this.$el.modal('hide');
     },

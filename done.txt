@@ -25,3 +25,7 @@ x 2016-07-30 Changes für abgelaufene Monate werden konsolidiert als Ausgangspun
 x 2016-07-30 die Views werden über den Router erstellt, der wird nur initial aufgerufen. +SPA
 x 2016-07-30 View für nur die Dienste +SPA
 x 2016-08-04 Wochenendtage mit stärkerem Rand
+x 2016-09-12 Die Diensttuenden können im +Planungsview nur auf Dienste gezogen werden, wo sie planbar sind. +SPA
+x 2016-09-12 Die Diensttuenden werden im +Planungsview aufgelistet +SPA
+x 2016-09-12 Im +Planungsview wird die Zahl der Dienste mitgezählt. +SPA
+x 2016-09-15 Die Diensttuenden können im +Planungsview mit drag-n-drop auf Dienste gezogen werden und werden dann dort eingeplant. +SPA

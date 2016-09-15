@@ -1,6 +1,7 @@
 var persons_init = [
-  { name: 'Anton', id: 'A', functions: ['A', 'B']},
-  { name: 'Berta', id: 'B', functions: ['A', 'B']},
+  { name: 'Anton', id: 'A', functions: ['A', 'B', 'N', 'O']},
+  { name: 'Berta', id: 'B', functions: ['A', 'B', 'N', 'O']},
+  { name: 'Conny', id: 'C', functions: ['A', 'B']}, // no nightshifts
   { name: 'Other', id: 'Other', functions: ['A', 'B'], anonymous: true}
 ];
 var wards_init = [
