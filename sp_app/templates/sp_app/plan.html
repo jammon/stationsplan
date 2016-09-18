@@ -98,7 +98,7 @@
       var curr_month = {{ first_of_month|date:'n' }} - 1;
       var start_of_data = new Date({{ start_of_data|date:'Y'}}, 
         {{ start_of_data|date:'n' }}-1, 1)
-      var can_change = {{ can_change }};
+      var can_change = {{ can_change }}; // can make changes to the plan
       var ward_selection = '{{ ward_selection }}';
       $(function(){
         main.initialize_site(persons_init, wards_init, plannings,

@@ -24,7 +24,7 @@ var StaffingView = Backbone.View.extend({
                     text: that.display_long_name ? person.get('name') : person.id,
                     'class': 'staff',
                 });
-                if (that.display_long_name) {
+                if (models.user_can_change && that.display_long_name) {
                     name.draggable({
                         helper: function() {
                             return $('<div/>', {
@@ -40,48 +40,41 @@ var StaffingView = Backbone.View.extend({
             });
             el.toggleClass('lacking', this.collection.lacking());
         }
-        el.droppable({
-            accept: function(draggable) {
-                var person = models.persons.where({ name: draggable.text() });
-                if (staffing.can_be_planned(person.length && person[0])) {
-                    return true;
-                } else {
-                    return false;
-                }
-            },
-            drop: function(event, ui) {
-                var persons = models.persons.where({ name: ui.draggable.text() });
-                if (persons.length) {
-                    models.save_change({
-                        day: staffing.day.id,
-                        ward: staffing.ward,
-                        continued: false,
-                        persons: [{
-                            id: persons[0].id,
-                            action: 'add',
-                        }],
-                    });
-                    if (ui.helper.attr('day'))
+        if (models.user_can_change) {
+            el.droppable({
+                accept: function(draggable) {
+                    var person = models.persons.where({ name: draggable.text() });
+                    if (staffing.can_be_planned(person.length && person[0])) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                },
+                drop: function(event, ui) {
+                    var persons = models.persons.where({ name: ui.draggable.text() });
+                    if (persons.length) {
                         models.save_change({
-                            day: ui.helper.attr('day'),
-                            ward: ui.helper.attr('ward'),
+                            day: staffing.day.id,
+                            ward: staffing.ward,
                             continued: false,
                             persons: [{
-                                id: ui.helper.attr('person'),
-                                action: 'remove',
+                                id: persons[0].id,
+                                action: 'add',
                             }],
                         });
-                }
-            },
-            activeClass: "ui-state-highlight",
-            tolerance: "pointer",
-            cursor: "pointer",
-        });
+                    }
+                    remove_person_from_helper(ui.helper);
+                },
+                activeClass: "ui-state-highlight",
+                tolerance: "pointer",
+                cursor: "pointer",
+            });
+        }
         return this;
     },
     addstaff: function() {
-        if (!can_change || this.collection.no_staffing) return;
-        changeviews.staff.show(this.collection);
+        if (models.user_can_change || !this.collection.no_staffing)
+            changeviews.staff.show(this.collection);
     },
 });
 models.Ward.prototype.row_view = StaffingView;
@@ -98,6 +91,19 @@ var DutiesView = Backbone.View.extend({
     },
 });
 models.Person.prototype.row_view = DutiesView;
+
+function remove_person_from_helper(helper) {
+    if (helper.attr('day'))
+        models.save_change({
+            day: helper.attr('day'),
+            ward: helper.attr('ward'),
+            continued: false,
+            persons: [{
+                id: helper.attr('person'),
+                action: 'remove',
+            }],
+        });
+}
 
 var month_names = ["Januar", "Februar", "März", "April", "Mai", "Juni", 
     "Juli", "August", "September", "Oktober", "November", "Dezember"];
@@ -230,17 +236,19 @@ var OnCallView = MonthView.extend({
         });
 
         // build CallTallies
-        table = this.$(".calltallies");
-        titlerow = $('<tr/>', {'class': 'titlerow'}).append($('<th/>'));
-        models.on_call.each(function(task) {
-            titlerow.append($('<th/>', {text: task.get('name')}));
-        });
-        table.append(titlerow);
-        var calltallies = this.month_days.calltallies;
-        models.persons.each(function(person) {
-            var view = new CallTallyView({ model: calltallies.get(person.id) });
-            table.append(view.render().$el);
-        });
+        if (models.user_can_change) {
+            table = this.$(".calltallies");
+            titlerow = $('<tr/>', {'class': 'titlerow'}).append($('<th/>'));
+            models.on_call.each(function(task) {
+                titlerow.append($('<th/>', {text: task.get('name')}));
+            });
+            table.append(titlerow);
+            var calltallies = this.month_days.calltallies;
+            models.persons.each(function(person) {
+                var view = new CallTallyView({ model: calltallies.get(person.id) });
+                table.append(view.render().$el);
+            });
+        }
     },
 });
 
@@ -347,5 +355,6 @@ return {
     // DutiesView: DutiesView,
     // MonthView: MonthView,
     // router: router,
+    remove_person_from_helper: remove_person_from_helper,
 };
 })($, _, Backbone);
