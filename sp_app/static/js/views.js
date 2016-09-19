@@ -243,9 +243,8 @@ var OnCallView = MonthView.extend({
                 titlerow.append($('<th/>', {text: task.get('name')}));
             });
             table.append(titlerow);
-            var calltallies = this.month_days.calltallies;
-            models.persons.each(function(person) {
-                var view = new CallTallyView({ model: calltallies.get(person.id) });
+            this.month_days.calltallies.each(function(calltally) {
+                var view = new CallTallyView({ model: calltally });
                 table.append(view.render().$el);
             });
         }
