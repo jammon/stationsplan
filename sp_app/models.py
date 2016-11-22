@@ -185,6 +185,10 @@ class ChangeLogging(models.Model):
     version = models.IntegerField(default=0)
     current_version = 1
 
+    class Meta:
+        verbose_name = _('ChangeLogging')
+        verbose_name_plural = _('ChangeLoggings')
+
     def toJson(self):
         return {
             'person': self.person.shortname,
@@ -293,6 +297,10 @@ class Planning(models.Model):
     version = models.IntegerField(default=0)
     current_version = 1
 
+    class Meta:
+        verbose_name = _('Planning')
+        verbose_name_plural = _('Plannings')
+
     def toJson(self):
         return {
             'person': self.person.shortname,
@@ -329,6 +337,10 @@ class Employee(models.Model):
     user = models.OneToOneField(User, related_name='employee')
     departments = models.ManyToManyField(Department, related_name='employees')
     company = models.ForeignKey(Company, related_name='employees')
+
+    class Meta:
+        verbose_name = _('Employee')
+        verbose_name_plural = _('Employees')
 
     def __str__(self):
         return '{}, {}, {}'.format(
