@@ -73,7 +73,7 @@ var StaffingView = Backbone.View.extend({
         return this;
     },
     addstaff: function() {
-        if (models.user_can_change || !this.collection.no_staffing)
+        if (models.user_can_change && !this.collection.no_staffing)
             changeviews.staff.show(this.collection);
     },
 });
