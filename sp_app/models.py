@@ -165,6 +165,9 @@ class Person(models.Model):
         if self.end_date < FAR_FUTURE:
             Planning.objects.filter(
                 person=self,
+                start__gte=self.end_date).delete()
+            Planning.objects.filter(
+                person=self,
                 end__gt=self.end_date).update(end=self.end_date)
 
 
@@ -296,6 +299,9 @@ class Planning(models.Model):
     json = models.CharField(max_length=255)
     version = models.IntegerField(default=0)
     current_version = 1
+    superseded_by = models.ForeignKey(
+        'self', models.SET_NULL, blank=True, null=True,
+        related_name='supersedes', default=None)
 
     class Meta:
         verbose_name = _('Planning')

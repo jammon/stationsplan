@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="{% static 'vendor/jquery-ui-1.12.0.custom/jquery-ui.min.css' %}">
     <link rel="stylesheet" href="{% static 'vendor/jquery-ui-1.12.0.custom/jquery-ui.structure.min.css' %}">
     <link rel="stylesheet" href="{% static 'vendor/jquery-ui-1.12.0.custom/jquery-ui.theme.min.css' %}">
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap-datepicker/css/bootstrap-datepicker3.css' %}">
 {% endblock extrahead %}
 
 {% block navigation %}
@@ -64,13 +65,17 @@
       </div>
       <div class="modal-body">
         <div class="row">
-          <div class="col-sm-8">
+          <div class="col-sm-6">
             <table id="changestafftable"></table>
           </div>
-          <div class="col-sm-4 col-xs-6 submitbuttons">
+          <div class="col-sm-6 col-xs-6 submitbuttons">
             <div><button type="button" class="btn btn-primary btn-block" id="one-day">Ein Tag</button></div>
             <div><button type="button" class="btn btn-primary btn-block" id="continued">Fortsetzen</button></div>
-            <div><button type="button" class="btn btn-default btn-block" data-dismiss="modal">Abbrechen</button></div>
+            <div id="date-picker" class="input-group">
+              <span class="input-group-addon">bis</span>
+              <input type="text" class="form-control" value="">
+            </div>
+
           </div>
         </div>
       </div>
@@ -85,6 +90,8 @@
     <script src="{% static 'vendor/backbone.js' %}"></script>
     <script src="{% static 'vendor/bootstrap.modalform.js' %}"></script>
     <script src="{% static 'vendor/jquery-ui-1.12.0.custom/jquery-ui.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap-datepicker/js/bootstrap-datepicker.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap-datepicker/locales/bootstrap-datepicker.de.min.js' %}"></script>
     <script src="{% static 'js/utils.js' %}"></script>
     <script src="{% static 'js/models.js' %}"></script>
     <script src="{% static 'js/changeviews.js' %}"></script>

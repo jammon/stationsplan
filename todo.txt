@@ -10,4 +10,9 @@
 (B) wann ist collection.no_staffing und wann ist collection===undefined?
 (C) A ward should not have the shortname id
 (B) Nach uberspace portieren
-Anonyme Personen sollten nicht für Krank oder Urlaub geplant werden können
+(B) Anonyme Personen sollten nicht für Krank oder Urlaub geplant werden können +FIX
+(A) http://stackoverflow.com/questions/14527387/script7002-xmlhttprequest-network-error-0x2ef3-could-not-complete-the-operati bearbeiten +FIX
+(B) Wenn eine Buchung nicht möglich ist, muss die Seite neu dargestellt werden +FIX
+(A) Man soll das Ende einer Planung eingeben können
+(A) Alle Dienste einer Person des aktuellen Monats sollen angezeigt werden
+(A) Die Verpflichtungen einer Person an diesem Tag als Tooltip anzeigen

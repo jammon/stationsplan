@@ -35,8 +35,10 @@ var ChangeStaffView = Backbone.View.extend({
     render: function() {
         var staffing = this.staffing;
         var day = this.staffing.day;
+        var cur_date = day.get('date');
+        var datestr = utils.datestr(cur_date);
         var changestafftable = this.$("#changestafftable").empty();
-        this.$(".changedate").text(utils.datestr(day.get('date')));
+        this.$(".changedate").text(datestr);
         this.$(".changeward").text(staffing.ward.get('name'));
         this.change_person_views = _.map(
             day.get_available(staffing.ward),
@@ -50,6 +52,17 @@ var ChangeStaffView = Backbone.View.extend({
                 view.$el.appendTo(changestafftable);
                 return view;
             });
+        this.$("#date-picker input").val(datestr);
+        var date_widget = this.$("#date-picker");
+        date_widget.datepicker({
+            format: "dd.mm.yyyy",
+            weekStart: 1,
+            language: "de",
+        });
+        date_widget.datepicker("setDate", cur_date);
+        date_widget.datepicker("setStartDate", cur_date);
+        // date_widget.datepicker("setEndDate", ?);
+        // setDatesDisabled, setDaysOfWeekDisabled
         return this;
     },
     show: function(staffing) {
@@ -93,6 +106,7 @@ var ChangePersonView = Backbone.View.extend({
         this.toggleClasses();
     }
 });
+
 
 return {
     staff: changestaffview,

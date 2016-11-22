@@ -34,7 +34,8 @@ def plan(request, month='', ward_selection=''):
     # wards_ids = [w.id for w in wards]
     plannings = Planning.objects.filter(
         ward__in=wards,
-        end__gte=start_of_data)
+        end__gte=start_of_data,
+        superseded_by=None)
     data = {
         'persons': json.dumps([p.toJson() for p in persons]),
         'wards': json_array(wards),
