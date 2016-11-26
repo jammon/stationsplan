@@ -350,7 +350,7 @@ var ErrorView = Backbone.View.extend({
 var error_view = new ErrorView({ el: $("#errors")});
 
 return {
-    // StaffingView: StaffingView,
+    StaffingView: StaffingView,
     // DutiesView: DutiesView,
     // MonthView: MonthView,
     // router: router,
