@@ -1,5 +1,5 @@
 describe("views", function() {
-    describe("Rights to display StaffingView", function() {
+    describe("StaffingView", function() {
         describe("with usual Staffing", function() {
             var monday = new models.Day({ date: new Date(2016, 10, 28) });
             var staffingview = new views.StaffingView({
