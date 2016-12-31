@@ -10,6 +10,10 @@ def test():
     local("./manage.py test sp_app")
 
 
+def serve():
+    local("./manage.py runserver")
+
+
 def sass():
     local("sass sp_app/static/css/main.{scss,css}")
 

@@ -1,6 +1,6 @@
 (B) Admins sollen nur User für das eigene Department anlegen können
 (C) Nur finalisierte Planungen sollen für Benutzer ohne besondere Berechtigung sichtbar sein
-(A) Customize the default error views 
+(B) Customize the default error views 
 (C) Der Kurzname einer Funktion sollte kein Komma enthalten.
 (A) Logging anzeigen
 (B) Auch Ärzte von Fremdabteilungen sollen angezeigt werden, wenn sie in den angezeigten Funktionen Dienst tun. Sollen dann nicht bearbeitbar sein.
@@ -13,6 +13,13 @@
 (B) Anonyme Personen sollten nicht für Krank oder Urlaub geplant werden können +FIX
 (A) http://stackoverflow.com/questions/14527387/script7002-xmlhttprequest-network-error-0x2ef3-could-not-complete-the-operati bearbeiten +FIX
 (B) Wenn eine Buchung nicht möglich ist, muss die Seite neu dargestellt werden +FIX
-(A) Man soll das Ende einer Planung eingeben können
 (A) Alle Dienste einer Person des aktuellen Monats sollen angezeigt werden
 (A) Die Verpflichtungen einer Person an diesem Tag als Tooltip anzeigen
+(A) Auf der login-Seite sollte auch der Benutzername focussiert sein
+(B) Urlaube in der Planungsansicht der Dienste anzeigen
+(B) Visitendienst in einer Zeile
+(B) Termine für Visitendienste
+(A) In der Statistik Ambulanz- und Intensivdienste zusammenfassen.
+(B) Anonyme Personen sollten nicht in den Duties angezeigt werden
+Unbesetzte Dienste/Stationen auch in Print markieren
+Kurzname von Personen ändern können

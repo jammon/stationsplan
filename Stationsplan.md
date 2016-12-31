@@ -62,4 +62,8 @@ Können alles was Department Leader können auf Company-Ebene.
 - die Admin-Static-Filea liegen in /var/www/virtual/$USER/$DJANGOURL/static/
 
 ## Planungen mit Anfang und Ende eingeben
-Wenn man eine Planung eingibt, die ein oder mehrere bisherige Planungen (teilweise) überlappt, sollen diese verlinkt und als inaktiv markiert werden. So ist ein Undo möglich.
+Wenn man eine Planung eingibt, die ein oder mehrere bisherige Planungen überdeckt, sollen diese verlinkt und als inaktiv markiert werden. So ist ein Undo möglich.
+
+Wenn eine neue Planung eine alte teilweise überlappt, wird sie so beschnitten, dass sie direkt anschließt und nicht mehr überlappt. (Nach dem bisherigen UI kann die neue Planung nur mit ihrem Ende den Anfang einer alten Planung überdecken.)
+
+Wenn ein Change mit add=False und angegebenem Ende andere Planungen überdeckt, werden diese gekürzt oder gelöscht.

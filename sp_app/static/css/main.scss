@@ -59,6 +59,9 @@ td.free-day{
 .submitbuttons > div {
     padding: 1px 4px;
 }
+#date-picker td.disabled {
+    color: #cccccc;
+}
 .errorlist {
     list-style-type: none;
     padding-left: 0;

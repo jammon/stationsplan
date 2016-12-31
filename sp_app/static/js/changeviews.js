@@ -1,14 +1,19 @@
 var changeviews = (function($, _, Backbone) {
 "use strict";
 
+var MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 var ChangeStaffView = Backbone.View.extend({
     events: {
         "click #one-day": "one_day",
         "click #continued": "continued",
+        "click #time_period": "time_period",
     },
     one_day: function() { this.save(false); },
     continued: function() { this.save(true); },
+    time_period: function(e) { 
+        this.save(this.$("#date-picker").datepicker('getDate'));
+    },
     save: function(continued) {
         models.save_change({
             day: this.staffing.day.id,
@@ -59,10 +64,18 @@ var ChangeStaffView = Backbone.View.extend({
             weekStart: 1,
             language: "de",
         });
-        date_widget.datepicker("setDate", cur_date);
+        date_widget.datepicker('setDate', cur_date);
+        $('#until-date').text("Zeitraum wählen");
+        date_widget.on("changeDate", function() {
+            $('#until-date').text(
+                "bis " +
+                date_widget.datepicker('getFormattedDate') +
+                " = " +
+                ((date_widget.datepicker('getDate') - cur_date) / MS_PER_DAY + 1) +
+                " Tage"
+            );
+        });
         date_widget.datepicker("setStartDate", cur_date);
-        // date_widget.datepicker("setEndDate", ?);
-        // setDatesDisabled, setDaysOfWeekDisabled
         return this;
     },
     show: function(staffing) {

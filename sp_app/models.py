@@ -174,6 +174,8 @@ class Person(models.Model):
 @python_2_unicode_compatible
 class ChangeLogging(models.Model):
     ''' Logs who has made which changes.
+    The change can be for one day (continued==False) or continued
+    If continued==True it can have an end date (`until`)
     '''
     company = models.ForeignKey(Company)
     user = models.ForeignKey(User)
@@ -181,7 +183,12 @@ class ChangeLogging(models.Model):
     ward = models.ForeignKey(Ward)
     day = models.DateField()
     added = models.BooleanField()
-    continued = models.BooleanField(default=True)
+    continued = models.BooleanField(
+        default=True,
+        help_text='If False the change is valid for one day.')
+    until = models.DateField(
+        null=True, blank=True,
+        help_text='The last day the change is valid. Can be blank.')
     description = models.CharField(max_length=255)
     json = models.CharField(max_length=255)
     change_time = models.DateTimeField(auto_now=True)
@@ -193,17 +200,23 @@ class ChangeLogging(models.Model):
         verbose_name_plural = _('ChangeLoggings')
 
     def toJson(self):
-        return {
+        data = {
             'person': self.person.shortname,
             'ward': self.ward.shortname,
             'day': self.day.strftime('%Y%m%d'),
             'action': 'add' if self.added else 'remove',
             'continued': self.continued,
         }
+        if self.until:
+            data['until'] = self.until.strftime('%Y%m%d')
+        return data
+
+    def make_json(self):
+        self.json = json.dumps(self.toJson())
 
     def calc_data(self):
         self.make_description()
-        self.json = json.dumps(self.toJson())
+        self.make_json()
         self.version = self.current_version
         return self
 
@@ -213,13 +226,15 @@ class ChangeLogging(models.Model):
 
     def make_description(self):
         template = (
-            '{user_name}: {self.person.name} ist {relation} {date} '
+            '{user_name}: {self.person.name} ist {relation} {date}{until} '
             '{added}für {self.ward.name} eingeteilt')
         self.description = template.format(
             user_name=self.user.last_name or self.user.get_username(),
             self=self,
             relation='ab' if self.continued else 'am',
             date=self.day.strftime('%d.%m.%Y'),
+            until=(' bis %s'.format(self.until.strftime('%d.%m.%Y'))
+                   if self.until else ''),
             added='' if self.added else 'nicht mehr ')
 
     def __str__(self):
@@ -233,38 +248,66 @@ def process_change(cl):
     """
     plannings = Planning.objects.filter(person_id=cl.person_id,
                                         ward_id=cl.ward_id)
-    planning_data = dict(person_id=cl.person_id, ward_id=cl.ward_id)
+    pl_data = dict(person_id=cl.person_id, ward_id=cl.ward_id)
     if cl.added:
         if cl.continued:
-            plannings = plannings.filter(end__gte=cl.day).order_by('start')
-            if len(plannings) == 0:
-                end = FAR_FUTURE
-            else:
-                next_planning = plannings[0]
-                if cl.day < next_planning.start:
-                    end = next_planning.start - ONE_DAY
+            end = cl.until or FAR_FUTURE
+            plannings = list(plannings.filter(
+                end__gte=cl.day,
+                start__lte=end,
+            ).order_by('start'))
+            if len(plannings):
+                # if cl.until is given and is before the end of the last
+                #   overlapping planning
+                # else it ends with the first planning in this period
+                if cl.until:
+                    last_planning = plannings[-1]
+                    if cl.until < last_planning.end:
+                        end = cl.until = last_planning.start - ONE_DAY
+                        cl.save()
+                        plannings.pop()
                 else:
-                    return {}  # change is in an existing planning
-            Planning.objects.create(start=cl.day, end=end, **planning_data)
+                    end = plannings[0].start - ONE_DAY
+                if cl.day > end:  # This can happen if cl.until==None and
+                    return {}     # change is in an existing planning
+            pl = Planning.objects.create(start=cl.day, end=end, **pl_data)
+            if cl.until and len(plannings) > 0:
+                Planning.objects.filter(
+                    id__in=[_pl.id for _pl in plannings]
+                ).update(superseded_by=pl)
         else:  # not continued, one day
             plannings = plannings.filter(start__lte=cl.day, end__gte=cl.day)
             if len(plannings) == 0:
-                Planning.objects.create(start=cl.day, end=cl.day,
-                                        **planning_data)
+                Planning.objects.create(start=cl.day, end=cl.day, **pl_data)
             else:
                 return {}  # change is contained in a Planning
 
     else:  # removed
-        plannings = plannings.filter(start__lte=cl.day, end__gte=cl.day)
+        plannings = plannings.filter(
+            start__lte=cl.until or cl.day, end__gte=cl.day).order_by('start')
         if len(plannings) == 0:
             return {}
         if cl.continued:
-            for pl in plannings:  # should be only one planning
-                if pl.start == cl.day:
-                    pl.delete()
-                else:
-                    pl.end = cl.day - ONE_DAY
-                    pl.save()
+            if cl.until:
+                for pl in plannings:
+                    if pl.start < cl.day:
+                        if pl.end > cl.until:
+                            Planning.objects.create(start=cl.until+ONE_DAY,
+                                                    end=pl.end, **pl_data)
+                        pl.end = cl.day - ONE_DAY
+                        pl.save()
+                    elif pl.end > cl.until:
+                        pl.start = cl.until + ONE_DAY
+                        pl.save()
+                    else:
+                        pl.delete()  # cave: no undo!!
+            else:
+                for pl in plannings:  # should be only one planning
+                    if pl.start == cl.day:
+                        pl.delete()
+                    else:
+                        pl.end = cl.day - ONE_DAY
+                        pl.save()
         else:  # not continued, one day
             for pl in plannings:
                 if pl.start == pl.end:  # pl is one day
@@ -276,7 +319,7 @@ def process_change(cl):
                     if not pl.end == cl.day:
                         Planning.objects.create(start=cl.day + ONE_DAY,
                                                 end=pl.end,
-                                                **planning_data)
+                                                **pl_data)
                     pl.end = cl.day - ONE_DAY
                     pl.save()
 
@@ -300,8 +343,9 @@ class Planning(models.Model):
     version = models.IntegerField(default=0)
     current_version = 1
     superseded_by = models.ForeignKey(
-        'self', models.SET_NULL, blank=True, null=True,
-        related_name='supersedes', default=None)
+        'self', on_delete=models.SET_NULL, blank=True, null=True,
+        related_name='supersedes', default=None,
+        help_text=_("Later planning that supersedes this one"))
 
     class Meta:
         verbose_name = _('Planning')

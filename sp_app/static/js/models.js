@@ -137,8 +137,8 @@ var Staffing = Backbone.Collection.extend({
         })) return false;
         // Is this ward in their portfolio?
         if (!person.can_work_on(this.ward)) return false;
+        // does yesterdays planning allow this?
         if (!person.get('anonymous')) {
-            // does yesterdays planning allow this?
             var yesterday = this.day.get('yesterday');
             var current_ward_id = this.ward.id;
             if (yesterday) {
@@ -177,14 +177,22 @@ var Staffing = Backbone.Collection.extend({
         this.continue_yesterday('add', person, options);
     },
     removed_yesterday: function(person, staffing, options) {
-        if (this.added_today.indexOf(person.id)==-1)
+        if (options.until && options.until>=this.day.id ||
+            this.added_today.indexOf(person.id)==-1)
             this.continue_yesterday('remove', person, options);
     },
     continue_yesterday: function(action, person, options) {
         // continue yesterdays planning
         if (!options.continued) return;
+        if (options.until && options.until<this.day.id) return;
         if (person.get('end_date')<this.day.get('date')) return;
         this[action](person, options);
+        if (options.until && options.until>this.day.id) {
+            if (action=='add' && this.contains(person) ||
+                action=='remove' && !this.contains(person)) {
+                this.trigger(action, person, this, options);
+            }
+        }
     },
     lacking: function() {
         return this.displayed.length<this.ward.get('min');
@@ -204,7 +212,7 @@ var Staffing = Backbone.Collection.extend({
     apply_change: function(change) {
         var person = persons.get(change.person);
         if (person) {
-            this[change.action](person, { continued: change.continued });
+            this[change.action](person, _.pick(change, 'continued', 'until'));
             if (change.action==="add") {
                 this.added_today.push(person.id);
             } else {
@@ -512,7 +520,7 @@ function save_change(data) {
     // data should have these attributes: 
     //   day: a models.Day or its id
     //   ward: a models.Ward
-    //   continued: a Boolean
+    //   continued: a Boolean or a Date
     //   persons: an Array of {
     //       id: a persons id,
     //       action: 'add' or 'remove'
@@ -532,7 +540,9 @@ function save_change(data) {
         data: JSON.stringify({
             day: data.day.id || data.day,
             ward: data.ward.id || data.ward,
-            continued: data.continued,
+            continued: _.isDate(data.continued) ?
+                utils.get_day_id(data.continued) :
+                data.continued,
             persons: data.persons,
         }),
         dataType: "json",

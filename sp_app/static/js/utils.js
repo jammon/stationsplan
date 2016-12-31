@@ -34,8 +34,9 @@ function get_next_month (year, month) {
 }
 
 function get_day_id (date_or_year, month, day) {
-    var date = (month === void 0) ? date_or_year :
-                                     new Date(date_or_year, month, day);
+    var date = (month === void 0) ? 
+               date_or_year : 
+               new Date(date_or_year, month, day);
     return "" + (date.getFullYear()*10000 +
                  (date.getMonth()+1)*100 +
                  date.getDate());

@@ -53,18 +53,21 @@ def apply_changes(user, company_id, day, ward, continued, persons):
         person.shortname: person for person in Person.objects.filter(
             company__id=company_id,
             shortname__in=(p['id'] for p in persons))}
+    data = dict(company_id=company_id, user=user, ward=ward,
+                day=datetime.strptime(day, '%Y%m%d').date(),
+                continued=continued,
+                until=None)
+    if isinstance(continued, basestring):
+        data['until'] = datetime.strptime(continued, '%Y%m%d').date()
+        data['continued'] = True
     cls = []
     for p in persons:
         assert p['id'] in known_persons, \
             "%s is not in the persons database" % p['id']
         cl = ChangeLogging.objects.create(
-                company_id=company_id,
-                user=user,
                 person=known_persons[p['id']],
-                ward=ward,
-                day=datetime.strptime(day, '%Y%m%d').date(),
                 added=p['action'] == 'add',
-                continued=continued)
+                **data)
         cl_dict = process_change(cl)
         if cl_dict:
             cls.append(cl_dict)

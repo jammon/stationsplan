@@ -17,7 +17,7 @@ def changes(request):
     The data come in this form:
     {'day': <YYYYMMDD>,
      'ward': <ward.shortname>,
-     'continued': True|False,
+     'continued': True|False|<YYYYMMDD>,
      'persons': [{
            'id': <person.shortname>,
            'action': 'add'|'remove',

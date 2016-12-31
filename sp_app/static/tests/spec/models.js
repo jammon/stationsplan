@@ -56,9 +56,10 @@ describe("models", function() {
         describe("calculate who can be planned", function() {
             var today, yesterday, staffing_a, person_a;
             beforeEach(function() {
-                yesterday = new models.Day({ date: new Date(2016, 8, 19) });
+                yesterday = new models.Day({ 
+                    date: new Date(2016, 8, 19) });
                 today = new models.Day({ 
-                    date: new Date(2016, 8, 20),
+                    date: new Date(2016, 8,20),
                     yesterday: yesterday,
                 });
                 staffing_a = today.ward_staffings.A;
@@ -500,66 +501,131 @@ describe("models", function() {
     });
     describe("Changes", function() {
         beforeEach(function() {
-            // initialize August 3 through 5
+            // initialize August 3 through 7
             models.days.reset();
             models.days.get_day(2015, 7, 3);
-            models.days.get_day(2015, 7, 5);
+            models.days.get_day(2015, 7, 7);
         });
         afterEach(function() {
             models.days.reset();
         });
+        function test_staffing(day_or_day_id, person_ids) {
+            if (_.isString(day_or_day_id)) {
+                expect(models.days.get(day_or_day_id)
+                    .ward_staffings.A.pluck('id'))
+                    .toEqual(person_ids);
+            } else {
+                expect(day_or_day_id
+                    .ward_staffings.A.pluck('id'))
+                    .toEqual(person_ids);
+            }
+        }
+        function test_duties(day_or_day_id, staff_ids) {
+            if (_.isString(day_or_day_id)) {
+                expect(models.days.get(day_or_day_id)
+                    .persons_duties.A.pluck('shortname'))
+                    .toEqual(staff_ids);
+            } else {
+                expect(day_or_day_id
+                    .persons_duties.A.pluck('shortname'))
+                    .toEqual(staff_ids);
+            }
+        }
+        function make_change(options) {
+            models.apply_change({
+                person: 'A', ward: 'A',
+                day: options.day,
+                action: options.action,
+                continued: options.continued,
+                until: options.until,
+            });
+        }
         it("should apply changes", function() {
             var yesterday = models.days.get('20150803');
             var today = models.days.get('20150804');
             var tomorrow = models.days.get('20150805');
-            models.apply_change({
-                person: 'A', ward: 'A',
+            make_change({
                 day: '20150804', action: 'add',
                 continued: true,
             });
-            expect(yesterday.ward_staffings.A.length).toBe(0);
-            expect(yesterday.persons_duties.A.length).toBe(0);
-            expect(today.ward_staffings.A.length).toBe(1);
-            expect(today.ward_staffings.A.pluck('id')).toEqual(['A']);
-            expect(today.persons_duties.A.pluck('shortname')).toEqual(['A']);
-            expect(tomorrow.ward_staffings.A.pluck('id')).toEqual(['A']);
-            expect(tomorrow.persons_duties.A.pluck('shortname')).toEqual(['A']);
+            test_staffing(yesterday, []);
+            test_duties(yesterday, []);
+            test_staffing(today, ['A']);
+            test_duties(today, ['A']);
+            test_staffing(tomorrow, ['A']);
+            test_duties(tomorrow, ['A']);
         });
         it("should preserve a later planning, " +
             "if a previous duty is started", function() {
             var tomorrow = models.days.get('20150805');
-            models.apply_change({  // add from today
-                person: 'A', ward: 'A',
+            make_change({  // add from today
                 day: '20150804', action: 'add', continued: true,
             });
-            models.apply_change({  // remove tomorrow
-                person: 'A', ward: 'A',
+            make_change({  // remove tomorrow
                 day: '20150805', action: 'remove', continued: true,
             });
-            models.apply_change({  // add from yesterday
-                person: 'A', ward: 'A',
+            make_change({  // add from yesterday
                 day: '20150803', action: 'add', continued: true,
             });
-            expect(tomorrow.ward_staffings.A.length).toEqual(0);
-            expect(tomorrow.persons_duties.A.length).toEqual(0);
+            test_staffing(tomorrow, []);
+            test_duties(tomorrow, []);
         });
         it("should preserve a later planning, " +
             "if a previous duty ends", function() {
             var tomorrow = models.days.get('20150805');
-            models.apply_change({  // add from tomorrow
-                person: 'A', ward: 'A',
+            make_change({  // add from tomorrow
                 day: '20150805', action: 'add', continued: true,
             });
-            models.apply_change({  // add from yesterday
-                person: 'A', ward: 'A',
+            make_change({  // add from yesterday
                 day: '20150803', action: 'add', continued: true,
             });
-            models.apply_change({  // remove today
-                person: 'A', ward: 'A',
+            make_change({  // remove today
                 day: '20150804', action: 'remove', continued: true,
             });
-            expect(tomorrow.ward_staffings.A.pluck('id')).toEqual(['A']);
-            expect(tomorrow.persons_duties.A.pluck('shortname')).toEqual(['A']);
+            test_staffing(tomorrow, ['A']);
+            test_duties(tomorrow, ['A']);
+        });
+        it("should apply a change with an end", function() {
+            make_change({
+                day: '20150803', action: 'add', continued: true,
+                until: '20150804',
+            });
+            test_staffing('20150803', ['A']);
+            test_staffing('20150804', ['A']);
+            test_staffing('20150805', []);
+        });
+        it("should apply a remove with an end", function() {
+            test_staffing('20150803', []);
+            make_change({
+                day: '20150803', action: 'add', continued: false,
+            });
+            make_change({
+                day: '20150805', action: 'add', continued: true,
+            });
+            make_change({
+                day: '20150803', action: 'remove', continued: true,
+                until: '20150805',
+            });
+            test_staffing('20150803', []);
+            test_staffing('20150804', []);
+            test_staffing('20150805', []);
+            test_staffing('20150806', ['A']);
+        });
+        it("should apply changes over other plannings when there is an end", function() {
+            make_change({
+                day: '20150804', action: 'add', continued: false,
+            });
+            make_change({
+                day: '20150806', action: 'add', continued: true,
+            });
+            make_change({
+                day: '20150803', action: 'add', continued: true,
+                until: '20150806',
+            });
+            test_staffing('20150803', ['A']);
+            test_staffing('20150804', ['A']);
+            test_staffing('20150805', ['A']);
+            test_staffing('20150806', ['A']);
         });
     });
 });
