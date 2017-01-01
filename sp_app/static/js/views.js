@@ -167,7 +167,9 @@ var MonthView = Backbone.View.extend({
         });
         // then the persons
         models.persons.each(function(person) {
-            table.append(construct_row(person));
+            if (person.get('end_date') >= that.month_days.first().get('date') &&
+                person.get('start_date') <= that.month_days.last().get('date'))
+                table.append(construct_row(person));
         });
     },
     render: function() {

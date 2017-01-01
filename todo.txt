@@ -15,7 +15,6 @@
 (B) Wenn eine Buchung nicht möglich ist, muss die Seite neu dargestellt werden +FIX
 (A) Alle Dienste einer Person des aktuellen Monats sollen angezeigt werden
 (A) Die Verpflichtungen einer Person an diesem Tag als Tooltip anzeigen
-(A) Auf der login-Seite sollte auch der Benutzername focussiert sein
 (B) Urlaube in der Planungsansicht der Dienste anzeigen
 (B) Visitendienst in einer Zeile
 (B) Termine für Visitendienste
