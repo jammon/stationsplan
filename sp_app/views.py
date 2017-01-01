@@ -13,7 +13,7 @@ from .utils import (get_first_of_month, json_array)
 def home(request):
     if request.user.is_authenticated():
         return redirect('plan')
-    return render(request, "sp_app/index.html")
+    return render(request, "sp_app/index.html", context={'next': '/plan'})
 
 
 @login_required
