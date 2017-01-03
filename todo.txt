@@ -20,5 +20,6 @@
 (B) Termine für Visitendienste
 (A) In der Statistik Ambulanz- und Intensivdienste zusammenfassen.
 (B) Anonyme Personen sollten nicht in den Duties angezeigt werden
-Unbesetzte Dienste/Stationen auch in Print markieren
-Kurzname von Personen ändern können
+(A) Unbesetzte Dienste/Stationen auch in Print markieren
+(A) Kurzname von Personen ändern können
+(A) Dienste aufsummiert anzeigen

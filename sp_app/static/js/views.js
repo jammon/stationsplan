@@ -166,10 +166,8 @@ var MonthView = Backbone.View.extend({
             table.append(construct_row(ward));
         });
         // then the persons
-        models.persons.each(function(person) {
-            if (person.get('end_date') >= that.month_days.first().get('date') &&
-                person.get('start_date') <= that.month_days.last().get('date'))
-                table.append(construct_row(person));
+        _.each(this.month_days.current_persons(), function(person) {
+            table.append(construct_row(person));
         });
     },
     render: function() {

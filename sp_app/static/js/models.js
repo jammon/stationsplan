@@ -448,17 +448,18 @@ function start_day_chain(year, month) {
 // is used as event dispatcher for the CallTallies
 var MonthDays = Backbone.Collection.extend({
     initialize: function(models, options) {
-        // 'models' should be a sorted array of 'Day's
-        Backbone.Collection.prototype.initialize.call(this, models, options);
+        // month is 0..11 like in javascript
+        var year = options.year, month = options.month, i = 1;
+        var next_day = days.get_day(year, month, i);
+        do {
+            this.add(next_day);
+            next_day = days.get_day(year, month, ++i);
+        } while (next_day.get('date').getMonth()===month);
         var calltallies = this.calltallies = new CallTallies();
-        var last = _.last(models).get('date');
-        var first = models[0].get('date');
-        persons.each(function(person) {
-            if (person.get('start_date') <= last &&
-                person.get('end_date') >= first)
-                calltallies.add({ id: person.id, name: person.get('name') });
+        _.each(this.current_persons(), function(person) {
+            calltallies.add({ id: person.id, name: person.get('name') });
         });
-        _.each(models, function(day) {
+        this.each(function(day) {
             on_call.each(function(ward) {
                 var displayed = day.ward_staffings[ward.id].displayed;
                 displayed.each(function(person) {
@@ -471,20 +472,24 @@ var MonthDays = Backbone.Collection.extend({
             });
         });
     },
+    current_persons: function() {
+        if (!this._current_persons) {
+            var first = this.first().get('date');
+            var last = this.last().get('date');
+            this._current_persons = persons.filter(function(person) {
+                return (person.get('end_date') >= first &&
+                        person.get('start_date') <= last);
+            });
+        }
+        return this._current_persons;
+    },
 });
 
 // Returns Collection with the Days of the current month
 // This should only be called in sequence
 function get_month_days(year, month) {
     // month is 0..11 like in javascript
-    var month_days = [];
-    var i = 1;
-    var next_day = days.get_day(year, month, i);
-    do {
-        month_days.push(next_day);
-        next_day = days.get_day(year, month, ++i);
-    } while (next_day.get('date').getMonth()===month);
-    return new MonthDays(month_days);
+    return new MonthDays(null, { year: year, month: month, });
 }
 
 
@@ -508,10 +513,12 @@ var CallTally = Backbone.Model.extend({
 var CallTallies = Backbone.Collection.extend({
     model: CallTally,
     on_call_added: function(person, staffing, options) {
-        this.get(person.id).add_shift(staffing.ward);
+        var ct = this.get(person.id);
+        if (ct) ct.add_shift(staffing.ward);
     },
     on_call_removed: function(person, staffing, options) {
-        this.get(person.id).subtract_shift(staffing.ward);
+        var ct = this.get(person.id);
+        if (ct) ct.subtract_shift(staffing.ward);
     },
 });
 
