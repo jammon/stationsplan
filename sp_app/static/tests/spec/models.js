@@ -499,6 +499,23 @@ describe("models", function() {
             expect(tally.get_tally(ward_n)).toBe(0);
         });
     });
+    describe("MonthDays.current_persons", function() {
+        it("should exclude persons according to their employment status", function() {
+            var month_days;
+            models.days.reset();
+            models.persons.add([
+                { name: 'No More', id: 'X', end_date: [2016, 2, 31] },
+                { name: 'Not Yet', id: 'Y', start_date: [2016, 4, 1] },
+                { name: 'Short Time', id: 'Z',
+                  start_date: [2016, 2, 1], end_date: [2016, 4, 31], },
+            ]);
+            month_days = models.get_month_days(2016, 3);
+            expect(_.pluck(month_days.current_persons(), 'id')).toEqual(
+                ['A', 'B', 'C', 'Other', 'Z']);
+            models.days.reset();
+        });
+
+    });
     describe("Changes", function() {
         beforeEach(function() {
             // initialize August 3 through 7
