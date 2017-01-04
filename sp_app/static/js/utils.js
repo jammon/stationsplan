@@ -27,12 +27,6 @@ function is_free(date) {
     return (free_dates.indexOf(date_string) > -1);
 }
 
-function get_next_month (year, month) {
-    return (month < 11) ?
-        { month: month+1, year: year } : 
-        { month: 0,       year: year+1 };
-}
-
 function get_day_id (date_or_year, month, day) {
     var date = (month === void 0) ? 
                date_or_year : 
@@ -45,21 +39,27 @@ function get_day_id (date_or_year, month, day) {
 function get_month_id (year, month) {
     return "" + (year*100 + (month+1));
 }
+
+function get_previous_month (year, month) {
+    return (month > 0) ?
+        { month: month-1, year: year } : 
+        { month: 11,      year: year-1 };
+}
 function get_previous_month_id(month_id) {
     var m = get_year_month(month_id);
-    if (m.month===0) {
-        return get_month_id(m.year-1, 11);
-    } else {
-        return get_month_id(m.year, m.month-1);
-    }
+    m = get_previous_month(m.year, m.month);
+    return get_month_id(m.year, m.month);
+}
+
+function get_next_month (year, month) {
+    return (month < 11) ?
+        { month: month+1, year: year } : 
+        { month: 0,       year: year+1 };
 }
 function get_next_month_id(month_id) {
     var m = get_year_month(month_id);
-    if (m.month===11) {
-        return get_month_id(m.year+1, 0);
-    } else {
-        return get_month_id(m.year, m.month+1);
-    }
+    m = get_next_month(m.year, m.month);
+    return get_month_id(m.year, m.month);
 }
 
 function get_year_month (month_id) {
@@ -75,9 +75,9 @@ function datestr(date) {
 
 return {
     is_free: is_free,
-    get_next_month: get_next_month,
     get_day_id: get_day_id,
     get_month_id: get_month_id,
+    get_next_month: get_next_month,
     get_previous_month_id: get_previous_month_id,
     get_next_month_id: get_next_month_id,
     get_year_month: get_year_month,
