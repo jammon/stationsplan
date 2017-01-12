@@ -239,8 +239,8 @@ var OnCallView = MonthView.extend({
         if (models.user_can_change) {
             table = this.$(".calltallies");
             titlerow = $('<tr/>', {'class': 'titlerow'}).append($('<th/>'));
-            models.on_call.each(function(task) {
-                titlerow.append($('<th/>', {text: task.get('name')}));
+            _.each(models.on_call_types, function(on_call_type) {
+                titlerow.append($('<th/>', {text: on_call_type}));
             });
             table.append(titlerow);
             this.month_days.calltallies.each(function(calltally) {
@@ -282,8 +282,8 @@ var CallTallyView = Backbone.View.extend({
             helper: 'clone',
         });
         el.empty().append(name);
-        models.on_call.each(function(ward) {
-            el.append($("<td\>", { text: model.get_tally(ward) }));
+        _.each(models.on_call_types, function(on_call_type) {
+            el.append($("<td\>", { text: model.get_tally(on_call_type) }));
         });
         return this;
     },

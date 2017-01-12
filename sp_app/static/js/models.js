@@ -53,6 +53,7 @@ var persons = new Persons();
 //     - on_leave = if truthy, then persons planned for this are on leave
 //     - approved = The date until which the plan is approved
 //     - after_this = an Array of wards, that can be planned after this one
+//     - ward_type = none or '' or type of ward (for handling of call shifts)
 var Ward = Backbone.Model.extend({
     initialize: function() {
         var start = this.get('approved') || [2015, 0, 1];
@@ -69,6 +70,9 @@ var Ward = Backbone.Model.extend({
         if (!this.get('continued')) return 'non-continued-row';
         if (this.get('on_leave')) return 'leaverow';
         return 'wardrow';
+    },
+    get_ward_type: function() {
+        return this.get('ward_type') || this.get('name');
     },
 });
 
@@ -88,6 +92,7 @@ var nightshifts = new Backbone.Collection();
 var on_leave = new Backbone.Collection();
 var special_duties = new Backbone.Collection();
 var on_call = new Backbone.Collection();
+var on_call_types = [];
 
 function initialize_wards (wards_init) {
     wards.reset(wards_init);
@@ -99,6 +104,10 @@ function initialize_wards (wards_init) {
     on_call.reset(wards.filter(function(ward) {
         return !ward.get('continued');
     }));
+    on_call_types = _.uniq(on_call.map(function(ward) {
+        return ward.get_ward_type();
+    }));
+    models.on_call_types = on_call_types;
 }
 
 
@@ -497,15 +506,15 @@ function get_month_days(year, month) {
 // per month
 var CallTally = Backbone.Model.extend({
     add_shift: function(ward) {
-        var ward_shortname = '_' + ward.get('shortname');
-        this.set(ward_shortname, (this.get(ward_shortname) || 0) + 1);
+        var ward_type = '_' + ward.get_ward_type();
+        this.set(ward_type, (this.get(ward_type) || 0) + 1);
     },
     subtract_shift: function(ward) {
-        var ward_shortname = '_' + ward.get('shortname');
-        this.set(ward_shortname, this.get(ward_shortname) - 1);
+        var ward_type = '_' + ward.get_ward_type();
+        this.set(ward_type, this.get(ward_type) - 1);
     },
-    get_tally: function(ward) {
-        return this.get('_' + ward.get('shortname')) || 0;
+    get_tally: function(on_call_type) {
+        return this.get('_' + on_call_type) || 0;
     },
 });
 
@@ -601,6 +610,7 @@ return {
     on_leave: on_leave,
     special_duties: special_duties,
     on_call: on_call,
+    on_call_types: on_call_types,
     initialize_wards: initialize_wards,
     Staffing: Staffing,
     Duties: Duties,

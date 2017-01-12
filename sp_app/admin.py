@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
 from .models import (Person, Ward, ChangeLogging, Planning, Department,
-                     Company, Employee, StatusEntry)
+                     Company, Employee, StatusEntry, WardType)
 from .forms import WardForm
 
 
@@ -118,6 +118,7 @@ class WardAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
             (('name', 'shortname', 'position'),
              ('max', 'min', 'approved'),
              ('nightshift', 'everyday', 'freedays', 'continued', 'on_leave',),
+             'ward_type',
              'departments',
              'staff',
              'after_this',
@@ -146,15 +147,19 @@ class PlanningAdmin(admin.ModelAdmin):
     list_filter = (PersonListFilter, WardListFilter)
 
 
+class WardTypeAdmin(admin.ModelAdmin):
+    fields = ('name', 'callshift', 'company', )
+
+
 admin.site.register(Person, PersonAdmin)
 admin.site.register(Ward, WardAdmin)
-
 admin.site.register(Department)
 admin.site.register(Company)
 admin.site.register(Employee)
 admin.site.register(ChangeLogging, ChangeLoggingAdmin)
 admin.site.register(Planning, PlanningAdmin)
 admin.site.register(StatusEntry)
+admin.site.register(WardType, WardTypeAdmin)
 
 
 class ConfigSite(admin.sites.AdminSite):
@@ -173,3 +178,4 @@ config_site = ConfigSite(name='config')
 config_site.register(Department, DepartmentAdmin)
 config_site.register(Ward, WardAdmin)
 config_site.register(Person, PersonAdmin)
+config_site.register(WardType)

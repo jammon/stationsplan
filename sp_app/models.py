@@ -76,6 +76,8 @@ class Ward(models.Model):
     position = models.IntegerField(
         default=1,
         help_text=_('Ordering in the display'))
+    ward_type = models.ForeignKey(
+        'WardType', related_name='wards', null=True, default=None)
     approved = models.DateField(
         null=True, blank=True,
         help_text=_('The date until which the plan is approved'))
@@ -113,7 +115,18 @@ class Ward(models.Model):
                 'id': self.id,
                 'after_this': '' if not self.pk else ','.join(
                     self.after_this.values_list('shortname', flat=True)),
+                'ward_type': self.ward_type.name if self.ward_type else ''
                 }
+
+
+@python_2_unicode_compatible
+class WardType(models.Model):
+    name = models.CharField(_('Name'), max_length=20)
+    callshift = models.BooleanField(_('Call shift'))
+    company = models.ForeignKey(Company, related_name='ward_types')
+
+    def __str__(self):
+        return self.name
 
 
 @python_2_unicode_compatible
