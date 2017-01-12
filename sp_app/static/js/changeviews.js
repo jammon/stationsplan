@@ -43,6 +43,7 @@ var ChangeStaffView = Backbone.View.extend({
         var cur_date = day.get('date');
         var datestr = utils.datestr(cur_date);
         var changestafftable = this.$("#changestafftable").empty();
+        var that = this;
         this.$(".changedate").text(datestr);
         this.$(".changeward").text(staffing.ward.get('name'));
         this.change_person_views = _.map(
@@ -55,6 +56,7 @@ var ChangeStaffView = Backbone.View.extend({
                 });
                 view.render();
                 view.$el.appendTo(changestafftable);
+                view.on("person_toggled", that.calc_changes, that);
                 return view;
             });
         this.$("#date-picker input").val(datestr);
@@ -63,8 +65,10 @@ var ChangeStaffView = Backbone.View.extend({
             format: "dd.mm.yyyy",
             weekStart: 1,
             language: "de",
+            defaultViewDate: cur_date,
         });
         date_widget.datepicker('setDate', cur_date);
+        date_widget.datepicker('update', cur_date);
         $('#until-date').text("Zeitraum wählen");
         date_widget.on("changeDate", function() {
             $('#until-date').text(
@@ -80,7 +84,12 @@ var ChangeStaffView = Backbone.View.extend({
     },
     show: function(staffing) {
         this.staffing = staffing;
-        this.render().$el.modal('show');
+        this.render().calc_changes().$el.modal('show');
+    },
+    calc_changes: function() {
+        this.changes = this.collect_changes();
+        this.$(".submitbuttons button").toggleClass("disabled", this.changes.length===0);
+        return this;
     },
 });
 var changestaffview = new ChangeStaffView({
@@ -117,6 +126,7 @@ var ChangePersonView = Backbone.View.extend({
         this.is_planned = !this.is_planned;
         this.is_changed = !this.is_changed;
         this.toggleClasses();
+        this.trigger("person_toggled");
     }
 });
 

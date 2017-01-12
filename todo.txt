@@ -23,3 +23,6 @@
 (A) Unbesetzte Dienste/Stationen auch in Print markieren
 (A) Kurzname von Personen ändern können
 (A) Dienste aufsummiert anzeigen
+(A) Passenden Monat im Changestaff-Dialog anzeigen - nicht den heutigen
+(A) Buttons im Changestaff-Dialog ausgrauen, bis eine Änderung ausgewählt ist
+Der Client sollte Updates automatisch einholen
