@@ -67,19 +67,21 @@ var ChangeStaffView = Backbone.View.extend({
             language: "de",
             defaultViewDate: cur_date,
         });
-        date_widget.datepicker('setDate', cur_date);
-        date_widget.datepicker('update', cur_date);
         $('#until-date').text("Zeitraum wählen");
         date_widget.on("changeDate", function() {
+            var days = (date_widget.datepicker('getDate') - cur_date) / 
+                       MS_PER_DAY + 1;
             $('#until-date').text(
                 "bis " +
                 date_widget.datepicker('getFormattedDate') +
                 " = " +
-                ((date_widget.datepicker('getDate') - cur_date) / MS_PER_DAY + 1) +
-                " Tage"
+                days +
+                (days>1 ? " Tage" : " Tag")
             );
         });
+        date_widget.datepicker('setDate', cur_date);
         date_widget.datepicker("setStartDate", cur_date);
+        date_widget.datepicker('update', cur_date);
         return this;
     },
     show: function(staffing) {

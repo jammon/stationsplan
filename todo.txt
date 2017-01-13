@@ -18,11 +18,8 @@
 (B) Urlaube in der Planungsansicht der Dienste anzeigen
 (B) Visitendienst in einer Zeile
 (B) Termine für Visitendienste
-(A) In der Statistik Ambulanz- und Intensivdienste zusammenfassen.
 (B) Anonyme Personen sollten nicht in den Duties angezeigt werden
 (A) Unbesetzte Dienste/Stationen auch in Print markieren
 (A) Kurzname von Personen ändern können
-(A) Dienste aufsummiert anzeigen
 (A) Passenden Monat im Changestaff-Dialog anzeigen - nicht den heutigen
-(A) Buttons im Changestaff-Dialog ausgrauen, bis eine Änderung ausgewählt ist
 Der Client sollte Updates automatisch einholen

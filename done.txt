@@ -32,3 +32,6 @@ x 2016-09-15 Die Diensttuenden können im +Planungsview mit drag-n-drop auf Dien
 x 2016-11-01 Deutsche Begriffe in Admin ergänzen
 x 2016-12-31 Man soll das Ende einer Planung eingeben können
 x 2017-01-01 Auf der login-Seite sollte auch der Benutzername focussiert sein
+x 2017-01-12 Buttons im Changestaff-Dialog ausgrauen, bis eine Änderung ausgewählt ist
+x 2017-01-12 Dienste aufsummiert anzeigen
+x 2017-01-12 In der Statistik Ambulanz- und Intensivdienste zusammenfassen.
