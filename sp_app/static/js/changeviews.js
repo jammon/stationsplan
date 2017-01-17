@@ -2,6 +2,7 @@ var changeviews = (function($, _, Backbone) {
 "use strict";
 
 var MS_PER_DAY = 24 * 60 * 60 * 1000;
+var current_date;
 
 var ChangeStaffView = Backbone.View.extend({
     events: {
@@ -40,9 +41,10 @@ var ChangeStaffView = Backbone.View.extend({
     render: function() {
         var staffing = this.staffing;
         var day = this.staffing.day;
-        var cur_date = day.get('date');
-        var datestr = utils.datestr(cur_date);
+        current_date = day.get('date');
+        var datestr = utils.datestr(current_date);
         var changestafftable = this.$("#changestafftable").empty();
+        var date_widget = this.$("#date-picker");
         var that = this;
         this.$(".changedate").text(datestr);
         this.$(".changeward").text(staffing.ward.get('name'));
@@ -60,29 +62,31 @@ var ChangeStaffView = Backbone.View.extend({
                 return view;
             });
         this.$("#date-picker input").val(datestr);
-        var date_widget = this.$("#date-picker");
         date_widget.datepicker({
             format: "dd.mm.yyyy",
             weekStart: 1,
             language: "de",
-            defaultViewDate: cur_date,
+            defaultViewDate: current_date,
         });
-        $('#until-date').text("Zeitraum wählen");
-        date_widget.on("changeDate", function() {
-            var days = (date_widget.datepicker('getDate') - cur_date) / 
-                       MS_PER_DAY + 1;
-            $('#until-date').text(
-                "bis " +
-                date_widget.datepicker('getFormattedDate') +
-                " = " +
-                days +
-                (days>1 ? " Tage" : " Tag")
-            );
-        });
-        date_widget.datepicker('setDate', cur_date);
-        date_widget.datepicker("setStartDate", cur_date);
-        date_widget.datepicker('update', cur_date);
+        if (!this._changeDate_connected) {
+            date_widget.on("changeDate", this.date_changed);
+            this._changeDate_connected = true;
+        }
+        date_widget.datepicker('setStartDate', current_date);
+        date_widget.datepicker('setDate', current_date);
+        date_widget.datepicker('update', current_date);
         return this;
+    },
+    date_changed: function(event) {
+        var date_widget = $("#date-picker");
+        var days = (event.date - current_date) / MS_PER_DAY + 1;
+        $('#until-date').text(
+            "bis " +
+            date_widget.datepicker('getFormattedDate') +
+            " = " +
+            days +
+            (days>1 ? " Tage" : " Tag")
+        );
     },
     show: function(staffing) {
         this.staffing = staffing;

@@ -35,3 +35,4 @@ x 2017-01-01 Auf der login-Seite sollte auch der Benutzername focussiert sein
 x 2017-01-12 Buttons im Changestaff-Dialog ausgrauen, bis eine Änderung ausgewählt ist
 x 2017-01-12 Dienste aufsummiert anzeigen
 x 2017-01-12 In der Statistik Ambulanz- und Intensivdienste zusammenfassen.
+x 2017-01-13 Passenden Monat im Changestaff-Dialog anzeigen - nicht den heutigen
