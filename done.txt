@@ -36,3 +36,4 @@ x 2017-01-12 Buttons im Changestaff-Dialog ausgrauen, bis eine √Ñnderung ausgew√
 x 2017-01-12 Dienste aufsummiert anzeigen
 x 2017-01-12 In der Statistik Ambulanz- und Intensivdienste zusammenfassen.
 x 2017-01-13 Passenden Monat im Changestaff-Dialog anzeigen - nicht den heutigen
+x 2017-01-20 Normale User sollten eingeloggt bleiben

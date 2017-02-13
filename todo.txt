@@ -22,4 +22,3 @@
 (A) Unbesetzte Dienste/Stationen auch in Print markieren
 (A) Kurzname von Personen ändern können
 Der Client sollte Updates automatisch einholen
-Normale User sollten eingeloggt bleiben

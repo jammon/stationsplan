@@ -37,6 +37,8 @@
 .vertical .free-day,
 td.free-day {
   font-weight: bold; }
+.calltallies th, .calltallies td {
+    padding: 0 1ex;}
 
 #changestafftable {
   margin-bottom: 2ex; }
