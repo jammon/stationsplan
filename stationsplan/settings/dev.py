@@ -1,4 +1,4 @@
-from .base import *
+from .base import *  # noqa: F403
 import os
 
 SECRET_KEY = '&df40)%pr4_d78+h=r!anx%3s!&8x!xgcnxphpoi(y7qk)3mb4'

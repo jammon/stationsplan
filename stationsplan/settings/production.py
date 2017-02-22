@@ -1,4 +1,4 @@
-from .base import *
+from .base import *  # noqa: F403
 import os
 import sys
 
@@ -6,7 +6,8 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['.stationsplan.de']
 STATIC_ROOT = '/var/www/stationsplan/htdocs/static/'
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+STATICFILES_STORAGE = \
+    'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 SECRETS_DIR = os.path.join(PARENT_OF_BASE_DIR, "secrets")
 # Database
@@ -14,8 +15,8 @@ SECRETS_DIR = os.path.join(PARENT_OF_BASE_DIR, "secrets")
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'stationsplan',
-        'USER': 'stationsplan',
+        'NAME': 'stationsplan_prod',
+        'USER': 'stationsplan_pro',
         'PASSWORD': read_secret(os.path.join(SECRETS_DIR, "db-password.txt"),
                                 "mysql password"),
         'TEST': {
