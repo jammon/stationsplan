@@ -92,7 +92,7 @@ var nightshifts = new Backbone.Collection();
 var on_leave = new Backbone.Collection();
 var special_duties = new Backbone.Collection();
 var on_call = new Backbone.Collection();
-var on_call_types = [];
+var on_call_types = [];  // List of the ward_types of on-call shifts
 
 function initialize_wards (wards_init) {
     wards.reset(wards_init);

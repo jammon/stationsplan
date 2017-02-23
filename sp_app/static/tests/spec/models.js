@@ -486,8 +486,8 @@ describe("models", function() {
             day1.ward_staffings.O.add(person_a);
             day2.ward_staffings.O.add(person_b);
             day3.ward_staffings.O.add(person_a);
-            var ward_o = models.wards.get('O');
-            var ward_n = models.wards.get('N');
+            var ward_o = models.wards.get('O').get_ward_type();
+            var ward_n = models.wards.get('N').get_ward_type();
             var tally = month_days.calltallies.get('A');
             expect(tally.get_tally(ward_o)).toBe(2);
             expect(tally.get_tally(ward_n)).toBe(0);
