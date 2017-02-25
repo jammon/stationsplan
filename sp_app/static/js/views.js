@@ -39,6 +39,7 @@ var StaffingView = Backbone.View.extend({
                 el.append(name);
             });
             el.toggleClass('lacking', this.collection.lacking());
+            el.toggleClass('today', this.collection.day.id==models.today_id);
         }
         if (models.user_can_change) {
             el.droppable({
@@ -136,8 +137,10 @@ var MonthView = Backbone.View.extend({
         var titlerow = $('<tr/>', {'class': 'titlerow'}).append($('<th/>'));
         this.month_days.each(function(day) {
             var date = day.get('date');
-            titlerow.append($('<th/>', {'html': 
-                day_names[date.getDay()] + '<br>' + date.getDate() + '.'}));
+            var th = $('<th/>', {'html': 
+                day_names[date.getDay()] + '<br>' + date.getDate() + '.'});
+            th.toggleClass('today', day.id==models.today_id);
+            titlerow.append(th);
         });
         table.append(titlerow);
 
@@ -219,6 +222,7 @@ var OnCallView = MonthView.extend({
         this.month_days.each(function(day) {
             var date = day.get('date');
             var row = $('<tr/>');
+            row.toggleClass('today', day.id==models.today_id);
             if (day.get('is_free')) row.addClass('free-day');
             row.append($('<th/>', { text: get_day_label(date) }));
 

@@ -21,4 +21,5 @@
 (B) Anonyme Personen sollten nicht in den Duties angezeigt werden
 (A) Unbesetzte Dienste/Stationen auch in Print markieren
 (A) Kurzname von Personen ändern können
-Der Client sollte Updates automatisch einholen
+(B) Der Client sollte Updates automatisch einholen
+(B) Die Dienste jeder Person als Kalender zur Verfügung stellen, mit Updates

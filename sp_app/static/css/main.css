@@ -12,6 +12,8 @@
     border: 1px solid #CCC;
     padding: 0 2px;
     vertical-align: top; }
+  .plan .today {
+    background-color: #C6FFCC; }
 
 .monthview {
   display: none; }
@@ -37,8 +39,9 @@
 .vertical .free-day,
 td.free-day {
   font-weight: bold; }
+
 .calltallies th, .calltallies td {
-    padding: 0 1ex;}
+  padding: 0 1ex; }
 
 #changestafftable {
   margin-bottom: 2ex; }
@@ -52,7 +55,7 @@ td.free-day {
   padding: 1px 4px; }
 
 #date-picker td.disabled {
-    color: #cccccc; }
+  color: #cccccc; }
 
 .errorlist {
   list-style-type: none;

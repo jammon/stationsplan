@@ -50,6 +50,7 @@ function initialize_site(persons, wards, plannings, year, month,
             }
         });
     }
+    models.today_id = utils.get_day_id(new Date());
     Backbone.history.start({ pushState: true });
 }
 
