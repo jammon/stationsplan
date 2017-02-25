@@ -79,7 +79,7 @@ var ChangeStaffView = Backbone.View.extend({
     },
     date_changed: function(event) {
         var date_widget = $("#date-picker");
-        var days = (event.date - current_date) / MS_PER_DAY + 1;
+        var days = Math.round((event.date - current_date) / MS_PER_DAY) + 1;
         $('#time_period').text(
             "bis " +
             date_widget.datepicker('getFormattedDate') +
