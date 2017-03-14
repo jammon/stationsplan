@@ -30,6 +30,21 @@ describe("utils", function() {
             test_get_day_id(1999, 11, 31, "19991231");
         });
     });
+    describe("function get_previous_day_id", function() {
+        it("should calculate the id of the previous day", function() {
+            expect(utils.get_previous_day_id('20170302')).toEqual('20170301');
+            expect(utils.get_previous_day_id('20170301')).toEqual('20170228');
+            expect(utils.get_previous_day_id('20160301')).toEqual('20160229');
+            expect(utils.get_previous_day_id('20170101')).toEqual('20161231');
+        });
+    });
+    describe("function get_next_day_id", function() {
+        it("should calculate the id of the next day", function() {
+            expect(utils.get_next_day_id('20170228')).toEqual('20170301');
+            expect(utils.get_next_day_id('20170301')).toEqual('20170302');
+            expect(utils.get_next_day_id('20171231')).toEqual('20180101');
+        });
+    });
     describe("function get_month_id", function() {
         it("should calculate the id of the month", function() {
             expect(utils.get_month_id(2016, 5)).toEqual('201606');

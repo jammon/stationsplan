@@ -6,13 +6,13 @@
   float: right;
   margin: 10px 5px 0 0; }
 
-.plan {
+.month_plan, .on_call_plan {
   font-size: 12px; }
-  .plan td, .plan th {
+  .month_plan td, .month_plan th, .on_call_plan td, .on_call_plan th {
     border: 1px solid #CCC;
     padding: 0 2px;
     vertical-align: top; }
-  .plan .today {
+  .month_plan .today, .on_call_plan .today {
     background-color: #C6FFCC; }
 
 .monthview {

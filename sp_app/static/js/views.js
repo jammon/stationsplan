@@ -109,11 +109,17 @@ function remove_person_from_helper(helper) {
 var month_names = ["Januar", "Februar", "März", "April", "Mai", "Juni", 
     "Juli", "August", "September", "Oktober", "November", "Dezember"];
 var day_names = ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'];
+var day_long_names = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch',
+    'Donnerstag', 'Freitag', 'Samstag'];
 
+var _table_template = _.template($('#table-template').html());
+function get_table_from_template(options) {
+    return _table_template(options);
+}
 var MonthView = Backbone.View.extend({
     events: {
-        "click .prev-month": "prev_month",
-        "click .next-month": "next_month",
+        "click .prev-view": "prev_period",
+        "click .next-view": "next_period",
     },
     base_class: 'month_plan',
     slug: 'plan',
@@ -173,25 +179,33 @@ var MonthView = Backbone.View.extend({
             table.append(construct_row(person));
         });
     },
+    get_template_options: function() {
+        return {
+            period: month_names[this.month] + ' ' + this.year,
+            label_prev: "Voriger Monat",
+            label_next: "Nächster Monat",
+            content: this.template(),
+        };
+    },
+    is_first_loaded_view: function() {
+        return models.days.first().get_month_id()===this.month_id;
+    },
     render: function() {
-        this.$el.html(this.template({
-            month_name: month_names[this.month],
-            year: this.year,
-        }));
+        this.$el.html(get_table_from_template(this.get_template_options()));
         this.build_table(this.$(".plan"));
 
         // display only the currently loaded days
-        if (models.days.first().get_month_id()===this.month_id) {
-            this.$(".prev-month").hide();
+        if (this.is_first_loaded_view()) {
+            this.$(".prev-view").hide();
         }
         $(".plans").append(this.$el);
         return this;
     },
-    prev_month: function() {
+    prev_period: function() {
         router.navigate(this.slug+'/'+utils.get_previous_month_id(this.month_id),
             {trigger: true});
     },
-    next_month: function() {
+    next_period: function() {
         router.navigate(this.slug+'/'+utils.get_next_month_id(this.month_id),
             {trigger: true});
     },
@@ -255,7 +269,62 @@ var OnCallView = MonthView.extend({
     },
 });
 
-var current_month_id = "";
+var DayView = MonthView.extend({
+    base_class: 'day_plan',
+    slug: 'tag',
+    template: _.template($('#day-table').html()),
+    row_template: _.template($('#day-row').html()),
+    initialize: function(options) {
+        // options can be { year: 2016, month: 5, day: 10 } or { day_id: '20160610' }
+        // options.month is 0..11 like in javascript
+        _.extend(this, _.pick(options, 'year', 'month', 'day', 'day_id'));
+        if (this.day_id === void 0) {
+            this.day_id = utils.get_day_id(this.year, this.month, this.day);
+        } else if (this.year === void 0) {
+            _.extend(this, utils.get_year_month_day(this.day_id));
+        }
+        this.day_obj = models.days.get_day(this.year, this.month, this.day);
+    },
+    get_template_options: function() {
+        var date = this.day_obj.get('date');
+        return {
+            period: day_long_names[date.getDay()] + ', ' + this.day + '. ' + 
+                month_names[this.month] + ' ' + this.year,
+            label_prev: "Voriger Tag",
+            label_next: "Nächster Tag",
+            content: this.template(),
+        };
+    },
+    build_table: function() {
+        var table = this.$(".plan");
+        var day = this.day_obj;
+        var row_template = this.row_template;
+        models.wards.each(function(ward) {
+            var displayed = day.ward_staffings[ward.id].displayed;
+            var tr = row_template({
+                ward: ward.get("name"),
+                persons: displayed.pluck("name").join(', '),
+            });
+            table.append(tr);
+        });
+
+    },
+    prev_period: function() {
+        router.navigate(this.slug+'/'+utils.get_previous_day_id(this.day_id),
+            {trigger: true});
+    },
+    next_period: function() {
+        router.navigate(this.slug+'/'+utils.get_next_day_id(this.day_id),
+            {trigger: true});
+    },
+});
+
+var current_day_id;
+var current_month_id;
+function update_current_day() {
+    current_day_id = utils.get_day_id(new Date());
+    current_month_id = current_day_id.slice(0, 6);
+}
 
 function MonthViews(klass) {
     this.klass = klass;
@@ -270,8 +339,21 @@ function MonthViews(klass) {
         return this[month_id];
     };
 }
+function DayViews() {
+    this.get_view = function(options) {
+        var day_id = options.day ?
+            utils.get_day_id(options.day) :
+            (options.day_id || current_day_id);
+        if (!_.has(this, day_id)) {
+            this[day_id] = (new DayView({day_id: day_id})).render();
+        }
+        current_day_id = day_id;
+        return this[day_id];
+    };
+}
 var month_views = new MonthViews(MonthView);
 var on_call_views = new MonthViews(OnCallView);
+var day_views = new DayViews();
 
 var CallTallyView = Backbone.View.extend({
     tagName: 'tr',
@@ -298,6 +380,7 @@ var Router = Backbone.Router.extend({
     routes: {
         "plan(/:month_id)": "plan",    // #plan
         "dienste(/:month_id)": "dienste",    // #dienste
+        "tag(/:day_id)": "tag",    // #Augaben an einem Tag
     },
     plan: function(month_id) {
         this.call_view(month_views, month_id);
@@ -305,22 +388,36 @@ var Router = Backbone.Router.extend({
     dienste: function(month_id) {
         this.call_view(on_call_views, month_id);
     },
-    call_view: function(klass, month_id) {
-        var options, view;
-        if (month_id) {
-            options = { month_id: month_id };
-        } else {
-            var today = new Date();
-            options = {
-                year: today.getFullYear(), 
-                month: today.getMonth(),
-            };
-        }
-        view = klass.get_view(options);
+    tag: function(day_id) {
+        var view = day_views.get_view({day_id: day_id});
         // find current view and hide it
         $('.monthview.current').removeClass('current');
         // show new view
         view.$el.addClass('current');
+    },
+    call_view: function(klass, month_id, period) {
+        var view;
+        view = klass.get_view(this.get_options(month_id, period));
+        // find current view and hide it
+        $('.monthview.current').removeClass('current');
+        // show new view
+        view.$el.addClass('current');
+    },
+    get_options: function(id, period) {
+        // id can be '' or undefined
+        // period should be 'month' (default) or 'day'
+        var result = {};
+        if (id) {
+            result[(period || 'month') + '_id'] = id;
+            return result;
+        }
+        var today = new Date();
+        if (period=='day')
+            return { day: today };
+        return {
+            year: today.getFullYear(), 
+            month: today.getMonth(),
+        };
     },
 });
 var router = new Router();
@@ -329,12 +426,19 @@ var NavView = Backbone.View.extend({
     events: {
         "click #nav-stationen": "stationen",
         "click #nav-dienste": "dienste",
+        "click #nav-tag": "tag",
     },
     stationen: function(event) {
+        update_current_day();
         router.navigate("plan/" + current_month_id, {trigger: true});
     },
     dienste: function(event) {
+        update_current_day();
         router.navigate("dienste/" + current_month_id, {trigger: true});
+    },
+    tag: function(event) {
+        update_current_day();
+        router.navigate("tag/" + current_day_id, {trigger: true});
     },
 });
 

@@ -17,8 +17,11 @@ def home(request):
 
 
 @login_required
-def plan(request, month='', ward_selection=''):
+def plan(request, month='', day='', ward_selection=''):
     # month is '' or 'YYYYMM'
+    # day is '' or 'YYYYMMDD'
+    if month == '' and day != '':
+        month = day[:6]
     department_ids = request.session.get('department_ids')
     # Get all Persons who worked here in this month
     first_of_month = get_first_of_month(month)
