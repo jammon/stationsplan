@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.contrib.auth.decorators import login_required
-from django.http import (HttpResponseNotAllowed, JsonResponse)
+from django.http import (HttpResponseNotAllowed, HttpResponseForbidden,
+                         JsonResponse)
 
 import json
 
@@ -30,6 +31,8 @@ def changes(request):
     """
     if request.method != 'POST':
         return HttpResponseNotAllowed(['POST'])
+    if not request.user.has_perm('sp_app.add_changelogging'):
+        return HttpResponseForbidden()
     data = json.loads(request.body)
     cls = apply_changes(request.user, request.session['company_id'], **data)
     return JsonResponse(cls, safe=False)

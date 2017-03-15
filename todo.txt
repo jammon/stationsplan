@@ -23,3 +23,4 @@
 (A) Kurzname von Personen ändern können
 (B) Der Client sollte Updates automatisch einholen
 (B) Die Dienste jeder Person als Kalender zur Verfügung stellen, mit Updates
+Test für nicht berechtigte User

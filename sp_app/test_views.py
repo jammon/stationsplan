@@ -71,6 +71,36 @@ class TestPlan(PopulatedTestCase):
             self.assertEqual(value['end'], expected['end'])
 
 
+DATA_FOR_CHANGE = {
+    'day': '20160120',
+    'ward': 'A',
+    'continued': False,
+    'persons': [
+       {'id': 'A', 'action': 'add', },
+       {'id': 'B', 'action': 'remove', },
+    ]}
+
+
+class TestChangeForbidden(PopulatedTestCase):
+
+    def setUp(self):
+        super(TestChangeForbidden, self).setUp()
+        self.user = User.objects.create_user(
+            'user', 'user@domain.tld', 'password')
+        self.employee = Employee.objects.create(
+            user=self.user, company=self.company)
+        self.employee.departments.add(self.department)
+
+    def test_with_data(self):
+        self.client.login(username='user', password='password')
+        response = self.client.post(
+            reverse('changes'),
+            json.dumps(DATA_FOR_CHANGE),
+            "text/json",
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(response.status_code, 403)
+
+
 class TestChangeMore(PopulatedTestCase):
 
     def setUp(self):
@@ -85,17 +115,10 @@ class TestChangeMore(PopulatedTestCase):
         self.employee.departments.add(self.department)
 
     def test_with_valid_data(self):
-        data = {'day': '20160120',
-                'ward': 'A',
-                'continued': False,
-                'persons': [
-                   {'id': 'A', 'action': 'add', },
-                   {'id': 'B', 'action': 'remove', },
-                ]}
         self.client.login(username='user', password='password')
         self.client.post(
             reverse('changes'),
-            json.dumps(data),
+            json.dumps(DATA_FOR_CHANGE),
             "text/json",
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         cls = ChangeLogging.objects.all().order_by('person__shortname')
