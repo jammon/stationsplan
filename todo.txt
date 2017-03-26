@@ -1,27 +1,26 @@
-(B) Admins sollen nur User für das eigene Department anlegen können
-(C) Nur finalisierte Planungen sollen für Benutzer ohne besondere Berechtigung sichtbar sein
-(B) Customize the default error views 
-(C) Der Kurzname einer Funktion sollte kein Komma enthalten.
-(A) Logging anzeigen
-(B) Auch Ärzte von Fremdabteilungen sollen angezeigt werden, wenn sie in den angezeigten Funktionen Dienst tun. Sollen dann nicht bearbeitbar sein.
-(B) Kommentare an Änderungen anhängen
-(C) Kommentare oder Nachrichten unabhängig von Änderungen
-(C) Dienstwünsche eingeben, für jede Person müsste ein User erstellt werden (z.B. 'amm-bot')
-(B) wann ist collection.no_staffing und wann ist collection===undefined?
-(C) A ward should not have the shortname id
-(B) Nach uberspace portieren
-(B) Anonyme Personen sollten nicht für Krank oder Urlaub geplant werden können +FIX
-(A) http://stackoverflow.com/questions/14527387/script7002-xmlhttprequest-network-error-0x2ef3-could-not-complete-the-operati bearbeiten +FIX
-(B) Wenn eine Buchung nicht möglich ist, muss die Seite neu dargestellt werden +FIX
-(A) Alle Dienste einer Person des aktuellen Monats sollen angezeigt werden
-(A) Die Verpflichtungen einer Person an diesem Tag als Tooltip anzeigen
-(B) Urlaube in der Planungsansicht der Dienste anzeigen
-(B) Visitendienst in einer Zeile
-(B) Termine für Visitendienste
-(B) Anonyme Personen sollten nicht in den Duties angezeigt werden
-(A) Unbesetzte Dienste/Stationen auch in Print markieren
-(A) Kurzname von Personen ändern können
-(B) Der Client sollte Updates automatisch einholen
-(B) Die Dienste jeder Person als Kalender zur Verfügung stellen, mit Updates
-Tag soll immer den heutigen Tag zeigen
-DayView soll sich aktualisieren nach Eingaben
+(C) Admins sollen nur User für das eigene Department anlegen können
+(D) Nur finalisierte Planungen sollen für Benutzer ohne besondere Berechtigung sichtbar sein
+(C) Customize the default error views 
+(D) Der Kurzname einer Funktion sollte kein Komma enthalten.
+(B) Logging anzeigen
+(C) Auch Ärzte von Fremdabteilungen sollen angezeigt werden, wenn sie in den angezeigten Funktionen Dienst tun. Sollen dann nicht bearbeitbar sein.
+(C) Kommentare an Änderungen anhängen
+(D) Kommentare oder Nachrichten unabhängig von Änderungen
+(D) Dienstwünsche eingeben, für jede Person müsste ein User erstellt werden (z.B. 'amm-bot')
+(C) wann ist collection.no_staffing und wann ist collection===undefined?
+(D) A ward should not have the shortname id
+(C) Nach uberspace portieren
+(C) Anonyme Personen sollten nicht für Krank oder Urlaub geplant werden können +FIX
+(B) http://stackoverflow.com/questions/14527387/script7002-xmlhttprequest-network-error-0x2ef3-could-not-complete-the-operati bearbeiten +FIX
+(C) Wenn eine Buchung nicht möglich ist, muss die Seite neu dargestellt werden +FIX
+(B) Alle Dienste einer Person des aktuellen Monats sollen angezeigt werden
+(B) Die Verpflichtungen einer Person an diesem Tag als Tooltip anzeigen
+(C) Urlaube in der Planungsansicht der Dienste anzeigen
+(C) Visitendienst in einer Zeile
+(C) Termine für Visitendienste
+(C) Anonyme Personen sollten nicht in den Duties angezeigt werden
+(B) Unbesetzte Dienste/Stationen auch in Print markieren
+(B) Kurzname von Personen ändern können
+(C) Der Client sollte Updates automatisch einholen
+(C) Die Dienste jeder Person als Kalender zur Verfügung stellen, mit Updates
+(A) Duties sollen nur auf Wunsch angezeigt werden

@@ -38,3 +38,8 @@ x 2017-01-12 In der Statistik Ambulanz- und Intensivdienste zusammenfassen.
 x 2017-01-13 Passenden Monat im Changestaff-Dialog anzeigen - nicht den heutigen
 x 2017-01-20 Normale User sollten eingeloggt bleiben
 x 2017-02-25 Den heutigen Tag markieren
+x 2017-03-20 construct_row so umschreiben, dass es nicht Darstellung aus dem Model holt
+x 2017-03-24 DayView soll sich aktualisieren nach Eingaben
+x 2017-03-24 Tag soll immer den heutigen Tag zeigen
+x 2017-03-26 In der Navigation soll der aktuelle Punkt markiert sein
+x 2017-03-26 Im Tagesplan sollen nur die Stationen gezeigt werden, die an dem Tag besetzt werden müssen

@@ -19,8 +19,6 @@ var Person = Backbone.Model.extend({
         var end = this.get('end_date') || [2099, 11, 31];
         this.set('end_date', new Date(end[0], end[1], end[2]));
     },
-    collection_array: 'persons_duties',
-    row_class: function() { return 'personrow'; },
     is_available: function(date) {
         var begin = this.get('start_date');
         var end = this.get('end_date');
@@ -64,13 +62,6 @@ var Ward = Backbone.Model.extend({
         }
     },
     idAttribute: "shortname",
-    collection_array: 'ward_staffings',
-    row_class: function() {
-        if (this.get('nightshift')) return 'nightshiftrow';
-        if (!this.get('continued')) return 'non-continued-row';
-        if (this.get('on_leave')) return 'leaverow';
-        return 'wardrow';
-    },
     get_ward_type: function() {
         return this.get('ward_type') || this.get('name');
     },

@@ -22,11 +22,11 @@
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="stationsplan-navbar-collapse">
+    <nav class="collapse navbar-collapse" id="stationsplan-navbar-collapse">
       <ul class="nav navbar-nav navbar-right">
         <li id="nav-stationen"><a>Stationen</a></li>
         <li id="nav-dienste"><a>Dienste</a></li>
-        <li id="nav-tag"><a>Tag</a></li>
+        <li id="nav-tag"><a>Heute</a></li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
             <span class="glyphicon glyphicon-cog"></span>
@@ -40,11 +40,11 @@
         </li>
         <p class="navbar-text">{% firstof user.get_full_name user.get_username %}</p>
       </ul>
-    </div><!-- /.navbar-collapse -->
+    </nav><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
-
 {% endblock navigation %}
+
 {% block content %}
   <div role="main" id="main-content">
     <div class="plans"></div>
@@ -66,10 +66,10 @@
       </div>
       <div class="modal-body">
         <div class="row">
-          <div class="col-sm-6">
+          <div class="col-sm-5">
             <table id="changestafftable"></table>
           </div>
-          <div class="col-sm-6 col-xs-6 submitbuttons">
+          <div class="col-sm-7 submitbuttons">
             <div><button type="button" class="btn btn-primary btn-block"
                     id="one-day">Ein Tag</button></div>
             <div id="date-picker"></div>

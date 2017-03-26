@@ -1,19 +1,19 @@
 <!-- Generic Template for the page with tables of persons and wards
 -->
 <script type="text/template" id="table-template">
-  <h2 class="month-heading">
-    <%= period %>
-    <span class="btn-group period-nav" role="group">
-      <a class="btn btn-default prev-view" aria-label="<%= label_prev %>"
-        title="<%= label_prev %>">
-        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-      </a>
-      <a class="btn btn-default next-view" aria-label="<%= label_next %>"
-        title="<%= label_next %>">
-        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-      </a>
-    </span>
-  </h2>
+    <h2 class="month-heading"> 
+      <span class="btn-group period-nav" role="group">
+        <a class="btn btn-default prev-view" aria-label="<%= label_prev %>"
+          title="<%= label_prev %>">
+          <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+        </a>
+        <a class="btn btn-default next-view" aria-label="<%= label_next %>"
+          title="<%= label_next %>">
+          <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+        </a>
+      </span>
+      <%= period %> 
+    </h2>
   <%= content %>
 </script>
 
@@ -44,15 +44,6 @@
   <div class="inner">
     <table class="plan"></table>
   </div>
-</script>
-
-<!-- Template for one row in the day table
--->
-<script type="text/template" id="day-row">
-  <tr>
-    <th><%= ward %>:</th>
-    <td><%= persons %></td>
-  </tr>
 </script>
 
 <!-- Template for the change person line
