@@ -11,16 +11,22 @@
 
 // Dienst- / Stationsplan
 .plan {
-    font-size: 12px;
     td, th {
-        border: 1px solid #CCC;
         padding: 0 2px;
         vertical-align: top;
     }
+}
+.month_plan, .on_call_plan {
+    td, th {
+        border: 1px solid #CCC;
+    }
+    font-size: 12px;
     .today {
         background-color: #C6FFCC;
     }
-
+}
+.day_plan {
+    font-size: 14px;
 }
 .monthview {
     display: none;

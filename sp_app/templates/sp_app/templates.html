@@ -1,19 +1,25 @@
+<!-- Generic Template for the page with tables of persons and wards
+-->
+<script type="text/template" id="table-template">
+    <h2 class="month-heading"> 
+      <span class="btn-group period-nav" role="group">
+        <a class="btn btn-default prev-view" aria-label="<%= label_prev %>"
+          title="<%= label_prev %>">
+          <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+        </a>
+        <a class="btn btn-default next-view" aria-label="<%= label_next %>"
+          title="<%= label_next %>">
+          <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+        </a>
+      </span>
+      <%= period %> 
+    </h2>
+  <%= content %>
+</script>
+
 <!-- Template for the big table with all the persons and wards
 -->
 <script type="text/template" id="big-table">
-  <h2 class="month-heading">
-    <%= month_name %> <%= year %>
-    <span class="btn-group" role="group">
-      <a class="btn btn-default prev-month" aria-label="Voriger Monat"
-        title="Voriger Monat">
-        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-      </a>
-      <a class="btn btn-default next-month" aria-label="Nächster Monat"
-        title="Nächster Monat">
-        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-      </a>
-    </span>
-  </h2>
   <div class="inner">
     <table class="plan"></table>
   </div>
@@ -22,19 +28,6 @@
 <!-- Template for the table of on-call services
 -->
 <script type="text/template" id="on-call-table">
-  <h2 class="on-call-heading">
-    <%= month_name %> <%= year %>
-    <span class="btn-group" role="group">
-      <a class="btn btn-default prev-month" aria-label="Voriger Monat"
-        title="Voriger Monat">
-        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-      </a>
-      <a class="btn btn-default next-month" aria-label="Nächster Monat"
-        title="Nächster Monat">
-        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-      </a>
-    </span>
-  </h2>
   <div class="row inner">
     <div class="col-md-7">
       <table class="plan"></table>
@@ -42,6 +35,14 @@
     <div class="col-md-5">
       <table class="calltallies"></table>
     </div>
+  </div>
+</script>
+
+<!-- Template for the persons and wards for one day
+-->
+<script type="text/template" id="day-table">
+  <div class="inner">
+    <table class="plan"></table>
   </div>
 </script>
 

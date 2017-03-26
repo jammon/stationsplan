@@ -42,6 +42,20 @@ function get_day_id (date_or_year, month, day) {
                  (date.getMonth()+1)*100 +
                  date.getDate());
 }
+function get_previous_day_id(day_id) {
+    var date = new Date(
+        parseInt(day_id.slice(0, 4)),
+        parseInt(day_id.slice(4, 6)) - 1,
+        parseInt(day_id.slice(6, 8)) - 1);
+    return get_day_id(date);
+}
+function get_next_day_id(day_id) {
+    var date = new Date(
+        parseInt(day_id.slice(0, 4)),
+        parseInt(day_id.slice(4, 6)) - 1,
+        parseInt(day_id.slice(6, 8)) + 1);
+    return get_day_id(date);
+}
 
 function get_month_id (year, month) {
     return "" + (year*100 + (month+1));
@@ -76,6 +90,14 @@ function get_year_month (month_id) {
     };
 }
 
+function get_year_month_day (day_id) {
+    return {
+        year: parseInt(day_id.slice(0, 4), 10),
+        month: parseInt(day_id.slice(4, 6), 10) - 1,
+        day: parseInt(day_id.slice(6, 8), 10),
+    };
+}
+
 function datestr(date) {
     return date.getDate()+'.'+(date.getMonth()+1)+'.'+date.getFullYear();
 }
@@ -83,11 +105,14 @@ function datestr(date) {
 return {
     is_free: is_free,
     get_day_id: get_day_id,
+    get_previous_day_id: get_previous_day_id,
+    get_next_day_id: get_next_day_id,
     get_month_id: get_month_id,
     get_next_month: get_next_month,
     get_previous_month_id: get_previous_month_id,
     get_next_month_id: get_next_month_id,
     get_year_month: get_year_month,
+    get_year_month_day: get_year_month_day,
     datestr: datestr,
 };
 })($, _, Backbone);

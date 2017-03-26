@@ -1,30 +1,46 @@
 var views = (function($, _, Backbone) {
 "use strict";
 
-var StaffingView = Backbone.View.extend({
+var StaffingDisplayView = Backbone.View.extend({
     tagName: 'td',
-    events: {
-        "click": "addstaff",
-    },
     initialize: function(options) {
         this.listenTo(this.collection.displayed, "update", this.render);
-        if (options)
+        if (options) {
             this.display_long_name = options.display_long_name;
+            this.changeable = options.changeable;
+            this.drag_n_droppable = options.drag_n_droppable;
+        }
         if (!this.collection.ward.get('continued') && !this.collection.no_staffing)
             this.$el.addClass('on-call');
+    },
+    render: function() {
+        var el = this.$el;
+        var staffing = this.collection;
+        el.empty();
+        if (!staffing.no_staffing) {
+            el.text(staffing.displayed.pluck('name').join(", "));
+            el.toggleClass('lacking', staffing.lacking());
+            el.toggleClass('today', staffing.day.id==models.today_id);
+        }
+        return this;
+    },
+});
+var StaffingView = StaffingDisplayView.extend({
+    events: {
+        "click": "addstaff",
     },
     render: function() {
         var el = this.$el;
         var that = this;
         var staffing = this.collection;
         el.empty();
-        if (!this.collection.no_staffing) {
-            this.collection.displayed.each(function(person) {
+        if (!staffing.no_staffing) {
+            staffing.displayed.each(function(person) {
                 var name = $('<div/>', {
                     text: that.display_long_name ? person.get('name') : person.id,
                     'class': 'staff',
                 });
-                if (models.user_can_change && that.display_long_name) {
+                if (models.user_can_change && that.drag_n_droppable) {
                     name.draggable({
                         helper: function() {
                             return $('<div/>', {
@@ -38,10 +54,10 @@ var StaffingView = Backbone.View.extend({
                 }
                 el.append(name);
             });
-            el.toggleClass('lacking', this.collection.lacking());
-            el.toggleClass('today', this.collection.day.id==models.today_id);
+            el.toggleClass('lacking', staffing.lacking());
+            el.toggleClass('today', staffing.day.id==models.today_id);
         }
-        if (models.user_can_change) {
+        if (models.user_can_change && that.drag_n_droppable) {
             el.droppable({
                 accept: function(draggable) {
                     var person = models.persons.where({ name: draggable.text() });
@@ -78,7 +94,6 @@ var StaffingView = Backbone.View.extend({
             changeviews.staff.show(this.collection);
     },
 });
-models.Ward.prototype.row_view = StaffingView;
 
 var DutiesView = Backbone.View.extend({
     tagName: 'td',
@@ -91,7 +106,6 @@ var DutiesView = Backbone.View.extend({
         return this;
     },
 });
-models.Person.prototype.row_view = DutiesView;
 
 function remove_person_from_helper(helper) {
     if (helper.attr('day'))
@@ -109,11 +123,17 @@ function remove_person_from_helper(helper) {
 var month_names = ["Januar", "Februar", "März", "April", "Mai", "Juni", 
     "Juli", "August", "September", "Oktober", "November", "Dezember"];
 var day_names = ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'];
+var day_long_names = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch',
+    'Donnerstag', 'Freitag', 'Samstag'];
 
+var _table_template = _.template($('#table-template').html());
+function get_table_from_template(options) {
+    return _table_template(options);
+}
 var MonthView = Backbone.View.extend({
     events: {
-        "click .prev-month": "prev_month",
-        "click .next-month": "next_month",
+        "click .prev-view": "prev_period",
+        "click .next-view": "next_period",
     },
     base_class: 'month_plan',
     slug: 'plan',
@@ -146,14 +166,16 @@ var MonthView = Backbone.View.extend({
 
         var that = this;
         // Construct rows for wards and persons
-        function construct_row(model) {
-            var row = $('<tr/>', {'class': model.row_class()});
+        function construct_row(model, row_class, collection_array, View) {
+            var row = $('<tr/>', {
+                'class': _.isFunction(row_class) ? row_class() : row_class,
+            });
             row.append($('<th/>', { text: model.get('name')}));
             that.month_days.each(function(day) {
-                var collection = day[model.collection_array][model.id];
+                var collection = day[collection_array][model.id];
                 var view;
                 if (collection) {
-                    view = new model.row_view({ 
+                    view = new View({ 
                         collection: collection,
                         className: day.get('is_free') ? 'free-day' : '',
                     });
@@ -166,32 +188,46 @@ var MonthView = Backbone.View.extend({
         }
         // first the wards
         models.wards.each(function(ward) {
-            table.append(construct_row(ward));
+            table.append(construct_row(ward, function() {
+                if (ward.get('nightshift')) return 'nightshiftrow';
+                if (!ward.get('continued')) return 'non-continued-row';
+                if (ward.get('on_leave')) return 'leaverow';
+                return 'wardrow';
+            }, 'ward_staffings', StaffingView));
         });
         // then the persons
         _.each(this.month_days.current_persons(), function(person) {
-            table.append(construct_row(person));
+            table.append(construct_row(person, 'personrow', 'persons_duties',
+                                       DutiesView));
         });
     },
+    get_template_options: function() {
+        return {
+            period: month_names[this.month] + ' ' + this.year,
+            label_prev: "Voriger Monat",
+            label_next: "Nächster Monat",
+            content: this.template(),
+        };
+    },
+    is_first_loaded_view: function() {
+        return models.days.first().get_month_id()===this.month_id;
+    },
     render: function() {
-        this.$el.html(this.template({
-            month_name: month_names[this.month],
-            year: this.year,
-        }));
+        this.$el.html(get_table_from_template(this.get_template_options()));
         this.build_table(this.$(".plan"));
 
         // display only the currently loaded days
-        if (models.days.first().get_month_id()===this.month_id) {
-            this.$(".prev-month").hide();
+        if (this.is_first_loaded_view()) {
+            this.$(".prev-view").hide();
         }
         $(".plans").append(this.$el);
         return this;
     },
-    prev_month: function() {
+    prev_period: function() {
         router.navigate(this.slug+'/'+utils.get_previous_month_id(this.month_id),
             {trigger: true});
     },
-    next_month: function() {
+    next_period: function() {
         router.navigate(this.slug+'/'+utils.get_next_month_id(this.month_id),
             {trigger: true});
     },
@@ -232,6 +268,7 @@ var OnCallView = MonthView.extend({
                     (new StaffingView({ 
                         collection: collection,
                         display_long_name: true,
+                        drag_n_droppable: true,
                     })).render().$el :
                     '<td></td>';
                 row.append(view);
@@ -255,7 +292,64 @@ var OnCallView = MonthView.extend({
     },
 });
 
-var current_month_id = "";
+var DayView = MonthView.extend({
+    base_class: 'day_plan',
+    slug: 'tag',
+    template: _.template($('#day-table').html()),
+    initialize: function(options) {
+        // options can be { year: 2016, month: 5, day: 10 } or { day_id: '20160610' }
+        // options.month is 0..11 like in javascript
+        _.extend(this, _.pick(options, 'year', 'month', 'day', 'day_id'));
+        if (this.day_id === void 0) {
+            this.day_id = utils.get_day_id(this.year, this.month, this.day);
+        } else if (this.year === void 0) {
+            _.extend(this, utils.get_year_month_day(this.day_id));
+        }
+        this.day_obj = models.days.get_day(this.year, this.month, this.day);
+    },
+    get_template_options: function() {
+        var date = this.day_obj.get('date');
+        return {
+            period: day_long_names[date.getDay()] + ', ' + this.day + '. ' + 
+                month_names[this.month] + ' ' + this.year,
+            label_prev: "Voriger Tag",
+            label_next: "Nächster Tag",
+            content: this.template(),
+        };
+    },
+    build_table: function() {
+        var table = this.$(".plan");
+        var day = this.day_obj;
+        models.wards.each(function(ward) {
+            if (!day.ward_staffings[ward.id].no_staffing) {
+                var row = $('<tr/>').append($('<th/>').text(ward.get("name")));
+                var view = new StaffingDisplayView({ 
+                    collection: day.ward_staffings[ward.id],
+                    className: day.get('is_free') ? 'free-day' : '',
+                });
+                row.append(view.render().$el);
+                table.append(row);
+            }
+        });
+
+    },
+    prev_period: function() {
+        router.navigate(this.slug+'/'+utils.get_previous_day_id(this.day_id),
+            {trigger: true});
+    },
+    next_period: function() {
+        router.navigate(this.slug+'/'+utils.get_next_day_id(this.day_id),
+            {trigger: true});
+    },
+});
+
+var current_day_id;
+var current_month_id;
+function update_current_day() {
+    current_day_id = utils.get_day_id(new Date());
+    current_month_id = current_day_id.slice(0, 6);
+}
+update_current_day();
 
 function MonthViews(klass) {
     this.klass = klass;
@@ -270,8 +364,21 @@ function MonthViews(klass) {
         return this[month_id];
     };
 }
+function DayViews() {
+    this.get_view = function(options) {
+        var day_id = options.day ?
+            utils.get_day_id(options.day) :
+            (options.day_id || current_day_id);
+        if (!_.has(this, day_id)) {
+            this[day_id] = (new DayView({day_id: day_id})).render();
+        }
+        current_day_id = day_id;
+        return this[day_id];
+    };
+}
 var month_views = new MonthViews(MonthView);
 var on_call_views = new MonthViews(OnCallView);
+var day_views = new DayViews();
 
 var CallTallyView = Backbone.View.extend({
     tagName: 'tr',
@@ -294,33 +401,53 @@ var CallTallyView = Backbone.View.extend({
 
 });
 
+
 var Router = Backbone.Router.extend({
     routes: {
-        "plan(/:month_id)": "plan",    // #plan
-        "dienste(/:month_id)": "dienste",    // #dienste
+        "plan(/:month_id)(/)": "plan",    // #plan
+        "dienste(/:month_id)(/)": "dienste",    // #dienste
+        "tag(/:day_id)(/)": "tag",    // #Augaben an einem Tag
     },
     plan: function(month_id) {
-        this.call_view(month_views, month_id);
+        this.call_view(month_views, "#nav-stationen", month_id);
     },
     dienste: function(month_id) {
-        this.call_view(on_call_views, month_id);
+        this.call_view(on_call_views, "#nav-dienste", month_id);
     },
-    call_view: function(klass, month_id) {
-        var options, view;
-        if (month_id) {
-            options = { month_id: month_id };
-        } else {
-            var today = new Date();
-            options = {
-                year: today.getFullYear(), 
-                month: today.getMonth(),
-            };
-        }
-        view = klass.get_view(options);
+    tag: function(day_id) {
+        var view = day_views.get_view({day_id: day_id});
         // find current view and hide it
         $('.monthview.current').removeClass('current');
         // show new view
         view.$el.addClass('current');
+        nav_view.$(".active").removeClass("active");
+        nav_view.$("#nav-tag").addClass("active");
+    },
+    call_view: function(klass, nav_id, month_id, period) {
+        var view;
+        view = klass.get_view(this.get_options(month_id, period));
+        // find current view and hide it
+        $('.monthview.current').removeClass('current');
+        // show new view
+        view.$el.addClass('current');
+        nav_view.$(".active").removeClass("active");
+        nav_view.$(nav_id).addClass("active");
+    },
+    get_options: function(id, period) {
+        // id can be '' or undefined
+        // period should be 'month' (default) or 'day'
+        var result = {};
+        if (id) {
+            result[(period || 'month') + '_id'] = id;
+            return result;
+        }
+        var today = new Date();
+        if (period=='day')
+            return { day: today };
+        return {
+            year: today.getFullYear(), 
+            month: today.getMonth(),
+        };
     },
 });
 var router = new Router();
@@ -329,12 +456,20 @@ var NavView = Backbone.View.extend({
     events: {
         "click #nav-stationen": "stationen",
         "click #nav-dienste": "dienste",
+        "click #nav-tag": "tag",
     },
     stationen: function(event) {
-        router.navigate("plan/" + current_month_id, {trigger: true});
+        this.navigate_to("plan/" + current_month_id);
     },
     dienste: function(event) {
-        router.navigate("dienste/" + current_month_id, {trigger: true});
+        this.navigate_to("dienste/" + current_month_id);
+    },
+    tag: function(event) {
+        this.navigate_to("tag/" + current_day_id);
+    },
+    navigate_to: function(path) {
+        update_current_day();
+        router.navigate(path, {trigger: true});
     },
 });
 
