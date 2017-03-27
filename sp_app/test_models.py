@@ -75,6 +75,15 @@ class TestChanges(PopulatedTestCase):
                 continued=continued, company=self.company, user=self.user)
             cl.make_description()
             self.assertEqual(cl.description, expected)
+        cl = ChangeLogging(
+            person=self.person_a, ward=self.ward_a, day=date(2015, 9, 14),
+            added=True, until=date(2015, 9, 16), company=self.company,
+            user=self.user)
+        cl.make_description()
+        self.assertEqual(
+            cl.description,
+            "Mr. User: Person A ist ab 14.09.2015 bis 16.09.2015 "
+            "für Ward A eingeteilt")
 
 
 class Process_Change_Testcase(PopulatedTestCase):

@@ -246,7 +246,7 @@ class ChangeLogging(models.Model):
             self=self,
             relation='ab' if self.continued else 'am',
             date=self.day.strftime('%d.%m.%Y'),
-            until=(' bis %s'.format(self.until.strftime('%d.%m.%Y'))
+            until=(' bis {}'.format(self.until.strftime('%d.%m.%Y'))
                    if self.until else ''),
             added='' if self.added else 'nicht mehr ')
 
