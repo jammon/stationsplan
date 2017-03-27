@@ -1,5 +1,5 @@
 (C) Admins sollen nur User für das eigene Department anlegen können
-(D) Nur finalisierte Planungen sollen für Benutzer ohne besondere Berechtigung sichtbar sein
+(A) Nur finalisierte Planungen sollen für Benutzer ohne besondere Berechtigung sichtbar sein
 (C) Customize the default error views 
 (D) Der Kurzname einer Funktion sollte kein Komma enthalten.
 (B) Logging anzeigen

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-31 06:11+0100\n"
+"POT-Creation-Date: 2017-03-27 22:06+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,7 +22,7 @@ msgstr ""
 msgid "Ward"
 msgstr "Funktion"
 
-#: sp_app/admin.py:80 sp_app/models.py:146
+#: sp_app/admin.py:80 sp_app/models.py:165
 msgid "Person"
 msgstr "Person"
 
@@ -30,7 +30,7 @@ msgstr "Person"
 msgid "Department"
 msgstr "Abteilung"
 
-#: sp_app/forms.py:14 sp_app/models.py:147
+#: sp_app/forms.py:14 sp_app/models.py:166
 msgid "Persons"
 msgstr "Personen"
 
@@ -39,12 +39,12 @@ msgid "staff"
 msgstr "Personen"
 
 #: sp_app/models.py:20 sp_app/models.py:33 sp_app/models.py:48
-#: sp_app/models.py:123
+#: sp_app/models.py:126 sp_app/models.py:142
 msgid "Name"
 msgstr "Name"
 
 #: sp_app/models.py:21 sp_app/models.py:34 sp_app/models.py:49
-#: sp_app/models.py:124
+#: sp_app/models.py:143
 msgid "Short Name"
 msgstr "Kurzname"
 
@@ -60,7 +60,7 @@ msgstr "Krankenhäuser"
 msgid "The top organizational unit"
 msgstr "Die oberste Organisationseinheit"
 
-#: sp_app/models.py:40 sp_app/models.py:74 sp_app/models.py:130
+#: sp_app/models.py:40 sp_app/models.py:74 sp_app/models.py:149
 msgid "Departments"
 msgstr "Abteilungen"
 
@@ -118,96 +118,104 @@ msgstr ""
 "wenn Wahr, dann stehen die hier eingetragenen Personen nicht zur Arbeit zur "
 "Verfügung"
 
-#: sp_app/models.py:78 sp_app/models.py:138
+#: sp_app/models.py:78 sp_app/models.py:157
 msgid "Ordering in the display"
 msgstr "Position in der Anzeige"
 
-#: sp_app/models.py:81
+#: sp_app/models.py:83
 msgid "The date until which the plan is approved"
 msgstr "Das Datum, bis zu dem der Plan genehmigt ist"
 
-#: sp_app/models.py:84
-#, fuzzy
-#| msgid "if True, staffing can not be planned on the next day."
+#: sp_app/models.py:86
 msgid "if not empty, only these functions can be planned on the next day"
 msgstr ""
-"wenn Wahr, dann kann der Diensthabende nicht für den nächsten Tag verplant "
-"werden"
+"wenn etwas ausgewählt ist, kann der Diensthabende am nächsten Tag nur für "
+"diese Funktionen verplant werden"
 
-#: sp_app/models.py:89
+#: sp_app/models.py:91
 msgid "Task"
 msgstr "Funktion"
 
-#: sp_app/models.py:90
+#: sp_app/models.py:92 sp_app/models.py:152
 msgid "Tasks"
 msgstr "Funktionen"
 
-#: sp_app/models.py:125
+#: sp_app/models.py:127
+msgid "Call shift"
+msgstr ""
+
+#: sp_app/models.py:131
+msgid "Ward type"
+msgstr "Funktionsart"
+
+#: sp_app/models.py:132
+msgid "Ward types"
+msgstr "Funktionsarten"
+
+#: sp_app/models.py:144
 msgid "start date"
 msgstr "Anfangsdatum"
 
-#: sp_app/models.py:126
+#: sp_app/models.py:145
 msgid "begin of job"
 msgstr "Dienstantritt"
 
-#: sp_app/models.py:127
+#: sp_app/models.py:146
 msgid "end date"
 msgstr "Endedatum"
 
-#: sp_app/models.py:128
+#: sp_app/models.py:147
 msgid "end of job"
 msgstr "Dienstende"
 
-#: sp_app/models.py:133
-#, fuzzy
-#| msgid "Ward"
-msgid "Wards"
-msgstr "Funktion"
-
-#: sp_app/models.py:134
+#: sp_app/models.py:153
 msgid "Functions that he or she can  perform."
 msgstr "Funktionen, die er oder sie ausüben kann"
 
-#: sp_app/models.py:136
+#: sp_app/models.py:155
 msgid "position"
 msgstr "Position"
 
-#: sp_app/models.py:140
+#: sp_app/models.py:159
 msgid "Anonymous"
 msgstr "Anonym"
 
-#: sp_app/models.py:142
+#: sp_app/models.py:161
 msgid ""
 "if True this person represents multiple other persons, e.g. an appartment"
 msgstr ""
 "wenn Wahr, dann steht diese Person für mehrere andere Personen, z.B. eine "
 "Abteilung"
 
-#: sp_app/models.py:189
+#: sp_app/models.py:218
 msgid "ChangeLogging"
 msgstr "Änderung"
 
-#: sp_app/models.py:190
+#: sp_app/models.py:219
 msgid "ChangeLoggings"
 msgstr "Änderungen"
 
-#: sp_app/models.py:301
+#: sp_app/models.py:367
+msgid "Later planning that supersedes this one"
+msgstr "Spätere Planung, die diese hier überdeckt"
+
+#: sp_app/models.py:370
 msgid "Planning"
 msgstr "Planung"
 
-#: sp_app/models.py:302
+#: sp_app/models.py:371
 msgid "Plannings"
 msgstr "Planungen"
 
-#: sp_app/models.py:342
+#: sp_app/models.py:411
 msgid "Employee"
 msgstr "Bearbeiter"
 
-#: sp_app/models.py:343
+#: sp_app/models.py:412
 msgid "Employees"
 msgstr "Bearbeiter"
 
-#: sp_app/models.py:361 sp_app/models.py:364
+#: sp_app/models.py:430 sp_app/models.py:433
 msgid "Can be empty"
 msgstr "Kann leer bleiben"
 

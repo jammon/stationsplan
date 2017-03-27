@@ -121,9 +121,15 @@ class Ward(models.Model):
 
 @python_2_unicode_compatible
 class WardType(models.Model):
+    ''' Type of Ward, mostly 'Call shift' or not
+    '''
     name = models.CharField(_('Name'), max_length=20)
     callshift = models.BooleanField(_('Call shift'))
     company = models.ForeignKey(Company, related_name='ward_types')
+
+    class Meta:
+        verbose_name = _('Ward type')
+        verbose_name_plural = _('Ward types')
 
     def __str__(self):
         return self.name
@@ -143,7 +149,7 @@ class Person(models.Model):
         Department, verbose_name=_('Departments'), related_name='persons')
     company = models.ForeignKey(Company, related_name='persons', null=True)
     functions = models.ManyToManyField(
-        Ward, related_name='staff', verbose_name=_('Wards'),
+        Ward, related_name='staff', verbose_name=_('Tasks'),
         help_text=_('Functions that he or she can  perform.'))
     position = models.IntegerField(
         _('position'),

@@ -158,7 +158,7 @@ admin.site.register(Company)
 admin.site.register(Employee)
 admin.site.register(ChangeLogging, ChangeLoggingAdmin)
 admin.site.register(Planning, PlanningAdmin)
-admin.site.register(StatusEntry)
+# admin.site.register(StatusEntry)
 admin.site.register(WardType, WardTypeAdmin)
 
 
