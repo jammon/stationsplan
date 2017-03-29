@@ -34,19 +34,20 @@ def plan(request, month='', day='', ward_selection=''):
     wards = Ward.objects.filter(departments__id__in=department_ids)
     if ward_selection == 'noncontinued':
         wards = wards.filter(continued=False)
-    # wards_ids = [w.id for w in wards]
+    can_change = request.user.has_perm('sp_app.add_changelogging')
     plannings = Planning.objects.filter(
         ward__in=wards,
         end__gte=start_of_data,
-        superseded_by=None)
+        superseded_by=None).select_related('ward')
+    if not can_change:
+        plannings = [p for p in plannings
+                     if not p.ward.approved or p.start <= p.ward.approved]
     data = {
         'persons': json.dumps([p.toJson() for p in persons]),
         'wards': json_array(wards),
         'plannings': json_array(plannings),
         'user': request.user,
-        'can_change': 'true'
-                      if request.user.has_perm('sp_app.add_changelogging')
-                      else 'false',
+        'can_change': 'true'if can_change else 'false',
         'first_of_month': first_of_month,
         'start_of_data': start_of_data,
         'ward_selection': ward_selection,
