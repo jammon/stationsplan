@@ -74,9 +74,24 @@ def apply_changes(user, company_id, day, ward, continued, persons):
     return cls
 
 
+def set_approved(wards, approved, company_id):
+    """
+    wards is [<ward.shortname>, ...],
+    approved is False|<YYYYMMDD>,
+    company_id is <company.id>
+    """
+    wards = Ward.objects.filter(company_id=company_id,
+                                shortname__in=wards)
+    approval = (datetime.strptime(approved, '%Y%m%d').date()
+                if approved else None)
+    for ward in wards:
+        ward.approved = approval
+        ward.save()
+    return {'wards': [ward.shortname for ward in wards], 'approved': approved}
+
+
 class PopulatedTestCase(TestCase):
     """TestCase with some prepared objects.
-    These objects should not be altered in the tests.
     """
     def setUp(self):
         self.company = Company.objects.create(name="Company", shortname="Comp")

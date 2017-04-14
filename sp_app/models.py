@@ -99,24 +99,23 @@ class Ward(models.Model):
         super(Ward, self).save(*args, **kwargs)
 
     def toJson(self):
-        return {'name': self.name,
-                'shortname': self.shortname,
-                'min': self.min,
-                'max': self.max,
-                'nightshift': self.nightshift,
-                'everyday': self.everyday,
-                'freedays': self.freedays,
-                'continued': self.continued,
-                'on_leave': self.on_leave,
-                'company_id': self.company_id,
-                'position': self.position,
-                'approved': date_to_json(self.approved) if self.approved
-                else None,
-                'id': self.id,
-                'after_this': '' if not self.pk else ','.join(
-                    self.after_this.values_list('shortname', flat=True)),
-                'ward_type': self.ward_type.name if self.ward_type else ''
-                }
+        res = {'name': self.name,
+               'shortname': self.shortname,
+               'min': self.min,
+               'max': self.max,
+               'nightshift': self.nightshift,
+               'everyday': self.everyday,
+               'freedays': self.freedays,
+               'continued': self.continued,
+               'on_leave': self.on_leave,
+               'company_id': self.company_id,
+               'position': self.position,
+               'after_this': '' if not self.pk else ','.join(
+                   self.after_this.values_list('shortname', flat=True)),
+               'ward_type': self.ward_type.name if self.ward_type else ''}
+        if self.approved is not None:
+            res['approved'] = date_to_json(self.approved)
+        return res
 
 
 @python_2_unicode_compatible

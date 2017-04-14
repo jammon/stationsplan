@@ -7,7 +7,7 @@ from django.contrib.auth.models import User, Permission
 import json
 
 from .utils import PopulatedTestCase
-from .models import Employee, ChangeLogging, Planning
+from .models import Ward, Employee, ChangeLogging, Planning, StatusEntry
 
 
 class TestViewsAnonymously(TestCase):
@@ -30,15 +30,19 @@ class TestViewsAnonymously(TestCase):
         self.assertEqual(response.status_code, 302)
 
 
-class TestPlan(PopulatedTestCase):
+class ViewsTestCase(PopulatedTestCase):
 
     def setUp(self):
-        super(TestPlan, self).setUp()
+        super(ViewsTestCase, self).setUp()
         self.user = User.objects.create_user(
             'user', 'user@domain.tld', 'password')
         self.employee = Employee.objects.create(
             user=self.user, company=self.company)
         self.employee.departments.add(self.department)
+        self.client.login(username='user', password='password')
+
+
+class TestPlan(ViewsTestCase):
 
     def test_plan(self):
         for start, end in (
@@ -53,7 +57,6 @@ class TestPlan(PopulatedTestCase):
             Planning.objects.create(
                 company=self.company, person=self.person_a,
                 ward=self.ward_a, start=start, end=end)
-        self.client.login(username='user', password='password')
         response = self.client.get('/plan/201604')
         self.assertEqual(response.status_code, 200)
         plannings = json.loads(response.context['plannings'])
@@ -81,18 +84,11 @@ DATA_FOR_CHANGE = {
     ]}
 
 
-class TestChangeForbidden(PopulatedTestCase):
+class TestChangeForbidden(ViewsTestCase):
+    """ User without permission to add changes
+    """
 
-    def setUp(self):
-        super(TestChangeForbidden, self).setUp()
-        self.user = User.objects.create_user(
-            'user', 'user@domain.tld', 'password')
-        self.employee = Employee.objects.create(
-            user=self.user, company=self.company)
-        self.employee.departments.add(self.department)
-
-    def test_with_data(self):
-        self.client.login(username='user', password='password')
+    def test_changes(self):
         response = self.client.post(
             reverse('changes'),
             json.dumps(DATA_FOR_CHANGE),
@@ -100,22 +96,27 @@ class TestChangeForbidden(PopulatedTestCase):
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(response.status_code, 403)
 
+    def test_approval(self):
+        response = self.client.post(
+            reverse('set_approved'),
+            'data',
+            "text/json",
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(response.status_code, 403)
 
-class TestChangeMore(PopulatedTestCase):
+
+class ViewsWithPermissionTestCase(ViewsTestCase):
 
     def setUp(self):
-        super(TestChangeMore, self).setUp()
-        self.user = User.objects.create_user(
-            'user', 'user@domain.tld', 'password')
+        super(ViewsWithPermissionTestCase, self).setUp()
         self.user.user_permissions.add(
             Permission.objects.get(codename='add_changelogging'))
         self.user = User.objects.get(pk=self.user.pk)  # -> permission cache
-        self.employee = Employee.objects.create(
-            user=self.user, company=self.company)
-        self.employee.departments.add(self.department)
+
+
+class TestChangeMore(ViewsWithPermissionTestCase):
 
     def test_with_valid_data(self):
-        self.client.login(username='user', password='password')
         self.client.post(
             reverse('changes'),
             json.dumps(DATA_FOR_CHANGE),
@@ -153,3 +154,30 @@ class TestChangeMore(PopulatedTestCase):
             {"action": "remove", "person": "B", "ward": "A", "day": "20160120",
              "continued": False})
         self.assertEqual(cl.version, 1)
+
+
+class TestChangeApproval(ViewsWithPermissionTestCase):
+
+    def test_change_approved(self):
+        self.client.post(
+            reverse('set_approved'),
+            json.dumps({'wards': ['A', 'B'], 'date': '20170414'}),
+            "text/json",
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        stat = StatusEntry.objects.order_by('-pk').first()
+        self.assertEqual(stat.content, 'user: A, B ist bis 20170414 sichtbar')
+        for ward_id in 'AB':
+            ward = Ward.objects.get(shortname=ward_id)
+            self.assertEqual(ward.approved, date(2017, 4, 14))
+
+        self.client.post(
+            reverse('set_approved'),
+            json.dumps({'wards': ['A'], 'date': False}),
+            "text/json",
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        stat = StatusEntry.objects.order_by('-pk').first()
+        self.assertEqual(stat.content, 'user: A ist unbegrenzt sichtbar')
+        ward = Ward.objects.get(shortname='A')
+        self.assertEqual(ward.approved, None)
+        ward = Ward.objects.get(shortname='B')
+        self.assertEqual(ward.approved, date(2017, 4, 14))

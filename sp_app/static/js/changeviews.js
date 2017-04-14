@@ -136,8 +136,86 @@ var ChangePersonView = Backbone.View.extend({
     }
 });
 
+var ApproveStaffingsView = Backbone.View.extend({
+    events: {
+        "click #approve-to-date": "approve",
+        "click #approve-all": "approve_all",
+    },
+    render: function() {
+        this.$("#changeapprovaltable").append(
+            models.wards.map(function(ward) {
+                var view = new SelectStaffingView({ward: ward});
+                return view.render().$el;
+            }));
+        var date_widget = this.$("#approval-date-picker");
+        date_widget.datepicker({
+            format: "dd.mm.yyyy",
+            weekStart: 1,
+            language: "de",
+            defaultViewDate: current_date,
+        });
+        date_widget.datepicker('setDate', current_date);
+        date_widget.datepicker('update', current_date);
+        if (!this._changeDate_connected) {
+            date_widget.on("changeDate", this.approval_date_changed);
+            this._changeDate_connected = true;
+        }
+        this.rendered = true;
+        return this;
+    },
+    show: function(ward) {
+        if (!this.rendered) this.render();
+        if (ward)
+            this.$("input[value='" + ward.get('shortname') + "']")
+                .attr('checked', true);
+        this.$el.modal('show');
+    },
+    approval_date_changed: function() {
+        var date = $("#approval-date-picker").datepicker('getFormattedDate');
+        $('#approve-to-date').text("Bis " + date + " freigeben");
+    },
+    get_checked_wards: function() {
+        return this.$("input:checked")
+            .map(function() {
+                return $( this ).val();
+            })
+            .get();
+    },
+    save: function(approval) {
+        models.save_approval(this.get_checked_wards(), approval);
+        this.$el.modal('hide');
+    },
+    approve: function() {
+        this.save(this.$("#approval-date-picker").datepicker('getDate'));
+    },
+    approve_all: function() { this.save(false); },
+});
+var approvestaffingview = new ApproveStaffingsView({
+    el: $("#approvestaffing"),
+});
+
+var SelectStaffingView = Backbone.View.extend({
+    tagName: 'tr',
+    initialize: function(options) {
+        this.ward = options.ward;
+        this.listenTo(this.ward, "change:approved", this.render);
+    },
+    template: _.template($('#approve_staffing_template').html()),
+    render: function() {
+        var approved = this.ward.get('approved');
+        var currentapproval =
+            approved ? utils.datestr(approved) : "offen";
+        this.$el.empty().append(this.template({
+            ward: this.ward.get('name'),
+            ward_id: this.ward.get('shortname'),
+            currentapproval: currentapproval,
+        }));
+        return this;
+    },
+});
 
 return {
     staff: changestaffview,
+    approve: approvestaffingview,
 };
 })($, _, Backbone);

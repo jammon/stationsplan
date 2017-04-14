@@ -42,6 +42,12 @@ function get_day_id (date_or_year, month, day) {
                  (date.getMonth()+1)*100 +
                  date.getDate());
 }
+function get_date(day_id) {
+    return new Date(
+        parseInt(day_id.slice(0, 4)),
+        parseInt(day_id.slice(4, 6)) - 1,
+        parseInt(day_id.slice(6, 8)));
+}
 function get_previous_day_id(day_id) {
     var date = new Date(
         parseInt(day_id.slice(0, 4)),
@@ -105,6 +111,7 @@ function datestr(date) {
 return {
     is_free: is_free,
     get_day_id: get_day_id,
+    get_date: get_date,
     get_previous_day_id: get_previous_day_id,
     get_next_day_id: get_next_day_id,
     get_month_id: get_month_id,

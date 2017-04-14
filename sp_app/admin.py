@@ -151,6 +151,10 @@ class WardTypeAdmin(admin.ModelAdmin):
     fields = ('name', 'callshift', 'company', )
 
 
+class StatusEntryAdmin(CompanyRestrictedMixin, admin.ModelAdmin):
+    list_display = ('name', 'content', 'department', 'company')
+
+
 admin.site.register(Person, PersonAdmin)
 admin.site.register(Ward, WardAdmin)
 admin.site.register(Department)
@@ -158,7 +162,7 @@ admin.site.register(Company)
 admin.site.register(Employee)
 admin.site.register(ChangeLogging, ChangeLoggingAdmin)
 admin.site.register(Planning, PlanningAdmin)
-# admin.site.register(StatusEntry)
+admin.site.register(StatusEntry, StatusEntryAdmin)
 admin.site.register(WardType, WardTypeAdmin)
 
 

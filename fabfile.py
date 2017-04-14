@@ -7,7 +7,7 @@ code_dir = '~/priv/stationsplan'
 
 
 def test():
-    local("./manage.py test sp_app")
+    local("python -Wd ./manage.py test sp_app")
 
 
 def serve():

@@ -62,3 +62,18 @@
   </td>
   <td><%= duties %></td>
 </script>
+
+<!-- Template for the approve staffing line
+  Parameters:
+  staffing - the name of the staffing
+  currentapproval - the current approval date of the staffing
+-->
+<script type="text/template" id="approve_staffing_template">
+  <td>
+    <label>
+      <input type="checkbox" value="<%= ward_id %>">
+      <%= ward %>
+    </label>
+  </td>
+  <td><%= currentapproval %></td>
+</script>

@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import json
 from unittest import TestCase
 from datetime import date
 
 from .utils import (last_day_of_month,
-                    get_for_company, apply_changes,
+                    get_for_company, apply_changes, set_approved,
                     PopulatedTestCase)
-from .models import Company, Person, Ward, ChangeLogging
+from .models import Company, Person, Ward
 
 
 class TestLastDayOfMonth(TestCase):
@@ -95,3 +94,22 @@ class TestApplyChanges(PopulatedTestCase):
             cls[0],
             {"person": "A", "ward": "A",
              "action": "add", "continued": True, "day": "20160328"})
+
+
+class TestSetApproved(PopulatedTestCase):
+
+    def test_set_approved(self):
+        def test_ward(ward_id, approval):
+            ward = get_for_company(Ward, company_id=self.company.id,
+                                   shortname=ward_id)
+            self.assertEqual(ward.approved, approval)
+
+        res = set_approved(['A', 'B'], '20170401', self.company.id)
+        self.assertEqual(res, {'wards': ['A', 'B'], 'approved': '20170401'})
+        test_ward('A', date(2017, 4, 1))
+        test_ward('B', date(2017, 4, 1))
+
+        res = set_approved(['A'], False, self.company.id)
+        self.assertEqual(res, {'wards': ['A'], 'approved': False})
+        test_ward('A', None)
+        test_ward('B', date(2017, 4, 1))
