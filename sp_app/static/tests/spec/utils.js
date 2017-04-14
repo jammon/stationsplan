@@ -30,6 +30,14 @@ describe("utils", function() {
             test_get_day_id(1999, 11, 31, "19991231");
         });
     });
+    describe("calculating the date from the day_id (get_date)", function() {
+        it("should calculate an id to usual date", function() {
+            expect(utils.get_date("20150101")).toEqual(new Date(2015, 0, 1));
+            expect(utils.get_date("20150830")).toEqual(new Date(2015, 7, 30));
+            expect(utils.get_date("20151231")).toEqual(new Date(2015, 11, 31));
+            expect(utils.get_date("19991231")).toEqual(new Date(1999, 11, 31));
+        });
+    });
     describe("function get_previous_day_id", function() {
         it("should calculate the id of the previous day", function() {
             expect(utils.get_previous_day_id('20170302')).toEqual('20170301');

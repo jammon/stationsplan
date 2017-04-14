@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 from datetime import date, timedelta
 
-from .models import (Person, ChangeLogging, Planning, process_change,
+from .models import (Person, Ward, ChangeLogging, Planning, process_change,
                      FAR_FUTURE)
 from .utils import PopulatedTestCase
 
@@ -44,6 +44,32 @@ class TestPerson(PopulatedTestCase):
             person=person, ward=self.ward_a,
             start=date(2016, 6, 1), end=FAR_FUTURE)
         self.assertEqual(planning.end, date(2016, 6, 30))
+
+
+class TestWard(PopulatedTestCase):
+
+    def test_ward(self):
+        ward = Ward(
+            name="Station A", shortname="A",
+            min=1, max=3, nightshift=False, everyday=False,
+            freedays=False, continued=True, on_leave=False,
+            company=self.company, position=2)
+        self.assertEqual(ward.toJson(),
+                         {'name': "Station A",
+                          'shortname': "A",
+                          'min': 1,
+                          'max': 3,
+                          'nightshift': False,
+                          'everyday': False,
+                          'freedays': False,
+                          'continued': True,
+                          'on_leave': False,
+                          'company_id': self.company.id,
+                          'position': 2,
+                          'after_this': '',
+                          'ward_type': ''})
+        ward.approved = date(2017, 3, 30)
+        self.assertEqual(ward.toJson()['approved'], [2017, 2, 30])
 
 
 class TestChanges(PopulatedTestCase):

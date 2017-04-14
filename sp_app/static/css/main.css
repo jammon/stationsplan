@@ -9,6 +9,8 @@
 .plan td, .plan th {
   padding: 0 2px;
   vertical-align: top; }
+.plan .unapproved {
+  color: #999; }
 
 .month_plan, .on_call_plan {
   font-size: 12px; }

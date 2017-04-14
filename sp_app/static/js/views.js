@@ -5,6 +5,7 @@ var StaffingDisplayView = Backbone.View.extend({
     tagName: 'td',
     initialize: function(options) {
         this.listenTo(this.collection.displayed, "update", this.render);
+        this.listenTo(this.collection.ward, "change:approved", this.render);
         if (options) {
             this.display_long_name = options.display_long_name;
             this.changeable = options.changeable;
@@ -16,12 +17,14 @@ var StaffingDisplayView = Backbone.View.extend({
     render: function() {
         var el = this.$el;
         var staffing = this.collection;
+        var approved = staffing.ward.is_approved(staffing.day.get('date'));
         el.empty();
-        if (!staffing.no_staffing) {
-            el.text(staffing.displayed.pluck('name').join(", "));
-            el.toggleClass('lacking', staffing.lacking());
-            el.toggleClass('today', staffing.day.id==models.today_id);
-        }
+        if (staffing.no_staffing) return this;
+        if (!models.user_can_change && !approved) return this; // not approved
+        el.text(staffing.displayed.pluck('name').join(", "));
+        el.toggleClass('lacking', staffing.lacking());
+        el.toggleClass('today', staffing.day.id==models.today_id);
+        el.toggleClass('unapproved', !approved);
         return this;
     },
 });
@@ -33,30 +36,34 @@ var StaffingView = StaffingDisplayView.extend({
         var el = this.$el;
         var that = this;
         var staffing = this.collection;
+        var approved = staffing.ward.is_approved(staffing.day.get('date'));
         el.empty();
-        if (!staffing.no_staffing) {
-            staffing.displayed.each(function(person) {
-                var name = $('<div/>', {
-                    text: that.display_long_name ? person.get('name') : person.id,
-                    'class': 'staff',
-                });
-                if (models.user_can_change && that.drag_n_droppable) {
-                    name.draggable({
-                        helper: function() {
-                            return $('<div/>', {
-                                text: person.get('name'),
-                                ward: staffing.ward.id,
-                                day: staffing.day.id,
-                                person: person.id,
-                            });
-                        }
-                    });
-                }
-                el.append(name);
+        // do we have to render it
+        if (staffing.no_staffing) return this;
+        if (!models.user_can_change && !approved) return this; // not approved
+        // ok, we have to
+        staffing.displayed.each(function(person) {
+            var name = $('<div/>', {
+                text: that.display_long_name ? person.get('name') : person.id,
+                'class': 'staff',
             });
-            el.toggleClass('lacking', staffing.lacking());
-            el.toggleClass('today', staffing.day.id==models.today_id);
-        }
+            if (models.user_can_change && that.drag_n_droppable) {
+                name.draggable({
+                    helper: function() {
+                        return $('<div/>', {
+                            text: person.get('name'),
+                            ward: staffing.ward.id,
+                            day: staffing.day.id,
+                            person: person.id,
+                        });
+                    }
+                });
+            }
+            el.append(name);
+        });
+        el.toggleClass('lacking', staffing.lacking());
+        el.toggleClass('today', staffing.day.id==models.today_id);
+        el.toggleClass('unapproved', !approved);
         if (models.user_can_change && that.drag_n_droppable) {
             el.droppable({
                 accept: function(draggable) {
@@ -108,6 +115,9 @@ var DutiesView = Backbone.View.extend({
 });
 
 function remove_person_from_helper(helper) {
+    // If a person has been drag-n-dropped to a StaffingView
+    // it has to be removed from its origin 
+    // if that is a StaffingView as well
     if (helper.attr('day'))
         models.save_change({
             day: helper.attr('day'),
@@ -134,6 +144,7 @@ var MonthView = Backbone.View.extend({
     events: {
         "click .prev-view": "prev_period",
         "click .next-view": "next_period",
+        "click .approvable th": "approve",
     },
     base_class: 'month_plan',
     slug: 'plan',
@@ -189,10 +200,11 @@ var MonthView = Backbone.View.extend({
         // first the wards
         models.wards.each(function(ward) {
             table.append(construct_row(ward, function() {
-                if (ward.get('nightshift')) return 'nightshiftrow';
-                if (!ward.get('continued')) return 'non-continued-row';
-                if (ward.get('on_leave')) return 'leaverow';
-                return 'wardrow';
+                var result = 'wardrow';
+                if (ward.get('nightshift')) result = 'nightshiftrow';
+                else if (!ward.get('continued')) result = 'non-continued-row';
+                else if (ward.get('on_leave')) result = 'leaverow';
+                return result + ' approvable';
             }, 'ward_staffings', StaffingView));
         });
         // then the persons
@@ -230,6 +242,14 @@ var MonthView = Backbone.View.extend({
     next_period: function() {
         router.navigate(this.slug+'/'+utils.get_next_month_id(this.month_id),
             {trigger: true});
+    },
+    approve: function(e) {
+        if (!models.user_can_change) return;
+        var ward = models.wards.where({name: e.currentTarget.textContent});
+        if (ward.length)
+            changeviews.approve.show(ward[0]);
+        else
+            changeviews.approve.show();
     },
 });
 

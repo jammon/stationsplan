@@ -52,6 +52,20 @@ describe("models", function() {
             });
         });
     });
+    describe("Ward", function() {
+        it("can be approved for a date", function() {
+            // Approval date not set
+            var ward = new models.Ward({shortname: 'A'});
+            expect(ward.is_approved(new Date(2017, 3, 1))).toBe(true);
+            // Approval date set to false
+            ward = new models.Ward({shortname: 'A', approved: false});
+            expect(ward.is_approved(new Date(2017, 3, 1))).toBe(true);
+            // Approval date set
+            ward = new models.Ward({shortname: 'A', approved: [2017, 3, 1]});
+            expect(ward.is_approved(new Date(2017, 3, 1))).toEqual(true);
+            expect(ward.is_approved(new Date(2017, 3, 2))).toEqual(false);
+        });
+    });
     describe("Staffing", function() {
         describe("calculate who can be planned", function() {
             var today, yesterday, staffing_a, person_a;

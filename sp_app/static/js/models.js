@@ -49,14 +49,15 @@ var persons = new Persons();
 //     - freedays = if truthy, is to be planned only on free days.
 //     - continued = if truthy, then todays staffing will usually be continued tomorrow
 //     - on_leave = if truthy, then persons planned for this are on leave
-//     - approved = The date until which the plan is approved
+//     - approved = The date until which the plan is approved or false
 //     - after_this = an Array of wards, that can be planned after this one
 //     - ward_type = none or '' or type of ward (for handling of call shifts)
 var Ward = Backbone.Model.extend({
     initialize: function() {
-        var start = this.get('approved') || [2015, 0, 1];
+        var approved = this.get('approved');
+        if (approved)
+            this.set('approved', new Date(approved[0], approved[1], approved[2]));
         var after_this = this.get('after_this');
-        this.set('approved', new Date(start[0], start[1], start[2]));
         if (after_this) {
             this.set('after_this', after_this.split(','));
         }
@@ -64,6 +65,13 @@ var Ward = Backbone.Model.extend({
     idAttribute: "shortname",
     get_ward_type: function() {
         return this.get('ward_type') || this.get('name');
+    },
+    is_approved: function(date) {
+        var approved = this.get('approved');
+        return !approved || (date <= approved);
+    },
+    is_approvable: function() {
+
     },
 });
 
@@ -559,6 +567,36 @@ function save_change(data) {
     });
 }
 
+function save_approval(ward_ids, date) {
+    // data should have these attributes: 
+    //   date: a Date or false
+    //   ward_ids: an Array of <ward_ids>
+    function error (jqXHR, textStatus, errorThrown) {
+        models.errors.add({
+            textStatus: textStatus, 
+            errorThrown: errorThrown,
+        });
+    }
+    function success (data, textStatus, jqXHR) {
+        var approved = data.approved ? utils.get_date(data.approved) : false;
+        _.each(data.wards, function(ward_id) {
+            wards.get(ward_id).set('approved', approved);
+        });
+    }
+    $.ajax({
+        type: "POST",
+        url: '/set_approved', 
+        data: JSON.stringify({
+            date: date ? utils.get_day_id(date) : false,
+            wards: ward_ids,
+        }),
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+        error: error,
+        success: success,
+    });
+}
+
 function set_plannings(p) {
     plannings = p;
 }
@@ -612,6 +650,7 @@ return {
     CallTally: CallTally,
     CallTallies: CallTallies,
     save_change: save_change,
+    save_approval: save_approval,
     set_plannings: set_plannings,
     apply_change: apply_change,
     errors: errors,

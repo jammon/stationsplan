@@ -61,8 +61,8 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title" id="changestaffLabel">Besetzung ändern</h4>
-        <p><span class="changedate"></span>, <span class="changeward"></span></p>
+        <h4 class="modal-title">Besetzung ändern</h4>
+        <h4><span class="changedate"></span>, <span class="changeward"></span></h4>
       </div>
       <div class="modal-body">
         <div class="row">
@@ -78,6 +78,32 @@
             <div><button type="button" class="btn btn-primary btn-block"
                     id="continued">ohne Ende</button></div>
             
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal dialog for approving Staffings -->
+<div class="modal" id="approvestaffing" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Planung freigeben</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-sm-6">
+            <table id="changeapprovaltable"></table>
+          </div>
+          <div class="col-sm-6">
+            <div id="approval-date-picker"></div>
+            <div><button type="button" class="btn btn-primary btn-block" 
+                    id="approve-to-date">Freigeben</button></div>
+            <div><button type="button" class="btn btn-primary btn-block" 
+                    id="approve-all">Unbeschränkt sichtbar</button></div>
           </div>
         </div>
       </div>
@@ -102,6 +128,7 @@
     <script>
       $(function(){
         main.initialize_site(
+    /* jshint ignore:start */
           {{ persons|safe }},
           {{ wards|safe }},
           {{ plannings|safe }},
@@ -112,8 +139,8 @@
                    1),                       // start_of_data
           {{ can_change }},
           '{{ ward_selection }}'
+    /* jshint ignore:end */
         );
       });
-
     </script>
 {% endblock extrascripts %}
