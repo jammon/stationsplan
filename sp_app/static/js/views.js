@@ -145,6 +145,7 @@ var MonthView = Backbone.View.extend({
         "click .prev-view": "prev_period",
         "click .next-view": "next_period",
         "click .approvable th": "approve",
+        "click .daycol": "show_day",
     },
     base_class: 'month_plan',
     slug: 'plan',
@@ -166,10 +167,20 @@ var MonthView = Backbone.View.extend({
     build_table: function() {
         var table = this.$(".plan");
         var titlerow = $('<tr/>', {'class': 'titlerow'}).append($('<th/>'));
+        var date_template = _.template(
+            "<%= day %>. <%= month %> <%= year %>");
         this.month_days.each(function(day) {
             var date = day.get('date');
-            var th = $('<th/>', {'html': 
-                day_names[date.getDay()] + '<br>' + date.getDate() + '.'});
+            var th = $('<th/>', {
+                html: day_names[date.getDay()]+'<br>'+date.getDate()+'.',
+                'class': 'daycol',
+                title: date_template({
+                    day: date.getDate(),
+                    month: month_names[date.getMonth()],
+                    year: date.getFullYear(),
+                }),
+                day_id: utils.get_day_id(date),
+            });
             th.toggleClass('today', day.id==models.today_id);
             titlerow.append(th);
         });
@@ -250,6 +261,10 @@ var MonthView = Backbone.View.extend({
             changeviews.approve.show(ward[0]);
         else
             changeviews.approve.show();
+    },
+    show_day: function(e) {
+        var day_id = $(e.currentTarget).attr('day_id');
+        router.navigate('tag/' + day_id, {trigger: true});
     },
 });
 

@@ -43,3 +43,5 @@ x 2017-03-24 DayView soll sich aktualisieren nach Eingaben
 x 2017-03-24 Tag soll immer den heutigen Tag zeigen
 x 2017-03-26 In der Navigation soll der aktuelle Punkt markiert sein
 x 2017-03-26 Im Tagesplan sollen nur die Stationen gezeigt werden, die an dem Tag besetzt werden müssen
+x 2017-04-17 Nur finalisierte Planungen sollen für Benutzer ohne besondere Berechtigung sichtbar sein
+x 2017-04-19 Click auf den Tag soll DayView zeigen

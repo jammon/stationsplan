@@ -1,5 +1,4 @@
 (C) Admins sollen nur User für das eigene Department anlegen können
-(A) Nur finalisierte Planungen sollen für Benutzer ohne besondere Berechtigung sichtbar sein
 (C) Customize the default error views 
 (D) Der Kurzname einer Funktion sollte kein Komma enthalten.
 (B) Logging anzeigen
@@ -26,7 +25,6 @@
 (A) Duties sollen nur auf Wunsch angezeigt werden
 Doppelclick auf voriger oder nächster Monat soll nur einmal wirken
 Wenn man mit DayView in einen anderen Monat navigiert, soll mit den MonthViews auch dieser Monat angezeigt werden
-Click auf den Tag soll DayView zeigen
 In ChangeStaffView den Wochentag im Header anzeigen
 (A) Jeder Editor darf nur Wards der eigenen Abteilung approven
 Wenn für einen Dienst genau eine Person gebraucht wird, soll sie mit einem Klick eingetragen werden können
