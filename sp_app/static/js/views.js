@@ -130,12 +130,6 @@ function remove_person_from_helper(helper) {
         });
 }
 
-var month_names = ["Januar", "Februar", "März", "April", "Mai", "Juni", 
-    "Juli", "August", "September", "Oktober", "November", "Dezember"];
-var day_names = ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'];
-var day_long_names = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch',
-    'Donnerstag', 'Freitag', 'Samstag'];
-
 var _table_template = _.template($('#table-template').html());
 function get_table_from_template(options) {
     return _table_template(options);
@@ -172,11 +166,11 @@ var MonthView = Backbone.View.extend({
         this.month_days.each(function(day) {
             var date = day.get('date');
             var th = $('<th/>', {
-                html: day_names[date.getDay()]+'<br>'+date.getDate()+'.',
+                html: utils.day_names[date.getDay()]+'<br>'+date.getDate()+'.',
                 'class': 'daycol',
                 title: date_template({
                     day: date.getDate(),
-                    month: month_names[date.getMonth()],
+                    month: utils.month_names[date.getMonth()],
                     year: date.getFullYear(),
                 }),
                 day_id: utils.get_day_id(date),
@@ -226,7 +220,7 @@ var MonthView = Backbone.View.extend({
     },
     get_template_options: function() {
         return {
-            period: month_names[this.month] + ' ' + this.year,
+            period: utils.month_names[this.month] + ' ' + this.year,
             label_prev: "Voriger Monat",
             label_next: "Nächster Monat",
             content: this.template(),
@@ -285,7 +279,7 @@ var OnCallView = MonthView.extend({
             "<%= name %> <%= date %>.<%= month %>.");
         function get_day_label(date) {
             return day_label({
-                name: day_names[date.getDay()],
+                name: utils.day_names[date.getDay()],
                 date: date.getDate(),
                 month: date.getMonth()+1,
             });
@@ -345,8 +339,8 @@ var DayView = MonthView.extend({
     get_template_options: function() {
         var date = this.day_obj.get('date');
         return {
-            period: day_long_names[date.getDay()] + ', ' + this.day + '. ' + 
-                month_names[this.month] + ' ' + this.year,
+            period: utils.day_long_names[date.getDay()] + ', ' + this.day + '. ' + 
+                utils.month_names[this.month] + ' ' + this.year,
             label_prev: "Voriger Tag",
             label_next: "Nächster Tag",
             content: this.template(),

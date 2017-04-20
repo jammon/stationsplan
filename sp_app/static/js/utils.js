@@ -35,6 +35,14 @@ function is_free(date) {
     return (free_dates.indexOf(date_string) > -1);
 }
 
+
+var month_names = ["Januar", "Februar", "März", "April", "Mai", "Juni", 
+    "Juli", "August", "September", "Oktober", "November", "Dezember"];
+var day_names = ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'];
+var day_long_names = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch',
+    'Donnerstag', 'Freitag', 'Samstag'];
+
+
 function get_day_id (date_or_year, month, day) {
     var date = (month === void 0) ? 
                date_or_year : 
@@ -111,6 +119,9 @@ function datestr(date) {
 
 return {
     is_free: is_free,
+    month_names: month_names,
+    day_names: day_names,
+    day_long_names: day_long_names,    
     get_day_id: get_day_id,
     get_date: get_date,
     get_previous_day_id: get_previous_day_id,

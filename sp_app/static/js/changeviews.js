@@ -42,7 +42,8 @@ var ChangeStaffView = Backbone.View.extend({
         var staffing = this.staffing;
         var day = this.staffing.day;
         current_date = day.get('date');
-        var datestr = utils.datestr(current_date);
+        var datestr = utils.day_long_names[current_date.getDay()] +
+            ', ' + utils.datestr(current_date);
         var changestafftable = this.$("#changestafftable").empty();
         var date_widget = this.$("#date-picker");
         var that = this;
