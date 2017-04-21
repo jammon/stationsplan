@@ -24,6 +24,5 @@
 (C) Die Dienste jeder Person als Kalender zur Verfügung stellen, mit Updates
 (B) Duties sollen nur auf Wunsch angezeigt werden
 (A) Doppelclick auf voriger oder nächster Monat soll nur einmal wirken
-(A) Wenn man mit DayView in einen anderen Monat navigiert, soll mit den MonthViews auch dieser Monat angezeigt werden
-(A) Jeder Editor darf nur Wards der eigenen Abteilung approven
+(B) Jeder Editor darf nur Wards der eigenen Abteilung approven
 (B) Wenn für einen Dienst genau eine Person gebraucht wird, soll sie mit einem Klick eingetragen werden können

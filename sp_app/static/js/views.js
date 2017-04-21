@@ -241,12 +241,12 @@ var MonthView = Backbone.View.extend({
         return this;
     },
     prev_period: function() {
-        router.navigate(this.slug+'/'+utils.get_previous_month_id(this.month_id),
-            {trigger: true});
+        update_current_day(utils.get_previous_month_id(this.month_id) + '01');
+        router.navigate(this.slug+'/'+current_month_id, {trigger: true});
     },
     next_period: function() {
-        router.navigate(this.slug+'/'+utils.get_next_month_id(this.month_id),
-            {trigger: true});
+        update_current_day(utils.get_next_month_id(this.month_id) + '01');
+        router.navigate(this.slug+'/'+current_month_id, {trigger: true});
     },
     approve: function(e) {
         if (!models.user_can_change) return;
@@ -363,19 +363,19 @@ var DayView = MonthView.extend({
 
     },
     prev_period: function() {
-        router.navigate(this.slug+'/'+utils.get_previous_day_id(this.day_id),
-            {trigger: true});
+        update_current_day(utils.get_previous_day_id(this.day_id));
+        router.navigate(this.slug+'/'+current_day_id, {trigger: true});
     },
     next_period: function() {
-        router.navigate(this.slug+'/'+utils.get_next_day_id(this.day_id),
-            {trigger: true});
+        update_current_day(utils.get_next_day_id(this.day_id));
+        router.navigate(this.slug+'/'+current_day_id, {trigger: true});
     },
 });
 
-var current_day_id;
-var current_month_id;
-function update_current_day() {
-    current_day_id = utils.get_day_id(new Date());
+var current_day_id;   // the currently displayed day
+var current_month_id; // the currently displayed month
+function update_current_day(day_id) {
+    current_day_id = day_id || utils.get_day_id(new Date());
     current_month_id = current_day_id.slice(0, 6);
 }
 update_current_day();
