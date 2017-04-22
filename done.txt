@@ -47,3 +47,4 @@ x 2017-04-17 Nur finalisierte Planungen sollen für Benutzer ohne besondere Bere
 x 2017-04-19 Click auf den Tag soll DayView zeigen
 x 2017-04-20 In ChangeStaffView den Wochentag im Header anzeigen
 x 2017-04-21 Wenn man mit DayView in einen anderen Monat navigiert, soll mit den MonthViews auch dieser Monat angezeigt werden
+x 2017-04-22 WardType should be a string, not a ForeignKey to a Model

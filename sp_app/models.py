@@ -78,9 +78,9 @@ class Ward(models.Model):
     position = models.IntegerField(
         default=1,
         help_text=_('Ordering in the display'))
-    ward_type = models.ForeignKey(
-        'WardType', related_name='wards', null=True, default=None,
-        on_delete=models.SET_NULL,)
+    ward_type = models.CharField(
+        _('Ward type'), max_length=50, blank=True, default='',
+        help_text=_('For sorting the CallTallies'))
     approved = models.DateField(
         null=True, blank=True,
         help_text=_('The date until which the plan is approved'))
@@ -115,27 +115,10 @@ class Ward(models.Model):
                'position': self.position,
                'after_this': '' if not self.pk else ','.join(
                    self.after_this.values_list('shortname', flat=True)),
-               'ward_type': self.ward_type.name if self.ward_type else ''}
+               'ward_type': self.ward_type}
         if self.approved is not None:
             res['approved'] = date_to_json(self.approved)
         return res
-
-
-@python_2_unicode_compatible
-class WardType(models.Model):
-    ''' Type of Ward, mostly 'Call shift' or not
-    '''
-    name = models.CharField(_('Name'), max_length=20)
-    callshift = models.BooleanField(_('Call shift'))
-    company = models.ForeignKey(Company, related_name='ward_types',
-                                on_delete=models.CASCADE)
-
-    class Meta:
-        verbose_name = _('Ward type')
-        verbose_name_plural = _('Ward types')
-
-    def __str__(self):
-        return self.name
 
 
 @python_2_unicode_compatible
