@@ -17,7 +17,6 @@
 (C) Urlaube in der Planungsansicht der Dienste anzeigen
 (C) Visitendienst in einer Zeile
 (C) Termine für Visitendienste
-(C) Anonyme Personen sollten nicht in den Duties angezeigt werden
 (B) Unbesetzte Dienste/Stationen auch in Print markieren
 (B) Kurzname von Personen ändern können
 (C) Der Client sollte Updates automatisch einholen

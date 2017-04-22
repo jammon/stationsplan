@@ -214,8 +214,9 @@ var MonthView = Backbone.View.extend({
         });
         // then the persons
         _.each(this.month_days.current_persons(), function(person) {
-            table.append(construct_row(person, 'personrow', 'persons_duties',
-                                       DutiesView));
+            if (!person.get('anonymous'))
+                table.append(construct_row(person, 'personrow', 'persons_duties',
+                                           DutiesView));
         });
     },
     get_template_options: function() {
