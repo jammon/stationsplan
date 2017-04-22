@@ -1,13 +1,11 @@
 (C) Admins sollen nur User für das eigene Department anlegen können
 (C) Customize the default error views 
-(D) Der Kurzname einer Funktion sollte kein Komma enthalten.
 (B) Logging anzeigen
 (C) Auch Ärzte von Fremdabteilungen sollen angezeigt werden, wenn sie in den angezeigten Funktionen Dienst tun. Sollen dann nicht bearbeitbar sein.
 (C) Kommentare an Änderungen anhängen
 (D) Kommentare oder Nachrichten unabhängig von Änderungen
 (D) Dienstwünsche eingeben, für jede Person müsste ein User erstellt werden (z.B. 'amm-bot')
 (C) wann ist collection.no_staffing und wann ist collection===undefined?
-(D) A ward should not have the shortname id
 (C) Nach uberspace portieren
 (C) Anonyme Personen sollten nicht für Krank oder Urlaub geplant werden können +FIX
 (B) http://stackoverflow.com/questions/14527387/script7002-xmlhttprequest-network-error-0x2ef3-could-not-complete-the-operati bearbeiten +FIX

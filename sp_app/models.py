@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import json
 from datetime import date, timedelta
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext as _
 from django.utils.encoding import python_2_unicode_compatible
@@ -119,6 +120,16 @@ class Ward(models.Model):
         if self.approved is not None:
             res['approved'] = date_to_json(self.approved)
         return res
+
+    def clean(self):
+        # A ward should not have the shortname id
+        if self.shortname == 'id':
+            raise ValidationError({
+                'shortname': _('Wards cannot have the shortname "id".')})
+        # A ward should not have the shortname id
+        if ',' in self.shortname:
+            raise ValidationError({
+                'shortname': _('Wards cannot have a comma in their shortname.')})
 
 
 @python_2_unicode_compatible
