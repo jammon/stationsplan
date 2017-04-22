@@ -241,11 +241,20 @@ var MonthView = Backbone.View.extend({
         return this;
     },
     prev_period: function() {
-        update_current_day(utils.get_previous_month_id(this.month_id) + '01');
-        router.navigate(this.slug+'/'+current_month_id, {trigger: true});
+        this.change_period(false);
     },
     next_period: function() {
-        update_current_day(utils.get_next_month_id(this.month_id) + '01');
+        this.change_period(true);
+    },
+    change_period: function(forward) {
+        update_current_day(this.next_day_id(forward));
+        this.navigate_to_next_period();
+    },
+    next_day_id: function(forward) {
+        var next_month_id = forward ? 'get_next_month_id' : 'get_previous_month_id';
+        return utils[next_month_id](this.month_id) + '01';
+    },
+    navigate_to_next_period: function() {
         router.navigate(this.slug+'/'+current_month_id, {trigger: true});
     },
     approve: function(e) {
@@ -362,12 +371,11 @@ var DayView = MonthView.extend({
         });
 
     },
-    prev_period: function() {
-        update_current_day(utils.get_previous_day_id(this.day_id));
-        router.navigate(this.slug+'/'+current_day_id, {trigger: true});
+    next_day_id: function(forward) {
+        if (forward) return utils.get_next_day_id(this.day_id);
+        else return utils.get_previous_day_id(this.day_id);
     },
-    next_period: function() {
-        update_current_day(utils.get_next_day_id(this.day_id));
+    navigate_to_next_period: function() {
         router.navigate(this.slug+'/'+current_day_id, {trigger: true});
     },
 });
