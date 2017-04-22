@@ -33,7 +33,8 @@ class Department(models.Model):
     name = models.CharField(_('Name'), max_length=50)
     shortname = models.CharField(_('Short Name'), max_length=10)
     company = models.ForeignKey(Company, related_name='departments',
-                                help_text=_('The top organizational unit'))
+                                help_text=_('The top organizational unit'),
+                                on_delete=models.CASCADE,)
 
     class Meta:
         verbose_name = _('Department')
@@ -72,12 +73,14 @@ class Ward(models.Model):
         help_text=_('if True, then persons planned for this are on leave'))
     departments = models.ManyToManyField(
         Department, verbose_name=_('Departments'), related_name='wards')
-    company = models.ForeignKey(Company, related_name='wards')
+    company = models.ForeignKey(Company, related_name='wards',
+                                on_delete=models.CASCADE)
     position = models.IntegerField(
         default=1,
         help_text=_('Ordering in the display'))
     ward_type = models.ForeignKey(
-        'WardType', related_name='wards', null=True, default=None)
+        'WardType', related_name='wards', null=True, default=None,
+        on_delete=models.SET_NULL,)
     approved = models.DateField(
         null=True, blank=True,
         help_text=_('The date until which the plan is approved'))
@@ -124,7 +127,8 @@ class WardType(models.Model):
     '''
     name = models.CharField(_('Name'), max_length=20)
     callshift = models.BooleanField(_('Call shift'))
-    company = models.ForeignKey(Company, related_name='ward_types')
+    company = models.ForeignKey(Company, related_name='ward_types',
+                                on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = _('Ward type')
@@ -146,7 +150,8 @@ class Person(models.Model):
                                 help_text=_('end of job'))
     departments = models.ManyToManyField(
         Department, verbose_name=_('Departments'), related_name='persons')
-    company = models.ForeignKey(Company, related_name='persons', null=True)
+    company = models.ForeignKey(Company, related_name='persons', null=True,
+                                on_delete=models.CASCADE)
     functions = models.ManyToManyField(
         Ward, related_name='staff', verbose_name=_('Tasks'),
         help_text=_('Functions that he or she can  perform.'))
@@ -195,10 +200,10 @@ class ChangeLogging(models.Model):
     The change can be for one day (continued==False) or continued
     If continued==True it can have an end date (`until`)
     '''
-    company = models.ForeignKey(Company)
-    user = models.ForeignKey(User)
-    person = models.ForeignKey(Person)
-    ward = models.ForeignKey(Ward)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    ward = models.ForeignKey(Ward, on_delete=models.CASCADE)
     day = models.DateField()
     added = models.BooleanField()
     continued = models.BooleanField(
@@ -352,9 +357,9 @@ class Planning(models.Model):
     The time period includes 'start' and 'end',
     i.e. a planning for one day has 'start' and 'end' set to the same date.
     """
-    company = models.ForeignKey(Company)
-    person = models.ForeignKey(Person)
-    ward = models.ForeignKey(Ward)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    ward = models.ForeignKey(Ward, on_delete=models.CASCADE)
     start = models.DateField()
     end = models.DateField(default=FAR_FUTURE)
     json = models.CharField(max_length=255)
@@ -402,9 +407,11 @@ class Employee(models.Model):
     Can be anyone who works there, but also other involved personnel,
     like management etc.
     '''
-    user = models.OneToOneField(User, related_name='employee')
+    user = models.OneToOneField(User, related_name='employee',
+                                on_delete=models.CASCADE)
     departments = models.ManyToManyField(Department, related_name='employees')
-    company = models.ForeignKey(Company, related_name='employees')
+    company = models.ForeignKey(Company, related_name='employees',
+                                on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = _('Employee')
@@ -426,10 +433,10 @@ class StatusEntry(models.Model):
     content = models.CharField(max_length=255)
     department = models.ForeignKey(
         Department, related_name='status_entries', null=True, blank=True,
-        help_text=_('Can be empty'))
+        help_text=_('Can be empty'), on_delete=models.SET_NULL)
     company = models.ForeignKey(
         Company, related_name='status_entries', null=True, blank=True,
-        help_text=_('Can be empty'))
+        help_text=_('Can be empty'), on_delete=models.SET_NULL)
 
     def __str__(self):
         return '{}: {}'.format(self.name, self.content)
