@@ -17,7 +17,7 @@ def home(request):
 
 
 @login_required
-def plan(request, month='', day='', ward_selection=''):
+def plan(request, month='', day=''):
     # month is '' or 'YYYYMM'
     # day is '' or 'YYYYMMDD' or None (for path "/tag")
     if month == '' and day:
@@ -32,8 +32,6 @@ def plan(request, month='', day='', ward_selection=''):
         departments__id__in=department_ids
     ).prefetch_related('functions')
     wards = Ward.objects.filter(departments__id__in=department_ids)
-    if ward_selection == 'noncontinued':
-        wards = wards.filter(continued=False)
     can_change = request.user.has_perm('sp_app.add_changelogging')
     plannings = Planning.objects.filter(
         ward__in=wards,
@@ -50,7 +48,6 @@ def plan(request, month='', day='', ward_selection=''):
         'can_change': 'true'if can_change else 'false',
         'first_of_month': first_of_month,
         'start_of_data': start_of_data,
-        'ward_selection': ward_selection,
     }
     if first_of_month > date.today():
         data['prev_month'] = (first_of_month - timedelta(1)).strftime('%Y%m')

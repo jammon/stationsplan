@@ -34,7 +34,7 @@ function setupCsrfProtection() {
 
 
 function initialize_site(persons, wards, plannings, year, month,
-                         start_of_data, can_change, ward_selection) {
+                         start_of_data, can_change) {
     setupCsrfProtection();
     models.initialize_wards(wards);
     models.persons.reset(persons);
