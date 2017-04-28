@@ -67,3 +67,18 @@ Wenn man eine Planung eingibt, die ein oder mehrere bisherige Planungen überdec
 Wenn eine neue Planung eine alte teilweise überlappt, wird sie so beschnitten, dass sie direkt anschließt und nicht mehr überlappt. (Nach dem bisherigen UI kann die neue Planung nur mit ihrem Ende den Anfang einer alten Planung überdecken.)
 
 Wenn ein Change mit add=False und angegebenem Ende andere Planungen überdeckt, werden diese gekürzt oder gelöscht.
+
+## Finalisierte Planungen
+- Für Wards kann ein Datum angegeben werden, bis zu dem Planungen sichtbar sind.
+- Default ist None.
+- Alle Planungen nach diesem Datum sind nur für Editoren sichtbar.
+- Für die Anderen enden die Planungen an diesem Datum.
+
+## Für das Handbuch
+- Anonyme Personen sollten nicht für "Krank" oder "Frei" buchbar gemacht werden.
+
+## Export nach CalDAV
+- bei der Freigabe sollen die Planungen für bestimmte Wards in einen CalDAV-Server gespeichert werden.
+- Nach Wunsch bekommen die betroffenen Perrsonen dann eine Mail.
+- für jede Person gibt es einen Principal.
+- Wenn Dienste in einem freigegebenen Ward geändert werden, werden diese für eine Benachrichtigung vorgemerkt. Der Editor kann dann die Personen über die Änderungen mit einem Kommentar per Mail benachrichtigen.

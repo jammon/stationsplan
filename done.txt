@@ -51,3 +51,4 @@ x 2017-04-22 WardType should be a string, not a ForeignKey to a Model
 x 2017-04-22 Anonyme Personen sollten nicht in den Duties angezeigt werden
 x 2017-04-22 A ward should not have the shortname id
 x 2017-04-22 Der Kurzname einer Funktion sollte kein Komma enthalten.
+x 2017-04-26 Anonyme Personen sollten nicht für Krank oder Urlaub geplant werden können +FIX

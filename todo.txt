@@ -1,14 +1,12 @@
-(C) Admins sollen nur User für das eigene Department anlegen können
-(C) Customize the default error views 
+(C) Admins sollen nur User für das eigene Department anlegen können +Public
 (B) Logging anzeigen
-(C) Auch Ärzte von Fremdabteilungen sollen angezeigt werden, wenn sie in den angezeigten Funktionen Dienst tun. Sollen dann nicht bearbeitbar sein.
+(C) Auch Ärzte von Fremdabteilungen sollen angezeigt werden, wenn sie in den angezeigten Funktionen Dienst tun. Sollen dann nicht bearbeitbar sein. +Public
 (C) Kommentare an Änderungen anhängen
-(D) Kommentare oder Nachrichten unabhängig von Änderungen
+(D) Kommentare oder Nachrichten unabhängig von Änderungen, die beim nächsten Aufruf angezeigt werden
 (D) Dienstwünsche eingeben, für jede Person müsste ein User erstellt werden (z.B. 'amm-bot')
 (C) wann ist collection.no_staffing und wann ist collection===undefined?
 (C) Nach uberspace portieren
-(C) Anonyme Personen sollten nicht für Krank oder Urlaub geplant werden können +FIX
-(B) http://stackoverflow.com/questions/14527387/script7002-xmlhttprequest-network-error-0x2ef3-could-not-complete-the-operati bearbeiten +FIX
+(B) http://stackoverflow.com/questions/14527387/script7002-xmlhttprequest-network-error-0x2ef3-could-not-complete-the-operati bearbeiten +FIX +Public
 (C) Wenn eine Buchung nicht möglich ist, muss die Seite neu dargestellt werden +FIX
 (B) Alle Dienste einer Person des aktuellen Monats sollen angezeigt werden
 (B) Die Verpflichtungen einer Person an diesem Tag als Tooltip anzeigen
@@ -21,5 +19,7 @@
 (C) Die Dienste jeder Person als Kalender zur Verfügung stellen, mit Updates
 (B) Duties sollen nur auf Wunsch angezeigt werden
 (A) Doppelclick auf voriger oder nächster Monat soll nur einmal wirken
-(B) Jeder Editor darf nur Wards der eigenen Abteilung approven
+(C) Jeder Editor darf nur Wards der eigenen Abteilung approven +Public
 (B) Wenn für einen Dienst genau eine Person gebraucht wird, soll sie mit einem Klick eingetragen werden können
+(D) ward.continued wird nur noch in tests/spec/models.js benutzt
+(A) Freie Tage in die Datenbank
