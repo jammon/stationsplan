@@ -42,8 +42,8 @@ function initialize_site(persons, wards, plannings, year, month,
     models.start_day_chain(start_of_data.getFullYear(),
         start_of_data.getMonth());
     models.user_can_change = can_change;
-    // .plan should work as background for staff to throw out
     if (models.user_can_change) {
+        // .plan should work as background for staff to throw out
         $(".plans").droppable({
             drop: function(event, ui) {
                 views.remove_person_from_helper(ui.helper);
