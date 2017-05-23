@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
 from .models import (Person, Ward, ChangeLogging, Planning, Department,
-                     Company, Employee, StatusEntry)
+                     Company, Employee, StatusEntry, Holiday, Region)
 from .forms import WardForm
 
 
@@ -159,6 +159,8 @@ admin.site.register(Employee)
 admin.site.register(ChangeLogging, ChangeLoggingAdmin)
 admin.site.register(Planning, PlanningAdmin)
 admin.site.register(StatusEntry, StatusEntryAdmin)
+admin.site.register(Holiday)
+admin.site.register(Region)
 
 
 class ConfigSite(admin.sites.AdminSite):
