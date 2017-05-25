@@ -34,7 +34,8 @@ urlpatterns = [
     url(r'^password_change', sp_views.password_change, name='password_change'),
     url(r'^admin/', admin.site.urls),
     url(r'^config/', config_site.urls),
-    url('^logout/', auth_views.logout, {'next_page': '/'}),
+    url(r'^login$', auth_views.login, name='login'),
+    url('^logout/', auth_views.logout, {'next_page': '/'}, name='logout'),
     url('^', include('django.contrib.auth.urls')),
 ]
 
