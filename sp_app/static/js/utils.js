@@ -1,38 +1,12 @@
 var utils = (function($, _, Backbone) {
 "use strict";
 
-var free_dates = [
-    '2015.10.3',
-    '2015.11.1',
-    '2015.12.24',
-    '2015.12.25',
-    '2015.12.26',
-    '2015.12.31',
-    '2016.1.1',
-    '2016.3.25',
-    '2016.3.28',
-    '2016.5.5',
-    '2016.5.16',
-    '2016.5.26',
-    '2016.10.3',
-    '2016.11.1',
-    '2016.12.26',
-    '2017.4.14',
-    '2017.4.17',
-    '2017.5.1',
-    '2017.5.25',
-    '2017.6.5',
-    '2017.6.15',
-    '2017.10.3',
-    '2017.11.1',
-];
 function is_free(date) {
     var weekday = date.getDay();
     if (weekday===6 || weekday===0) {
         return true;
     }
-    var date_string = date.getFullYear()+'.'+(date.getMonth()+1)+'.'+date.getDate();
-    return (free_dates.indexOf(date_string) > -1);
+    return (models.free_dates.indexOf(get_day_id(date)) > -1);
 }
 
 

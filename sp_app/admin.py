@@ -151,6 +151,13 @@ class StatusEntryAdmin(CompanyRestrictedMixin, admin.ModelAdmin):
     list_display = ('name', 'content', 'department', 'company')
 
 
+class HolidayAdmin(admin.ModelAdmin):
+    ordering = ('date', )
+
+
+class RegionAdmin(admin.ModelAdmin):
+    filter_horizontal = ('holidays',)
+
 admin.site.register(Person, PersonAdmin)
 admin.site.register(Ward, WardAdmin)
 admin.site.register(Department)
@@ -159,8 +166,8 @@ admin.site.register(Employee)
 admin.site.register(ChangeLogging, ChangeLoggingAdmin)
 admin.site.register(Planning, PlanningAdmin)
 admin.site.register(StatusEntry, StatusEntryAdmin)
-admin.site.register(Holiday)
-admin.site.register(Region)
+admin.site.register(Holiday, HolidayAdmin)
+admin.site.register(Region, RegionAdmin)
 
 
 class ConfigSite(admin.sites.AdminSite):

@@ -6,7 +6,7 @@ from collections import defaultdict
 currentyear = 2017
 lastyear = 2020
 url = "http://www.feiertage.net/csvfile.php?state={}&year={}&type=csv"
-laender = {
+regions = {
     "BW": "Baden-Württemberg",
     "BY": "Bayern",
     "BE": "Berlin",
@@ -25,10 +25,10 @@ laender = {
     "TH": "Thüringen"
 }
 
-feiertage = defaultdict(list)
-for land in laender.keys():
+holidays = defaultdict(list)
+for region in regions.keys():
     for year in range(currentyear, lastyear + 1):
-        link = url.format(land, year)
+        link = url.format(region, year)
         # print("Read " + link)
         response = urlopen(link)
         cr = csv.reader(response)
@@ -36,9 +36,9 @@ for land in laender.keys():
         next(csvreader)
         for line in csvreader:
             # print(line)
-            feiertage[(line[0], line[1].lstrip())].append(land)
+            holidays[(line[0], line[1].lstrip())].append(region)
 
-with open('feiertage.csv', 'w') as output:
+with open('holidays.csv', 'w') as output:
     csv_out = csv.writer(output)
-    for (tag, name), val in feiertage.items():
+    for (tag, name), val in holidays.items():
         csv_out.writerow((tag, name, '|'.join(val)))

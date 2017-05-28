@@ -138,6 +138,7 @@
                    {{ start_of_data|date:'n' }}-1, 
                    1),                       // start_of_data
           {{ can_change }},
+          {{ holidays|safe }},
     /* jshint ignore:end */
         );
       });
