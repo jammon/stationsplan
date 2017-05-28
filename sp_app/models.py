@@ -10,7 +10,7 @@ from django.utils.encoding import python_2_unicode_compatible
 
 
 def date_to_json(date):
-    return [date.year, date.month-1, date.day]
+    return [date.year, date.month - 1, date.day]
 
 FAR_FUTURE = date(2099, 12, 31)
 ONE_DAY = timedelta(days=1)
@@ -20,6 +20,11 @@ ONE_DAY = timedelta(days=1)
 class Company(models.Model):
     name = models.CharField(_('Name'), max_length=50)
     shortname = models.CharField(_('Short Name'), max_length=10)
+    region = models.ForeignKey('Region', null=True, blank=True,
+                               related_name='companies')
+    extra_holidays = models.ManyToManyField(
+        'Holiday', verbose_name=_('Zusätzliche Feiertage'),
+        related_name='companies', blank=True)
 
     class Meta:
         verbose_name = _('Company')
@@ -129,7 +134,8 @@ class Ward(models.Model):
         # A ward should not have the shortname id
         if ',' in self.shortname:
             raise ValidationError({
-                'shortname': _('Wards cannot have a comma in their shortname.')})
+                'shortname': _('Wards cannot have a comma in their shortname.')
+            })
 
 
 @python_2_unicode_compatible
@@ -309,7 +315,7 @@ def process_change(cl):
                 for pl in plannings:
                     if pl.start < cl.day:
                         if pl.end > cl.until:
-                            Planning.objects.create(start=cl.until+ONE_DAY,
+                            Planning.objects.create(start=cl.until + ONE_DAY,
                                                     end=pl.end, **pl_data)
                         pl.end = cl.day - ONE_DAY
                         pl.save()
@@ -434,3 +440,33 @@ class StatusEntry(models.Model):
 
     def __str__(self):
         return '{}: {}'.format(self.name, self.content)
+
+
+@python_2_unicode_compatible
+class Holiday(models.Model):
+    date = models.DateField(_('Datum'))
+    name = models.CharField(_('Name'), max_length=50)
+
+    class Meta:
+        verbose_name = _('Feiertag')
+        verbose_name_plural = _('Feiertage')
+
+    def __str__(self):
+        return '{}: {}'.format(self.date, self.name)
+
+
+@python_2_unicode_compatible
+class Region(models.Model):
+    """ Aggregates the usual holidays for that region
+    """
+    name = models.CharField(_('Name'), max_length=50)
+    shortname = models.CharField(_('Short Name'), max_length=10, unique=True)
+    holidays = models.ManyToManyField(Holiday, verbose_name=_('Holidays'),
+                                      related_name='regions')
+
+    class Meta:
+        verbose_name = _('Region')
+        verbose_name_plural = _('Regionen')
+
+    def __str__(self):
+        return self.name

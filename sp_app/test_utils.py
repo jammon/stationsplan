@@ -5,9 +5,10 @@ from unittest import TestCase
 from datetime import date
 
 from .utils import (last_day_of_month,
-                    get_for_company, apply_changes, set_approved,
+                    get_for_company, get_holidays_for_company,
+                    apply_changes, set_approved,
                     PopulatedTestCase)
-from .models import Company, Person, Ward
+from .models import Company, Person, Ward, Holiday, Region
 
 
 class TestLastDayOfMonth(TestCase):
@@ -44,6 +45,32 @@ class TestGetForCompany(TestCase):
             session = {'company_id': company_a.id}
         smith = get_for_company(Person, Request(), shortname="Smith")
         self.assertEqual(smith.name, "Anna Smith")
+
+
+class TestGetHolidaysForCompany(PopulatedTestCase):
+
+    def test_get_holidays_for_company(self):
+        weihnachten = Holiday.objects.create(
+            name='Weihnachten', date=date(2017, 12, 25))
+        neujahr = Holiday.objects.create(
+            name='Neujahr', date=date(2018, 1, 1))
+        dreikoenig = Holiday.objects.create(
+            name='Dreikönig', date=date(2018, 1, 6))
+        testregion = Region.objects.create(
+            name="Testregion", shortname="Test")
+        testregion.holidays.add(weihnachten, neujahr)
+        self.company.region = testregion
+        self.company.save()
+
+        holidays = get_holidays_for_company(self.company.id)
+        self.assertEqual(holidays['20171225'], 'Weihnachten')
+        self.assertEqual(holidays['20180101'], 'Neujahr')
+        self.assertNotIn('20180106', holidays)
+
+        self.company.extra_holidays.add(dreikoenig)
+        holidays = get_holidays_for_company(self.company.id)
+        self.assertEqual(len(holidays), 3)
+        self.assertEqual(holidays['20180106'], 'Dreikönig')
 
 
 class TestApplyChanges(PopulatedTestCase):

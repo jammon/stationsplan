@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from .models import Person, Ward, Planning
-from .utils import (get_first_of_month, json_array)
+from .utils import get_first_of_month, json_array, get_holidays_for_company
 
 
 def home(request):
@@ -23,7 +23,7 @@ def plan(request, month='', day=''):
     if month == '' and day:
         month = day[:6]
     department_ids = request.session.get('department_ids')
-    # Get all Persons who worked here in this month
+    # Get all Persons who work here currently
     first_of_month = get_first_of_month(month)
     # start_of_data should be three months earlier
     start_of_data = (first_of_month - timedelta(88)).replace(day=1)
@@ -32,14 +32,16 @@ def plan(request, month='', day=''):
         departments__id__in=department_ids
     ).prefetch_related('functions')
     wards = Ward.objects.filter(departments__id__in=department_ids)
-    can_change = request.user.has_perm('sp_app.add_changelogging')
     plannings = Planning.objects.filter(
         ward__in=wards,
         end__gte=start_of_data,
         superseded_by=None).select_related('ward')
+    can_change = request.user.has_perm('sp_app.add_changelogging')
     if not can_change:
         plannings = [p for p in plannings
                      if not p.ward.approved or p.start <= p.ward.approved]
+    holidays = get_holidays_for_company(request.session['company_id'])
+
     data = {
         'persons': json.dumps([p.toJson() for p in persons]),
         'wards': json_array(wards),
@@ -48,6 +50,7 @@ def plan(request, month='', day=''):
         'can_change': 'true'if can_change else 'false',
         'first_of_month': first_of_month,
         'start_of_data': start_of_data,
+        'holidays': json.dumps(holidays),
     }
     if first_of_month > date.today():
         data['prev_month'] = (first_of_month - timedelta(1)).strftime('%Y%m')

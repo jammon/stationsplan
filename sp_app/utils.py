@@ -3,10 +3,11 @@ from __future__ import unicode_literals
 
 from datetime import timedelta, datetime, date
 from django.contrib.auth.models import User
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.test import TestCase
 from .models import (Ward, Person, Company, Department, ChangeLogging,
-                     process_change)
+                     Holiday, process_change)
 
 
 def json_array(data):
@@ -29,7 +30,7 @@ def last_day_of_month(date):
     """
     return (date.replace(day=31)
             if date.month == 12
-            else date.replace(month=date.month+1, day=1) - timedelta(days=1))
+            else date.replace(month=date.month + 1, day=1) - timedelta(days=1))
 
 
 def get_for_company(klass, request=None, company_id='', **kwargs):
@@ -38,6 +39,13 @@ def get_for_company(klass, request=None, company_id='', **kwargs):
             klass, company__id=company_id, **kwargs)
     return get_object_or_404(
         klass, company__id=request.session['company_id'], **kwargs)
+
+
+def get_holidays_for_company(company_id):
+    holidays = Holiday.objects.filter(
+        Q(regions__companies__id=company_id) |
+        Q(companies__id=company_id))
+    return dict((h.date.strftime('%Y%m%d'), h.name) for h in holidays)
 
 
 def apply_changes(user, company_id, day, ward, continued, persons):
@@ -65,9 +73,9 @@ def apply_changes(user, company_id, day, ward, continued, persons):
         assert p['id'] in known_persons, \
             "%s is not in the persons database" % p['id']
         cl = ChangeLogging.objects.create(
-                person=known_persons[p['id']],
-                added=p['action'] == 'add',
-                **data)
+            person=known_persons[p['id']],
+            added=p['action'] == 'add',
+            **data)
         cl_dict = process_change(cl)
         if cl_dict:
             cls.append(cl_dict)
