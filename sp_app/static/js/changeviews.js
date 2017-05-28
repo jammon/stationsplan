@@ -2,7 +2,6 @@ var changeviews = (function($, _, Backbone) {
 "use strict";
 
 var MS_PER_DAY = 24 * 60 * 60 * 1000;
-var current_date;
 
 var ChangeStaffView = Backbone.View.extend({
     events: {
@@ -44,9 +43,9 @@ var ChangeStaffView = Backbone.View.extend({
         var day = this.staffing.day;
         var min_staffing = staffing.ward.get('min');
         this.no_dblclick = (min_staffing && min_staffing>1);
-        current_date = day.get('date');
-        var datestr = utils.day_long_names[current_date.getDay()] +
-            ', ' + utils.datestr(current_date);
+        this.current_date = day.get('date');
+        var datestr = utils.day_long_names[this.current_date.getDay()] +
+            ', ' + utils.datestr(this.current_date);
         var changestafftable = this.$("#changestafftable").empty();
         var date_widget = this.$("#date-picker");
         var that = this;
@@ -70,20 +69,20 @@ var ChangeStaffView = Backbone.View.extend({
             format: "dd.mm.yyyy",
             weekStart: 1,
             language: "de",
-            defaultViewDate: current_date,
+            defaultViewDate: this.current_date,
         });
         if (!this._changeDate_connected) {
             date_widget.on("changeDate", this.date_changed);
             this._changeDate_connected = true;
         }
-        date_widget.datepicker('setStartDate', current_date);
-        date_widget.datepicker('setDate', current_date);
-        date_widget.datepicker('update', current_date);
+        date_widget.datepicker('setStartDate', this.current_date);
+        date_widget.datepicker('setDate', this.current_date);
+        date_widget.datepicker('update', this.current_date);
         return this;
     },
     date_changed: function(event) {
         var date_widget = $("#date-picker");
-        var days = Math.round((event.date - current_date) / MS_PER_DAY) + 1;
+        var days = Math.round((event.date - this.current_date) / MS_PER_DAY) + 1;
         $('#time_period').text(
             "bis " +
             date_widget.datepicker('getFormattedDate') +
@@ -168,14 +167,15 @@ var ApproveStaffingsView = Backbone.View.extend({
                 return view.render().$el;
             }));
         var date_widget = this.$("#approval-date-picker");
+        var today = new Date();
         date_widget.datepicker({
             format: "dd.mm.yyyy",
             weekStart: 1,
             language: "de",
-            defaultViewDate: current_date,
+            defaultViewDate: today,
         });
-        date_widget.datepicker('setDate', current_date);
-        date_widget.datepicker('update', current_date);
+        date_widget.datepicker('setDate', today);
+        date_widget.datepicker('update', today);
         if (!this._changeDate_connected) {
             date_widget.on("changeDate", this.approval_date_changed);
             this._changeDate_connected = true;

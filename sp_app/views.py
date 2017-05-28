@@ -18,8 +18,14 @@ def home(request):
 
 @login_required
 def plan(request, month='', day=''):
-    # month is '' or 'YYYYMM'
-    # day is '' or 'YYYYMMDD' or None (for path "/tag")
+    """ Delivers all the data to built the month-, day- and on-call-view
+    on the client side.
+
+    This view is called by 'plan', 'dienste', and 'tag'.
+
+    month is '' or 'YYYYMM'
+    day is '' or 'YYYYMMDD' or None (for path "/tag")
+    """
     if month == '' and day:
         month = day[:6]
     department_ids = request.session.get('department_ids')

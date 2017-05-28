@@ -18,6 +18,6 @@
 (C) Der Client sollte Updates automatisch einholen
 (C) Die Dienste jeder Person als Kalender zur Verfügung stellen, mit Updates
 (B) Duties sollen nur auf Wunsch angezeigt werden
-(A) Doppelclick auf voriger oder nächster Monat soll nur einmal wirken
+(B) Doppelclick auf voriger oder nächster Monat soll nur einmal wirken
 (C) Jeder Editor darf nur Wards der eigenen Abteilung approven +Public
 (D) ward.continued wird nur noch in tests/spec/models.js benutzt
