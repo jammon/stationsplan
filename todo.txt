@@ -20,6 +20,4 @@
 (B) Duties sollen nur auf Wunsch angezeigt werden
 (A) Doppelclick auf voriger oder nächster Monat soll nur einmal wirken
 (C) Jeder Editor darf nur Wards der eigenen Abteilung approven +Public
-(B) Wenn für einen Dienst genau eine Person gebraucht wird, soll sie mit einem Klick eingetragen werden können
 (D) ward.continued wird nur noch in tests/spec/models.js benutzt
-(A) Freie Tage in die Datenbank

@@ -9,6 +9,7 @@ var ChangeStaffView = Backbone.View.extend({
         "click #one-day": "one_day",
         "click #continued": "continued",
         "click #time_period": "time_period",
+        "dblclick .changestaff": "one_click_plan",
     },
     one_day: function() { this.save(false); },
     continued: function() { this.save(true); },
@@ -41,6 +42,8 @@ var ChangeStaffView = Backbone.View.extend({
     render: function() {
         var staffing = this.staffing;
         var day = this.staffing.day;
+        var min_staffing = staffing.ward.get('min');
+        this.no_dblclick = (min_staffing && min_staffing>1);
         current_date = day.get('date');
         var datestr = utils.day_long_names[current_date.getDay()] +
             ', ' + utils.datestr(current_date);
@@ -98,6 +101,18 @@ var ChangeStaffView = Backbone.View.extend({
         this.$(".submitbuttons button").toggleClass("disabled", this.changes.length===0);
         return this;
     },
+    one_click_plan: function() {
+        if (this.no_dblclick) return;
+        _.each(this.change_person_views, function(cpv) {
+            if (cpv.is_dblclicked) {
+                if (!cpv.is_planned) cpv.toggle_planned();
+                cpv.is_dblclicked = false;
+            } else {
+                if (cpv.is_planned) cpv.toggle_planned();
+            }
+        });
+        this.save(false);
+    },
 });
 var changestaffview = new ChangeStaffView({
     el: $("#changestaff"),
@@ -107,6 +122,7 @@ var ChangePersonView = Backbone.View.extend({
     tagName: 'tr',
     events: {
         "click .changestaff": "toggle_planned",
+        "dblclick .changestaff": "one_click_plan",
     },
     template: _.template($('#change_person_template').html()),
     initialize: function(options) {
@@ -134,7 +150,10 @@ var ChangePersonView = Backbone.View.extend({
         this.is_changed = !this.is_changed;
         this.toggleClasses();
         this.trigger("person_toggled");
-    }
+    },
+    one_click_plan: function() {
+        this.is_dblclicked = true;
+    },
 });
 
 var ApproveStaffingsView = Backbone.View.extend({
