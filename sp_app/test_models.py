@@ -406,7 +406,7 @@ class Test_Changes_with_End(Process_Change_Testcase):
         self._do_test(
             (dict(day=date_10, until=date_14, **add_cont),
              dict(day=date_08, until=date_12, **add_cont),),
-            (dict(start=date_08, end=date_10-ONE_DAY),
+            (dict(start=date_08, end=date_10 - ONE_DAY),
              dict(start=date_10, end=date_14), ))
 
     def test_rem_with_no_other_plannings(self):
@@ -424,13 +424,13 @@ class Test_Changes_with_End(Process_Change_Testcase):
         self._do_test(
             (dict(day=date_10, until=date_14, **add_cont),
              dict(day=date_08, until=date_12, **rem_cont),),
-            (dict(start=date_12+ONE_DAY, end=date_14), ))
+            (dict(start=date_12 + ONE_DAY, end=date_14), ))
 
     def test_rem_planning_end_covered_partially(self):
         self._do_test(
             (dict(day=date_08, until=date_12, **add_cont),
              dict(day=date_10, until=date_14, **rem_cont),),
-            (dict(start=date_08, end=date_10-ONE_DAY), ))
+            (dict(start=date_08, end=date_10 - ONE_DAY), ))
 
     def test_rem_planning_combined(self):
         self._do_test(
@@ -438,5 +438,5 @@ class Test_Changes_with_End(Process_Change_Testcase):
              dict(day=date_10, until=date_11, **add_cont),
              dict(day=date_12, until=date_14, **add_cont),
              dict(day=date_09, until=date_12, **rem_cont),),
-            (dict(start=date_07, end=date_09-ONE_DAY),
-             dict(start=date_12+ONE_DAY, end=date_14), ))
+            (dict(start=date_07, end=date_09 - ONE_DAY),
+             dict(start=date_12 + ONE_DAY, end=date_14), ))

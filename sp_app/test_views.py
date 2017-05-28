@@ -18,10 +18,10 @@ class TestViewsAnonymously(TestCase):
             response = c.get(reverse(url))
             self.assertEqual(response.status_code, 302, msg=url)
             response = c.get(reverse(url), follow=True)
-            self.assertRedirects(response, '/login/?next=%2F'+url,
+            self.assertRedirects(response, '/login?next=/' + url,
                                  msg_prefix=url)
             response = c.post(reverse(url), follow=True)
-            self.assertRedirects(response, '/login/?next=%2F'+url,
+            self.assertRedirects(response, '/login?next=/' + url,
                                  msg_prefix=url)
 
     def test_status_post(self):
@@ -52,8 +52,7 @@ class TestPlan(ViewsTestCase):
                 (date(2016, 1, 1), date(2016, 5, 31)),
                 (date(2016, 4, 1), date(2016, 4, 30)),
                 (date(2016, 4, 1), date(2016, 5, 31)),
-                (date(2016, 5, 1), date(2016, 5, 31)),
-                ):
+                (date(2016, 5, 1), date(2016, 5, 31))):
             Planning.objects.create(
                 company=self.company, person=self.person_a,
                 ward=self.ward_a, start=start, end=end)
@@ -66,8 +65,7 @@ class TestPlan(ViewsTestCase):
                 {'start': '20160101', 'end': '20160531'},
                 {'start': '20160401', 'end': '20160430'},
                 {'start': '20160401', 'end': '20160531'},
-                {'start': '20160501', 'end': '20160531'},
-                )):
+                {'start': '20160501', 'end': '20160531'})):
             self.assertEqual(value['person'], 'A')
             self.assertEqual(value['ward'], 'A')
             self.assertEqual(value['start'], expected['start'])
@@ -79,8 +77,8 @@ DATA_FOR_CHANGE = {
     'ward': 'A',
     'continued': False,
     'persons': [
-       {'id': 'A', 'action': 'add', },
-       {'id': 'B', 'action': 'remove', },
+        {'id': 'A', 'action': 'add', },
+        {'id': 'B', 'action': 'remove', },
     ]}
 
 
@@ -148,7 +146,8 @@ class TestChangeMore(ViewsWithPermissionTestCase):
         self.assertEqual(cl.continued, False)
         self.assertEqual(
             cl.description,
-            'user: Person B ist am 20.01.2016 nicht mehr für Ward A eingeteilt')
+            'user: Person B ist am 20.01.2016 nicht mehr für Ward A '
+            'eingeteilt')
         self.assertEqual(
             json.loads(cl.json),
             {"action": "remove", "person": "B", "ward": "A", "day": "20160120",
