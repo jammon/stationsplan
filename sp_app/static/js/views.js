@@ -221,7 +221,7 @@ var MonthView = Backbone.View.extend({
                 that.table.append(that.construct_row(
                     person, 'personrow', 'persons_duties', DutiesView));
         });
-        $(".show-duties").hide();
+        this.$(".show-duties").hide();
     },
     get_template_options: function() {
         return {
