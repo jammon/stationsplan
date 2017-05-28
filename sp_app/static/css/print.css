@@ -1,6 +1,7 @@
 .period-nav,
 .addstaff,
-.logout {
+.logout,
+.show-duties {
     display: none;
 }
 .container {

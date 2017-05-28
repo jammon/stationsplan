@@ -140,6 +140,7 @@ var MonthView = Backbone.View.extend({
         "click .next-view": "next_period",
         "click .approvable th": "approve",
         "click .daycol": "show_day",
+        "click .show-duties": "build_duties_table",
     },
     base_class: 'month_plan',
     slug: 'plan',
@@ -158,8 +159,26 @@ var MonthView = Backbone.View.extend({
         }
         this.month_days = models.get_month_days(this.year, this.month);
     },
+    construct_row: function(model, row_class, collection_array, View) {
+        var row = $('<tr/>', {'class': row_class});
+        row.append($('<th/>', { text: model.get('name')}));
+        this.month_days.each(function(day) {
+            var collection = day[collection_array][model.id];
+            var view;
+            if (collection) {
+                view = new View({
+                    collection: collection,
+                    className: day.get('is_free') ? 'free-day' : '',
+                });
+                row.append(view.render().$el);
+            } else {
+                row.append('<td></td>');
+            }
+        });
+        return row;
+    },
     build_table: function() {
-        var table = this.$(".plan");
+        this.table = this.$(".plan");
         var titlerow = $('<tr/>', {'class': 'titlerow'}).append($('<th/>'));
         var date_template = _.template(
             "<%= day %>. <%= month %> <%= year %>");
@@ -178,46 +197,31 @@ var MonthView = Backbone.View.extend({
             th.toggleClass('today', day.id==models.today_id);
             titlerow.append(th);
         });
-        table.append(titlerow);
+        this.table.append(titlerow);
 
         var that = this;
         // Construct rows for wards and persons
-        function construct_row(model, row_class, collection_array, View) {
-            var row = $('<tr/>', {
-                'class': _.isFunction(row_class) ? row_class() : row_class,
-            });
-            row.append($('<th/>', { text: model.get('name')}));
-            that.month_days.each(function(day) {
-                var collection = day[collection_array][model.id];
-                var view;
-                if (collection) {
-                    view = new View({ 
-                        collection: collection,
-                        className: day.get('is_free') ? 'free-day' : '',
-                    });
-                    row.append(view.render().$el);
-                } else {
-                    row.append('<td></td>');
-                }
-            });
-            return row;
-        }
         // first the wards
         models.wards.each(function(ward) {
-            table.append(construct_row(ward, function() {
-                var result = 'wardrow';
-                if (ward.get('nightshift')) result = 'nightshiftrow';
-                else if (!ward.get('continued')) result = 'non-continued-row';
-                else if (ward.get('on_leave')) result = 'leaverow';
-                return result + ' approvable';
-            }, 'ward_staffings', StaffingView));
+            var row_class = 'wardrow';
+            if (ward.get('nightshift')) row_class = 'nightshiftrow';
+            else if (!ward.get('continued')) row_class = 'non-continued-row';
+            else if (ward.get('on_leave')) row_class = 'leaverow';
+            that.table.append(that.construct_row(
+                ward, 
+                row_class + ' approvable',
+                'ward_staffings', StaffingView));
         });
+    },
+    build_duties_table: function() {
         // then the persons
+        var that = this;
         _.each(this.month_days.current_persons(), function(person) {
             if (!person.get('anonymous'))
-                table.append(construct_row(person, 'personrow', 'persons_duties',
-                                           DutiesView));
+                that.table.append(that.construct_row(
+                    person, 'personrow', 'persons_duties', DutiesView));
         });
+        $(".show-duties").hide();
     },
     get_template_options: function() {
         return {

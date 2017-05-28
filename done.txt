@@ -54,3 +54,4 @@ x 2017-04-22 Der Kurzname einer Funktion sollte kein Komma enthalten.
 x 2017-04-26 Anonyme Personen sollten nicht für Krank oder Urlaub geplant werden können +FIX
 x 2017-05-28 Freie Tage in die Datenbank
 x 2017-05-28 Wenn für einen Dienst genau eine Person gebraucht wird, soll sie mit einem Klick eingetragen werden können
+x 2017-05-28 Duties sollen nur auf Wunsch angezeigt werden
