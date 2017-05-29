@@ -1,15 +1,23 @@
 var utils = (function($, _, Backbone) {
 "use strict";
 
+var _holidays = {};
+var _free_dates = [];
+
 function is_free(date) {
     var weekday = date.getDay();
     if (weekday===6 || weekday===0) {
         return true;
     }
-    return (models.free_dates.indexOf(get_day_id(date)) > -1);
+    return (_free_dates.indexOf(get_day_id(date)) > -1);
 }
 
-
+function set_holidays(holidays) {
+    // holidays should be in the form of
+    // {'YYYYMMDD': 'Name of the holiday', ...}
+    _holidays = holidays;
+    _free_dates = _.keys(holidays);
+}
 var month_names = ["Januar", "Februar", "März", "April", "Mai", "Juni", 
     "Juli", "August", "September", "Oktober", "November", "Dezember"];
 var day_names = ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'];
@@ -93,6 +101,7 @@ function datestr(date) {
 
 return {
     is_free: is_free,
+    set_holidays: set_holidays,
     month_names: month_names,
     day_names: day_names,
     day_long_names: day_long_names,    

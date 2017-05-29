@@ -7,8 +7,9 @@ describe("utils", function() {
             expect(utils.is_free(new Date(2015, 7, 10))).toBe(false);  // Monday
         });
         it("should identify special holidays", function() {
-            expect(utils.is_free(new Date(2015, 9, 3))).toBe(true);
-            expect(utils.is_free(new Date(2015, 11, 24))).toBe(true);
+            utils.set_holidays({'20171003': 'Tag der deutschen Einheit'});
+            expect(utils.is_free(new Date(2017, 9, 3))).toBe(true);
+            expect(utils.is_free(new Date(2017, 9, 4))).toBe(false);
         });
     });
     describe("function get_next_month", function() {

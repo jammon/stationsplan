@@ -39,8 +39,7 @@ function initialize_site(persons, wards, plannings, year, month,
     models.initialize_wards(wards);
     models.persons.reset(persons);
     models.set_plannings(plannings); 
-    models.holidays = holidays;
-    models.free_dates = _.keys(holidays);
+    utils.set_holidays(holidays);
     models.start_day_chain(start_of_data.getFullYear(),
         start_of_data.getMonth());
     models.user_can_change = can_change;
