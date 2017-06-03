@@ -20,4 +20,11 @@
 (B) Doppelclick auf voriger oder nächster Monat soll nur einmal wirken
 (C) Jeder Editor darf nur Wards der eigenen Abteilung approven +Public
 (D) ward.continued wird nur noch in tests/spec/models.js benutzt
-Heutigen Tag differenzierter darstellen
+(A) Wenn man einen Diensthabenden dragt und auf das gleiche Feld wieder dropt, wird er ausgetragen
+(A) Punkteliste implementieren
+Integrationtests in jasmine einbauen
+Favicon bauen
+Planungen mit ausgeschiedenen MA beenden
+YSlow einsetzen
+Feiertage auf algorithmisch berechnete Daten umstellen
+Administration auch auf der Single-Page-App

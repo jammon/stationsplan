@@ -17,7 +17,8 @@
   .month_plan td, .month_plan th, .on_call_plan td, .on_call_plan th {
     border: 1px solid #CCC; }
   .month_plan .today, .on_call_plan .today {
-    background-color: #C6FFCC; }
+    border-left: 2px solid #888;
+    border-right: 2px solid #888; }
 
 .day_plan {
   font-size: 14px; }
