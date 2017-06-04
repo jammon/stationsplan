@@ -56,3 +56,4 @@ x 2017-05-28 Freie Tage in die Datenbank
 x 2017-05-28 Wenn für einen Dienst genau eine Person gebraucht wird, soll sie mit einem Klick eingetragen werden können
 x 2017-05-28 Duties sollen nur auf Wunsch angezeigt werden
 x 2017-06-03 Heutigen Tag differenzierter darstellen
+x 2017-06-04 Bug in ChangeView

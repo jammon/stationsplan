@@ -9,6 +9,7 @@ var ChangeStaffView = Backbone.View.extend({
         "click #continued": "continued",
         "click #time_period": "time_period",
         "dblclick .changestaff": "one_click_plan",
+        "changeDate": "date_changed",
     },
     one_day: function() { this.save(false); },
     continued: function() { this.save(true); },
@@ -47,7 +48,6 @@ var ChangeStaffView = Backbone.View.extend({
         var datestr = utils.day_long_names[this.current_date.getDay()] +
             ', ' + utils.datestr(this.current_date);
         var changestafftable = this.$("#changestafftable").empty();
-        var date_widget = this.$("#date-picker");
         var that = this;
         this.$(".changedate").text(datestr);
         this.$(".changeward").text(staffing.ward.get('name'));
@@ -65,27 +65,23 @@ var ChangeStaffView = Backbone.View.extend({
                 return view;
             });
         this.$("#date-picker input").val(datestr);
-        date_widget.datepicker({
+        this.date_widget = this.$("#date-picker");
+        this.date_widget.datepicker({
             format: "dd.mm.yyyy",
             weekStart: 1,
             language: "de",
             defaultViewDate: this.current_date,
         });
-        if (!this._changeDate_connected) {
-            date_widget.on("changeDate", this.date_changed);
-            this._changeDate_connected = true;
-        }
-        date_widget.datepicker('setStartDate', this.current_date);
-        date_widget.datepicker('setDate', this.current_date);
-        date_widget.datepicker('update', this.current_date);
+        this.date_widget.datepicker('setStartDate', this.current_date);
+        this.date_widget.datepicker('setDate', this.current_date);
+        this.date_widget.datepicker('update', this.current_date);
         return this;
     },
     date_changed: function(event) {
-        var date_widget = $("#date-picker");
         var days = Math.round((event.date - this.current_date) / MS_PER_DAY) + 1;
         $('#time_period').text(
             "bis " +
-            date_widget.datepicker('getFormattedDate') +
+            this.date_widget.datepicker('getFormattedDate') +
             " = " +
             days +
             (days>1 ? " Tage" : " Tag")
@@ -159,6 +155,7 @@ var ApproveStaffingsView = Backbone.View.extend({
     events: {
         "click #approve-to-date": "approve",
         "click #approve-all": "approve_all",
+        "changeDate": "approval_date_changed",
     },
     render: function() {
         this.$("#changeapprovaltable").append(
@@ -166,20 +163,16 @@ var ApproveStaffingsView = Backbone.View.extend({
                 var view = new SelectStaffingView({ward: ward});
                 return view.render().$el;
             }));
-        var date_widget = this.$("#approval-date-picker");
         var today = new Date();
-        date_widget.datepicker({
+        this.date_widget = this.$("#approval-date-picker");
+        this.date_widget.datepicker({
             format: "dd.mm.yyyy",
             weekStart: 1,
             language: "de",
             defaultViewDate: today,
         });
-        date_widget.datepicker('setDate', today);
-        date_widget.datepicker('update', today);
-        if (!this._changeDate_connected) {
-            date_widget.on("changeDate", this.approval_date_changed);
-            this._changeDate_connected = true;
-        }
+        this.date_widget.datepicker('setDate', today);
+        this.date_widget.datepicker('update', today);
         this.rendered = true;
         return this;
     },
@@ -191,7 +184,7 @@ var ApproveStaffingsView = Backbone.View.extend({
         this.$el.modal('show');
     },
     approval_date_changed: function() {
-        var date = $("#approval-date-picker").datepicker('getFormattedDate');
+        var date = this.date_widget.datepicker('getFormattedDate');
         $('#approve-to-date').text("Bis " + date + " freigeben");
     },
     get_checked_wards: function() {
