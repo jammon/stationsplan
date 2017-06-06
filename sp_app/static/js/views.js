@@ -20,7 +20,7 @@ var StaffingDisplayView = Backbone.View.extend({
         var approved = staffing.ward.is_approved(staffing.day.get('date'));
         el.empty();
         if (staffing.no_staffing) return this;
-        if (!models.user_can_change && !approved) return this; // not approved
+        if (!models.user_can_change() && !approved) return this; // not approved
         el.text(staffing.displayed.pluck('name').join(", "));
         el.toggleClass('lacking', staffing.lacking());
         el.toggleClass('today', staffing.day.id==models.today_id);
@@ -40,14 +40,14 @@ var StaffingView = StaffingDisplayView.extend({
         el.empty();
         // do we have to render it
         if (staffing.no_staffing) return this;
-        if (!models.user_can_change && !approved) return this; // not approved
+        if (!models.user_can_change() && !approved) return this; // not approved
         // ok, we have to
         staffing.displayed.each(function(person) {
             var name = $('<div/>', {
                 text: that.display_long_name ? person.get('name') : person.id,
                 'class': 'staff',
             });
-            if (models.user_can_change && that.drag_n_droppable) {
+            if (models.user_can_change() && that.drag_n_droppable) {
                 name.draggable({
                     helper: function() {
                         return $('<div/>', {
@@ -64,7 +64,7 @@ var StaffingView = StaffingDisplayView.extend({
         el.toggleClass('lacking', staffing.lacking());
         el.toggleClass('today', staffing.day.id==models.today_id);
         el.toggleClass('unapproved', !approved);
-        if (models.user_can_change && that.drag_n_droppable) {
+        if (models.user_can_change() && that.drag_n_droppable) {
             el.droppable({
                 accept: function(draggable) {
                     var person = models.persons.where({ name: draggable.text() });
@@ -97,7 +97,7 @@ var StaffingView = StaffingDisplayView.extend({
         return this;
     },
     addstaff: function() {
-        if (models.user_can_change && !this.collection.no_staffing)
+        if (models.user_can_change() && !this.collection.no_staffing)
             changeviews.staff.show(this.collection);
     },
 });
@@ -134,7 +134,9 @@ var _table_template = _.template($('#table-template').html());
 function get_table_from_template(options) {
     return _table_template(options);
 }
-var MonthView = Backbone.View.extend({
+var PeriodView = Backbone.View.extend({
+    // This view displays some period of days, 
+    // usually a month, but maybe less according to the available space
     events: {
         "click .prev-view": "prev_period",
         "click .next-view": "next_period",
@@ -142,7 +144,7 @@ var MonthView = Backbone.View.extend({
         "click .daycol": "show_day",
         "click .show-duties": "build_duties_table",
     },
-    base_class: 'month_plan',
+    base_class: 'period_plan',
     slug: 'plan',
     className: function() {
         return ['monthview', this.base_class, this.month_id].join(' ');
@@ -157,12 +159,12 @@ var MonthView = Backbone.View.extend({
         } else if (this.year === void 0) {
             _.extend(this, utils.get_year_month(this.month_id));
         }
-        this.month_days = models.get_month_days(this.year, this.month);
+        this.period_days = models.get_month_days(this.year, this.month);
     },
     construct_row: function(model, row_class, collection_array, View) {
         var row = $('<tr/>', {'class': row_class});
         row.append($('<th/>', { text: model.get('name')}));
-        this.month_days.each(function(day) {
+        this.period_days.each(function(day) {
             var collection = day[collection_array][model.id];
             var view;
             if (collection) {
@@ -182,7 +184,7 @@ var MonthView = Backbone.View.extend({
         var titlerow = $('<tr/>', {'class': 'titlerow'}).append($('<th/>'));
         var date_template = _.template(
             "<%= day %>. <%= month %> <%= year %>");
-        this.month_days.each(function(day) {
+        this.period_days.each(function(day) {
             var date = day.get('date');
             var th = $('<th/>', {
                 html: utils.day_names[date.getDay()]+'<br>'+date.getDate()+'.',
@@ -214,9 +216,8 @@ var MonthView = Backbone.View.extend({
         });
     },
     build_duties_table: function() {
-        // then the persons
         var that = this;
-        _.each(this.month_days.current_persons(), function(person) {
+        _.each(this.period_days.current_persons(), function(person) {
             if (!person.get('anonymous'))
                 that.table.append(that.construct_row(
                     person, 'personrow', 'persons_duties', DutiesView));
@@ -263,7 +264,7 @@ var MonthView = Backbone.View.extend({
         router.navigate(this.slug+'/'+current_month_id, {trigger: true});
     },
     approve: function(e) {
-        if (!models.user_can_change) return;
+        if (!models.user_can_change()) return;
         var ward = models.wards.where({name: e.currentTarget.textContent});
         if (ward.length)
             changeviews.approve.show(ward[0]);
@@ -276,7 +277,7 @@ var MonthView = Backbone.View.extend({
     },
 });
 
-var OnCallView = MonthView.extend({
+var OnCallView = PeriodView.extend({
     base_class: 'on_call_plan',
     slug: 'dienste',
     template: _.template($('#on-call-table').html()),
@@ -298,7 +299,7 @@ var OnCallView = MonthView.extend({
                 month: date.getMonth()+1,
             });
         }
-        this.month_days.each(function(day) {
+        this.period_days.each(function(day) {
             var date = day.get('date');
             var row = $('<tr/>');
             row.toggleClass('today', day.id==models.today_id);
@@ -320,14 +321,14 @@ var OnCallView = MonthView.extend({
         });
 
         // build CallTallies
-        if (models.user_can_change) {
+        if (models.user_can_change()) {
             table = this.$(".calltallies");
             titlerow = $('<tr/>', {'class': 'titlerow'}).append($('<th/>'));
             _.each(models.on_call_types, function(on_call_type) {
                 titlerow.append($('<th/>', {text: on_call_type}));
             });
             table.append(titlerow);
-            this.month_days.calltallies.each(function(calltally) {
+            this.period_days.calltallies.each(function(calltally) {
                 var view = new CallTallyView({ model: calltally });
                 table.append(view.render().$el);
             });
@@ -335,7 +336,7 @@ var OnCallView = MonthView.extend({
     },
 });
 
-var DayView = MonthView.extend({
+var DayView = PeriodView.extend({
     base_class: 'day_plan',
     slug: 'tag',
     template: _.template($('#day-table').html()),
@@ -393,7 +394,7 @@ function update_current_day(day_id) {
 }
 update_current_day();
 
-function MonthViews(klass) {
+function PeriodViews(klass) {
     this.klass = klass;
     this.get_view = function(options) {
         var month_id = options.year ?
@@ -418,8 +419,8 @@ function DayViews() {
         return this[day_id];
     };
 }
-var month_views = new MonthViews(MonthView);
-var on_call_views = new MonthViews(OnCallView);
+var month_views = new PeriodViews(PeriodView);
+var on_call_views = new PeriodViews(OnCallView);
 var day_views = new DayViews();
 
 var CallTallyView = Backbone.View.extend({
@@ -533,7 +534,7 @@ var error_view = new ErrorView({ el: $("#errors")});
 return {
     StaffingView: StaffingView,
     // DutiesView: DutiesView,
-    // MonthView: MonthView,
+    // PeriodView: PeriodView,
     // router: router,
     remove_person_from_helper: remove_person_from_helper,
 };

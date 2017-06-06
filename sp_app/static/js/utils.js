@@ -95,6 +95,14 @@ function get_year_month_day (day_id) {
     };
 }
 
+function get_month_length(year, month) {
+    var lengths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    var result = lengths[month % 12];
+    var real_year = year + Math.floor(month / 12);
+    if (result == 28 && real_year % 4 === 0) return 29;
+    else return result;
+}
+
 function datestr(date) {
     return date.getDate()+'.'+(date.getMonth()+1)+'.'+date.getFullYear();
 }
@@ -115,6 +123,7 @@ return {
     get_next_month_id: get_next_month_id,
     get_year_month: get_year_month,
     get_year_month_day: get_year_month_day,
+    get_month_length: get_month_length,
     datestr: datestr,
 };
 })($, _, Backbone);

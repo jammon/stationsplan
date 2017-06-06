@@ -12,11 +12,11 @@
 .plan .unapproved {
   color: #999; }
 
-.month_plan, .on_call_plan {
+.period_plan, .on_call_plan {
   font-size: 12px; }
-  .month_plan td, .month_plan th, .on_call_plan td, .on_call_plan th {
+  .period_plan td, .period_plan th, .on_call_plan td, .on_call_plan th {
     border: 1px solid #CCC; }
-  .month_plan .today, .on_call_plan .today {
+  .period_plan .today, .on_call_plan .today {
     border-left: 2px solid #888;
     border-right: 2px solid #888; }
 

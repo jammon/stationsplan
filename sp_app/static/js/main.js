@@ -36,14 +36,14 @@ function setupCsrfProtection() {
 function initialize_site(persons, wards, plannings, year, month,
                          start_of_data, can_change, holidays) {
     setupCsrfProtection();
+    models.user_can_change(can_change);
     models.initialize_wards(wards);
     models.persons.reset(persons);
     models.set_plannings(plannings); 
     utils.set_holidays(holidays);
     models.start_day_chain(start_of_data.getFullYear(),
         start_of_data.getMonth());
-    models.user_can_change = can_change;
-    if (models.user_can_change) {
+    if (can_change) {
         // .plan should work as background for staff to throw out
         $(".plans").droppable({
             drop: function(event, ui) {

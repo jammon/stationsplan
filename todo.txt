@@ -28,3 +28,5 @@
 (B) YSlow einsetzen +Public
 (C) Feiertage auf algorithmisch berechnete Daten umstellen
 (B) Administration auch auf der Single-Page-App +Public
+View über zwei oder eine Wochen für kleinere Devices
+Assets komprimieren

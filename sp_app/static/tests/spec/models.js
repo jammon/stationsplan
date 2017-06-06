@@ -482,16 +482,36 @@ describe("models", function() {
         });
         it("should return the right days", function() {
             expect(month_days.length).toBe(30);
-            expect(models.days.length).toBe(31);
+            // expect(models.days.length).toBe(31);
             expect(month_days.at(0).id).toEqual('20160401');
             expect(month_days.at(29).id).toEqual('20160430');
-            expect(models.days.get('20160501')).toBeDefined();
+            // expect(models.days.get('20160501')).toBeDefined();
         });
-        it("should initialize a CallTally for every person", function() {
+    });
+    describe("get_month_days and CallTallies", function() {
+        var month_days;
+        beforeEach(function() {
+            models.days.reset();
+        });
+        afterEach(function() {
+            models.days.reset();
+        });
+        it("should initialize a CallTally for every person if the user can change",
+           function() {
+            models.user_can_change(true);
+            month_days = models.get_month_days(2016, 3);
             expect(month_days.calltallies).toBeDefined();
             expect(month_days.calltallies.length).toBe(4);
+            models.user_can_change(false);
+        });
+        it("should not initialize a CallTally if the user cannot change",
+           function() {
+            month_days = models.get_month_days(2016, 3);
+            expect(month_days.calltallies).not.toBeDefined();
         });
         it("should update the CallTallies", function() {
+            models.user_can_change(true);
+            month_days = models.get_month_days(2016, 3);
             var person_a = models.persons.get('A');
             var person_b = models.persons.get('B');
             var day1 = month_days.get('20160401');
@@ -511,6 +531,7 @@ describe("models", function() {
             tally = month_days.calltallies.get('Other');
             expect(tally.get_tally(ward_o)).toBe(0);
             expect(tally.get_tally(ward_n)).toBe(0);
+            models.user_can_change(false);
         });
     });
     describe("MonthDays.current_persons", function() {

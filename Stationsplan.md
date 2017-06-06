@@ -79,6 +79,9 @@ Wenn ein Change mit add=False und angegebenem Ende andere Planungen überdeckt, 
 
 ## Export nach CalDAV
 - bei der Freigabe sollen die Planungen für bestimmte Wards in einen CalDAV-Server gespeichert werden.
-- Nach Wunsch bekommen die betroffenen Perrsonen dann eine Mail.
+- Nach Wunsch bekommen die betroffenen Personen dann eine Mail.
 - für jede Person gibt es einen Principal.
 - Wenn Dienste in einem freigegebenen Ward geändert werden, werden diese für eine Benachrichtigung vorgemerkt. Der Editor kann dann die Personen über die Änderungen mit einem Kommentar per Mail benachrichtigen.
+
+## Feiertage
+`feiertage.py` lädt die Feiertage von www.feiertage.net und schreibt sie in `holidays.csv`. Mit `python manage.py read_holidays` kann man sie einlesen.

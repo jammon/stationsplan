@@ -1,8 +1,19 @@
 var models = (function($, _, Backbone) {
 "use strict";
 
+// This module contains
+// - all the constructors for the data models (`Person`, `Ward` etc.),
+// - the data models themselves (`persons`, `wards` etc.),
+// - some data determining the working status 
+//   (like `user_can_change`, `today_id`, `errors` etc.)
+
 var default_start_for_person = [2015, 0, 1];
 var default_end_for_person = [2099, 11, 31];
+var _user_can_change = false;
+function user_can_change(can_change) {
+    if (arguments.length===0) return _user_can_change;
+    _user_can_change = can_change;
+}
 
 // A person has a
 //     - name
@@ -452,17 +463,21 @@ function start_day_chain(year, month) {
     days.get_day(year, month, 1);
 }
 
-// the 'Day's of one month.
-// is used as event dispatcher for the CallTallies
-var MonthDays = Backbone.Collection.extend({
+// the 'Day's of one period.
+var PeriodDays = Backbone.Collection.extend({
     initialize: function(models, options) {
-        // month is 0..11 like in javascript
-        var year = options.year, month = options.month, i = 1;
-        var next_day = days.get_day(year, month, i);
-        do {
-            this.add(next_day);
-            next_day = days.get_day(year, month, ++i);
-        } while (next_day.get('date').getMonth()===month);
+        this.first_day = options.first;
+        this.nr_days = options.nr_days;
+        var year = this.first_day.getFullYear();
+        var month = this.first_day.getMonth();
+        var day = this.first_day.getDate();
+        for (var i = 0; i < this.nr_days; i++) {
+            this.add(days.get_day(year, month, i+1));
+        }
+        if (user_can_change() && options.needs_calltallies)
+            this.build_calltallies();
+    },
+    build_calltallies: function() {
         var calltallies = this.calltallies = new CallTallies();
         _.each(this.current_persons(), function(person) {
             calltallies.add({ id: person.id, name: person.get('name') });
@@ -473,11 +488,35 @@ var MonthDays = Backbone.Collection.extend({
                 displayed.each(function(person) {
                     calltallies.on_call_added(person, displayed);
                 });
-                displayed.on(
-                    'add', calltallies.on_call_added, calltallies);
-                displayed.on(
-                    'remove', calltallies.on_call_removed, calltallies);
+                displayed.on({
+                    'add': calltallies.on_call_added,
+                    'remove': calltallies.on_call_removed
+                }, calltallies);
             });
+        });
+    },
+    current_persons: function() {
+        if (!this._current_persons) {
+            var last = this.last().get('date');
+            this._current_persons = persons.filter(function(person) {
+                return (person.get('end_date') >= this.first_day &&
+                        person.get('start_date') <= last);
+            });
+        }
+        return this._current_persons;
+    },
+});
+
+// the 'Day's of one month.
+// is used as event dispatcher for the CallTallies
+var MonthDays = PeriodDays.extend({
+    initialize: function(models, options) {
+        // month is 0..11 like in javascript
+        var year = options.year, month = options.month;
+        PeriodDays.prototype.initialize.call(this, [], {
+            first: new Date(year, month, 1),
+            nr_days: utils.get_month_length(year, month),
+            needs_calltallies: true,
         });
     },
     current_persons: function() {
@@ -655,5 +694,6 @@ return {
     apply_change: apply_change,
     errors: errors,
     reset_data: reset_data,
+    user_can_change: user_can_change,
 };
 })($, _, Backbone);

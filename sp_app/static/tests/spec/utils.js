@@ -82,6 +82,17 @@ describe("utils", function() {
             expect(utils.get_year_month('201612')).toEqual({ year: 2016, month: 11 });
         });
     });
+    describe("function get_month_length", function() {
+        it("should calculate the length of a month", function() {
+            expect(utils.get_month_length(2017, 0)).toEqual(31);
+            expect(utils.get_month_length(2017, 1)).toEqual(28);
+            expect(utils.get_month_length(2017, 2)).toEqual(31);
+            expect(utils.get_month_length(2017, 3)).toEqual(30);
+            expect(utils.get_month_length(2017, 13)).toEqual(28); // Feb 2018
+            expect(utils.get_month_length(2020, 1)).toEqual(29);
+            expect(utils.get_month_length(2019, 13)).toEqual(29);
+        });
+    });
     describe("datestr", function() {
         it("should calculate the date strings", function() {
             expect(utils.datestr(new Date(2016, 0, 1)))
