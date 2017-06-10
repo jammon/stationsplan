@@ -54,6 +54,13 @@ describe("utils", function() {
             expect(utils.get_next_day_id('20171231')).toEqual('20180101');
         });
     });
+    describe("function get_last_monday_id", function() {
+        it("should calculate the id of the last monday", function() {
+            expect(utils.get_last_monday_id('20170609')).toEqual('20170605');
+            expect(utils.get_last_monday_id('20170610')).toEqual('20170605');
+            expect(utils.get_last_monday_id('20170601')).toEqual('20170529');
+        });
+    });
     describe("function get_month_id", function() {
         it("should calculate the id of the month", function() {
             expect(utils.get_month_id(2016, 5)).toEqual('201606');

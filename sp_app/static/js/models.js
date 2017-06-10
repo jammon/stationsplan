@@ -466,13 +466,13 @@ function start_day_chain(year, month) {
 // the 'Day's of one period.
 var PeriodDays = Backbone.Collection.extend({
     initialize: function(models, options) {
-        this.first_day = options.first;
+        this.first_day = options.first_day;
         this.nr_days = options.nr_days;
         var year = this.first_day.getFullYear();
         var month = this.first_day.getMonth();
         var day = this.first_day.getDate();
         for (var i = 0; i < this.nr_days; i++) {
-            this.add(days.get_day(year, month, i+1));
+            this.add(days.get_day(year, month, day+i));
         }
         if (user_can_change() && options.needs_calltallies)
             this.build_calltallies();
@@ -498,8 +498,9 @@ var PeriodDays = Backbone.Collection.extend({
     current_persons: function() {
         if (!this._current_persons) {
             var last = this.last().get('date');
+            var that = this;
             this._current_persons = persons.filter(function(person) {
-                return (person.get('end_date') >= this.first_day &&
+                return (person.get('end_date') >= that.first_day &&
                         person.get('start_date') <= last);
             });
         }
@@ -514,7 +515,7 @@ var MonthDays = PeriodDays.extend({
         // month is 0..11 like in javascript
         var year = options.year, month = options.month;
         PeriodDays.prototype.initialize.call(this, [], {
-            first: new Date(year, month, 1),
+            first_day: new Date(year, month, 1),
             nr_days: utils.get_month_length(year, month),
             needs_calltallies: true,
         });
@@ -531,6 +532,16 @@ var MonthDays = PeriodDays.extend({
         return this._current_persons;
     },
 });
+
+// Returns Collection with the Days of the requested period
+function get_period_days(start, length) {
+    start = _.isDate(start) ? start : utils.get_date(start);
+    return new PeriodDays(null, { 
+        first_day: start, 
+        nr_days: length,
+    });
+}
+
 
 // Returns Collection with the Days of the current month
 // This should only be called in sequence
@@ -685,6 +696,7 @@ return {
     Day: Day,
     days: days,
     start_day_chain: start_day_chain,
+    get_period_days: get_period_days,
     get_month_days: get_month_days,
     CallTally: CallTally,
     CallTallies: CallTallies,

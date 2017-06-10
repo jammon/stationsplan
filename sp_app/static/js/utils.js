@@ -53,6 +53,15 @@ function get_next_day_id(day_id) {
         parseInt(day_id.slice(6, 8)) + 1);
     return get_day_id(date);
 }
+function get_last_monday(day) {
+    return new Date(
+        day.getFullYear(),
+        day.getMonth(),
+        day.getDate() - (day.getDay()+6)%7);
+}
+function get_last_monday_id(day_id) {
+    return get_day_id(get_last_monday(get_date(day_id)));
+}
 
 function get_month_id (year, month) {
     return "" + (year*100 + (month+1));
@@ -117,6 +126,8 @@ return {
     get_date: get_date,
     get_previous_day_id: get_previous_day_id,
     get_next_day_id: get_next_day_id,
+    get_last_monday: get_last_monday,
+    get_last_monday_id: get_last_monday_id,
     get_month_id: get_month_id,
     get_next_month: get_next_month,
     get_previous_month_id: get_previous_month_id,

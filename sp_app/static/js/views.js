@@ -134,6 +134,20 @@ var _table_template = _.template($('#table-template').html());
 function get_table_from_template(options) {
     return _table_template(options);
 }
+var _period_template = _.template($('#period-template').html());
+function get_period_from_template(options) {
+    var start_year = options.start.getFullYear();
+    var end_year = options.end.getFullYear();
+    if (start_year==end_year)
+        start_year = '';
+    return _period_template({
+        start: [options.start.getDate(), options.start.getMonth()+1, start_year]
+             .join('.'),
+        end: [options.end.getDate(), options.end.getMonth()+1, end_year]
+             .join('.'),
+    });
+}
+
 var PeriodView = Backbone.View.extend({
     // This view displays some period of days, 
     // usually a month, but maybe less according to the available space
@@ -147,19 +161,28 @@ var PeriodView = Backbone.View.extend({
     base_class: 'period_plan',
     slug: 'plan',
     className: function() {
-        return ['monthview', this.base_class, this.month_id].join(' ');
+        return ['contentview', this.base_class, this.start_id].join(' ');
     },
     template: _.template($('#big-table').html()),
     initialize: function(options) {
-        // options can be { year: 2016, month: 5 } or { month_id: '201606' }
-        // options.month is 0..11 like in javascript
-        _.extend(this, _.pick(options, 'year', 'month', 'month_id'));
-        if (this.month_id === void 0) {
-            this.month_id = utils.get_month_id(this.year, this.month);
-        } else if (this.year === void 0) {
-            _.extend(this, utils.get_year_month(this.month_id));
-        }
-        this.period_days = models.get_month_days(this.year, this.month);
+        // options.start_id is 'YYYYMMDD' (or 'YYYYMM')
+        // options.size can be 'xxs', 'xs', 'sm' or 'md'.
+        //7, 14, 21, 28 or 'month'
+        var lengths = {xxs: 7, xs: 14, sm: 21, md: 28};
+        _.extend(this, _.pick(options, 'start_id', 'size'));
+        this.length = lengths[this.size];
+        this.start = this.get_start_date(this.start_id);
+        this.get_period_days();
+    },
+    get_start_date: function(start_id) {
+        return utils.get_last_monday(utils.get_date(start_id));
+    },
+    get_period_days: function() {
+        this.period_days = models.get_period_days(this.start, this.length);
+        this.end = new Date(
+            this.start.getFullYear(), 
+            this.start.getMonth(),
+            this.start.getDate() + this.length - 1);
     },
     construct_row: function(model, row_class, collection_array, View) {
         var row = $('<tr/>', {'class': row_class});
@@ -226,14 +249,17 @@ var PeriodView = Backbone.View.extend({
     },
     get_template_options: function() {
         return {
-            period: utils.month_names[this.month] + ' ' + this.year,
-            label_prev: "Voriger Monat",
-            label_next: "Nächster Monat",
+            period: get_period_from_template({
+                start: this.start,
+                end: this.end,
+            }),
+            label_prev: "Zurück",
+            label_next: "Weiter",
             content: this.template(),
         };
     },
     is_first_loaded_view: function() {
-        return models.days.first().get_month_id()===this.month_id;
+        return models.days.first().id===this.start_id;
     },
     render: function() {
         this.$el.html(get_table_from_template(this.get_template_options()));
@@ -254,14 +280,14 @@ var PeriodView = Backbone.View.extend({
     },
     change_period: function(forward) {
         update_current_day(this.next_day_id(forward));
-        this.navigate_to_next_period();
+        router.navigate(this.slug+'/'+current_day_id, {trigger: true});
     },
     next_day_id: function(forward) {
-        var next_month_id = forward ? 'get_next_month_id' : 'get_previous_month_id';
-        return utils[next_month_id](this.month_id) + '01';
-    },
-    navigate_to_next_period: function() {
-        router.navigate(this.slug+'/'+current_month_id, {trigger: true});
+        var next_start = new Date(
+            this.start.getFullYear(),
+            this.start.getMonth(),
+            this.start.getDate() + (forward ? this.length : - this.length));
+        return utils.get_day_id(next_start);
     },
     approve: function(e) {
         if (!models.user_can_change()) return;
@@ -276,8 +302,38 @@ var PeriodView = Backbone.View.extend({
         router.navigate('tag/' + day_id, {trigger: true});
     },
 });
+PeriodView.get_period_id = function(options) {
+    return utils.get_last_monday_id(options.start_id) + options.size;
+};
 
-var OnCallView = PeriodView.extend({
+
+var MonthView = PeriodView.extend({
+    get_start_date: function(start_id) {
+        return utils.get_date(start_id.length==6 ? start_id+'01' : start_id);
+    },
+    get_period_days: function() {
+        this.period_days = models.get_month_days(
+            this.start.getFullYear(), this.start.getMonth());
+    },
+    get_template_options: function() {
+        return {
+            period: utils.month_names[this.start.getMonth()] + ' ' +
+                this.start.getFullYear(),
+            label_prev: "Voriger Monat",
+            label_next: "Nächster Monat",
+            content: this.template(),
+        };
+    },
+    next_day_id: function(forward) {
+        var next_month_id = forward ? 'get_next_month_id' : 'get_previous_month_id';
+        return utils[next_month_id](this.start_id.slice(0, 6)) + '01';
+    },
+});
+MonthView.get_period_id = function(options) {
+    return options.start_id.slice(0, 6);
+};
+
+var OnCallView = MonthView.extend({
     base_class: 'on_call_plan',
     slug: 'dienste',
     template: _.template($('#on-call-table').html()),
@@ -335,20 +391,35 @@ var OnCallView = PeriodView.extend({
         }
     },
 });
+var CallTallyView = Backbone.View.extend({
+    tagName: 'tr',
+    initialize: function() {
+        this.listenTo(this.model, "change", this.render);
+    },
+    render: function() {
+        var el = this.$el;
+        var model = this.model;
+        var name = $("<th\>", { text: model.get("name") });
+        name.draggable({
+            helper: 'clone',
+        });
+        el.empty().append(name);
+        _.each(models.on_call_types, function(on_call_type) {
+            el.append($("<td\>", { text: model.get_tally(on_call_type) }));
+        });
+        return this;
+    },
+
+});
 
 var DayView = PeriodView.extend({
     base_class: 'day_plan',
     slug: 'tag',
     template: _.template($('#day-table').html()),
     initialize: function(options) {
-        // options can be { year: 2016, month: 5, day: 10 } or { day_id: '20160610' }
-        // options.month is 0..11 like in javascript
-        _.extend(this, _.pick(options, 'year', 'month', 'day', 'day_id'));
-        if (this.day_id === void 0) {
-            this.day_id = utils.get_day_id(this.year, this.month, this.day);
-        } else if (this.year === void 0) {
-            _.extend(this, utils.get_year_month_day(this.day_id));
-        }
+        // options can be like { start_id: '20160610' }
+        this.start_id = options.start_id;
+        _.extend(this, utils.get_year_month_day(this.start_id));
         this.day_obj = models.days.get_day(this.year, this.month, this.day);
     },
     get_template_options: function() {
@@ -375,122 +446,91 @@ var DayView = PeriodView.extend({
                 table.append(row);
             }
         });
-
     },
     next_day_id: function(forward) {
-        if (forward) return utils.get_next_day_id(this.day_id);
-        else return utils.get_previous_day_id(this.day_id);
-    },
-    navigate_to_next_period: function() {
-        router.navigate(this.slug+'/'+current_day_id, {trigger: true});
+        if (forward) return utils.get_next_day_id(this.start_id);
+        else return utils.get_previous_day_id(this.start_id);
     },
 });
+DayView.get_period_id = function(options) {
+    return options.start_id;
+};
 
 var current_day_id;   // the currently displayed day
-var current_month_id; // the currently displayed month
 function update_current_day(day_id) {
     current_day_id = day_id || utils.get_day_id(new Date());
-    current_month_id = current_day_id.slice(0, 6);
 }
 update_current_day();
+
+var current_size;   // the currently displayed size
+function update_current_size() {
+    var old_size = current_size;
+    current_size = $('.device-check:visible').attr('data-device');
+    if (current_size=='xs' && window.screen.availWidth<=550)
+        current_size='xxs';
+    if (old_size && old_size!=current_size)
+        router.size_changed();
+}
+update_current_size();
+$(window).resize(update_current_size);
 
 function PeriodViews(klass) {
     this.klass = klass;
     this.get_view = function(options) {
-        var month_id = options.year ?
-            utils.get_month_id(options.year, options.month) :
-            (options.month_id || current_month_id);
-        if (!_.has(this, month_id)) {
-            this[month_id] = (new klass(options)).render();
+        var cur_klass = this.klass;
+        if (cur_klass==PeriodView && options.size=='lg')
+            cur_klass = MonthView;
+        var period_id = options.period_id = cur_klass.get_period_id(options);
+        if (!_.has(this, period_id)) {
+            this[period_id] = (new cur_klass(options)).render();
         }
-        current_month_id = month_id;
-        return this[month_id];
-    };
-}
-function DayViews() {
-    this.get_view = function(options) {
-        var day_id = options.day ?
-            utils.get_day_id(options.day) :
-            (options.day_id || current_day_id);
-        if (!_.has(this, day_id)) {
-            this[day_id] = (new DayView({day_id: day_id})).render();
-        }
-        current_day_id = day_id;
-        return this[day_id];
+        update_current_day(options.start_id);
+        return this[period_id];
     };
 }
 var month_views = new PeriodViews(PeriodView);
 var on_call_views = new PeriodViews(OnCallView);
-var day_views = new DayViews();
-
-var CallTallyView = Backbone.View.extend({
-    tagName: 'tr',
-    initialize: function() {
-        this.listenTo(this.model, "change", this.render);
-    },
-    render: function() {
-        var el = this.$el;
-        var model = this.model;
-        var name = $("<th\>", { text: model.get("name") });
-        name.draggable({
-            helper: 'clone',
-        });
-        el.empty().append(name);
-        _.each(models.on_call_types, function(on_call_type) {
-            el.append($("<td\>", { text: model.get_tally(on_call_type) }));
-        });
-        return this;
-    },
-
-});
+var day_views = new PeriodViews(DayView);
 
 
 var Router = Backbone.Router.extend({
     routes: {
-        "plan(/:month_id)(/)": "plan",    // #plan
-        "dienste(/:month_id)(/)": "dienste",    // #dienste
-        "tag(/:day_id)(/)": "tag",    // #Augaben an einem Tag
+        "plan(/:period_id)(/)": "plan",    // #plan
+        "dienste(/:period_id)(/)": "dienste",    // #dienste
+        "tag(/:day_id)(/)": "tag",    // #Aufgaben an einem Tag
     },
-    plan: function(month_id) {
-        this.call_view(month_views, "#nav-stationen", month_id);
+    plan: function(period_id) {
+        this.call_view(month_views, "#nav-stationen", period_id);
     },
-    dienste: function(month_id) {
-        this.call_view(on_call_views, "#nav-dienste", month_id);
+    dienste: function(period_id) {
+        this.call_view(on_call_views, "#nav-dienste", period_id);
     },
-    tag: function(day_id) {
-        var view = day_views.get_view({day_id: day_id});
+    tag: function(period_id) {
+        this.call_view(day_views, "#nav-tag", period_id);
+        // var view = day_views.get_view({day_id: day_id});
+        // // find current view and hide it
+        // $('.contentview.current').removeClass('current');
+        // // show new view
+        // view.$el.addClass('current');
+        // nav_view.$(".active").removeClass("active");
+        // nav_view.$("#nav-tag").addClass("active");
+    },
+    call_view: function(views_coll, nav_id, period_id) {
+        var view = views_coll.get_view({
+            start_id: period_id || utils.get_day_id(new Date()),
+            size: current_size,
+        });
         // find current view and hide it
-        $('.monthview.current').removeClass('current');
+        if (this.current_view)
+            this.current_view.$el.removeClass('current');
         // show new view
         view.$el.addClass('current');
-        nav_view.$(".active").removeClass("active");
-        nav_view.$("#nav-tag").addClass("active");
-    },
-    call_view: function(klass, nav_id, month_id, period) {
-        var view;
-        view = klass.get_view(this.get_options(month_id, period));
-        // find current view and hide it
-        $('.monthview.current').removeClass('current');
-        // show new view
-        view.$el.addClass('current');
+        this.current_view = view;
         nav_view.$(".active").removeClass("active");
         nav_view.$(nav_id).addClass("active");
     },
-    get_options: function(id, period) {
-        // id can be '' or undefined
-        // period should be 'month' (default) or 'day'
-        var result = {};
-        if (id) {
-            result[(period || 'month') + '_id'] = id;
-            return result;
-        }
-        var today = new Date();
-        if (period=='day')
-            return { day: today };
-        return {
-            year: today.getFullYear(), 
-            month: today.getMonth(),
-        };
+    size_changed: function() {
+        Backbone.history.loadUrl(Backbone.history.fragment);
     },
 });
 var router = new Router();
@@ -502,10 +542,10 @@ var NavView = Backbone.View.extend({
         "click #nav-tag": "tag",
     },
     stationen: function(event) {
-        this.navigate_to("plan/" + current_month_id);
+        this.navigate_to("plan/" + current_day_id);
     },
     dienste: function(event) {
-        this.navigate_to("dienste/" + current_month_id);
+        this.navigate_to("dienste/" + current_day_id);
     },
     tag: function(event) {
         this.navigate_to("tag/" + current_day_id);

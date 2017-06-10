@@ -57,3 +57,7 @@ x 2017-05-28 Wenn für einen Dienst genau eine Person gebraucht wird, soll sie m
 x 2017-05-28 Duties sollen nur auf Wunsch angezeigt werden
 x 2017-06-03 Heutigen Tag differenzierter darstellen
 x 2017-06-04 Bug in ChangeView
+x 2017-06-09 Heutigen Tag in Dienste besser markieren
+x 2017-06-10 Umschaltung für verschiedene Displaygrößen einbauen
+x 2017-06-10 View über zwei oder eine Wochen für kleinere Devices
+x 2017-06-10 Handling von current_day_id prüfen

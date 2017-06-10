@@ -24,15 +24,19 @@
         border: 1px solid #CCC;
     }
     font-size: 12px;
-    .today {
-        border-left: 2px solid #888;
-        border-right: 2px solid #888;
-    }
+}
+.period_plan .today {
+    border-left: 2px solid #888;
+    border-right: 2px solid #888;
+}
+.on_call_plan .today {
+    border-top: 2px solid #888;
+    border-bottom: 2px solid #888;
 }
 .day_plan {
     font-size: 14px;
 }
-.monthview {
+.contentview {
     display: none;
     &.current {
         display: block;

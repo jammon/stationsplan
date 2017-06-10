@@ -482,10 +482,18 @@ describe("models", function() {
         });
         it("should return the right days", function() {
             expect(month_days.length).toBe(30);
-            // expect(models.days.length).toBe(31);
             expect(month_days.at(0).id).toEqual('20160401');
             expect(month_days.at(29).id).toEqual('20160430');
-            // expect(models.days.get('20160501')).toBeDefined();
+        });
+    });
+    describe("get_period_days", function() {
+        it("should return the right days", function() {
+            models.days.reset();
+            var period_days = models.get_period_days(new Date(2017, 5, 5), 14);
+            expect(period_days.length).toBe(14);
+            expect(period_days.at(0).id).toEqual('20170605');
+            expect(period_days.at(13).id).toEqual('20170618');
+            models.days.reset();
         });
     });
     describe("get_month_days and CallTallies", function() {
