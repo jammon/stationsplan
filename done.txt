@@ -61,3 +61,4 @@ x 2017-06-09 Heutigen Tag in Dienste besser markieren
 x 2017-06-10 Umschaltung für verschiedene Displaygrößen einbauen
 x 2017-06-10 View über zwei oder eine Wochen für kleinere Devices
 x 2017-06-10 Handling von current_day_id prüfen
+x 2017-06-11 Swipe einbauen

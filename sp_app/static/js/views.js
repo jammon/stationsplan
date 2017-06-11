@@ -154,6 +154,8 @@ var PeriodView = Backbone.View.extend({
     events: {
         "click .prev-view": "prev_period",
         "click .next-view": "next_period",
+        "swipeleft": "prev_period",
+        "swiperight": "next_period",
         "click .approvable th": "approve",
         "click .daycol": "show_day",
         "click .show-duties": "build_duties_table",
