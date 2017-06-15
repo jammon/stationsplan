@@ -20,10 +20,12 @@ ONE_DAY = timedelta(days=1)
 class Company(models.Model):
     name = models.CharField(_('Name'), max_length=50)
     shortname = models.CharField(_('Short Name'), max_length=10)
-    region = models.ForeignKey('Region', null=True, blank=True,
-                               related_name='companies')
+    region = models.ForeignKey(
+        'Region', null=True, blank=True, related_name='companies',
+        help_text=_('Region that determines the legal holidays '
+                    'for this company'))
     extra_holidays = models.ManyToManyField(
-        'Holiday', verbose_name=_('Zusätzliche Feiertage'),
+        'Holiday', verbose_name=_('Additional Holidays'),
         related_name='companies', blank=True)
 
     class Meta:
@@ -444,12 +446,12 @@ class StatusEntry(models.Model):
 
 @python_2_unicode_compatible
 class Holiday(models.Model):
-    date = models.DateField(_('Datum'))
+    date = models.DateField(_('Date'))
     name = models.CharField(_('Name'), max_length=50)
 
     class Meta:
-        verbose_name = _('Feiertag')
-        verbose_name_plural = _('Feiertage')
+        verbose_name = _('Holiday')
+        verbose_name_plural = _('Holidays')
 
     def __str__(self):
         return '{}: {}'.format(self.date, self.name)
@@ -466,7 +468,7 @@ class Region(models.Model):
 
     class Meta:
         verbose_name = _('Region')
-        verbose_name_plural = _('Regionen')
+        verbose_name_plural = _('Regions')
 
     def __str__(self):
         return self.name
