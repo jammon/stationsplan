@@ -21,12 +21,12 @@
 (C) Jeder Editor darf nur Wards der eigenen Abteilung approven +Public
 (D) ward.continued wird nur noch in tests/spec/models.js benutzt
 (A) Wenn man einen Diensthabenden dragt und auf das gleiche Feld wieder dropt, wird er ausgetragen
-(A) Punkteliste implementieren
 (C) Integrationtests in jasmine einbauen +Public
 (B) Favicon bauen +Public
 (C) Planungen mit ausgeschiedenen MA beenden
 (B) YSlow einsetzen +Public
 (C) Feiertage auf algorithmisch berechnete Daten umstellen
-(B) Administration auch auf der Single-Page-App +Public
 Assets komprimieren
 Flags für Betatester
+Administration für User bauen +Public
+Wird ward.continued noch verwendet?

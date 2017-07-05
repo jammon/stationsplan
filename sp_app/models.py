@@ -97,6 +97,10 @@ class Ward(models.Model):
         help_text=_('if not empty, '
                     'only these functions can be planned on the next day'))
     json = models.CharField(max_length=511)
+    weight = models.IntegerField(
+        default=0,
+        help_text=_('if this is a call shift, the weight reflects its '
+                    'burden on the persons doing the shift'))
 
     class Meta:
         verbose_name = _('Task')
@@ -123,7 +127,8 @@ class Ward(models.Model):
                'position': self.position,
                'after_this': '' if not self.pk else ','.join(
                    self.after_this.values_list('shortname', flat=True)),
-               'ward_type': self.ward_type}
+               'ward_type': self.ward_type,
+               'weight': self.weight}
         if self.approved is not None:
             res['approved'] = date_to_json(self.approved)
         return res

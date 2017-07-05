@@ -150,7 +150,7 @@ function get_period_from_template(options) {
 
 var PeriodView = Backbone.View.extend({
     // This view displays some period of days, 
-    // usually a month, but maybe less according to the available space
+    // usually a month, but maybe less according to the available screenspace
     events: {
         "click .prev-view": "prev_period",
         "click .next-view": "next_period",
@@ -385,6 +385,7 @@ var OnCallView = MonthView.extend({
             _.each(models.on_call_types, function(on_call_type) {
                 titlerow.append($('<th/>', {text: on_call_type}));
             });
+            titlerow.append($('<th/>', {text: 'Last'}));
             table.append(titlerow);
             this.period_days.calltallies.each(function(calltally) {
                 var view = new CallTallyView({ model: calltally });
@@ -400,15 +401,16 @@ var CallTallyView = Backbone.View.extend({
     },
     render: function() {
         var el = this.$el;
-        var model = this.model;
-        var name = $("<th\>", { text: model.get("name") });
+        var tally = this.model;
+        var name = $("<th\>", { text: tally.get("name") });
         name.draggable({
             helper: 'clone',
         });
         el.empty().append(name);
         _.each(models.on_call_types, function(on_call_type) {
-            el.append($("<td\>", { text: model.get_tally(on_call_type) }));
+            el.append($("<td\>", { text: tally.get_tally(on_call_type) }));
         });
+        el.append($("<td\>", { text: tally.get('weights') }));
         return this;
     },
 

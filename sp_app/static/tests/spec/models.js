@@ -533,12 +533,15 @@ describe("models", function() {
             var tally = month_days.calltallies.get('A');
             expect(tally.get_tally(ward_o)).toBe(2);
             expect(tally.get_tally(ward_n)).toBe(0);
+            expect(tally.get('weights')).toBe(6);
             tally = month_days.calltallies.get('B');
             expect(tally.get_tally(ward_o)).toBe(1);
             expect(tally.get_tally(ward_n)).toBe(0);
+            expect(tally.get('weights')).toBe(3);
             tally = month_days.calltallies.get('Other');
             expect(tally.get_tally(ward_o)).toBe(0);
             expect(tally.get_tally(ward_n)).toBe(0);
+            expect(tally.get('weights')).toBeUndefined();
             models.user_can_change(false);
         });
     });

@@ -557,10 +557,12 @@ var CallTally = Backbone.Model.extend({
     add_shift: function(ward) {
         var ward_type = '_' + ward.get_ward_type();
         this.set(ward_type, (this.get(ward_type) || 0) + 1);
+        this.set('weights', (this.get('weights') || 0) + ward.get('weight'));        
     },
     subtract_shift: function(ward) {
         var ward_type = '_' + ward.get_ward_type();
         this.set(ward_type, this.get(ward_type) - 1);
+        this.set('weights', this.get('weights') - ward.get('weight'));        
     },
     get_tally: function(on_call_type) {
         return this.get('_' + on_call_type) || 0;

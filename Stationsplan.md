@@ -85,3 +85,63 @@ Wenn ein Change mit add=False und angegebenem Ende andere Planungen überdeckt, 
 
 ## Feiertage
 `feiertage.py` lädt die Feiertage von www.feiertage.net und schreibt sie in `holidays.csv`. Mit `python manage.py read_holidays` kann man sie einlesen.
+
+### Feiertage an festen Terminen
+- 01.01.: Neujahr
+- 06.01.: Heilige Drei Könige
+- 01.05.: Maifeiertag
+- 15.08.: Mariä Himmelfahrt
+- 03.10.: Tag der Deutschen Einheit
+- 31.10.: Reformationstag
+- 01.11.: Allerheiligen
+- 25.12.: 1. Weihnachtstag
+- 26.12.: 2. Weihnachtstag
+
+- 14.04.: Karfreitag: -2
+- 17.04.: Ostermontag: +1
+- 25.05.: Christi Himmelfahrt: +39
+- 05.06.: Pfingstmontag: +50
+- 15.06.: Fronleichnam: +60
+- 22.11.: Buß- und Bettag: 
+
+Ostertermine
+2017 - 16.04.
+2018 - 1.04.
+2019 - 21.04.
+2020 - 12.04.
+2021 - 4.04.
+2022 - 17.04.
+2023 - 9.04.
+2024 - 31.03.
+2025 - 20.04.
+2026 - 5.04.
+2027 - 28.03.
+2028 - 16.04.
+2029 - 1.04.
+2030 - 21.04.
+
+## Tabelle an Screengröße anpassen
+### Tabellenbreite
+- Bei Screengröße 'lg' 1 Monat
+- Bei Screengröße 'md' 4 Wochen
+- Bei Screengröße 'sm' 3 Wochen
+- Bei Screengröße 'xs' und window-width>550 2 Wochen
+- Bei Screengröße 'xs' und window-width<=550 1 Woche
+
+### Pfad
+- `/plan/YYYYMM` zeigt bei Monatsansicht den Monat, bei Zeitraumansicht beginnt der Zeitraum mit dem Montag der Woche, in der der Monatserste liegt.
+- `/plan/YYYYMMDD` zeigt bei Monatsansicht den Monat des Tages (wie bei `YYYYMM`), bei Zeitraumansicht beginnt der Zeitraum mit dem Montag der Woche, in der der Tag liegt.
+
+D.h. `/plan/YYYYMM` ist äquivalent zu `/plan/YYYYMM01`.
+
+### Screengröße abfragen
+    <div class='device-check visible-xs' data-device='xs'></div>
+    <div class='device-check visible-sm' data-device='sm'></div>
+    <div class='device-check visible-md' data-device='md'></div>
+    <div class='device-check visible-lg' data-device='lg'></div>
+
+you can then find the current grid option with:
+
+    function get_current_grid_option(){
+        return $('.device-check:visible').attr('data-device')
+    }
