@@ -43,14 +43,15 @@ function initialize_site(persons, wards, plannings, year, month,
     utils.set_holidays(holidays);
     models.start_day_chain(start_of_data.getFullYear(),
         start_of_data.getMonth());
-    if (can_change) {
-        // .plan should work as background for staff to throw out
-        $(".plans").droppable({
-            drop: function(event, ui) {
-                views.remove_person_from_helper(ui.helper);
-            }
-        });
-    }
+    // if (can_change) {
+    //     // .plan should work as background for staff to throw out
+    //     $(".plans").droppable({
+    //         drop: function(event, ui) {
+    //             console.log("remove_person_from_helper in initialize_site");
+    //             views.remove_person_from_helper(ui.helper);
+    //         }
+    //     });
+    // }
     models.today_id = utils.get_day_id(new Date());
     Backbone.history.start({ pushState: true });
 }

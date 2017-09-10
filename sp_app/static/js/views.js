@@ -46,6 +46,7 @@ var StaffingView = StaffingDisplayView.extend({
             var name = $('<div/>', {
                 text: that.display_long_name ? person.get('name') : person.id,
                 'class': 'staff',
+                title: staffing.day.persons_duties[person.id].displayed.pluck('name').join(', '),
             });
             if (models.user_can_change() && that.drag_n_droppable) {
                 name.draggable({
@@ -68,13 +69,12 @@ var StaffingView = StaffingDisplayView.extend({
             el.droppable({
                 accept: function(draggable) {
                     var person = models.persons.where({ name: draggable.text() });
-                    if (staffing.can_be_planned(person.length && person[0])) {
-                        return true;
-                    } else {
-                        return false;
-                    }
+                    return staffing.can_be_planned(person.length && person[0]);
                 },
                 drop: function(event, ui) {
+                    // Is it dropped back on the same day and ward?
+                    if (staffing.day.id == ui.helper.attr('day') &&
+                        staffing.ward.id == ui.helper.attr('ward')) return;
                     var persons = models.persons.where({ name: ui.draggable.text() });
                     if (persons.length) {
                         models.save_change({
