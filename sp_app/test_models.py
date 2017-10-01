@@ -67,7 +67,8 @@ class TestWard(PopulatedTestCase):
                           'company_id': self.company.id,
                           'position': 2,
                           'after_this': '',
-                          'ward_type': ''})
+                          'ward_type': '',
+                          'weight': 0})
         ward.approved = date(2017, 3, 30)
         self.assertEqual(ward.toJson()['approved'], [2017, 2, 30])
 
