@@ -62,9 +62,9 @@ var StaffingView = StaffingDisplayView.extend({
             }
             el.append(name);
         });
-        el.toggleClass('lacking', staffing.lacking());
-        el.toggleClass('today', staffing.day.id==models.today_id);
-        el.toggleClass('unapproved', !approved);
+        el.toggleClass('lacking', staffing.lacking())
+            .toggleClass('today', staffing.day.id==models.today_id)
+            .toggleClass('unapproved', !approved);
         if (models.user_can_change() && that.drag_n_droppable) {
             el.droppable({
                 accept: function(draggable) {
@@ -552,7 +552,7 @@ var NavView = Backbone.View.extend({
         this.navigate_to("dienste/" + current_day_id);
     },
     tag: function(event) {
-        this.navigate_to("tag/" + current_day_id);
+        this.navigate_to("tag/" + utils.get_day_id(new Date()));
     },
     navigate_to: function(path) {
         update_current_day();
