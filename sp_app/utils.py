@@ -16,13 +16,14 @@ def json_array(data):
 
 def get_first_of_month(month=''):
     """ Returns a date.
-    'month' should be a string in the form of 'YYYYMM'.
+    'month' should be a string in the form of 'YYYYMM' or 'YYYYMMDD'.
     If 'month' is not given, it returns the current month.
     """
-    try:
-        return datetime.strptime(month, '%Y%m').date()
-    except (TypeError, ValueError):
+    if not month:
         return date.today().replace(day=1)
+    if len(month) == len('YYYYMM'):
+        return datetime.strptime(month, '%Y%m').date()
+    return datetime.strptime(month, '%Y%m%d').date().replace(day=1)
 
 
 def last_day_of_month(date):

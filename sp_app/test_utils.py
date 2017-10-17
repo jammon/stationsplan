@@ -4,11 +4,27 @@ from __future__ import unicode_literals
 from unittest import TestCase
 from datetime import date
 
-from .utils import (last_day_of_month,
+from .utils import (get_first_of_month, last_day_of_month,
                     get_for_company, get_holidays_for_company,
                     apply_changes, set_approved,
                     PopulatedTestCase)
 from .models import Company, Person, Ward, Holiday, Region
+
+
+class TestFirstOfMonth(TestCase):
+
+    def test_gfom(self):
+        data = (
+            ("201510", date(2015, 10, 1)),
+            ("20151001", date(2015, 10, 1)),
+            ("20151031", date(2015, 10, 1)),
+        )
+        for given, expected in data:
+            got = get_first_of_month(given)
+            self.assertEqual(
+                got, expected,
+                msg="get_first_of_month for {} should be {}, got {}".format(
+                    given, expected, got))
 
 
 class TestLastDayOfMonth(TestCase):
