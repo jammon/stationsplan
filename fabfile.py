@@ -16,6 +16,7 @@ def serve():
 
 def sass():
     local("sass sp_app/static/css/main.{scss,css}")
+    local("sass sp_app/static/css/print.{scss,css}")
 
 
 def commit():

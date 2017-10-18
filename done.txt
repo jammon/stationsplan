@@ -64,3 +64,5 @@ x 2017-06-10 Handling von current_day_id prüfen
 x 2017-06-11 Swipe einbauen
 x 2017-07-05 Punkteliste implementieren
 x 2017-10-01 Heute soll tasächlich auf heute verweisen
+x 2017-10-17 Die Verpflichtungen einer Person an diesem Tag als Tooltip anzeigen
+x 2017-10-18 Unbesetzte Dienste/Stationen auch in Print markieren
