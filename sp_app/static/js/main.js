@@ -34,7 +34,8 @@ function setupCsrfProtection() {
 
 
 function initialize_site(persons, wards, plannings, year, month,
-                         start_of_data, can_change, holidays) {
+                         start_of_data, can_change, holidays, 
+                         last_change_pk, last_change_time) {
     setupCsrfProtection();
     models.user_can_change(can_change);
     models.initialize_wards(wards);
@@ -53,6 +54,10 @@ function initialize_site(persons, wards, plannings, year, month,
     //     });
     // }
     models.today_id = utils.get_day_id(new Date());
+    models.schedule_next_update({
+        pk: last_change_pk, 
+        time: last_change_time
+    });
     Backbone.history.start({ pushState: true });
 }
 

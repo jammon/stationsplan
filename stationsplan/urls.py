@@ -29,6 +29,7 @@ urlpatterns = [
     url(r'^tag(/(?P<day>[0-9]+))?/?$', sp_views.plan, name='tag'),
     url(r'^changes$', sp_ajax.changes, name='changes'),
     url(r'^set_approved$', sp_ajax.change_approved, name='set_approved'),
+    url(r'^updates/([0-9]+)/?$', sp_ajax.updates, name='updates'),
     url(r'^tests$', TemplateView.as_view(template_name="sp_app/tests.html"),
         name='tests'),
     url(r'^password_change', sp_views.password_change, name='password_change'),

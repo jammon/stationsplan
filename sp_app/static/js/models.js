@@ -668,6 +668,43 @@ function apply_change(change) {
     console.log(change);
 }
 
+var _min_update_intervall = 10;  // 10 sec
+var _max_update_intervall = 300;  // 5 min
+var _next_check_id;
+var _last_change_pk;
+function schedule_next_update(last_change) {
+    var next_update_check;
+    if (last_change) {
+        next_update_check = Math.min(
+            Math.max(last_change.time, _min_update_intervall),
+            _max_update_intervall);
+        _last_change_pk = last_change.pk;
+    } else next_update_check = _max_update_intervall;
+    window.clearTimeout(_next_check_id);
+    _next_check_id = window.setTimeout(get_updates, next_update_check*1000);
+}
+
+function process_updates(data) {
+    _.each(data.cls, apply_change);
+    schedule_next_update(data.last_change);
+}
+
+function updates_failed() {
+    schedule_next_update();
+}
+
+function get_updates() {
+    $.ajax({
+        type: "GET",
+        url: '/updates/' + _last_change_pk, 
+        cache: false,
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+        error: updates_failed,
+        success: process_updates,
+    });
+}
+
 var errors = new Backbone.Collection();
 
 function reset_data() {
@@ -709,5 +746,6 @@ return {
     errors: errors,
     reset_data: reset_data,
     user_can_change: user_can_change,
+    schedule_next_update: schedule_next_update,
 };
 })($, _, Backbone);

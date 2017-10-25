@@ -6,8 +6,8 @@ from django.http import JsonResponse
 
 import json
 
-from .utils import apply_changes, set_approved
-from .models import StatusEntry
+from .utils import apply_changes, set_approved, get_last_change
+from .models import StatusEntry, ChangeLogging
 
 
 @login_required
@@ -55,10 +55,25 @@ def change_approved(request):
     content = template.format(
         user_name=request.user.last_name or request.user.get_username(),
         wards=', '.join(res['wards']),
-        limit=('bis '+res['approved']) if res['approved'] else 'unbegrenzt')
+        limit=('bis ' + res['approved']) if res['approved'] else 'unbegrenzt')
     StatusEntry.objects.create(
         name='Approval',
         content=content,
         department=None,
         company_id=request.session['company_id'])
     return JsonResponse(res, safe=False)
+
+
+@login_required
+# TODO: zweiten DB-Zugriff entfernen
+def updates(request, last_change=0):
+    cl = ChangeLogging.objects.filter(
+        company_id=request.session['company_id'],
+        pk__gt=last_change
+    ).values_list('json', flat=True).order_by('pk')
+    if len(cl) == 0:
+        return JsonResponse({})
+    return JsonResponse({
+        'cls': [json.loads(cljson) for cljson in cl],
+        'last_change': get_last_change(request.session['company_id'])
+    })

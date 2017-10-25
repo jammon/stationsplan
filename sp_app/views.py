@@ -7,7 +7,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from .models import Person, Ward, Planning
-from .utils import get_first_of_month, json_array, get_holidays_for_company
+from .utils import (get_first_of_month, json_array, get_holidays_for_company,
+                    get_last_change)
 
 
 def home(request):
@@ -42,11 +43,13 @@ def plan(request, month='', day=''):
         ward__in=wards,
         end__gte=start_of_data,
         superseded_by=None).select_related('ward')
+
     can_change = request.user.has_perm('sp_app.add_changelogging')
     if not can_change:
         plannings = [p for p in plannings
                      if not p.ward.approved or p.start <= p.ward.approved]
     holidays = get_holidays_for_company(request.session['company_id'])
+    last_change = get_last_change(request.session['company_id'])
 
     data = {
         'persons': json.dumps([p.toJson() for p in persons]),
@@ -57,6 +60,8 @@ def plan(request, month='', day=''):
         'first_of_month': first_of_month,
         'start_of_data': start_of_data,
         'holidays': json.dumps(holidays),
+        'last_change_pk': last_change['pk'],
+        'last_change_time': last_change['time'],
     }
     if first_of_month > date.today():
         data['prev_month'] = (first_of_month - timedelta(1)).strftime('%Y%m')

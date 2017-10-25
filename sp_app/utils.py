@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import pytz
 
 from datetime import timedelta, datetime, date
 from django.contrib.auth.models import User
@@ -97,6 +98,18 @@ def set_approved(wards, approved, company_id):
         ward.approved = approval
         ward.save()
     return {'wards': [ward.shortname for ward in wards], 'approved': approved}
+
+
+def get_last_change(company_id):
+    last_change = ChangeLogging.objects.filter(
+        company_id=company_id
+    ).order_by('pk').last()
+    if last_change is not None:
+        time_diff = datetime.now(pytz.utc) - last_change.change_time
+        return {
+            'pk': last_change.pk,
+            'time': time_diff.days * 86400 + time_diff.seconds,
+        }
 
 
 class PopulatedTestCase(TestCase):
