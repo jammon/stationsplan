@@ -618,7 +618,7 @@ function save_change(data) {
 }
 function process_changes(data) {
     _.each(data.cls, models.apply_change);
-    schedule_next_update(data.last_change);
+    models.schedule_next_update(data.last_change);
 }
 
 function save_approval(ward_ids, date) {
@@ -686,12 +686,6 @@ function schedule_next_update(last_change) {
     _next_check_id = window.setTimeout(get_updates, next_update_check*1000);
 }
 
-function process_updates(data) {
-    _.each(data.cls, apply_change);
-    // TODO: This part is untested
-    models.schedule_next_update(data.last_change);
-}
-
 function updates_failed() {
     models.schedule_next_update();
 }
@@ -704,9 +698,7 @@ function get_updates() {
         dataType: "json",
         contentType: "application/json; charset=utf-8",
         error: updates_failed,
-        success: function(data) {
-            process_updates(data);
-        },
+        success: process_changes,
     });
 }
 

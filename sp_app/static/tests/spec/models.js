@@ -715,8 +715,7 @@ describe("models", function() {
                 test_staffing('20150805', ['A', 'B']);
                 test_staffing('20150806', ['B']);
             });
-            xit("should set last_change", function() {
-                // FIXME: this fails
+            it("should set last_change", function() {
                 expect(models.schedule_next_update).toHaveBeenCalledWith(
                     data.last_change);
             });
