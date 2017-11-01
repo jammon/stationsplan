@@ -6,8 +6,8 @@ from django.http import JsonResponse
 
 import json
 
-from .utils import apply_changes, set_approved, get_last_change
-from .models import StatusEntry, ChangeLogging
+from .utils import apply_changes, set_approved, get_last_changes
+from .models import StatusEntry
 
 
 @login_required
@@ -27,14 +27,18 @@ def changes(request):
            'action': 'add'|'remove',
          },
          ...
-     ]}
+     ],
+     'last_pk': <ChangeLogging.pk>}
 
-    There is no testing, whether the same change is already in the database.
-    The frontend has to deal with this.
+    Returned are the new changes since 'last_pk',
+    including the just transmitted changes, if they succeeded.
     """
     data = json.loads(request.body)
-    cls = apply_changes(request.user, request.session['company_id'], **data)
-    return JsonResponse(cls, safe=False)
+    company_id = request.session['company_id']
+    apply_changes(
+        request.user, company_id, data['day'], data['ward'],
+        data['continued'], data['persons'])
+    return get_last_changes(company_id, data['last_pk'])
 
 
 @login_required
@@ -65,15 +69,5 @@ def change_approved(request):
 
 
 @login_required
-# TODO: zweiten DB-Zugriff entfernen
 def updates(request, last_change=0):
-    cl = ChangeLogging.objects.filter(
-        company_id=request.session['company_id'],
-        pk__gt=last_change
-    ).values_list('json', flat=True).order_by('pk')
-    if len(cl) == 0:
-        return JsonResponse({})
-    return JsonResponse({
-        'cls': [json.loads(cljson) for cljson in cl],
-        'last_change': get_last_change(request.session['company_id'])
-    })
+    return get_last_changes(request.session['company_id'], last_change)

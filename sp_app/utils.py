@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import pytz
+import json
 
 from datetime import timedelta, datetime, date
 from django.contrib.auth.models import User
 from django.db.models import Q
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.test import TestCase
 from .models import (Ward, Person, Company, Department, ChangeLogging,
@@ -100,16 +102,27 @@ def set_approved(wards, approved, company_id):
     return {'wards': [ward.shortname for ward in wards], 'approved': approved}
 
 
-def get_last_change(company_id):
-    last_change = ChangeLogging.objects.filter(
-        company_id=company_id
-    ).order_by('pk').last()
-    if last_change is not None:
-        time_diff = datetime.now(pytz.utc) - last_change.change_time
-        return {
-            'pk': last_change.pk,
+def get_last_changes(company_id, last_change_pk):
+    """ Return a JsonResponse with the changes since last_change_pk
+    and pk and elapsed time of the last change.
+
+    TODO: Sending changes triggers more frequent updates
+    """
+    cls = list(ChangeLogging.objects.filter(
+        company_id=company_id,
+        pk__gt=last_change_pk
+    ).order_by('pk'))
+    if len(cls) == 0:
+        return JsonResponse({})
+    last_cl = cls[-1]
+    time_diff = datetime.now(pytz.utc) - last_cl.change_time
+    return JsonResponse({
+        'cls': [json.loads(cl.json) or cl.toJson() for cl in cls],
+        'last_change': {
+            'pk': last_cl.pk,
             'time': time_diff.days * 86400 + time_diff.seconds,
         }
+    })
 
 
 class PopulatedTestCase(TestCase):
@@ -138,3 +151,10 @@ class PopulatedTestCase(TestCase):
         self.person_a.functions.add(self.ward_a, self.ward_b)
         self.person_b.functions.add(self.ward_a, self.ward_b)
         self.user = User.objects.create(username='Mr. User', password='123456')
+
+    def assertContainsDict(self, given, expected):
+        msg = "{{ {0}: {1}, ...}} != {{ {0}: {2}, ...}}"
+        for key, value in expected.items():
+            self.assertEqual(
+                given[key], value,
+                msg.format(repr(key), repr(given[key]), repr(value)))

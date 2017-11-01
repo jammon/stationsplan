@@ -12,7 +12,6 @@
 (C) Visitendienst in einer Zeile
 (C) Termine für Visitendienste
 (B) Kurzname von Personen ändern können
-(B) Der Client sollte Updates automatisch einholen +Public
 (C) Die Dienste jeder Person als Kalender zur Verfügung stellen, mit Updates +Public
 (B) Doppelclick auf voriger oder nächster Monat soll nur einmal wirken
 (C) Jeder Editor darf nur Wards der eigenen Abteilung approven +Public
@@ -23,7 +22,7 @@
 (C) Planungen mit ausgeschiedenen MA beenden
 (C) YSlow einsetzen +Public
 (C) Feiertage auf algorithmisch berechnete Daten umstellen
-Assets komprimieren
-Flags für Betatester
-Administration für User bauen +Public
-Wird ward.continued noch verwendet?
+(C) Assets komprimieren
+(C) Flags für Betatester
+(C) Administration für User bauen +Public
+(B) Wird ward.continued noch verwendet?

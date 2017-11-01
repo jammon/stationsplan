@@ -145,3 +145,13 @@ you can then find the current grid option with:
     function get_current_grid_option(){
         return $('.device-check:visible').attr('data-device')
     }
+
+## Plan regelmäßig aktualisieren
+- '/plan' liefert die Zeit seit der letzten Änderung mit, 
+- jede Änderung gibt ihre pk mit,
+- der Server meldet die Zeit nach der letzten Änderung
+- nach einer Zeit, die von last_change abhängt, wird ein Update abgeholt
+- dafür wird die letzte bekannte pk angegeben
+- beim Update werden die neuesten Änderungen seit der letzten bekannten pk geliefert
+- beim Speichern von changes wird ebenfalls die letzte bekannte pk mitgegeben.
+- zurückgeliefert werden dann die neuestens changes inklusive der gerade gespeicherten (wenn sie erfolgreich war).

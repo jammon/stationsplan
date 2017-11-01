@@ -598,9 +598,6 @@ function save_change(data) {
             errorThrown: errorThrown,
         });
     }
-    function success (data, textStatus, jqXHR) {
-        _.each(data, models.apply_change);
-    }
     $.ajax({
         type: "POST",
         url: '/changes', 
@@ -611,12 +608,17 @@ function save_change(data) {
                 utils.get_day_id(data.continued) :
                 data.continued,
             persons: data.persons,
+            last_pk: _last_change_pk,
         }),
         dataType: "json",
         contentType: "application/json; charset=utf-8",
-        error: data.error || error,
-        success: data.success || success,
+        error: error,
+        success: process_changes,
     });
+}
+function process_changes(data) {
+    _.each(data.cls, models.apply_change);
+    schedule_next_update(data.last_change);
 }
 
 function save_approval(ward_ids, date) {
@@ -686,11 +688,12 @@ function schedule_next_update(last_change) {
 
 function process_updates(data) {
     _.each(data.cls, apply_change);
-    schedule_next_update(data.last_change);
+    // TODO: This part is untested
+    models.schedule_next_update(data.last_change);
 }
 
 function updates_failed() {
-    schedule_next_update();
+    models.schedule_next_update();
 }
 
 function get_updates() {
@@ -701,7 +704,9 @@ function get_updates() {
         dataType: "json",
         contentType: "application/json; charset=utf-8",
         error: updates_failed,
-        success: process_updates,
+        success: function(data) {
+            process_updates(data);
+        },
     });
 }
 
@@ -740,6 +745,7 @@ return {
     CallTally: CallTally,
     CallTallies: CallTallies,
     save_change: save_change,
+    process_changes: process_changes,
     save_approval: save_approval,
     set_plannings: set_plannings,
     apply_change: apply_change,

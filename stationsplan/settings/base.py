@@ -19,7 +19,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # 'debug_toolbar',
-    'django_nose',
     'sp_app',
 )
 
@@ -95,16 +94,6 @@ STATICFILES_FINDERS = (
 LOGIN_URL = "/login"
 LOGIN_REDIRECT_URL = "/plan"
 
-# Use nose to run all tests
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-
-# Tell nose to measure coverage on the 'foo' and 'bar' apps
-# NOSE_ARGS = [
-#     '--with-coverage',
-#     '--cover-package=stationsplan,sp_app',
-#     '--cover-html',
-# ]
-
 
 def read_secret(secret_file_name, content_description,
                 generate_secret=False):
@@ -117,7 +106,7 @@ def read_secret(secret_file_name, content_description,
         try:
             from random import choice
             import string
-            secret = ''.join([choice(string.ascii_letters+string.digits)
+            secret = ''.join([choice(string.ascii_letters + string.digits)
                               for i in range(50)])
             with open(secret_file_name, 'w') as f:
                 f.write(secret)

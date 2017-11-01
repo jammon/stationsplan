@@ -39,7 +39,6 @@ class RestrictFields(object):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         model_class = FIELDMODELS.get(db_field.name)
         if model_class:
-            print db_field.name
             kwargs["queryset"] = model_class.objects.filter(
                 company_id=request.session.get('company_id'))
         return super(RestrictFields, self).formfield_for_foreignkey(
@@ -48,7 +47,6 @@ class RestrictFields(object):
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         model_class = FIELDMODELS.get(db_field.name)
         if model_class:
-            print db_field.name
             kwargs["queryset"] = model_class.objects.filter(
                 company_id=request.session.get('company_id'))
         return super(RestrictFields, self).formfield_for_manytomany(

@@ -236,23 +236,20 @@ class ChangeLogging(models.Model):
             'day': self.day.strftime('%Y%m%d'),
             'action': 'add' if self.added else 'remove',
             'continued': self.continued,
+            'pk': self.pk,
         }
         if self.until:
             data['until'] = self.until.strftime('%Y%m%d')
         return data
 
-    def make_json(self):
-        self.json = json.dumps(self.toJson())
-
-    def calc_data(self):
-        self.make_description()
-        self.make_json()
-        self.version = self.current_version
-        return self
-
     def save(self, *args, **kwargs):
-        self.calc_data()
+        self.make_description()
+        self.version = self.current_version
         super(ChangeLogging, self).save(*args, **kwargs)
+        # self.json contains the primary key
+        self.json = json.dumps(self.toJson())
+        ChangeLogging.objects.filter(
+            pk=self.pk).update(json=self.json)
 
     def make_description(self):
         template = (

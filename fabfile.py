@@ -6,8 +6,8 @@ env.hosts = ['stationsplan.de']
 code_dir = '~/priv/stationsplan'
 
 
-def test():
-    local("python ./manage.py test sp_app")
+def test(verbosity='1'):
+    local("python ./manage.py test sp_app -v %s" % verbosity)
 
 
 def serve():

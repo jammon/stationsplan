@@ -81,10 +81,10 @@ class TestChanges(PopulatedTestCase):
                           added=True)
         expected = {'person': "A", 'ward': "A", 'day': "20151002",
                     'continued': True, 'action': "add", }
-        self.assertEqual(c.toJson(), expected)
+        self.assertContainsDict(c.toJson(), expected)
         c.added = False
         expected['action'] = "remove"
-        self.assertEqual(c.toJson(), expected)
+        self.assertContainsDict(c.toJson(), expected)
 
     def test_description(self):  # gehört nach test_models
         testdata = (
@@ -123,12 +123,6 @@ class Process_Change_Testcase(PopulatedTestCase):
                 **c))
         plannings = Planning.objects.filter(
             superseded_by__isnull=True).order_by('start')
-        print "expected"
-        for p in expected_plannings:
-            print p
-        print "observed"
-        for p in plannings:
-            print "start:", p.start, ", end:", p.end
         self.assertEqual(len(plannings), len(expected_plannings))
         for planning, expected in zip(plannings, expected_plannings):
             self.assertEqual(planning.start, expected['start'])

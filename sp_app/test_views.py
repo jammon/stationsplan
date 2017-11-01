@@ -43,7 +43,7 @@ class ViewsTestCase(PopulatedTestCase):
 
 
 class TestPlan(ViewsTestCase):
-
+    """ Test views.plan """
     def test_plan(self):
         for start, end in (
                 (date(2015, 12, 1), date(2015, 12, 31)),  # older than 3 mon
@@ -72,6 +72,8 @@ class TestPlan(ViewsTestCase):
             self.assertEqual(value['end'], expected['end'])
 
 
+# Tests for sp_app.ajax
+
 DATA_FOR_CHANGE = {
     'day': '20160120',
     'ward': 'A',
@@ -79,7 +81,8 @@ DATA_FOR_CHANGE = {
     'persons': [
         {'id': 'A', 'action': 'add', },
         {'id': 'B', 'action': 'remove', },
-    ]}
+    ],
+    'last_pk': 0}
 
 
 class TestChangeForbidden(ViewsTestCase):
@@ -133,7 +136,7 @@ class TestChangeMore(ViewsWithPermissionTestCase):
         self.assertEqual(
             cl.description,
             'user: Person A ist am 20.01.2016 für Ward A eingeteilt')
-        self.assertEqual(
+        self.assertContainsDict(
             json.loads(cl.json),
             {"action": "add", "person": "A", "ward": "A", "day": "20160120",
              "continued": False})
@@ -148,7 +151,7 @@ class TestChangeMore(ViewsWithPermissionTestCase):
             cl.description,
             'user: Person B ist am 20.01.2016 nicht mehr für Ward A '
             'eingeteilt')
-        self.assertEqual(
+        self.assertContainsDict(
             json.loads(cl.json),
             {"action": "remove", "person": "B", "ward": "A", "day": "20160120",
              "continued": False})

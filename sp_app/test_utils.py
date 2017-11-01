@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
+import json
 from unittest import TestCase
 from datetime import date
 
 from .utils import (get_first_of_month, last_day_of_month,
                     get_for_company, get_holidays_for_company,
-                    apply_changes, set_approved,
+                    apply_changes, set_approved, get_last_changes,
                     PopulatedTestCase)
-from .models import Company, Person, Ward, Holiday, Region
+from .models import Company, Person, Ward, Holiday, Region, ChangeLogging
 
 
 class TestFirstOfMonth(TestCase):
@@ -99,7 +99,7 @@ class TestApplyChanges(PopulatedTestCase):
                             day=day, ward=self.ward_a.shortname,
                             continued=continued, persons=persons)
         self.assertEqual(len(cls), 1)
-        self.assertEqual(
+        self.assertContainsDict(
             cls[0],
             {"person": "A", "ward": "A",
              "action": "add", "continued": True, "day": "20160328"})
@@ -113,11 +113,11 @@ class TestApplyChanges(PopulatedTestCase):
                             day=day, ward=self.ward_a.shortname,
                             continued=continued, persons=persons)
         self.assertEqual(len(cls), 2)
-        self.assertEqual(
+        self.assertContainsDict(
             cls[0],
             {"person": "A", "ward": "A",
              "action": "add", "continued": True, "day": "20160328"})
-        self.assertEqual(
+        self.assertContainsDict(
             cls[1],
             {"person": "B", "ward": "A",
              "action": "add", "continued": True, "day": "20160328"})
@@ -133,7 +133,7 @@ class TestApplyChanges(PopulatedTestCase):
                             day=day, ward=self.ward_a.shortname,
                             continued=continued, persons=persons)
         self.assertEqual(len(cls), 1)
-        self.assertEqual(
+        self.assertContainsDict(
             cls[0],
             {"person": "A", "ward": "A",
              "action": "add", "continued": True, "day": "20160328"})
@@ -156,3 +156,33 @@ class TestSetApproved(PopulatedTestCase):
         self.assertEqual(res, {'wards': ['A'], 'approved': False})
         test_ward('A', None)
         test_ward('B', date(2017, 4, 1))
+
+
+class TestGetLastChanges(PopulatedTestCase):
+
+    def test_get_last_changes(self):
+        c_dict = dict(
+            company=self.company, user_id=1, person=self.person_a,
+            ward=self.ward_a, added=True, continued=False)
+        c1 = ChangeLogging.objects.create(day=date(2017, 10, 27), **c_dict)
+        c2 = ChangeLogging.objects.create(day=date(2017, 10, 28), **c_dict)
+        c3 = ChangeLogging.objects.create(day=date(2017, 10, 29), **c_dict)
+
+        response = get_last_changes(self.company.id, c1.pk)
+        content = json.loads(response.content)
+        self.assertEqual(len(content['cls']), 2)
+        self.assertEqual(content['last_change']['pk'], c3.pk)
+
+        response = get_last_changes(self.company.id, c2.pk)
+        content = json.loads(response.content)
+        self.assertEqual(len(content['cls']), 1)
+        self.assertEqual(content['last_change']['pk'], c3.pk)
+
+
+class TestAssertContainsDict(PopulatedTestCase):
+
+    def test_assertContainsDict(self):
+        self.assertContainsDict({'a': 1, 'b': 2}, {'a': 1})
+        msg = "{ u'a': 2, ...} != { u'a': 1, ...}"
+        with self.assertRaisesRegexp(AssertionError, msg):
+            self.assertContainsDict({'a': 2}, {'a': 1})

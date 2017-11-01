@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import json
-from datetime import date, timedelta
+import pytz
+from datetime import date, timedelta, datetime
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
-from .models import Person, Ward, Planning
-from .utils import (get_first_of_month, json_array, get_holidays_for_company,
-                    get_last_change)
+from .models import Person, Ward, Planning, ChangeLogging
+from .utils import (get_first_of_month, json_array, get_holidays_for_company)
 
 
 def home(request):
@@ -49,8 +49,6 @@ def plan(request, month='', day=''):
         plannings = [p for p in plannings
                      if not p.ward.approved or p.start <= p.ward.approved]
     holidays = get_holidays_for_company(request.session['company_id'])
-    last_change = get_last_change(request.session['company_id'])
-
     data = {
         'persons': json.dumps([p.toJson() for p in persons]),
         'wards': json_array(wards),
@@ -60,9 +58,15 @@ def plan(request, month='', day=''):
         'first_of_month': first_of_month,
         'start_of_data': start_of_data,
         'holidays': json.dumps(holidays),
-        'last_change_pk': last_change['pk'],
-        'last_change_time': last_change['time'],
     }
+    last_change = ChangeLogging.objects.filter(
+        company_id=request.session['company_id'],
+    ).values('pk', 'change_time').order_by('pk').last()
+    if last_change is not None:
+        time_diff = datetime.now(pytz.utc) - last_change['change_time']
+        data['last_change_pk'] = last_change['pk']
+        data['last_change_time'] = time_diff.days * 86400 + time_diff.seconds
+
     if first_of_month > date.today():
         data['prev_month'] = (first_of_month - timedelta(1)).strftime('%Y%m')
     return render(request, 'sp_app/plan.html', data)
