@@ -72,6 +72,7 @@ var Ward = Backbone.Model.extend({
         if (after_this) {
             this.set('after_this', after_this.split(','));
         }
+        this.set('weight', this.get('weight') || 0);
     },
     idAttribute: "shortname",
     get_ward_type: function() {

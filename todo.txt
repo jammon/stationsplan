@@ -26,3 +26,4 @@
 (C) Flags für Betatester
 (C) Administration für User bauen +Public
 (B) Wird ward.continued noch verwendet?
+Dienste, die man für den 31.12. einträgt, werden fortgesetzt
