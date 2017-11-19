@@ -5,13 +5,11 @@ var MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 var ChangeStaffView = Backbone.View.extend({
     events: {
-        "click #one-day": "one_day",
         "click #continued": "continued",
         "click #time_period": "time_period",
         "dblclick .changestaff": "one_click_plan",
         "changeDate": "date_changed",
     },
-    one_day: function() { this.save(false); },
     continued: function() { this.save(true); },
     time_period: function(e) { 
         this.save(this.$("#date-picker").datepicker('getDate'));
