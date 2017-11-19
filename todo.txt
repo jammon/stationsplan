@@ -16,7 +16,7 @@
 (B) Doppelclick auf voriger oder nächster Monat soll nur einmal wirken
 (C) Jeder Editor darf nur Wards der eigenen Abteilung approven +Public
 (D) ward.continued wird nur noch in tests/spec/models.js benutzt
-(A) Wenn man einen Diensthabenden dragt und auf das gleiche Feld wieder dropt, wird er ausgetragen
+(B) Wenn man einen Diensthabenden dragt und auf das gleiche Feld wieder dropt, wird er ausgetragen
 (C) Integrationtests in jasmine einbauen +Public
 (C) Favicon bauen +Public
 (C) Planungen mit ausgeschiedenen MA beenden
@@ -26,4 +26,6 @@
 (C) Flags für Betatester
 (C) Administration für User bauen +Public
 (B) Wird ward.continued noch verwendet?
-Dienste, die man für den 31.12. einträgt, werden fortgesetzt
+(B) Dienste, die man für den 31.12. einträgt, werden fortgesetzt
+(D) Do https://codeburst.io/the-front-end-checklist-8b2292fdda44
+(B) Änderungsgeschichte einer Planung abrufbar machen

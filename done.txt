@@ -68,3 +68,4 @@ x 2017-10-17 Die Verpflichtungen einer Person an diesem Tag als Tooltip anzeigen
 x 2017-10-18 Unbesetzte Dienste/Stationen auch in Print markieren
 x 2017-10-18 http://stackoverflow.com/questions/14527387/script7002-xmlhttprequest-network-error-0x2ef3-could-not-complete-the-operati bearbeiten +FIX +Public
 x 2017-11-01 Der Client sollte Updates automatisch einholen +Public
+x 2017-11-19 Für normale User Dienste in voller Breite darstellen

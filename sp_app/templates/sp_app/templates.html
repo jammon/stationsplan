@@ -38,12 +38,14 @@
 -->
 <script type="text/template" id="on-call-table">
   <div class="row inner">
-    <div class="col-md-7">
+    <div class="{% if can_change %}col-md-7{% else %}col-xs-12{% endif %}">
       <table class="plan"></table>
     </div>
+    {% if can_change %}
     <div class="col-md-5">
       <table class="calltallies"></table>
     </div>
+    {% endif %}
   </div>
 </script>
 

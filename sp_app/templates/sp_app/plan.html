@@ -144,7 +144,7 @@
           new Date({{ start_of_data|date:'Y'}}, 
                    {{ start_of_data|date:'n' }}-1, 
                    1),                       // start_of_data
-          {{ can_change }},
+          {% if can_change %}true{% else %}false{% endif %},
           {{ holidays|safe }},
           {{ last_change_pk }},
           {{ last_change_time }}

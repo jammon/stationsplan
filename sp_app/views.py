@@ -54,7 +54,7 @@ def plan(request, month='', day=''):
         'wards': json_array(wards),
         'plannings': json_array(plannings),
         'user': request.user,
-        'can_change': 'true'if can_change else 'false',
+        'can_change': can_change,
         'first_of_month': first_of_month,
         'start_of_data': start_of_data,
         'holidays': json.dumps(holidays),
