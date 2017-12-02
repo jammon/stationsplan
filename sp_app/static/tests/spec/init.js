@@ -5,17 +5,15 @@ var persons_init = [
   { name: 'Other', id: 'Other', functions: ['A', 'B'], anonymous: true}
 ];
 var wards_init = [
-  { name: 'Ward A', shortname: 'A', min: 1, max: 2, continued: true },
-  { name: 'Ward B', shortname: 'B', min: 2, max: 2, continued: true },
+  { name: 'Ward A', shortname: 'A', min: 1, max: 2 },
+  { name: 'Ward B', shortname: 'B', min: 2, max: 2 },
   { name: 'Nightshift', shortname: 'N', min: 0, max: 1, nightshift: true, 
     everyday: true, weight: 2 },
-  { name: 'Leave', shortname: 'L', min: 0, max: 10, on_leave: true, 
-    continued: true },
-  { name: 'Free days', shortname: 'F', min: 0, max: 10, freedays: true,
-    continued: true },
-  { name: 'One day task', shortname: 'O', min: 0, max: 10, continued: false,
+  { name: 'Leave', shortname: 'L', min: 0, max: 10, on_leave: true },
+  { name: 'Free days', shortname: 'F', min: 0, max: 10, freedays: true },
+  { name: 'One day task', shortname: 'O', min: 0, max: 10,
     weight: 3 },
-  { name: 'Special', shortname: 'S', min: 0, max: 10, continued: false,
+  { name: 'Special', shortname: 'S', min: 0, max: 10,
     after_this: 'S,A' },
 ];
 function init_hospital() {

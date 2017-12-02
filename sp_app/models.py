@@ -70,11 +70,6 @@ class Ward(models.Model):
         _('freedays'),
         default=False,
         help_text=_('if True, is to be planned only on free days.'))
-    continued = models.BooleanField(
-        _('continued'),
-        default=True,
-        help_text=_('if True, '
-                    'then todays staffing will be planned for tomorrow'))
     on_leave = models.BooleanField(
         _('on_leave'),
         default=False,
@@ -121,7 +116,6 @@ class Ward(models.Model):
                'nightshift': self.nightshift,
                'everyday': self.everyday,
                'freedays': self.freedays,
-               'continued': self.continued,
                'on_leave': self.on_leave,
                'company_id': self.company_id,
                'position': self.position,

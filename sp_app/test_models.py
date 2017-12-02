@@ -52,7 +52,7 @@ class TestWard(PopulatedTestCase):
         ward = Ward(
             name="Station A", shortname="A",
             min=1, max=3, nightshift=False, everyday=False,
-            freedays=False, continued=True, on_leave=False,
+            freedays=False, on_leave=False,
             company=self.company, position=2)
         self.assertEqual(ward.toJson(),
                          {'name': "Station A",
@@ -62,7 +62,6 @@ class TestWard(PopulatedTestCase):
                           'nightshift': False,
                           'everyday': False,
                           'freedays': False,
-                          'continued': True,
                           'on_leave': False,
                           'company_id': self.company.id,
                           'position': 2,

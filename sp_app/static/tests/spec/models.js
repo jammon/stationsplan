@@ -11,7 +11,6 @@ describe("models", function() {
             expect(ward_a.get('name')).toBe('Ward A');
             expect(ward_a.get('min')).toBe(1);
             expect(ward_a.get('max')).toBe(2);
-            expect(ward_a.get('continued')).toBe(true);
         });
     });
     describe("Person", function() {
