@@ -1,6 +1,7 @@
 var views = (function($, _, Backbone) {
 "use strict";
 
+// StaffingDisplayView is used in DayView
 var StaffingDisplayView = Backbone.View.extend({
     tagName: 'td',
     initialize: function(options) {
@@ -13,6 +14,7 @@ var StaffingDisplayView = Backbone.View.extend({
         }
         if (!this.collection.ward.get('continued') && !this.collection.no_staffing)
             this.$el.addClass('on-call');
+        this.listenTo(this.collection.day, "change:day_id", this.update_today);
     },
     render: function() {
         var el = this.$el;
@@ -23,11 +25,15 @@ var StaffingDisplayView = Backbone.View.extend({
         if (!models.user_can_change() && !approved) return this; // not approved
         el.text(staffing.displayed.pluck('name').join(", "));
         el.toggleClass('lacking', staffing.lacking());
-        el.toggleClass('today', staffing.day.id==models.today_id);
+        this.update_today();
         el.toggleClass('unapproved', !approved);
         return this;
     },
+    update_today: function() {
+        this.$el.toggleClass('today', this.collection.day.get('is_today'));
+    },
 });
+// StaffingView is used in PeriodView and OnCallView
 var StaffingView = StaffingDisplayView.extend({
     events: {
         "click": "addstaff",
@@ -63,8 +69,8 @@ var StaffingView = StaffingDisplayView.extend({
             el.append(name);
         });
         el.toggleClass('lacking', staffing.lacking())
-            .toggleClass('today', staffing.day.id==models.today_id)
             .toggleClass('unapproved', !approved);
+        this.update_today();
         if (models.user_can_change() && that.drag_n_droppable) {
             el.droppable({
                 accept: function(draggable) {
@@ -148,6 +154,29 @@ function get_period_from_template(options) {
     });
 }
 
+var title_template = _.template("<%= day_name %>.<br> <%= day %>.");
+var date_template = _.template("<%= day %>. <%= month %> <%= year %>");
+var DayTitleView = Backbone.View.extend({
+    tagName: "th",
+    render: function() {
+        var date = this.model.get('date');
+        var el = this.$el;
+        el.html(title_template({
+            day_name: utils.day_names[date.getDay()],
+            day: date.getDate(),
+        }));
+        el.attr({
+            title: date_template({
+                day: date.getDate(),
+                month: utils.month_names[date.getMonth()],
+                year: date.getFullYear(),
+            }),
+            day_id: utils.get_day_id(date),
+        });
+        this.$el.toggleClass('today', this.model.get('is_today'));
+        return this;
+    },
+});
 var PeriodView = Backbone.View.extend({
     // This view displays some period of days, 
     // usually a month, but maybe less according to the available screenspace
@@ -207,22 +236,9 @@ var PeriodView = Backbone.View.extend({
     build_table: function() {
         this.table = this.$(".plan");
         var titlerow = $('<tr/>', {'class': 'titlerow'}).append($('<th/>'));
-        var date_template = _.template(
-            "<%= day %>. <%= month %> <%= year %>");
         this.period_days.each(function(day) {
-            var date = day.get('date');
-            var th = $('<th/>', {
-                html: utils.day_names[date.getDay()]+'<br>'+date.getDate()+'.',
-                'class': 'daycol',
-                title: date_template({
-                    day: date.getDate(),
-                    month: utils.month_names[date.getMonth()],
-                    year: date.getFullYear(),
-                }),
-                day_id: utils.get_day_id(date),
-            });
-            th.toggleClass('today', day.id==models.today_id);
-            titlerow.append(th);
+            var view = new DayTitleView({ model: day });
+            titlerow.append(view.render().$el);
         });
         this.table.append(titlerow);
 
@@ -335,6 +351,40 @@ MonthView.get_period_id = function(options) {
     return options.start_id.slice(0, 6);
 };
 
+var OnCallRowView = Backbone.View.extend({
+    tagName: "tr",
+    render: function() {
+        var day = this.model;
+        var date = day.get('date');
+        var day_label = _.template(
+            "<%= name %>. <%= date %>.<%= month %>.");
+        var el = this.$el;
+        el.empty();
+
+        el.toggleClass('today', day.get('is_today'));
+        if (day.get('is_free')) el.addClass('free-day');
+        el.append($('<th/>', { 
+            text: day_label({
+                name: utils.day_names[date.getDay()],
+                date: date.getDate(),
+                month: date.getMonth()+1,
+            })
+        }));
+
+        models.on_call.each(function(task) {
+            var collection = day.ward_staffings[task.id];
+            var view = (collection && !collection.no_staffing) ?
+                (new StaffingView({ 
+                    collection: collection,
+                    display_long_name: true,
+                    drag_n_droppable: true,
+                })).render().$el :
+                '<td></td>';
+            el.append(view);
+        });
+        return this;
+    }
+});
 var OnCallView = MonthView.extend({
     base_class: 'on_call_plan',
     slug: 'dienste',
@@ -348,34 +398,9 @@ var OnCallView = MonthView.extend({
         table.append(titlerow);
 
         // Construct rows for every day
-        var day_label = _.template(
-            "<%= name %> <%= date %>.<%= month %>.");
-        function get_day_label(date) {
-            return day_label({
-                name: utils.day_names[date.getDay()],
-                date: date.getDate(),
-                month: date.getMonth()+1,
-            });
-        }
         this.period_days.each(function(day) {
-            var date = day.get('date');
-            var row = $('<tr/>');
-            row.toggleClass('today', day.id==models.today_id);
-            if (day.get('is_free')) row.addClass('free-day');
-            row.append($('<th/>', { text: get_day_label(date) }));
-
-            models.on_call.each(function(task) {
-                var collection = day.ward_staffings[task.id];
-                var view = (collection && !collection.no_staffing) ?
-                    (new StaffingView({ 
-                        collection: collection,
-                        display_long_name: true,
-                        drag_n_droppable: true,
-                    })).render().$el :
-                    '<td></td>';
-                row.append(view);
-            });
-            table.append(row);
+            var row = new OnCallRowView({ model: day });
+            table.append(row.render().$el);
         });
 
         // build CallTallies

@@ -20,7 +20,7 @@ function set_holidays(holidays) {
 }
 var month_names = ["Januar", "Februar", "März", "April", "Mai", "Juni", 
     "Juli", "August", "September", "Oktober", "November", "Dezember"];
-var day_names = ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'];
+var day_names = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
 var day_long_names = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch',
     'Donnerstag', 'Freitag', 'Samstag'];
 

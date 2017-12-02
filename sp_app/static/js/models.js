@@ -5,7 +5,7 @@ var models = (function($, _, Backbone) {
 // - all the constructors for the data models (`Person`, `Ward` etc.),
 // - the data models themselves (`persons`, `wards` etc.),
 // - some data determining the working status 
-//   (like `user_can_change`, `today_id`, `errors` etc.)
+//   (like `user_can_change`, `errors` etc.)
 
 var default_start_for_person = [2015, 0, 1];
 var default_end_for_person = [2099, 11, 31];
@@ -14,6 +14,20 @@ function user_can_change(can_change) {
     if (arguments.length===0) return _user_can_change;
     _user_can_change = can_change;
 }
+
+var Current_Date = Backbone.Model.extend({
+    initialize: function() {
+        this.set({ date_id: utils.get_day_id(new Date()) });
+    },
+    update: function() {
+        var today_id = utils.get_day_id(new Date());
+        this.set({ date_id: today_id });
+    },
+    is_today: function(date_id) {
+        return date_id == this.get('date_id');
+    },
+});
+var current_date = new Current_Date();
 
 // A person has a
 //     - name
@@ -299,6 +313,11 @@ var Day = Backbone.Model.extend({
             yesterday.on('special-duty-changed', this.calc_persons_display, this);
             this.continue_yesterdays_staffings();
         }
+        this.update_is_today();
+        current_date.on('change:date_id', this.update_is_today, this);
+    },
+    update_is_today: function() {
+        this.set({ is_today: current_date.is_today(this.id) });
     },
     continue_yesterdays_staffings: function() {
         var date = this.get('date');
@@ -701,6 +720,7 @@ function get_updates() {
         error: updates_failed,
         success: process_changes,
     });
+    current_date.update();
 }
 
 var errors = new Backbone.Collection();
@@ -716,6 +736,7 @@ function reset_data() {
 }
 
 return {
+    Current_Date: Current_Date,
     Person: Person,
     Persons: Persons,
     persons: persons,

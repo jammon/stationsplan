@@ -53,7 +53,6 @@ function initialize_site(persons, wards, plannings, year, month,
     //         }
     //     });
     // }
-    models.today_id = utils.get_day_id(new Date());
     models.schedule_next_update({
         pk: last_change_pk, 
         time: last_change_time

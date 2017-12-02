@@ -13,6 +13,31 @@ describe("models", function() {
             expect(ward_a.get('max')).toBe(2);
         });
     });
+    describe("Current_Date", function() {
+        it("should initialize to todays id", function() {
+            var current_date = new models.Current_Date();
+            expect(current_date.get('date_id'))
+                .toBe(utils.get_day_id(new Date()));
+        });
+        it("should send change event only when the date has changed", function() {
+            var current_date = new models.Current_Date();
+            var changed = false;
+            current_date.on('change:date_id', function() { changed = true; });
+            current_date.update();
+            expect(changed).toBeFalsy();
+
+            current_date.set({ date_id: '20170101' });
+            changed = false;
+            current_date.update();
+            expect(changed).toBeTruthy();
+        });
+        it("should tell, if a date_id refers to today", function() {
+            var current_date = new models.Current_Date();
+            expect(current_date.is_today(utils.get_day_id(new Date())))
+                .toBeTruthy();
+            expect(current_date.is_today('20170101')).toBeFalsy();
+        });
+    });
     describe("Person", function() {
         describe("calculating availability", function() {
             var before = new Date(2016, 1, 29);
