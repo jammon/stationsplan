@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 import datetime
+import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
@@ -36,7 +37,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='department',
             name='company',
-            field=models.ForeignKey(related_name='departments', to='sp_app.Company', help_text='Die oberste Organisationseinheit'),
+            field=models.ForeignKey(related_name='departments', on_delete=django.db.models.deletion.CASCADE, to='sp_app.Company', help_text='Die oberste Organisationseinheit'),
         ),
         migrations.AlterField(
             model_name='department',

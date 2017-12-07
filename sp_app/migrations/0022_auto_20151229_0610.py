@@ -9,7 +9,7 @@ def update_changelogging(apps, schema_editor):
         "{user_name}: {self.person.name} ist {relation} {date} für "
         "{self.ward.name} {added}eingeteilt")
     for cl in ChangeLogging.objects.all().select_related('person', 'ward', 'user'):
-    	cl.json = json.dumps({
+        cl.json = json.dumps({
             'person': cl.person.shortname,
             'ward': cl.ward.shortname,
             'day': cl.day.strftime('%Y%m%d'),

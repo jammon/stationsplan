@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
+import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
@@ -17,7 +18,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=20, verbose_name='Name')),
                 ('callshift', models.BooleanField(verbose_name='Call shift')),
-                ('company', models.ForeignKey(related_name='ward_types', to='sp_app.Company')),
+                ('company', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='ward_types', to='sp_app.Company')),
             ],
         ),
         migrations.AlterField(
@@ -33,6 +34,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='ward',
             name='ward_type',
-            field=models.ForeignKey(related_name='wards', default=None, to='sp_app.WardType', null=True),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='wards', default=None, to='sp_app.WardType', null=True),
         ),
     ]

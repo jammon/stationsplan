@@ -37,11 +37,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='statusentry',
             name='company',
-            field=models.ForeignKey(related_name='status_entries', blank=True, to='sp_app.Company', help_text='Kann leer bleiben', null=True),
+            field=models.ForeignKey(related_name='status_entries', on_delete=django.db.models.deletion.CASCADE, blank=True, to='sp_app.Company', help_text='Kann leer bleiben', null=True),
         ),
         migrations.AlterField(
             model_name='statusentry',
             name='department',
-            field=models.ForeignKey(related_name='status_entries', blank=True, to='sp_app.Department', help_text='Kann leer bleiben', null=True),
+            field=models.ForeignKey(related_name='status_entries', on_delete=django.db.models.deletion.CASCADE, blank=True, to='sp_app.Department', help_text='Kann leer bleiben', null=True),
         ),
     ]

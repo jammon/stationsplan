@@ -1,9 +1,8 @@
-coverage==4.0.1
-Django==1.11
-django-compressor==1.5
-django-debug-panel==0.8.2
-django-debug-toolbar==1.4
-pytz==2017.2
-six==1.10.0
-sqlparse==0.1.18
-fabric
+coverage
+Django
+django-compressor
+django-debug-panel
+django-debug-toolbar
+pytz
+sqlparse
+fabric3

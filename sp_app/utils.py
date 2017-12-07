@@ -69,7 +69,7 @@ def apply_changes(user, company_id, day, ward, continued, persons):
                 day=datetime.strptime(day, '%Y%m%d').date(),
                 continued=continued,
                 until=None)
-    if isinstance(continued, basestring):
+    if isinstance(continued, str):
         data['until'] = datetime.strptime(continued, '%Y%m%d').date()
         data['continued'] = True
     cls = []

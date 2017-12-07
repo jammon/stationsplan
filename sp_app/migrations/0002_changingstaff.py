@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-
+import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
@@ -17,8 +17,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(serialize=False, primary_key=True, verbose_name='ID', auto_created=True)),
                 ('day', models.DateField()),
                 ('added', models.BooleanField()),
-                ('person', models.ForeignKey(to='sp_app.Person')),
-                ('ward', models.ForeignKey(to='sp_app.Ward')),
+                ('person', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='sp_app.Person')),
+                ('ward', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='sp_app.Ward')),
             ],
         ),
     ]

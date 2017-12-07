@@ -23,7 +23,8 @@ class Company(models.Model):
     region = models.ForeignKey(
         'Region', null=True, blank=True, related_name='companies',
         help_text=_('Region that determines the legal holidays '
-                    'for this company'))
+                    'for this company'),
+        on_delete=models.PROTECT)
     extra_holidays = models.ManyToManyField(
         'Holiday', verbose_name=_('Additional Holidays'),
         related_name='companies', blank=True)
