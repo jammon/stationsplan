@@ -28,3 +28,4 @@
 (B) Dienste, die man für den 31.12. einträgt, werden fortgesetzt
 (D) Do https://codeburst.io/the-front-end-checklist-8b2292fdda44
 (B) Änderungsgeschichte einer Planung abrufbar machen
+Testen mit Firefox headless oder PhantomJS
