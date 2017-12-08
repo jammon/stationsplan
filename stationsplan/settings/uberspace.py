@@ -1,8 +1,6 @@
 from .base import *  # noqa: F403
 import os
 import configparser
-from random import choice
-import string
 
 DEBUG = False
 
@@ -24,12 +22,9 @@ try:
 except KeyError:
     if not config.has_section('django'):
         config['django'] = {}
-    if 'key' not in config['django']:
-        config['django']['key'] = ''.join(
-            [choice(string.printable) for i in range(50)])
+    SECRET_KEY = config['django']['key'] = random_string(50)
     with open(CONFIG_FILE, 'w') as configfile:
         config.write(configfile)
-    SECRET_KEY = config['django']['key']    
 
 
 db_config = configparser.ConfigParser()

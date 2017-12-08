@@ -4,6 +4,8 @@ Django settings for stationsplan project.
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import string
+from random import choice
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(
     os.path.abspath(__file__))))
@@ -94,6 +96,10 @@ LOGIN_URL = "/login"
 LOGIN_REDIRECT_URL = "/plan"
 
 
+def random_string(length=50):
+    return ''.join([choice(string.printable) for i in range(50)])
+
+
 def read_secret(secret_file_name, content_description,
                 generate_secret=False):
     try:
@@ -103,8 +109,6 @@ def read_secret(secret_file_name, content_description,
         pass
     if generate_secret:
         try:
-            from random import choice
-            import string
             secret = ''.join([choice(string.ascii_letters + string.digits)
                               for i in range(50)])
             with open(secret_file_name, 'w') as f:
