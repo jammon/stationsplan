@@ -50,7 +50,15 @@
     <div class="plans"></div>
   </div>
 {% if user.is_staff %}
-  <div> <table id="errors" class="table"></table> </div>
+  <div> <table id="errors" class="table hidden">
+    <tr>
+      <th>Status</th>
+      <th>Error</th>
+      <th>Response-Text</th>
+      <th>URL</th>
+      <th>Data</th>
+    </tr>
+  </table> </div>
 {% endif %}
 {% endblock content %}
 

@@ -588,17 +588,32 @@ var NavView = Backbone.View.extend({
 var nav_view = new NavView({el: $(".nav")});
 
 var ErrorView = Backbone.View.extend({
+    template: _.template(
+            "<tr>" +
+              "<td><%= status %></td>" +
+              "<td><%= error %></td>" +
+              "<td><%= response %></td>" +
+              "<td><%= url %></td>" +
+              "<td><%= data %></td>" +
+            "</tr>"),
     initialize: function() {
         this.listenTo(models.errors, "add", this.addError);
+        this.$el.append();
     },
     addError: function(error) {
-        var tr = $("<tr/>");
-        tr.append($("<td/>", { text: error.get('textStatus') }));
-        tr.append($("<td/>", { text: error.get('errorThrown').toString() }));
-        this.$el.append(tr);
+        var msg = this.template$({
+            status: error.get('textStatus'),
+            error: error.get('errorThrown'),
+            response: error.get('responseText'),
+            url: error.get('url'),
+            data: error.get('data'),
+        });
+        this.$el.removeClass("hidden").append(msg);
     },
 });
-var error_view = new ErrorView({ el: $("#errors")});
+var error_view;
+if (models.user_can_change )
+    error_view = new ErrorView({ el: $("#errors")});
 
 return {
     StaffingView: StaffingView,

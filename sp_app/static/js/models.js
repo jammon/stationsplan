@@ -612,24 +612,29 @@ function save_change(data) {
     //       id: a persons id,
     //       action: 'add' or 'remove'
     //   }
+    var json_data = JSON.stringify({
+        day: data.day.id || data.day,
+        ward: data.ward.id || data.ward,
+        continued: _.isDate(data.continued) ?
+            utils.get_day_id(data.continued) :
+            data.continued,
+        persons: data.persons,
+        last_pk: _last_change_pk,
+    });
+    var url = '/changes';
     function error (jqXHR, textStatus, errorThrown) {
         models.errors.add({
             textStatus: textStatus, 
             errorThrown: errorThrown,
+            responseText: jqXHR.responseText,
+            url: url,
+            data: json_data,
         });
     }
     $.ajax({
         type: "POST",
-        url: '/changes', 
-        data: JSON.stringify({
-            day: data.day.id || data.day,
-            ward: data.ward.id || data.ward,
-            continued: _.isDate(data.continued) ?
-                utils.get_day_id(data.continued) :
-                data.continued,
-            persons: data.persons,
-            last_pk: _last_change_pk,
-        }),
+        url: url, 
+        data: json_data,
         dataType: "json",
         contentType: "application/json; charset=utf-8",
         error: error,
@@ -645,10 +650,18 @@ function save_approval(ward_ids, date) {
     // data should have these attributes: 
     //   date: a Date or false
     //   ward_ids: an Array of <ward_ids>
+    var json_data = JSON.stringify({
+        date: date ? utils.get_day_id(date) : false,
+        wards: ward_ids,
+    });
+    var url = '/set_approved';
     function error (jqXHR, textStatus, errorThrown) {
         models.errors.add({
             textStatus: textStatus, 
             errorThrown: errorThrown,
+            responseText: jqXHR.responseText,
+            url: url,
+            data: json_data,
         });
     }
     function success (data, textStatus, jqXHR) {
@@ -659,11 +672,8 @@ function save_approval(ward_ids, date) {
     }
     $.ajax({
         type: "POST",
-        url: '/set_approved', 
-        data: JSON.stringify({
-            date: date ? utils.get_day_id(date) : false,
-            wards: ward_ids,
-        }),
+        url: url,
+        data: json_data,
         dataType: "json",
         contentType: "application/json; charset=utf-8",
         error: error,
