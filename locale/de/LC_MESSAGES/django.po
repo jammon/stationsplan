@@ -87,8 +87,7 @@ msgstr "Nachtdienst"
 #: sp_app/models.py:64
 msgid "if True, staffing can not be planned on the next day."
 msgstr ""
-"wenn Wahr, dann kann der Diensthabende nicht für den nächsten Tag verplant "
-"werden"
+"Der Diensthabende kann nicht für den nächsten Tag verplant werden"
 
 #: sp_app/models.py:66
 msgid "everyday"
@@ -97,7 +96,7 @@ msgstr "täglich"
 #: sp_app/models.py:68
 msgid "if True, is to be planned also on free days."
 msgstr ""
-"wenn Wahr, dann muss diese Funktion auch an freien Tagen geplant werden"
+"Diese Funktion muss auch an freien Tagen geplant werden"
 
 #: sp_app/models.py:70
 msgid "freedays"
@@ -105,7 +104,7 @@ msgstr "freie Tage"
 
 #: sp_app/models.py:72
 msgid "if True, is to be planned only on free days."
-msgstr "wenn Wahr, dann kann diese Funktion nur an freien Tagen geplant werden"
+msgstr "Diese Funktion kann nur an freien Tagen geplant werden"
 
 #: sp_app/models.py:74
 msgid "continued"
@@ -114,7 +113,7 @@ msgstr "fortsetzen"
 #: sp_app/models.py:76
 msgid "if True, then todays staffing will be planned for tomorrow"
 msgstr ""
-"wenn Wahr, dann wird die heutige Besetzung i.d.R. auch für morgen geplant"
+"Die heutige Besetzung wird i.d.R. auch für morgen geplant"
 
 #: sp_app/models.py:79
 msgid "on_leave"
@@ -123,8 +122,7 @@ msgstr "Urlaub/frei"
 #: sp_app/models.py:81
 msgid "if True, then persons planned for this are on leave"
 msgstr ""
-"wenn Wahr, dann stehen die hier eingetragenen Personen nicht zur Arbeit zur "
-"Verfügung"
+"Die hier eingetragenen Personen stehen nicht zur Arbeit zur Verfügung"
 
 #: sp_app/models.py:88 sp_app/models.py:167
 msgid "Ordering in the display"
@@ -196,8 +194,7 @@ msgstr "Anonym"
 msgid ""
 "if True this person represents multiple other persons, e.g. an appartment"
 msgstr ""
-"wenn Wahr, dann steht diese Person für mehrere andere Personen, z.B. eine "
-"Abteilung"
+"Diese Person steht für mehrere andere Personen, z.B. eine Abteilung"
 
 #: sp_app/models.py:228
 msgid "ChangeLogging"

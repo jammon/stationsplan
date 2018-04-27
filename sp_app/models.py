@@ -50,7 +50,7 @@ class Department(models.Model):
         verbose_name_plural = _('Departments')
 
     def __str__(self):
-        return self.name
+        return "{} ({})".format(self.name, self.shortname)
 
 
 @python_2_unicode_compatible
@@ -89,7 +89,7 @@ class Ward(models.Model):
         null=True, blank=True,
         help_text=_('The date until which the plan is approved'))
     after_this = models.ManyToManyField(
-        'self', symmetrical=False, blank=True,
+        'self', verbose_name=_('after this'), symmetrical=False, blank=True,
         help_text=_('if not empty, '
                     'only these functions can be planned on the next day'))
     json = models.CharField(max_length=511)
@@ -101,6 +101,7 @@ class Ward(models.Model):
     class Meta:
         verbose_name = _('Task')
         verbose_name_plural = _('Tasks')
+        ordering = ['position']
 
     def __str__(self):
         return self.name
@@ -172,7 +173,7 @@ class Person(models.Model):
         verbose_name_plural = _('Persons')
 
     def __str__(self):
-        return self.name
+        return "{} ({})".format(self.name, self.shortname)
 
     def toJson(self):
         return {'name': self.name,

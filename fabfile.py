@@ -7,11 +7,11 @@ code_dir = '~/priv/stationsplan'
 
 
 def test(verbosity='1'):
-    local("python ./manage.py test sp_app -v %s" % verbosity)
+    local("python ./manage.py test sp_app --settings=stationsplan.settings.dev -v %s" % verbosity)
 
 
 def serve():
-    local("./manage.py runserver")
+    local("./manage.py runserver --settings=stationsplan.settings.dev")
 
 
 def sass():

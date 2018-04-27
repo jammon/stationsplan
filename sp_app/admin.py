@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from django import forms
+from django.db import models
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
@@ -102,11 +104,21 @@ class DepartmentsListFilter(admin.SimpleListFilter):
 
 
 class PersonAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
-    filter_horizontal = ('departments', 'functions',)
+    # filter_horizontal = ('departments', 'functions',)
     list_filter = (DepartmentsListFilter, )
     ordering = ('position', 'name',)
-    list_display = ('name', 'position')
+    list_display = ('name', 'shortname', 'position')
     list_editable = ('position',)
+    formfield_overrides = {
+        models.ManyToManyField: {
+            'widget': forms.CheckboxSelectMultiple
+        },
+    }
+    fields = (
+        ('name', 'shortname'),
+        ('start_date', 'end_date'),
+        ('departments', 'functions'),
+        ('position', 'anonymous'), )
 
 
 class WardAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):

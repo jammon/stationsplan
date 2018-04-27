@@ -89,11 +89,12 @@ def apply_changes(user, company_id, day, ward, continued, persons):
 def set_approved(wards, approved, company_id):
     """
     wards is [<ward.shortname>, ...],
-    approved is False|<YYYYMMDD>,
+    approved is False|<YYYYMMDD>, (False means unlimited approval)
     company_id is <company.id>
     """
     wards = Ward.objects.filter(company_id=company_id,
                                 shortname__in=wards)
+    # TODO: test for malformatted input
     approval = (datetime.strptime(approved, '%Y%m%d').date()
                 if approved else None)
     for ward in wards:
