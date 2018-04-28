@@ -6,3 +6,5 @@ cover/*
 db.sqlite3
 dev_static/*
 debug.log
+.sass-cache/*
+todo.txt.bak
