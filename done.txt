@@ -72,3 +72,4 @@ x 2017-11-19 Für normale User Dienste in voller Breite darstellen
 x 2017-12-02 ward.continued wird nur noch in tests/spec/models.js benutzt
 x 2017-12-02 Automatische Aktualisierung soll auch das Datum aktualisieren
 x 2017-12-07 Upgrade to Django2.0
+x 2018-04-28 Versionsnummer einfügen und abfragbar machen

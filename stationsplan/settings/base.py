@@ -5,12 +5,15 @@ Django settings for stationsplan project.
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 import string
+import time
 from random import choice
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(
     os.path.abspath(__file__))))
 PARENT_OF_BASE_DIR = os.path.dirname(BASE_DIR)
 
+VERSION = time.strftime(
+    '%Y-%m-%d', time.gmtime(os.path.getmtime(os.path.join(BASE_DIR, '.git'))))
 # Application definition
 
 INSTALLED_APPS = (
@@ -48,6 +51,7 @@ DJANGO_TEMPLATES = {
             "django.template.context_processors.static",
             "django.template.context_processors.tz",
             "django.contrib.messages.context_processors.messages",
+            "stationsplan.context_processors.app_version",
         ],
     },
 }

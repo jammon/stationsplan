@@ -10,7 +10,8 @@
 (B) Alle Dienste einer Person des aktuellen Monats sollen angezeigt werden
 (C) Urlaube in der Planungsansicht der Dienste anzeigen
 (C) Visitendienst in einer Zeile
-(C) Termine für Visitendienste
+(B) Termine für Visitendienste nur an bestimmten Wochentagen
+(B) Termine für Visitendienste auch an terminlich festgelegten Tagen, ggf. auch nicht
 (B) Kurzname von Personen ändern können
 (C) Die Dienste jeder Person als Kalender zur Verfügung stellen, mit Updates +Public
 (B) Doppelclick auf voriger oder nächster Monat soll nur einmal wirken
@@ -32,4 +33,3 @@
 (A) Aktion Aktualisieren ins Menu
 (A) Aktualisierung soll auch die Freigabe von Planungen vermitteln
 (A) Serverversion aktualisieren
-(A) Versionsnummer einfügen und abfragbar machen

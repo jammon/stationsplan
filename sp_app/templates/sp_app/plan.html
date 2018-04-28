@@ -60,6 +60,10 @@
     </tr>
   </table> </div>
 {% endif %}
+{% if can_change %}
+  <footer class="pull-right text-muted small">Version: {{ APP_VERSION }}</footer>
+{% endif %}
+
 {% endblock content %}
 
 {% block extracontent %}
