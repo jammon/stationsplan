@@ -81,7 +81,8 @@ class Ward(models.Model):
                                 on_delete=models.CASCADE)
     position = models.IntegerField(
         default=1,
-        help_text=_('Ordering in the display'))
+        help_text=_('Ordering in the display. '
+                    'Should not be more than two digits.'))
     ward_type = models.CharField(
         _('Ward type'), max_length=50, blank=True, default='',
         help_text=_('For sorting the CallTallies'))
@@ -120,7 +121,7 @@ class Ward(models.Model):
                'freedays': self.freedays,
                'on_leave': self.on_leave,
                'company_id': self.company_id,
-               'position': self.position,
+               'position': '%02d' % self.position,
                'after_this': '' if not self.pk else ','.join(
                    self.after_this.values_list('shortname', flat=True)),
                'ward_type': self.ward_type,
@@ -161,7 +162,8 @@ class Person(models.Model):
     position = models.IntegerField(
         _('position'),
         default=1,
-        help_text=_('Ordering in the display'))
+        help_text=_('Ordering in the display. '
+                    'Should not be more than two digits.'))
     anonymous = models.BooleanField(
         _('Anonymous'),
         default=False,
@@ -181,7 +183,7 @@ class Person(models.Model):
                 'start_date': date_to_json(self.start_date),
                 'end_date': date_to_json(self.end_date),
                 'functions': [f.shortname for f in self.functions.all()],
-                'position': self.position,
+                'position': '%02d' % self.position,
                 'anonymous': self.anonymous,
                 }
 

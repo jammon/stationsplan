@@ -105,11 +105,10 @@ var Ward = Backbone.Model.extend({
 var Wards = Backbone.Collection.extend({
     model: Ward,
     comparator: function(ward) {
-        var res = (ward.get('on_leave') ? '1' : '0') +  // on_leave last
+        return (ward.get('on_leave') ? '1' : '0') +  // on_leave last
             (ward.get('continued') ? '0' : '1') +  // normal wards first
             ward.get('position') +
             ward.get('name');
-        return res;
     },
 });
 var wards = new Wards();

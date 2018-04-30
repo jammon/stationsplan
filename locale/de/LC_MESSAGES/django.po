@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-15 17:12+0200\n"
+"POT-Creation-Date: 2018-04-30 22:40+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,15 +22,15 @@ msgstr ""
 msgid "Ward"
 msgstr "Funktion"
 
-#: sp_app/admin.py:80 sp_app/models.py:175
+#: sp_app/admin.py:80 sp_app/models.py:174
 msgid "Person"
 msgstr "Person"
 
-#: sp_app/admin.py:88 sp_app/models.py:48
+#: sp_app/admin.py:88 sp_app/models.py:49
 msgid "Department"
 msgstr "Abteilung"
 
-#: sp_app/forms.py:14 sp_app/models.py:176
+#: sp_app/forms.py:14 sp_app/models.py:175
 msgid "Persons"
 msgstr "Personen"
 
@@ -38,13 +38,13 @@ msgstr "Personen"
 msgid "staff"
 msgstr "Personen"
 
-#: sp_app/models.py:21 sp_app/models.py:41 sp_app/models.py:57
-#: sp_app/models.py:151 sp_app/models.py:454 sp_app/models.py:468
+#: sp_app/models.py:21 sp_app/models.py:42 sp_app/models.py:58
+#: sp_app/models.py:149 sp_app/models.py:450 sp_app/models.py:464
 msgid "Name"
 msgstr "Name"
 
-#: sp_app/models.py:22 sp_app/models.py:42 sp_app/models.py:58
-#: sp_app/models.py:152 sp_app/models.py:469
+#: sp_app/models.py:22 sp_app/models.py:43 sp_app/models.py:59
+#: sp_app/models.py:150 sp_app/models.py:465
 msgid "Short Name"
 msgstr "Kurzname"
 
@@ -52,199 +52,204 @@ msgstr "Kurzname"
 msgid "Region that determines the legal holidays for this company"
 msgstr "Region (Bundesland), deren Feiertage für dieses Krankenhaus gelten."
 
-#: sp_app/models.py:28
+#: sp_app/models.py:29
 msgid "Additional Holidays"
 msgstr "Zusätzliche Feiertage"
 
-#: sp_app/models.py:32
+#: sp_app/models.py:33
 msgid "Company"
 msgstr "Krankenhaus"
 
-#: sp_app/models.py:33
+#: sp_app/models.py:34
 msgid "Companies"
 msgstr "Krankenhäuser"
 
-#: sp_app/models.py:44
+#: sp_app/models.py:45
 msgid "The top organizational unit"
 msgstr "Die oberste Organisationseinheit"
 
-#: sp_app/models.py:49 sp_app/models.py:83 sp_app/models.py:158
+#: sp_app/models.py:50 sp_app/models.py:79 sp_app/models.py:156
 msgid "Departments"
 msgstr "Abteilungen"
 
-#: sp_app/models.py:59
+#: sp_app/models.py:60
 msgid "maximum staffing"
 msgstr "Maximale Besetzung"
 
-#: sp_app/models.py:60
+#: sp_app/models.py:61
 msgid "minimum staffing"
 msgstr "Minimale Besetzung"
 
-#: sp_app/models.py:62
+#: sp_app/models.py:63
 msgid "nightshift"
 msgstr "Nachtdienst"
 
-#: sp_app/models.py:64
+#: sp_app/models.py:65
 msgid "if True, staffing can not be planned on the next day."
-msgstr ""
-"Der Diensthabende kann nicht für den nächsten Tag verplant werden"
+msgstr "Der Diensthabende kann nicht für den nächsten Tag verplant werden"
 
-#: sp_app/models.py:66
+#: sp_app/models.py:67
 msgid "everyday"
 msgstr "täglich"
 
-#: sp_app/models.py:68
+#: sp_app/models.py:69
 msgid "if True, is to be planned also on free days."
-msgstr ""
-"Diese Funktion muss auch an freien Tagen geplant werden"
+msgstr "Diese Funktion muss auch an freien Tagen geplant werden"
 
-#: sp_app/models.py:70
+#: sp_app/models.py:71
 msgid "freedays"
 msgstr "freie Tage"
 
-#: sp_app/models.py:72
+#: sp_app/models.py:73
 msgid "if True, is to be planned only on free days."
 msgstr "Diese Funktion kann nur an freien Tagen geplant werden"
 
-#: sp_app/models.py:74
-msgid "continued"
-msgstr "fortsetzen"
-
-#: sp_app/models.py:76
-msgid "if True, then todays staffing will be planned for tomorrow"
-msgstr ""
-"Die heutige Besetzung wird i.d.R. auch für morgen geplant"
-
-#: sp_app/models.py:79
+#: sp_app/models.py:75
 msgid "on_leave"
 msgstr "Urlaub/frei"
 
-#: sp_app/models.py:81
+#: sp_app/models.py:77
 msgid "if True, then persons planned for this are on leave"
-msgstr ""
-"Die hier eingetragenen Personen stehen nicht zur Arbeit zur Verfügung"
+msgstr "Die hier eingetragenen Personen stehen nicht zur Arbeit zur Verfügung"
 
-#: sp_app/models.py:88 sp_app/models.py:167
-msgid "Ordering in the display"
-msgstr "Position in der Anzeige"
+#: sp_app/models.py:84
+msgid "Ordering in the display. Should not be more than two digits"
+msgstr "Position in der Anzeige. Sollte nicht mehr als zwei Stellen haben."
 
-#: sp_app/models.py:90
+#: sp_app/models.py:87
 msgid "Ward type"
 msgstr "Funktionsart"
 
-#: sp_app/models.py:91
+#: sp_app/models.py:88
 msgid "For sorting the CallTallies"
 msgstr "Zum Sortieren der Dienstbelastungen"
 
-#: sp_app/models.py:94
+#: sp_app/models.py:91
 msgid "The date until which the plan is approved"
 msgstr "Das Datum, bis zu dem der Plan genehmigt ist"
 
-#: sp_app/models.py:97
+#: sp_app/models.py:93
+msgid "after this"
+msgstr "Folgeschicht"
+
+#: sp_app/models.py:94
 msgid "if not empty, only these functions can be planned on the next day"
 msgstr ""
 "wenn etwas ausgewählt ist, kann der Diensthabende am nächsten Tag nur für "
 "diese Funktionen verplant werden"
 
-#: sp_app/models.py:106
+#: sp_app/models.py:99
+msgid ""
+"if this is a call shift, the weight reflects its burden on the persons doing "
+"the shift"
+msgstr ""
+"Wenn dies ein Bereitschaftsdienst ist, beschreibt dies die Belastung für den "
+"Diensthabenden"
+
+#: sp_app/models.py:103
 msgid "Task"
 msgstr "Funktion"
 
-#: sp_app/models.py:107 sp_app/models.py:162
+#: sp_app/models.py:104 sp_app/models.py:160
 msgid "Tasks"
 msgstr "Funktionen"
 
-#: sp_app/models.py:139
+#: sp_app/models.py:137
 msgid "Wards cannot have the shortname \"id\"."
 msgstr "Funktionen dürfen nicht \"id\" als Kurznamen haben."
 
-#: sp_app/models.py:143
+#: sp_app/models.py:141
 msgid "Wards cannot have a comma in their shortname."
 msgstr "Funktionen dürfen kein Komma in ihrem Kurznamen haben."
 
-#: sp_app/models.py:153
+#: sp_app/models.py:151
 msgid "start date"
 msgstr "Anfangsdatum"
 
-#: sp_app/models.py:154
+#: sp_app/models.py:152
 msgid "begin of job"
 msgstr "Dienstantritt"
 
-#: sp_app/models.py:155
+#: sp_app/models.py:153
 msgid "end date"
 msgstr "Endedatum"
 
-#: sp_app/models.py:156
+#: sp_app/models.py:154
 msgid "end of job"
 msgstr "Dienstende"
 
-#: sp_app/models.py:163
+#: sp_app/models.py:161
 msgid "Functions that he or she can  perform."
 msgstr "Funktionen, die er oder sie ausüben kann"
 
-#: sp_app/models.py:165
+#: sp_app/models.py:163
 msgid "position"
 msgstr "Position"
 
-#: sp_app/models.py:169
+#: sp_app/models.py:165
+#, fuzzy
+#| msgid "Ordering in the display. Should not be more than two digits"
+msgid "Ordering in the display. Should not be more than two digits."
+msgstr "Position in der Anzeige. Sollte nicht mehr als zwei Stellen haben."
+
+#: sp_app/models.py:168
 msgid "Anonymous"
 msgstr "Anonym"
 
-#: sp_app/models.py:171
+#: sp_app/models.py:170
 msgid ""
 "if True this person represents multiple other persons, e.g. an appartment"
-msgstr ""
-"Diese Person steht für mehrere andere Personen, z.B. eine Abteilung"
+msgstr "Diese Person steht für mehrere andere Personen, z.B. eine Abteilung"
 
-#: sp_app/models.py:228
+#: sp_app/models.py:227
 msgid "ChangeLogging"
 msgstr "Änderung"
 
-#: sp_app/models.py:229
+#: sp_app/models.py:228
 msgid "ChangeLoggings"
 msgstr "Änderungen"
 
-#: sp_app/models.py:377
+#: sp_app/models.py:373
 msgid "Later planning that supersedes this one"
 msgstr "Spätere Planung, die diese hier überdeckt"
 
-#: sp_app/models.py:380
+#: sp_app/models.py:376
 msgid "Planning"
 msgstr "Planung"
 
-#: sp_app/models.py:381
+#: sp_app/models.py:377
 msgid "Plannings"
 msgstr "Planungen"
 
-#: sp_app/models.py:423
+#: sp_app/models.py:419
 msgid "Employee"
 msgstr "Bearbeiter"
 
-#: sp_app/models.py:424
+#: sp_app/models.py:420
 msgid "Employees"
 msgstr "Bearbeiter"
 
-#: sp_app/models.py:442 sp_app/models.py:445
+#: sp_app/models.py:438 sp_app/models.py:441
 msgid "Can be empty"
 msgstr "Kann leer bleiben"
 
-#: sp_app/models.py:453
+#: sp_app/models.py:449
 msgid "Date"
 msgstr "Datum"
 
-#: sp_app/models.py:457
+#: sp_app/models.py:453
 msgid "Holiday"
 msgstr "Feiertag"
 
-#: sp_app/models.py:458 sp_app/models.py:470
+#: sp_app/models.py:454 sp_app/models.py:466
 msgid "Holidays"
 msgstr "Feiertage"
 
-#: sp_app/models.py:474
+#: sp_app/models.py:470
 msgid "Region"
 msgstr "Region"
 
-#: sp_app/models.py:475
+#: sp_app/models.py:471
 msgid "Regions"
 msgstr "Regionen"
 
@@ -259,3 +264,12 @@ msgstr "Bitte korrigieren Sie diese Fehler"
 #: sp_app/templates/registration/password_change.html:49
 msgid "Change my password"
 msgstr "Passwort ändern"
+
+#~ msgid "continued"
+#~ msgstr "fortsetzen"
+
+#~ msgid "if True, then todays staffing will be planned for tomorrow"
+#~ msgstr "Die heutige Besetzung wird i.d.R. auch für morgen geplant"
+
+#~ msgid "Ordering in the display"
+#~ msgstr "Position in der Anzeige"

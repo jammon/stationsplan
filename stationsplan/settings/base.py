@@ -14,8 +14,8 @@ PARENT_OF_BASE_DIR = os.path.dirname(BASE_DIR)
 
 VERSION = time.strftime(
     '%Y-%m-%d', time.gmtime(os.path.getmtime(os.path.join(BASE_DIR, '.git'))))
-# Application definition
 
+# Application definition
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
