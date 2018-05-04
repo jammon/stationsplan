@@ -7,7 +7,7 @@ from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
-from .models import Person, Ward, Planning, ChangeLogging
+from .models import Person, Ward, DifferentDay, Planning, ChangeLogging
 from .utils import (get_first_of_month, json_array, get_holidays_for_company)
 
 
@@ -41,6 +41,9 @@ def plan(request, month='', day=''):
         departments__id__in=department_ids
     ).prefetch_related('functions')
     wards = Ward.objects.filter(departments__id__in=department_ids)
+    different_days = DifferentDay.objects.filter(
+        ward__departments__id__in=department_ids,
+        day__gte=start_of_data).select_related('ward')
     plannings = Planning.objects.filter(
         ward__in=wards,
         end__gte=start_of_data,
@@ -54,6 +57,10 @@ def plan(request, month='', day=''):
     data = {
         'persons': json.dumps([p.toJson() for p in persons]),
         'wards': json_array(wards),
+        'different_days': json.dumps([
+            (dd.ward.shortname, dd.day.strftime('%Y%m%d'),
+             '+' if dd.added else '-')
+            for dd in different_days]),
         'plannings': json_array(plannings),
         'user': request.user,
         'can_change': can_change,

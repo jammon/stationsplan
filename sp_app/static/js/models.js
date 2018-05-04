@@ -87,6 +87,7 @@ var Ward = Backbone.Model.extend({
             this.set('after_this', after_this.split(','));
         }
         this.set('weight', this.get('weight') || 0);
+        this.different_days = {};
     },
     idAttribute: "shortname",
     get_ward_type: function() {
@@ -96,8 +97,8 @@ var Ward = Backbone.Model.extend({
         var approved = this.get('approved');
         return !approved || (date <= approved);
     },
-    is_approvable: function() {
-
+    set_different_day: function(date_id, key) {
+        this.different_days[date_id] = key;
     },
 });
 
@@ -118,7 +119,7 @@ var special_duties = new Backbone.Collection();
 var on_call = new Backbone.Collection();
 var on_call_types = [];  // List of the ward_types of on-call shifts
 
-function initialize_wards (wards_init) {
+function initialize_wards (wards_init, different_days) {
     wards.reset(wards_init);
     nightshifts.reset(wards.where({'nightshift': true}));
     on_leave.reset(wards.where({'on_leave': true}));
@@ -132,6 +133,9 @@ function initialize_wards (wards_init) {
         return ward.get_ward_type();
     }));
     models.on_call_types = on_call_types;
+    _.each(different_days, function(dd) {
+        wards.get(dd[0]).set_different_day(dd[1], dd[2]);
+    });
 }
 
 
@@ -155,7 +159,7 @@ var Staffing = Backbone.Collection.extend({
         this.on({
             'add': this.day.person_added,
             'remove': this.day.person_removed }, this.day);
-        this.no_staffing = !this.needs_staffing();
+        this.no_staffing = !needs_staffing(this.ward, this.day);
         this.added_today = [];  // holds the ids of the persons added on this day
         // so that a continued "remove" change on a *previous* day
         // won't delete this planning.
@@ -233,15 +237,6 @@ var Staffing = Backbone.Collection.extend({
     room_for_more: function() {
         return this.displayed.length<this.ward.get('max');
     },
-    needs_staffing: function() {
-        var ward = this.ward;
-        if (ward.get('everyday') || ward.get('on_leave')) {
-            return true;
-        }
-        var day_is_free = this.day.get('is_free');
-        var for_free_days = (ward.get('freedays') || false);
-        return day_is_free == for_free_days;
-    },
     apply_change: function(change) {
         var person = persons.get(change.person);
         if (person) {
@@ -258,6 +253,19 @@ var Staffing = Backbone.Collection.extend({
         }
     },
 });
+function needs_staffing(ward, day) {
+    if (ward.get('everyday') || ward.get('on_leave')) {
+        return true;
+    }
+    var different_day = ward.different_days[day.id];
+    if (different_day) return (different_day == '+');
+    var weekdays = ward.get('weekdays');
+    if (weekdays)
+        return weekdays.indexOf(day.get('date').getDay()) > -1;
+    var day_is_free = day.get('is_free');
+    var for_free_days = (ward.get('freedays') || false);
+    return day_is_free == for_free_days;
+}
 
 // Duties are the duties of one person on one day
 var Duties = Backbone.Collection.extend({
@@ -759,6 +767,7 @@ return {
     on_call_types: on_call_types,
     initialize_wards: initialize_wards,
     Staffing: Staffing,
+    needs_staffing: needs_staffing,
     Duties: Duties,
     Day: Day,
     days: days,

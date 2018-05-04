@@ -11,13 +11,18 @@ var wards_init = [
     everyday: true, weight: 2 },
   { name: 'Leave', shortname: 'L', min: 0, max: 10, on_leave: true },
   { name: 'Free days', shortname: 'F', min: 0, max: 10, freedays: true },
+  { name: 'Visite', shortname: 'V', min: 0, max: 10, weekdays: '6' },
   { name: 'One day task', shortname: 'O', min: 0, max: 10,
     weight: 3 },
   { name: 'Special', shortname: 'S', min: 0, max: 10,
     after_this: 'S,A' },
 ];
+var different_days = [
+  ['V', '20150808', '-'],
+  ['V', '20150809', '+'],
+];
 function init_hospital() {
-    models.initialize_wards(wards_init);
+    models.initialize_wards(wards_init, different_days);
     models.persons.reset(persons_init);
 }
 

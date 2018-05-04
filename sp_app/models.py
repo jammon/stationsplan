@@ -9,11 +9,12 @@ from django.utils.translation import ugettext as _
 from django.utils.encoding import python_2_unicode_compatible
 
 
-def date_to_json(date):
-    return [date.year, date.month - 1, date.day]
-
 FAR_FUTURE = date(2099, 12, 31)
 ONE_DAY = timedelta(days=1)
+
+
+def date_to_json(date):
+    return [date.year, date.month - 1, date.day]
 
 
 @python_2_unicode_compatible
@@ -71,6 +72,10 @@ class Ward(models.Model):
         _('freedays'),
         default=False,
         help_text=_('if True, is to be planned only on free days.'))
+    weekdays = models.CharField(
+        _('weekdays'), max_length=7, default='',
+        help_text=_('Days of the week when this is to be planned. '
+                    '(String of digits, 0  for sunday.)'))
     on_leave = models.BooleanField(
         _('on_leave'),
         default=False,
@@ -119,6 +124,7 @@ class Ward(models.Model):
                'nightshift': self.nightshift,
                'everyday': self.everyday,
                'freedays': self.freedays,
+               'weekdays': self.weekdays,
                'on_leave': self.on_leave,
                'company_id': self.company_id,
                'position': '%02d' % self.position,
@@ -140,6 +146,17 @@ class Ward(models.Model):
             raise ValidationError({
                 'shortname': _('Wards cannot have a comma in their shortname.')
             })
+
+
+@python_2_unicode_compatible
+class DifferentDay(models.Model):
+    """ A ward can be planned or not planned out of schedule """
+    day = models.DateField(_('day'), help_text=_('Day that is different'))
+    ward = models.ForeignKey(
+        Ward, related_name='different_days', on_delete=models.CASCADE)
+    added = models.BooleanField(
+        _('additional'),
+        help_text=_('Planning is additional (not cancelled)'))
 
 
 @python_2_unicode_compatible

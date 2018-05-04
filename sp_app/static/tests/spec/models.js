@@ -4,7 +4,7 @@ describe("models", function() {
         it("should have the persons and wards set", function() {
             // FIXME: hier kam schon mal 7 raus
             expect(models.persons.length).toBe(4);
-            expect(models.wards.length).toBe(7);
+            expect(models.wards.length).toBe(8);
             var person_a = models.persons.get('A');
             expect(person_a.get('name')).toBe('Anton');
             var ward_a = models.wards.get('A');
@@ -198,17 +198,68 @@ describe("models", function() {
             });
         });
         describe("need for staffing", function() {
+            // implicitly tests Staffing.needs_staffing
             it("should respect free days", function() {
-                var sunday = new models.Day({
-                    date: new Date(2015, 7, 2),
-                });
-                var monday = new models.Day({
-                    date: new Date(2015, 7, 3),
-                });
+                var sunday = new models.Day({date: new Date(2015, 7, 2)});
+                var monday = new models.Day({date: new Date(2015, 7, 3)});
                 expect(sunday.ward_staffings.A.no_staffing).toBeTruthy();
                 expect(sunday.ward_staffings.F.no_staffing).toBeFalsy();
                 expect(monday.ward_staffings.A.no_staffing).toBeFalsy();
                 expect(monday.ward_staffings.F.no_staffing).toBeTruthy();
+            });
+            it("should plan wards for certain weekdays", function() {
+                var saturday = new models.Day({date: new Date(2015, 7, 1)});
+                var sunday = new models.Day({date: new Date(2015, 7, 2)});
+                var monday = new models.Day({date: new Date(2015, 7, 3)});
+                expect(saturday.ward_staffings.V.no_staffing).toBeFalsy();
+                expect(sunday.ward_staffings.V.no_staffing).toBeTruthy();
+                expect(monday.ward_staffings.V.no_staffing).toBeTruthy();
+            });
+            it("should account for different days", function() {
+                var no = new models.Day({date: new Date(2015, 7, 8)});
+                var yes = new models.Day({date: new Date(2015, 7, 9)});
+                expect(no.ward_staffings.V.no_staffing).toBeTruthy();
+                expect(yes.ward_staffings.V.no_staffing).toBeFalsy();
+            });
+        });
+        describe("needs_staffing", function() {
+            // explicitly tests models.needs_staffing
+            it("should respect free days", function() {
+                var sunday = new models.Day({date: new Date(2015, 7, 2)});
+                var monday = new models.Day({date: new Date(2015, 7, 3)});
+                var A = new models.Ward({
+                    name: 'Ward A', shortname: 'A', min: 1, max: 2 });
+                var F = new models.Ward({
+                    name: 'Free days', shortname: 'F', min: 0, max: 10, 
+                    freedays: true });
+                expect(models.needs_staffing(A, sunday)).toBeFalsy();
+                expect(models.needs_staffing(F, sunday)).toBeTruthy();
+                expect(models.needs_staffing(A, monday)).toBeTruthy();
+                expect(models.needs_staffing(F, monday)).toBeFalsy();
+            });
+            it("should plan wards for certain weekdays", function() {
+                var V = new models.Ward({
+                    name: 'Visite', shortname: 'V', min: 0, max: 10,
+                    weekdays: '16' });
+                var saturday = new models.Day({date: new Date(2015, 7, 1)});
+                var sunday = new models.Day({date: new Date(2015, 7, 2)});
+                var monday = new models.Day({date: new Date(2015, 7, 3)});
+                var tuesday = new models.Day({date: new Date(2015, 7, 4)});
+                expect(models.needs_staffing(V, saturday)).toBeTruthy();
+                expect(models.needs_staffing(V, sunday)).toBeFalsy();
+                expect(models.needs_staffing(V, monday)).toBeTruthy();
+                expect(models.needs_staffing(V, tuesday)).toBeFalsy();
+            });
+            it("should account for different days", function() {
+                var V = new models.Ward({
+                    name: 'Visite', shortname: 'V', min: 0, max: 10,
+                    weekdays: '1' });
+                var saturday = new models.Day({date: new Date(2015, 7, 1)});
+                var sunday = new models.Day({date: new Date(2015, 7, 2)});
+                V.set_different_day('20150801', '-');
+                V.set_different_day('20150802', '+');
+                expect(models.needs_staffing(V, saturday)).toBeFalsy();
+                expect(models.needs_staffing(V, sunday)).toBeTruthy();
             });
         });
         describe("interaction with previous planning", function() {

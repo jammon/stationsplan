@@ -6,7 +6,8 @@ from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
 from .models import (Person, Ward, ChangeLogging, Planning, Department,
-                     Company, Employee, StatusEntry, Holiday, Region)
+                     Company, Employee, StatusEntry, Holiday, Region,
+                     DifferentDay)
 from .forms import WardForm
 
 
@@ -55,6 +56,9 @@ class RestrictFields(object):
             db_field, request, **kwargs)
 
 
+#
+# Filters
+#
 class PersonWardListFilter(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
@@ -103,6 +107,9 @@ class DepartmentsListFilter(admin.SimpleListFilter):
         return qs
 
 
+#
+# Admins
+#
 class PersonAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
     # filter_horizontal = ('departments', 'functions',)
     list_filter = (DepartmentsListFilter, )
@@ -121,6 +128,11 @@ class PersonAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
         ('position', 'anonymous'), )
 
 
+class DifferentDayInline(admin.TabularInline):
+    model = DifferentDay
+    extra = 1
+
+
 class WardAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
     form = WardForm
     fieldsets = (
@@ -128,6 +140,7 @@ class WardAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
             (('name', 'shortname', 'position'),
              ('max', 'min', 'approved'),
              ('nightshift', 'everyday', 'freedays', 'on_leave',),
+             ('weekdays', ),
              ('ward_type', 'weight',),
              'departments',
              'staff',
@@ -140,6 +153,9 @@ class WardAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
     ordering = ('position', 'name',)
     list_display = ('name', 'shortname', 'position')
     list_editable = ('position',)
+    inlines = [
+        DifferentDayInline,
+    ]
 
 
 class DepartmentAdmin(CompanyRestrictedMixin, admin.ModelAdmin):

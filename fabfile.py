@@ -7,7 +7,18 @@ code_dir = '~/priv/stationsplan'
 
 
 def test(verbosity='1'):
-    local("python ./manage.py test sp_app --settings=stationsplan.settings.dev -v %s" % verbosity)
+    local("python ./manage.py test sp_app "
+          "--settings=stationsplan.settings.dev -v %s" % verbosity)
+
+
+def makemigrations():
+    local("python ./manage.py makemigrations sp_app "
+          "--settings=stationsplan.settings.dev")
+
+
+def migrate_local():
+    local("python ./manage.py migrate sp_app "
+          "--settings=stationsplan.settings.dev")
 
 
 def serve():

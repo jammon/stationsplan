@@ -20,7 +20,7 @@ class TestPerson(PopulatedTestCase):
                           'start_date': [2015, 0, 1],
                           'end_date': [2015, 11, 31],
                           'functions': [],
-                          'position': 1,
+                          'position': '01',
                           'anonymous': False, })
 
     def test_persons_leave_terminates_planning(self):
@@ -62,9 +62,10 @@ class TestWard(PopulatedTestCase):
                           'nightshift': False,
                           'everyday': False,
                           'freedays': False,
+                          'weekdays': '',
                           'on_leave': False,
                           'company_id': self.company.id,
-                          'position': 2,
+                          'position': '02',
                           'after_this': '',
                           'ward_type': '',
                           'weight': 0})

@@ -33,12 +33,12 @@ function setupCsrfProtection() {
 }
 
 
-function initialize_site(persons, wards, plannings, year, month,
-                         start_of_data, can_change, holidays, 
+function initialize_site(persons, wards, different_days, plannings,
+                         year, month, start_of_data, can_change, holidays, 
                          last_change_pk, last_change_time) {
     setupCsrfProtection();
     models.user_can_change(can_change);
-    models.initialize_wards(wards);
+    models.initialize_wards(wards, different_days);
     models.persons.reset(persons);
     models.set_plannings(plannings); 
     utils.set_holidays(holidays);
