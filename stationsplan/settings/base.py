@@ -23,7 +23,6 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'debug_toolbar',
     'sp_app',
 )
 
@@ -123,5 +122,3 @@ def read_secret(secret_file_name, content_description,
     error_message = ("Please create a file named '%s' with %s!"
                      % (secret_file_name, content_description))
     raise Exception(error_message)
-
-# DEBUG_TOOLBAR_PATCH_SETTINGS = False

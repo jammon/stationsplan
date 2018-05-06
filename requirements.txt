@@ -1,8 +1,2 @@
-coverage
-Django
-django-compressor
-django-debug-panel
-django-debug-toolbar
-pytz
-sqlparse
-fabric3
+pytz==2017.3
+Django==2.0
