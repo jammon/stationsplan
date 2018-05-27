@@ -29,14 +29,14 @@ except KeyError:
 
 db_config = configparser.ConfigParser()
 with open(DB_CONFIG_FILE) as db_conf_file:
-    config.read_file(db_conf_file)
+    db_config.read_file(db_conf_file)
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'statplan',
-        'USER': config['client']['user'],
-        'PASSWORD': config['client']['password'],
+        'USER': db_config['client']['user'],
+        'PASSWORD': db_config['client']['password'],
         'TEST': {
             'NAME': 'statplan_test',
         },
