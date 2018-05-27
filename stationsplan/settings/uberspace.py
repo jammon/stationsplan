@@ -6,7 +6,9 @@ DEBUG = False
 
 ALLOWED_HOSTS = [
     '.stationsplan.de',
-    'statplan.uberspace.de',
+    'stplan2.uberspace.de',
+    'localhost',
+    '127.0.0.1',
 ]
 STATIC_ROOT = os.path.expanduser('~/stationsplan/static/')
 STATICFILES_STORAGE = \
