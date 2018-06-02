@@ -6,11 +6,11 @@ DEBUG = False
 
 ALLOWED_HOSTS = [
     '.stationsplan.de',
-    'stplan2.uberspace.de',
+    'stplan2.uber.space',
     'localhost',
     '127.0.0.1',
 ]
-STATIC_ROOT = os.path.expanduser('~/stationsplan/static/')
+STATIC_ROOT = os.path.expanduser('~/html/static/')
 STATICFILES_STORAGE = \
     'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
@@ -36,7 +36,7 @@ with open(DB_CONFIG_FILE) as db_conf_file:
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'statplan',
+        'NAME': config['client']['user'], 
         'USER': config['client']['user'],
         'PASSWORD': config['client']['password'],
         'TEST': {
