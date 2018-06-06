@@ -36,7 +36,7 @@ with open(DB_CONFIG_FILE) as db_conf_file:
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'statplan',
+        'NAME': db_config['client']['user'],
         'USER': db_config['client']['user'],
         'PASSWORD': db_config['client']['password'],
         'TEST': {
