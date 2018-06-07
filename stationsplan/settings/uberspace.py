@@ -1,29 +1,52 @@
 from .base import *  # noqa: F403
 import os
+from ConfigParser import ConfigParser
 
 DEBUG = False
 
 ALLOWED_HOSTS = [
     '.stationsplan.de',
-    'django.jammon.lynx.uberspace.de',
+    'stplan2.uberspace.de',
+    'localhost',
+    '127.0.0.1',
 ]
-STATIC_ROOT = '/home/jammon/projects/stationsplan/static/'
+STATIC_ROOT = os.path.expanduser('~/html/static/')
 STATICFILES_STORAGE = \
     'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
-SECRETS_DIR = os.path.join(PARENT_OF_BASE_DIR, "secrets")
-# Database
-# https://docs.djangoproject.com/en/1.8/ref/settings/#databases
+CONFIG_FILE = os.path.expanduser('~/.statplan.cnf')
+DB_CONFIG_FILE = os.path.expanduser('~/.my.cnf')
+
+config = ConfigParser.ConfigParser()
+config.read(CONFIG_FILE)
+try:
+    SECRET_KEY = config.get('django', 'key')
+except (KeyError, ConfigParser.NoSectionError):
+    if not config.has_section('django'):
+        config.add_section('django')
+    SECRET_KEY = random_string(50)
+    config.set('django', 'key', SECRET_KEY)
+    with open(CONFIG_FILE, 'w') as configfile:
+        config.write(configfile)
+
+
+db_config = ConfigParser.ConfigParser()
+with open(DB_CONFIG_FILE) as db_conf_file:
+    db_config.readfp(db_conf_file)
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'stationsplan.db',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': db_config.get('client', 'user'),
+        'USER': db_config.get('client', 'user'),
+        'PASSWORD': db_config.get('client', 'password'),
+        'TEST': {
+            'NAME': 'statplan_test',
+        },
+        'CONN_MAX_AGE': 5,
     }
 }
 
-SECRET_KEY = read_secret(os.path.join(SECRETS_DIR, "django-key.txt"),
-                         "random characters to generate your secret key",
-                         generate_secret=True)
 
 DJANGO_TEMPLATES['OPTIONS']['loaders'] = [
     ('django.template.loaders.cached.Loader', [
@@ -39,7 +62,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': '/home/jammon/projects/logs/stationsplan.log',
+            'filename': os.path.expanduser('~/logs/stationsplan.log'),
         },
     },
     'loggers': {
