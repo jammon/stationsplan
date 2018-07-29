@@ -188,6 +188,8 @@ var PeriodView = Backbone.View.extend({
         "click .approvable th": "approve",
         "click .daycol": "show_day",
         "click .show-duties": "build_duties_table",
+        // this is implemented only in OnCallView
+        "click .quickinput th": "quickinput",
     },
     base_class: 'period_plan',
     slug: 'plan',
@@ -389,9 +391,18 @@ var OnCallView = MonthView.extend({
     base_class: 'on_call_plan',
     slug: 'dienste',
     template: _.template($('#on-call-table').html()),
+    // Was sollte das? TODO
+    // initialize: function(models, options) {
+    //     // PeriodDays.prototype.initialize.call(this, [], {
+    //     //     first_day: new Date(year, month, 1),
+    //     //     nr_days: utils.get_month_length(year, month),
+    //     //     needs_calltallies: true,
+    //     // });
+    // },
     build_table: function() {
         var table = this.$(".plan");
-        var titlerow = $('<tr/>', {'class': 'titlerow'}).append($('<th/>'));
+        var titlerow = $('<tr/>', {'class': 'titlerow quickinput'})
+                .append($('<th/>'));
         models.on_call.each(function(task) {
             titlerow.append($('<th/>', {text: task.get('name')}));
         });
@@ -417,6 +428,10 @@ var OnCallView = MonthView.extend({
                 table.append(view.render().$el);
             });
         }
+    },
+    quickinput: function(event) {
+        var ward = models.wards.where({name: event.currentTarget.textContent});
+        changeviews.quickinput.show(ward, this.start);
     },
 });
 var CallTallyView = Backbone.View.extend({
@@ -570,13 +585,13 @@ var NavView = Backbone.View.extend({
         "click #nav-dienste": "dienste",
         "click #nav-tag": "tag",
     },
-    stationen: function(event) {
+    stationen: function() {
         this.navigate_to("plan/" + current_day_id);
     },
-    dienste: function(event) {
+    dienste: function() {
         this.navigate_to("dienste/" + current_day_id);
     },
-    tag: function(event) {
+    tag: function() {
         this.navigate_to("tag/" + utils.get_day_id(new Date()));
     },
     navigate_to: function(path) {
@@ -616,7 +631,7 @@ if (models.user_can_change )
     error_view = new ErrorView({ el: $("#errors")});
 
 return {
-    StaffingView: StaffingView,
+    StaffingView: StaffingView,  // exported for testing
     // DutiesView: DutiesView,
     // PeriodView: PeriodView,
     // router: router,

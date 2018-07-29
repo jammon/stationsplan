@@ -4,6 +4,7 @@ var changeviews = (function($, _, Backbone) {
 var MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 var ChangeStaffView = Backbone.View.extend({
+    // Change the Staffing of one Ward on one Day
     events: {
         "click #continued": "continued",
         "click #time_period": "time_period",
@@ -112,6 +113,7 @@ var changestaffview = new ChangeStaffView({
 });
 
 var ChangePersonView = Backbone.View.extend({
+    // Subview for ChangeStaffView for changing the planning of one Person
     tagName: 'tr',
     events: {
         "click .changestaff": "toggle_planned",
@@ -150,6 +152,7 @@ var ChangePersonView = Backbone.View.extend({
 });
 
 var ApproveStaffingsView = Backbone.View.extend({
+    // Approve the plannings of one or more Wards until a given day
     events: {
         "click #approve-to-date": "approve",
         "click #approve-all": "approve_all",
@@ -206,6 +209,7 @@ var approvestaffingview = new ApproveStaffingsView({
 });
 
 var SelectStaffingView = Backbone.View.extend({
+    // Subview for ApproveStaffingsView for selecting a Ward
     tagName: 'tr',
     initialize: function(options) {
         this.ward = options.ward;
@@ -225,8 +229,155 @@ var SelectStaffingView = Backbone.View.extend({
     },
 });
 
+
+var QuickInputView = Backbone.View.extend({
+    // Quickly key in the the Staffing of On-Call-Shifts
+    // - Shows possible Persons
+    // - Greys out unavailable Persons
+    // - Shows current date and 3(?) days before and after
+    // - Click on a Person 
+    //   - deletes the previous planning
+    //   - plans the Person
+    //   - advances the current date
+    events: {
+        "click .next_day": "next_day",
+        "click .prev_day": "prev_day",
+    },
+    TOTAL_NR_DAYS: 5,
+    NR_DAYS_BEFORE: 2,
+    render: function() {
+        this.days_table = this.$el.$("#quickdays");
+        this.persons_div = this.$el.$("#quickpersons");
+        var day, staffing,  dv, i;
+        this.day_views = {};
+        this.days = {};
+        this.displayed_dayviews = [];
+        for (i = -this.NR_DAYS_BEFORE; 
+             i < this.TOTAL_NR_DAYS - this.NR_DAYS_BEFORE; i++) {
+            day = this.get_day(i);
+            dv = this.get_day_view(day);
+            this.days_table.append(dv.render().$el);
+            if (i === 0) dv.$el.addClass("current");
+            this.displayed_dayviews.push(dv);
+        }
+        this.offset_current = 0;
+
+        var ward = this.ward;
+        this.person_views = _.map(
+            models.persons.filter(function(person) {
+                return person.can_work_on(ward);
+            }),
+            function(person) {
+                var pv = new QuickPersonView({ model: person });
+                this.persons_div.append(
+                    pv.render().new_day(day, ward).$el);
+                return pv;
+            }, this);
+        return this;
+    },
+    show: function(ward, start_date) {
+        // `ward` is the ward
+        // `start_date` is the first day edited
+        this.new_staffings = {};
+        this.ward = ward;
+        this.start_date = start_date;
+        this.render().$el.modal('show');
+    },
+    next_day: function() { this.change_day(true); },
+    prev_day: function() { this.change_day(false); },
+    change_day: function(forward) {
+        var dvs = this.displayed_dayviews;
+        var dv;
+        dvs[this.NR_DAYS_BEFORE].blur();
+        if (forward) {
+            dvs.shift().remove();
+            this.offset_current += 1;
+            dv = this.get_day_view(this.offset_current - this.NR_DAYS_BEFORE +
+                this.TOTAL_NR_DAYS);
+            this.days_table.append(dv.render().$el);
+            dvs.push(dv);
+        } else {
+            dvs.pop().remove();
+            this.offset_current -= 1;
+            dv = this.get_day_view(this.offset_current - this.NR_DAYS_BEFORE);
+            this.days_table.prepend(dv.render().$el);
+            dvs.unshift(dv);
+        }
+        dvs[this.NR_DAYS_BEFORE].focus();
+        this.displayed_dayviews = dvs;
+        var day = this.get_day(this.offset_current);
+    },
+    update_personviews: function(day, ward) {
+        _.each(this.person_views, function(pv) {
+            pv.new_day(day, ward);
+        });
+    },
+    get_day: function(offset) {
+        if (!this.days[offset])
+            this.days[offset] = models.days.get_day(
+                this.start_date.getYear(),
+                this.start_date.getMonth(),
+                this.start_date.getDate() + offset);
+        return this.days[offset]
+    },
+    get_day_view: function(offset) {
+        var day = this.get_day(offset);
+        var dv = this.day_views[day.id];
+        if (dv) return dv;
+        var staffing = day.ward_staffings[this.ward.id];
+        dv = new QuickInputDayView({ 
+            date: day.get('date'),
+            name: this.new_staffings[day.id] || 
+                staffing.first().get('name') || '',
+        });
+        this.day_views[day.id] = dv;
+        return dv;
+    },
+});
+var quickinputview = new QuickInputView({
+    el: $("#quickinput"),
+});
+var QuickInputDayView = Backbone.View.extend({
+    tagName: 'tr',
+    template: _.template(
+        "<td><%= day %>.<%= month %>.</td><td><%= name %></td>"),
+    initialize: function(options) {
+        // options should contain { date: …, name: … }
+        this.day = options.date.getDate();
+        this.month = options.date.getMonth() + 1;
+        this.name = options.name;
+    },
+    render: function() {
+        this.$el.empty().append(this.template(this));
+        return this;
+    },
+    set_name: function(name) {
+        this.name = name;
+        this.render();
+    },
+    focus: function() { this.$el.addClass("current"); },
+    blur: function() { this.$el.removeClass("current"); },
+});
+var QuickPersonView = new Backbone.View.extend({
+    tagName: 'button',
+    className: 'quickperson',
+    render: function() {
+        this.$el.text(this.model.get("name"))
+            .val(this.model.get("id"));
+        return this;
+    },
+    new_day: function(day, ward) {
+        if (day.ward_staffings[ward.id].can_be_planned(this.model))
+            this.$el.removeClass("unavailable");
+        else
+            this.$el.addClass("unavailable");
+        return this;
+    },
+});
+
 return {
     staff: changestaffview,
     approve: approvestaffingview,
+    quickinput: quickinputview,
 };
 })($, _, Backbone);

@@ -120,6 +120,37 @@
     </div>
   </div>
 </div>
+
+<!-- Modal dialog for quickly inputing Staffings for Call-Shifts -->
+<div class="modal" id="quickinput" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Dienstplanung eingeben</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-sm-6" id="quickpersons"> </div>
+          <div class="col-sm-6">
+            <table id="quickdays"></table>
+            <div>
+              <button type="button" class="btn btn-primary btn-block next_day">
+                &uarr;</button>
+              <button type="button" class="btn btn-primary btn-block prev_day">
+                &darr;</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+        <button type="button" class="btn btn-primary">Speichern</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Check device size -->
 <div class='device-check visible-xs' data-device='xs'></div>
 <div class='device-check visible-sm' data-device='sm'></div>

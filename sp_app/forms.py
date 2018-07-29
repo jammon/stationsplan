@@ -6,7 +6,7 @@ from .models import Person
 
 
 class WardForm(forms.ModelForm):
-
+    """ used in sp_app.admin.WardAdmin """
     staff = forms.ModelMultipleChoiceField(
         Person.objects.all(),
         # Add this line to use the double list widget
