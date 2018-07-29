@@ -485,6 +485,42 @@ DayView.get_period_id = function(options) {
     return options.start_id;
 };
 
+var FunctionsView = Backbone.View.extend({
+    // Edit the functions of every person
+    className: 'contentview functions_view',
+    el: '#functions_view',
+    render: function() {
+        var titleline = $('<tr />');
+        var table = this.$('table');
+        titleline.append($('<th />'));
+        models.wards.each(function(ward) {
+            titleline.append($('<th />', {
+                text: ward.get('shortname'),
+            }));
+        });
+        table.empty().append(titleline);
+        models.persons.each(function(person) {
+            var p_line = $('<tr />');
+            p_line.append($('<th />', {
+                text: person.get('name'),
+            }));
+            models.wards.each(function(ward) {
+                var td = $('<td />');
+                td.append($('<input />', {
+                    type: "checkbox",
+                    name: person.shortname,
+                    value: ward.shortname,
+                    checked: person.can_work_on(ward),
+                }));
+                p_line.append(td);
+            });
+            table.append(p_line);
+        });
+        return this;
+    },
+});
+var functionsview = new FunctionsView();
+
 var current_day_id;   // the currently displayed day
 function update_current_day(day_id) {
     current_day_id = day_id || utils.get_day_id(new Date());
@@ -527,6 +563,7 @@ var Router = Backbone.Router.extend({
         "plan(/:period_id)(/)": "plan",    // #plan
         "dienste(/:period_id)(/)": "dienste",    // #dienste
         "tag(/:day_id)(/)": "tag",    // #Aufgaben an einem Tag
+        "funktionen": "funktionen"
     },
     plan: function(period_id) {
         this.call_view(month_views, "#nav-stationen", period_id);
@@ -544,11 +581,17 @@ var Router = Backbone.Router.extend({
         // nav_view.$(".active").removeClass("active");
         // nav_view.$("#nav-tag").addClass("active");
     },
+    funktionen: function() {
+        this.make_current(functionsview.render(), "#nav-funktionen");
+    },
     call_view: function(views_coll, nav_id, period_id) {
         var view = views_coll.get_view({
             start_id: period_id || utils.get_day_id(new Date()),
             size: current_size,
         });
+        this.make_current(view, nav_id);
+    },
+    make_current: function(view, nav_id) {
         // find current view and hide it
         if (this.current_view)
             this.current_view.$el.removeClass('current');
