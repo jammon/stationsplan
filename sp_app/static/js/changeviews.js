@@ -234,7 +234,7 @@ var QuickInputView = Backbone.View.extend({
     // Quickly key in the the Staffing of On-Call-Shifts
     // - Shows possible Persons
     // - Greys out unavailable Persons
-    // - Shows current date and 3(?) days before and after
+    // - Shows current date and 2(?) days before and after
     // - Click on a Person 
     //   - deletes the previous planning
     //   - plans the Person
@@ -242,136 +242,187 @@ var QuickInputView = Backbone.View.extend({
     events: {
         "click .next_day": "next_day",
         "click .prev_day": "prev_day",
+        "plan_person": "plan_person",
     },
-    TOTAL_NR_DAYS: 5,
-    NR_DAYS_BEFORE: 2,
     render: function() {
-        this.days_table = this.$el.$("#quickdays");
-        this.persons_div = this.$el.$("#quickpersons");
-        var day, staffing,  dv, i;
-        this.day_views = {};
-        this.days = {};
-        this.displayed_dayviews = [];
-        for (i = -this.NR_DAYS_BEFORE; 
-             i < this.TOTAL_NR_DAYS - this.NR_DAYS_BEFORE; i++) {
-            day = this.get_day(i);
-            dv = this.get_day_view(day);
-            this.days_table.append(dv.render().$el);
-            if (i === 0) dv.$el.addClass("current");
-            this.displayed_dayviews.push(dv);
-        }
-        this.offset_current = 0;
-
         var ward = this.ward;
-        this.person_views = _.map(
-            models.persons.filter(function(person) {
-                return person.can_work_on(ward);
-            }),
-            function(person) {
-                var pv = new QuickPersonView({ model: person });
-                this.persons_div.append(
-                    pv.render().new_day(day, ward).$el);
-                return pv;
-            }, this);
+        this.$(".ward_name").text(ward.get('name'));
+
+        this.day_views = new QuickDateViews({
+            ward: this.ward,
+            start_date: this.start_date,
+        });
+        this.day_views.render();
+
+        var persons_div = this.$("#quickpersons");
+        var day = models.days.get_day(this.start_date);
+        if (!this.person_views) {
+            this.person_views = [];
+            _.each(
+                models.persons.filter(function(person) {
+                    return person.can_work_on(ward);
+                }),
+                function(person) {
+                    var pv = new QuickPersonView({ 
+                        model: person,
+                        day: day,
+                        ward: ward,
+                    });
+                    persons_div.append(
+                        pv.render().$el);
+                    this.person_views.push(pv);
+                    this.listenTo(pv, 'plan_person', this.plan_person);
+                }, this);
+        } else {
+            _.each(this.person_views, function(pv) {
+                pv.new_day(day);
+            });
+        }
+
         return this;
     },
     show: function(ward, start_date) {
         // `ward` is the ward
         // `start_date` is the first day edited
-        this.new_staffings = {};
         this.ward = ward;
+        delete this.person_views;
         this.start_date = start_date;
         this.render().$el.modal('show');
     },
-    next_day: function() { this.change_day(true); },
-    prev_day: function() { this.change_day(false); },
-    change_day: function(forward) {
-        var dvs = this.displayed_dayviews;
-        var dv;
-        dvs[this.NR_DAYS_BEFORE].blur();
-        if (forward) {
-            dvs.shift().remove();
-            this.offset_current += 1;
-            dv = this.get_day_view(this.offset_current - this.NR_DAYS_BEFORE +
-                this.TOTAL_NR_DAYS);
-            this.days_table.append(dv.render().$el);
-            dvs.push(dv);
-        } else {
-            dvs.pop().remove();
-            this.offset_current -= 1;
-            dv = this.get_day_view(this.offset_current - this.NR_DAYS_BEFORE);
-            this.days_table.prepend(dv.render().$el);
-            dvs.unshift(dv);
-        }
-        dvs[this.NR_DAYS_BEFORE].focus();
-        this.displayed_dayviews = dvs;
-        var day = this.get_day(this.offset_current);
-    },
-    update_personviews: function(day, ward) {
+    new_date: function(date) {
+        var day = models.days.get_day(date);
+        this.start_date = date;
         _.each(this.person_views, function(pv) {
-            pv.new_day(day, ward);
+            pv.new_day(day);
         });
     },
-    get_day: function(offset) {
-        if (!this.days[offset])
-            this.days[offset] = models.days.get_day(
-                this.start_date.getYear(),
-                this.start_date.getMonth(),
-                this.start_date.getDate() + offset);
-        return this.days[offset]
+    next_day: function() { 
+        this.change_day(true);
+        this.day_views.next_day();
     },
-    get_day_view: function(offset) {
-        var day = this.get_day(offset);
-        var dv = this.day_views[day.id];
-        if (dv) return dv;
-        var staffing = day.ward_staffings[this.ward.id];
-        dv = new QuickInputDayView({ 
-            date: day.get('date'),
-            name: this.new_staffings[day.id] || 
-                staffing.first().get('name') || '',
+    prev_day: function() { 
+        this.change_day(false);
+        this.day_views.prev_day();
+    },
+    change_day: function(forward) {
+        var ONEDAY = 24 * 60 * 60 * 1000;
+        this.new_date(new Date(
+            this.start_date.getTime() + (forward ? ONEDAY : -ONEDAY)));
+    },
+    plan_person: function(person, staffing) {
+        var persons = [{ id: person.id, action: 'add' }];
+        if (staffing.length>0)
+            persons.push({ id: staffing.at(0).id, action: 'remove' });
+        models.save_change({
+            day: staffing.day.id,
+            ward: staffing.ward,
+            continued: false,
+            persons: persons,
         });
-        this.day_views[day.id] = dv;
-        return dv;
+        this.next_day();
     },
 });
 var quickinputview = new QuickInputView({
     el: $("#quickinput"),
 });
-var QuickInputDayView = Backbone.View.extend({
+var QuickPersonView = Backbone.View.extend({
+    tagName: 'button',
+    className: 'quickperson btn btn-default btn-block',
+    events: {click: 'plan_person'},
+    initialize: function(options) {
+        this.ward = options.ward;
+        this.new_day(options.day);
+    },
+    new_day: function(day) {
+        this.staffing = day.ward_staffings[this.ward.id];
+        return this;
+    },
+    is_unavailable: function() {
+        return !this.staffing.can_be_planned(this.model);
+    },
+    render: function() {
+        this.$el.empty().text(this.model.get("name"))
+            .val(this.model.get("id"));
+        if (this.is_unavailable())
+            this.$el.attr("disabled", "disabled");
+        return this;
+    },
+    plan_person: function() {
+        this.trigger('plan_person', this.model, this.staffing);
+    },
+});
+var QuickDateView = Backbone.View.extend({
     tagName: 'tr',
     template: _.template(
-        "<td><%= day %>.<%= month %>.</td><td><%= name %></td>"),
-    initialize: function(options) {
-        // options should contain { date: …, name: … }
-        this.day = options.date.getDate();
-        this.month = options.date.getMonth() + 1;
-        this.name = options.name;
+        "<td><%= day_name %>, <%= day %>.<%= month %>.</td><td><%= name %></td>"),
+    initialize: function() {
+        this.listenTo(this.collection.displayed, "update", this.render);
+    },
+    set_active: function(active) {
+        this.active = active;
     },
     render: function() {
-        this.$el.empty().append(this.template(this));
+        var date = this.collection.day.get('date');
+        var name = '';
+        if (this.collection.length>0)
+            name = this.collection.first().get('name');
+        this.$el.html(this.template({
+            day_name: utils.day_names[date.getDay()],
+            day: date.getDate(),
+            month: date.getMonth()+1,
+            name: name,
+        }));
+        if (this.active)
+            this.$el.addClass('active');
+        else
+            this.$el.removeClass('active');
         return this;
     },
-    set_name: function(name) {
-        this.name = name;
+});
+var QuickDateViews = Backbone.View.extend({
+    el: "#quickdays",
+    NR_DAYS_BEFORE: 2,
+    NR_DAYS_AFTER: 2,
+    initialize: function(options) {
+        this.start_date = options.start_date;
+        this.ward = options.ward;
+        this.views = {};
+        this.offset = 0;
+    },
+    get_view: function(offset) {
+        if (this.views[offset])
+            return this.views[offset];
+        var day = models.days.get_day(this.start_date, offset);
+        var staffing = day.ward_staffings[this.ward.id];
+        var view = new QuickDateView({collection: staffing});
+        view.render();
+        this.views[offset] = view;
+        return view;
+    },
+    render: function() {
+        this.$el.empty();
+        var day, dv, i, staffing;
+        for (i = this.offset - this.NR_DAYS_BEFORE; 
+             i <= this.offset + this.NR_DAYS_AFTER; i++) {
+            dv = this.get_view(i);
+            dv.set_active(i === this.offset);
+            this.$el.append(dv.render().el);
+        }
+        return this;
+    },
+    next_day: function() {
+        // this.get_view(this.offset - this.NR_DAYS_BEFORE).$el.remove();
+        this.offset += 1;
+        // this.get_view(this.offset + this.NR_DAYS_AFTER).$el
+        //     .appendTo(this.$el);
         this.render();
     },
-    focus: function() { this.$el.addClass("current"); },
-    blur: function() { this.$el.removeClass("current"); },
-});
-var QuickPersonView = new Backbone.View.extend({
-    tagName: 'button',
-    className: 'quickperson',
-    render: function() {
-        this.$el.text(this.model.get("name"))
-            .val(this.model.get("id"));
-        return this;
-    },
-    new_day: function(day, ward) {
-        if (day.ward_staffings[ward.id].can_be_planned(this.model))
-            this.$el.removeClass("unavailable");
-        else
-            this.$el.addClass("unavailable");
-        return this;
+    prev_day: function() {
+        // this.get_view(this.offset + this.NR_DAYS_AFTER).$el.remove();
+        this.offset -= 1;
+        // this.get_view(this.offset - this.NR_DAYS_BEFORE).$el
+        //     .prependTo(this.$el);
+        this.render();
     },
 });
 
@@ -379,5 +430,8 @@ return {
     staff: changestaffview,
     approve: approvestaffingview,
     quickinput: quickinputview,
+    test: {
+        QuickInputView: QuickInputView,
+    },
 };
 })($, _, Backbone);

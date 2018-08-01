@@ -455,18 +455,27 @@ var current_plannings = [];
 
 var Days = Backbone.Collection.extend({
     model: Day,
-    get_day: function(year, month, day) {
+    get_day: function(year_or_date, month_or_offset, day) {
         // month is 0..11 like in javascript
         var result, day_id;
+        var ONEDAY = 24 * 60 * 60 * 1000;
+        var date;
+        if (day === void 0) {
+            if (month_or_offset)
+                date = new Date(year_or_date.getTime() + ONEDAY * month_or_offset);
+            else
+                date = year_or_date;
+        } else date = new Date(year_or_date, month_or_offset, day);
+        if (date.getFullYear()<2015) return;
         if (this.length===0) {
             // Start day chain
-            result = this.add({ date: new Date(year, month, day) });
+            result = this.add({ date: date });
             // Start application of the plannings
             current_plannings = _.filter(plannings, result.apply_planning, result);
             return result;
         }
         // Retrieve result, if it exists already
-        day_id = utils.get_day_id(year, month, day);
+        day_id = utils.get_day_id(date);
         result = this.get(day_id);
         if (result) 
             return result;

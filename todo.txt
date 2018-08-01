@@ -37,3 +37,4 @@
 (A) Schnelleingabe von Diensthabenden
 (C) In Admin der Wards nur aktuelle und zukünftige Kollegen auswählbar machen
 (B) Funktionsmöglichkeiten der Personen übersichtlich eingeben
+Wie erkennt man, ob eine Funktion on_call ist

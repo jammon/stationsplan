@@ -490,6 +490,10 @@ describe("models", function() {
                 var day = models.days.get_day(2016, 2, 24);
                 expect(day).toBeDefined();
                 expect(models.days.get('20160324')).toEqual(day);
+
+                expect(models.days.get_day(new Date(2016, 2, 24))).toEqual(day);
+                expect(models.days.get_day(new Date(2016, 2, 21), 3)).toEqual(day);
+
                 var next_day = day.make_next_day();
                 expect(models.days.get('20160325')).toEqual(next_day);
                 var future_day = models.days.get_day(2016, 2, 27);

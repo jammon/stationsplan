@@ -189,7 +189,7 @@ var PeriodView = Backbone.View.extend({
         "click .daycol": "show_day",
         "click .show-duties": "build_duties_table",
         // this is implemented only in OnCallView
-        "click .quickinput th": "quickinput",
+        "click .quickinput": "quickinput",
     },
     base_class: 'period_plan',
     slug: 'plan',
@@ -391,20 +391,16 @@ var OnCallView = MonthView.extend({
     base_class: 'on_call_plan',
     slug: 'dienste',
     template: _.template($('#on-call-table').html()),
-    // Was sollte das? TODO
-    // initialize: function(models, options) {
-    //     // PeriodDays.prototype.initialize.call(this, [], {
-    //     //     first_day: new Date(year, month, 1),
-    //     //     nr_days: utils.get_month_length(year, month),
-    //     //     needs_calltallies: true,
-    //     // });
-    // },
     build_table: function() {
         var table = this.$(".plan");
-        var titlerow = $('<tr/>', {'class': 'titlerow quickinput'})
+        var titlerow = $('<tr/>', {'class': 'titlerow'})
                 .append($('<th/>'));
         models.on_call.each(function(task) {
-            titlerow.append($('<th/>', {text: task.get('name')}));
+            var th = $(
+                '<th/>', {text: task.get('name')});
+            if (task.get('max')==1)
+                th.addClass('quickinput');
+            titlerow.append(th);
         });
         table.append(titlerow);
 
@@ -430,8 +426,8 @@ var OnCallView = MonthView.extend({
         }
     },
     quickinput: function(event) {
-        var ward = models.wards.where({name: event.currentTarget.textContent});
-        changeviews.quickinput.show(ward, this.start);
+        var ward = models.wards.where({name: event.currentTarget.textContent})[0];
+        changeviews.quickinput.show(ward, this.period_days.first_day);
     },
 });
 var CallTallyView = Backbone.View.extend({
@@ -616,7 +612,7 @@ var ErrorView = Backbone.View.extend({
         this.$el.append();
     },
     addError: function(error) {
-        var msg = this.template$({
+        var msg = this.template({
             status: error.get('textStatus'),
             error: error.get('errorThrown'),
             response: error.get('responseText'),
