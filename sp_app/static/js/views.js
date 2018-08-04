@@ -540,7 +540,6 @@ var FunctionsView = Backbone.View.extend({
             });
             table.append(p_line);
         });
-        this.$el.addClass('contentview functions_view');
         return this;
     },
 });
@@ -600,6 +599,10 @@ var Router = Backbone.Router.extend({
         this.call_view(day_views, "#nav-tag", period_id);
     },
     funktionen: function() {
+        if (!models.user_can_change()) {
+            this.navigate("plan/", {trigger: true});
+            return;
+        }
         if (!functionsview)
             functionsview = (new FunctionsView()).render();
         this.make_current(functionsview, "#nav-funktionen");
