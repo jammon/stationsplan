@@ -65,6 +65,11 @@ td.free-day{
 .calltallies th, .calltallies td {
     padding: 0 1ex;
 }
+.functions_view {
+    .titleline th {
+        width: 40px;
+    }
+}
 
 // Bearbeitungsdialoge
 #changestafftable {

@@ -697,6 +697,41 @@ function save_approval(ward_ids, date) {
     });
 }
 
+function save_function(person, ward, added) {
+    var json_data = JSON.stringify({
+        person: person.id,
+        ward: ward.id,
+        add: added,
+    });
+    var url = '/change_function';
+    function error (jqXHR, textStatus, errorThrown) {
+        models.errors.add({
+            textStatus: textStatus, 
+            errorThrown: errorThrown,
+            responseText: jqXHR.responseText,
+            url: url,
+            data: json_data,
+        });
+    }
+    function success (data, textStatus, jqXHR) {
+        if (data.status=='ok') {
+            persons.get(data.person).set('functions', data.functions);
+        } else {
+            error(jqXHR, textStatus, data.reason);
+        }
+    }
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: json_data,
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+        error: error,
+        success: success,
+    });
+}
+
+
 function set_plannings(p) {
     plannings = p;
 }
@@ -788,6 +823,7 @@ return {
     save_change: save_change,
     process_changes: process_changes,
     save_approval: save_approval,
+    save_function: save_function,
     set_plannings: set_plannings,
     apply_change: apply_change,
     errors: errors,

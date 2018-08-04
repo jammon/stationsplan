@@ -14,15 +14,13 @@ class TestViewsAnonymously(TestCase):
 
     def test_view_redirects_to_login(self):
         c = Client()
-        for url in ('changes', 'plan'):
+        for url in ('changes', 'plan', 'funktionen'):
             response = c.get(reverse(url))
             self.assertEqual(response.status_code, 302, msg=url)
-            response = c.get(reverse(url), follow=True)
-            self.assertRedirects(response, '/login?next=/' + url,
-                                 msg_prefix=url)
-            response = c.post(reverse(url), follow=True)
-            self.assertRedirects(response, '/login?next=/' + url,
-                                 msg_prefix=url)
+            for f in (c.get, c.post):
+                response = f(reverse(url), follow=True)
+                self.assertRedirects(response, '/login?next=/' + url,
+                                     msg_prefix=url)
 
     def test_status_post(self):
         c = Client()

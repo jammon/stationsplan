@@ -283,7 +283,7 @@ var PeriodView = Backbone.View.extend({
     },
     render: function() {
         this.$el.html(get_table_from_template(this.get_template_options()));
-        this.build_table(this.$(".plan"));
+        this.build_table();
 
         // display only the currently loaded days
         if (this.is_first_loaded_view()) {
@@ -496,6 +496,66 @@ DayView.get_period_id = function(options) {
     return options.start_id;
 };
 
+var PersonFunctionView = Backbone.View.extend({
+    events: {
+        "click": "save_function",
+    },
+    tagName: 'td',
+    initialize: function(options) {
+        this.person = options.person;
+        this.ward = options.ward;
+        this.listenTo(this.person, "change:functions", this.render);
+    },
+    render: function() { 
+        var attr = {type: 'checkbox'};
+        if (this.person.can_work_on(this.ward))
+            attr.checked = 'checked';
+        var input = $('<input>').attr(attr);
+        this.$el.empty().append(input);
+        this.input = input[0];
+        return this; 
+    },
+    save_function: function(event) {
+        if (this.person.can_work_on(this.ward) === this.input.checked)
+            return;
+        models.save_function(this.person, this.ward, this.input.checked);
+        this.$('input').attr('disabled', 'disabled');
+    },
+});
+var FunctionsView = Backbone.View.extend({
+    // Edit the functions of every person
+    el: "#functions_view",
+    render: function() {
+        var table = this.$('table');
+        var titleline = $('<tr />', {'class': 'titleline'});
+        titleline.append($('<td />'));
+        models.wards.each(function(ward) {
+            titleline.append($('<th />', {
+                text: ward.get('shortname'),
+            }));
+        });
+        table.append(titleline);
+        models.persons.each(function(person) {
+            var p_line = $('<tr />');
+            p_line.append($('<th />', {
+                text: person.get('name'),
+            }));
+            models.wards.each(function(ward) {
+                var view = new PersonFunctionView({
+                    person: person,
+                    ward: ward,
+                });
+                view.render();
+                var el = view.$el;
+                p_line.append(el);
+            });
+            table.append(p_line);
+        });
+        return this;
+    },
+});
+var functionsview;
+
 var current_day_id;   // the currently displayed day
 function update_current_day(day_id) {
     current_day_id = day_id || utils.get_day_id(new Date());
@@ -538,6 +598,7 @@ var Router = Backbone.Router.extend({
         "plan(/:period_id)(/)": "plan",    // #plan
         "dienste(/:period_id)(/)": "dienste",    // #dienste
         "tag(/:day_id)(/)": "tag",    // #Aufgaben an einem Tag
+        "funktionen(/)": "funktionen"
     },
     plan: function(period_id) {
         this.call_view(month_views, "#nav-stationen", period_id);
@@ -547,19 +608,24 @@ var Router = Backbone.Router.extend({
     },
     tag: function(period_id) {
         this.call_view(day_views, "#nav-tag", period_id);
-        // var view = day_views.get_view({day_id: day_id});
-        // // find current view and hide it
-        // $('.contentview.current').removeClass('current');
-        // // show new view
-        // view.$el.addClass('current');
-        // nav_view.$(".active").removeClass("active");
-        // nav_view.$("#nav-tag").addClass("active");
+    },
+    funktionen: function() {
+        if (!models.user_can_change()) {
+            this.navigate("plan/", {trigger: true});
+            return;
+        }
+        if (!functionsview)
+            functionsview = (new FunctionsView()).render();
+        this.make_current(functionsview, "#nav-funktionen");
     },
     call_view: function(views_coll, nav_id, period_id) {
         var view = views_coll.get_view({
             start_id: period_id || utils.get_day_id(new Date()),
             size: current_size,
         });
+        this.make_current(view, nav_id);
+    },
+    make_current: function(view, nav_id) {
         // find current view and hide it
         if (this.current_view)
             this.current_view.$el.removeClass('current');
@@ -580,6 +646,7 @@ var NavView = Backbone.View.extend({
         "click #nav-stationen": "stationen",
         "click #nav-dienste": "dienste",
         "click #nav-tag": "tag",
+        "click #nav-funktionen": "funktionen",
     },
     stationen: function() {
         this.navigate_to("plan/" + current_day_id);
@@ -589,6 +656,9 @@ var NavView = Backbone.View.extend({
     },
     tag: function() {
         this.navigate_to("tag/" + utils.get_day_id(new Date()));
+    },
+    funktionen: function(event) {
+        router.navigate("funktionen/", {trigger: true});
     },
     navigate_to: function(path) {
         update_current_day();
