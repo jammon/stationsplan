@@ -7,7 +7,7 @@ from django.http import JsonResponse
 import json
 
 from .utils import apply_changes, set_approved, get_last_changes
-from .models import StatusEntry
+from .models import StatusEntry, Person, Ward
 
 
 @login_required
@@ -71,3 +71,42 @@ def change_approved(request):
 @login_required
 def updates(request, last_change=0):
     return get_last_changes(request.session['company_id'], last_change)
+
+
+@login_required
+@require_POST
+@permission_required('sp_app.add_person', raise_exception=True)
+def change_function(request):
+    """Change the ability of a person to perform a function.
+
+    The data come in this form:
+    {'person': person.shortname,
+     'ward': ward.shortname,
+     'add': True|False,
+    }
+    """
+    data = json.loads(request.body)
+    company_id = request.session['company_id']
+    res = {'status': 'error'}
+    try:
+        person = Person.objects.get(
+            shortname=data['person'], company_id=company_id)
+        ward = Ward.objects.get(shortname=data['ward'], company_id=company_id)
+        if data['add']:
+            person.functions.add(ward)
+        else:
+            person.functions.remove(ward)
+        res = {
+            'status': 'ok',
+            'person': person.shortname,
+            'functions': [f.shortname for f in person.functions.all()],
+        }
+    except Person.DoesNotExist as e:
+        res['reason'] = 'Person {} not found'.format(data['person'])
+    except Person.MultipleObjectsReturned as e:
+        res['reason'] = 'Person {} found multiple times'.format(data['person'])
+    except Ward.DoesNotExist as e:
+        res['reason'] = 'Ward {} not found'.format(data['ward'])
+    except Ward.MultipleObjectsReturned as e:
+        res['reason'] = 'Ward {} found multiple times'.format(data['ward'])
+    return JsonResponse(res, safe=False)

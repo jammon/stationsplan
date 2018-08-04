@@ -27,6 +27,7 @@
         <li id="nav-stationen"><a>Stationen</a></li>
         <li id="nav-dienste"><a>Dienste</a></li>
         <li id="nav-tag"><a>Heute</a></li>
+        <li id="nav-funktionen"><a>Funktionen</a></li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
             <span class="glyphicon glyphicon-cog"></span>
@@ -47,7 +48,12 @@
 
 {% block content %}
   <div role="main" id="main-content">
-    <div class="plans"></div>
+    <div class="plans">
+      <div id="functions_view">
+        <h2>Funktionen</h2>
+        <table></table>
+      </div>
+    </div>
   </div>
 {% if user.is_staff %}
   <div> <table id="errors" class="table hidden">
