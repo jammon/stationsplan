@@ -10,8 +10,6 @@
 (B) Alle Dienste einer Person des aktuellen Monats sollen angezeigt werden
 (C) Urlaube in der Planungsansicht der Dienste anzeigen
 (C) Visitendienst in einer Zeile
-(B) Termine für Visitendienste nur an bestimmten Wochentagen
-(B) Termine für Visitendienste auch an terminlich festgelegten Tagen, ggf. auch nicht
 (B) Kurzname von Personen ändern können
 (C) Die Dienste jeder Person als Kalender zur Verfügung stellen, mit Updates +Public
 (B) Doppelclick auf voriger oder nächster Monat soll nur einmal wirken
@@ -25,7 +23,6 @@
 (C) Assets komprimieren
 (C) Flags für Betatester
 (C) Administration für User bauen +Public
-(B) Wird ward.continued noch verwendet?
 (B) Dienste, die man für den 31.12. einträgt, werden fortgesetzt
 (D) Do https://codeburst.io/the-front-end-checklist-8b2292fdda44
 (B) Änderungsgeschichte einer Planung abrufbar machen
@@ -34,8 +31,6 @@
 (A) Aktualisierung soll auch die Freigabe von Planungen vermitteln
 (A) Serverversion aktualisieren
 (C) meta description in base.html verbessern
-(A) Schnelleingabe von Diensthabenden
 (C) In Admin der Wards nur aktuelle und zukünftige Kollegen auswählbar machen
-(B) Funktionsmöglichkeiten der Personen übersichtlich eingeben
 Wie erkennt man, ob eine Funktion on_call ist
 Debug Toolbar soll unabhängig vom Internet funktionieren

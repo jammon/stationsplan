@@ -44,15 +44,6 @@ function initialize_site(persons, wards, different_days, plannings,
     utils.set_holidays(holidays);
     models.start_day_chain(start_of_data.getFullYear(),
         start_of_data.getMonth());
-    // if (can_change) {
-    //     // .plan should work as background for staff to throw out
-    //     $(".plans").droppable({
-    //         drop: function(event, ui) {
-    //             console.log("remove_person_from_helper in initialize_site");
-    //             views.remove_person_from_helper(ui.helper);
-    //         }
-    //     });
-    // }
     models.schedule_next_update({
         pk: last_change_pk, 
         time: last_change_time

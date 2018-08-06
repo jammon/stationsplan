@@ -74,3 +74,8 @@ x 2017-12-02 Automatische Aktualisierung soll auch das Datum aktualisieren
 x 2017-12-07 Upgrade to Django2.0
 x 2018-04-28 Versionsnummer einfügen und abfragbar machen
 x 2018-04-30 Wie wird die Reihung der Dienst gemacht - Zahlen größer 10?
+x 2018-08-06 Schnelleingabe von Diensthabenden
+x 2018-08-06 Funktionsmöglichkeiten der Personen übersichtlich eingeben
+x 2018-08-06 Termine für Visitendienste nur an bestimmten Wochentagen
+x 2018-08-06 Termine für Visitendienste auch an terminlich festgelegten Tagen, ggf. auch nicht
+x 2018-08-06 Wird ward.continued noch verwendet?

@@ -411,17 +411,11 @@ var QuickDateViews = Backbone.View.extend({
         return this;
     },
     next_day: function() {
-        // this.get_view(this.offset - this.NR_DAYS_BEFORE).$el.remove();
         this.offset += 1;
-        // this.get_view(this.offset + this.NR_DAYS_AFTER).$el
-        //     .appendTo(this.$el);
         this.render();
     },
     prev_day: function() {
-        // this.get_view(this.offset + this.NR_DAYS_AFTER).$el.remove();
         this.offset -= 1;
-        // this.get_view(this.offset - this.NR_DAYS_BEFORE).$el
-        //     .prependTo(this.$el);
         this.render();
     },
 });

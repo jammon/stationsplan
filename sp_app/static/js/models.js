@@ -72,6 +72,7 @@ var persons = new Persons();
 //     - nightshift = if truthy, staffing can not be planned on the next day.
 //     - everyday = if truthy, is to be planned also on free days.
 //     - freedays = if truthy, is to be planned only on free days.
+//     - weekdays = Days of the week when this is to be planned.
 //     - continued = if truthy, then todays staffing will usually be continued tomorrow
 //     - on_leave = if truthy, then persons planned for this are on leave
 //     - approved = The date until which the plan is approved or false
@@ -132,7 +133,6 @@ function initialize_wards (wards_init, different_days) {
     on_call_types = _.uniq(on_call.map(function(ward) {
         return ward.get_ward_type();
     }));
-    models.on_call_types = on_call_types;
     _.each(different_days, function(dd) {
         wards.get(dd[0]).set_different_day(dd[1], dd[2]);
     });
@@ -254,6 +254,7 @@ var Staffing = Backbone.Collection.extend({
     },
 });
 function needs_staffing(ward, day) {
+    // True if persons can be planned for this day
     if (ward.get('everyday') || ward.get('on_leave')) {
         return true;
     }
