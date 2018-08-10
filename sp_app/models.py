@@ -143,11 +143,9 @@ class Ward(models.Model):
         return res
 
     def clean(self):
-        # A ward should not have the shortname id
         if self.shortname == 'id':
             raise ValidationError({
                 'shortname': _('Wards cannot have the shortname "id".')})
-        # A ward should not have the shortname id
         if ',' in self.shortname:
             raise ValidationError({
                 'shortname': _('Wards cannot have a comma in their shortname.')
