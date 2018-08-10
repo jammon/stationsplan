@@ -73,7 +73,7 @@ var persons = new Persons();
 //     - everyday = if truthy, is to be planned also on free days.
 //     - freedays = if truthy, is to be planned only on free days.
 //     - weekdays = Days of the week when this is to be planned.
-//     - continued = if truthy, then todays staffing will usually be continued tomorrow
+//     - callshift = if truthy, then this function is treated as call shift
 //     - on_leave = if truthy, then persons planned for this are on leave
 //     - approved = The date until which the plan is approved or false
 //     - after_this = an Array of wards, that can be planned after this one
@@ -104,35 +104,34 @@ var Ward = Backbone.Model.extend({
 });
 
 
-var Wards = Backbone.Collection.extend({
+var WARD_COLLECTION = {
     model: Ward,
     comparator: function(ward) {
         return (ward.get('on_leave') ? '1' : '0') +  // on_leave last
-            (ward.get('continued') ? '0' : '1') +  // normal wards first
+            (ward.get('callshift') ? '1' : '0') +  // normal wards first
             ward.get('position') +
             ward.get('name');
     },
-});
+};
+var Wards = Backbone.Collection.extend(WARD_COLLECTION);
 var wards = new Wards();
-var nightshifts = new Backbone.Collection();
-var on_leave = new Backbone.Collection();
-var special_duties = new Backbone.Collection();
-var on_call = new Backbone.Collection();
+var nightshifts = new Backbone.Collection(WARD_COLLECTION);
+var on_leave = new Backbone.Collection(WARD_COLLECTION);
+var on_call = new Backbone.Collection(WARD_COLLECTION);
 var on_call_types = [];  // List of the ward_types of on-call shifts
 
 function initialize_wards (wards_init, different_days) {
     wards.reset(wards_init);
     nightshifts.reset(wards.where({'nightshift': true}));
     on_leave.reset(wards.where({'on_leave': true}));
-    special_duties.reset(wards.filter(function(ward) {
-        return ward.get('after_this') !== void 0;
-    }));
     on_call.reset(wards.filter(function(ward) {
-        return !ward.get('continued');
+        return ward.get('callshift');
     }));
-    on_call_types = _.uniq(on_call.map(function(ward) {
-        return ward.get_ward_type();
-    }));
+    on_call.each(function(ward) {
+        var ward_type = ward.get_ward_type();
+        if (!on_call_types.includes(ward_type))
+            on_call_types.push(ward_type);
+    });
     _.each(different_days, function(dd) {
         wards.get(dd[0]).set_different_day(dd[1], dd[2]);
     });
@@ -793,7 +792,6 @@ function reset_data() {
     wards.reset(null);
     nightshifts.reset(null);
     on_leave.reset(null);
-    special_duties.reset(null);
     days.reset();
 }
 
@@ -807,7 +805,6 @@ return {
     wards: wards,
     nightshifts: nightshifts,
     on_leave: on_leave,
-    special_duties: special_duties,
     on_call: on_call,
     on_call_types: on_call_types,
     initialize_wards: initialize_wards,

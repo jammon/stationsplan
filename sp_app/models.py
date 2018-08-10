@@ -73,9 +73,14 @@ class Ward(models.Model):
         default=False,
         help_text=_('if True, is to be planned only on free days.'))
     weekdays = models.CharField(
-        _('weekdays'), max_length=7, default='',
+        _('weekdays'), max_length=7, default='', blank=True,
         help_text=_('Days of the week when this is to be planned. '
                     '(String of digits, 0  for sunday.)'))
+    callshift = models.BooleanField(
+        _('callshift'),
+        default=False,
+        help_text=_('if True, '
+                    'then this function is treated as call shift'))
     on_leave = models.BooleanField(
         _('on_leave'),
         default=False,
@@ -125,6 +130,7 @@ class Ward(models.Model):
                'everyday': self.everyday,
                'freedays': self.freedays,
                'weekdays': self.weekdays,
+               'callshift': self.callshift,
                'on_leave': self.on_leave,
                'company_id': self.company_id,
                'position': '%02d' % self.position,

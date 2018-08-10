@@ -12,7 +12,7 @@ var StaffingDisplayView = Backbone.View.extend({
             this.changeable = options.changeable;
             this.drag_n_droppable = options.drag_n_droppable;
         }
-        if (!this.collection.ward.get('continued') && !this.collection.no_staffing)
+        if (this.collection.ward.get('callshift') && !this.collection.no_staffing)
             this.$el.addClass('on-call');
         this.listenTo(this.collection.day, "change:day_id", this.update_today);
     },
@@ -249,8 +249,7 @@ var PeriodView = Backbone.View.extend({
         // first the wards
         models.wards.each(function(ward) {
             var row_class = 'wardrow';
-            if (ward.get('nightshift')) row_class = 'nightshiftrow';
-            else if (!ward.get('continued')) row_class = 'non-continued-row';
+            if (ward.get('callshift')) row_class = 'callshiftrow';
             else if (ward.get('on_leave')) row_class = 'leaverow';
             that.table.append(that.construct_row(
                 ward, 

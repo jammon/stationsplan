@@ -90,6 +90,21 @@ describe("models", function() {
             expect(ward.is_approved(new Date(2017, 3, 1))).toEqual(true);
             expect(ward.is_approved(new Date(2017, 3, 2))).toEqual(false);
         });
+        it("has a ward_type", function() {
+            expect(models.wards.get('V').get_ward_type()).toEqual('Visite');
+            expect(models.wards.get('N').get_ward_type()).toEqual('Callshifts');
+            expect(models.wards.get('O').get_ward_type()).toEqual('Callshifts');
+        });
+        describe("on_call", function() {
+            it("should contain the call shifts", function() {
+                expect(models.on_call.pluck('shortname')).toEqual(['N', 'O', 'V']);
+            });
+        });
+        describe("on_call_types", function() {
+            it("should contain the types of the call shifts", function() {
+                expect(models.on_call_types).toEqual(['Callshifts', 'Visite']);
+            });
+        });
     });
     describe("Staffing", function() {
         describe("calculate who can be planned", function() {
@@ -132,7 +147,7 @@ describe("models", function() {
                 today.ward_staffings.L.add(person_a);
                 expect(staffing_l.can_be_planned(person_a)).toBeTruthy();
             });
-            it("'anonymous' persons can be planned afer a call shift", function() {
+            it("'anonymous' persons can be planned after a call shift", function() {
                 var anon = models.persons.get('Other');
                 expect(staffing_a.can_be_planned(anon)).toBeTruthy();
                 yesterday.ward_staffings.N.add(anon);
@@ -326,9 +341,6 @@ describe("models", function() {
                 today.ward_staffings.A.remove(person_a, {continued: true});
                 expect(today.ward_staffings.A.length).toBe(0);
                 expect(tomorrow.ward_staffings.A.length).toBe(0);
-                // same thing for non-continued ward
-                yesterday.ward_staffings.O.add(person_a, {continued: true});
-                expect(today.ward_staffings.O.length).toBe(1);
             });
             describe("combination of previous changes", function() {
                 var template = _.template(
@@ -459,16 +471,12 @@ describe("models", function() {
                 var tdat;
                 today.ward_staffings.A.add(models.persons.get('A'),
                     {continued: true});
-                // same thing for non-continued ward
-                today.ward_staffings.O.add(models.persons.get('A'),
-                    {continued: true});
                 tdat = new models.Day({
                     date: new Date(2015, 7, 6),
                     yesterday: tomorrow,
                 });
                 expect(tdat.ward_staffings.A.length).toBe(1);
                 expect(tdat.ward_staffings.A.models[0].id).toBe('A');
-                expect(tdat.ward_staffings.O.length).toBe(1);
                 expect(tdat.ward_staffings.B.length).toBe(0);
             });
             it("should calculate a persons duties if a day is added", function() {
@@ -610,18 +618,18 @@ describe("models", function() {
             day2.ward_staffings.O.add(person_b);
             day3.ward_staffings.O.add(person_a);
             var ward_o = models.wards.get('O').get_ward_type();
-            var ward_n = models.wards.get('N').get_ward_type();
+            var ward_v = models.wards.get('V').get_ward_type();
             var tally = month_days.calltallies.get('A');
             expect(tally.get_tally(ward_o)).toBe(2);
-            expect(tally.get_tally(ward_n)).toBe(0);
+            expect(tally.get_tally(ward_v)).toBe(0);
             expect(tally.get('weights')).toBe(6);
             tally = month_days.calltallies.get('B');
             expect(tally.get_tally(ward_o)).toBe(1);
-            expect(tally.get_tally(ward_n)).toBe(0);
+            expect(tally.get_tally(ward_v)).toBe(0);
             expect(tally.get('weights')).toBe(3);
             tally = month_days.calltallies.get('Other');
             expect(tally.get_tally(ward_o)).toBe(0);
-            expect(tally.get_tally(ward_n)).toBe(0);
+            expect(tally.get_tally(ward_v)).toBe(0);
             expect(tally.get('weights')).toBeUndefined();
             models.user_can_change(false);
         });
