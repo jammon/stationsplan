@@ -162,6 +162,10 @@ class DifferentDay(models.Model):
         _('additional'),
         help_text=_('Planning is additional (not cancelled)'))
 
+    class Meta:
+        verbose_name = _('Different Day')
+        verbose_name_plural = _('Different Days')
+
 
 @python_2_unicode_compatible
 class Person(models.Model):

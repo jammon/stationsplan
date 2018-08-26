@@ -79,3 +79,4 @@ x 2018-08-06 Funktionsmöglichkeiten der Personen übersichtlich eingeben
 x 2018-08-06 Termine für Visitendienste nur an bestimmten Wochentagen
 x 2018-08-06 Termine für Visitendienste auch an terminlich festgelegten Tagen, ggf. auch nicht
 x 2018-08-06 Wird ward.continued noch verwendet?
+x 2018-08-17 Wie erkennt man, ob eine Funktion on_call ist

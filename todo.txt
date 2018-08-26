@@ -5,7 +5,7 @@
 (D) Kommentare oder Nachrichten unabhängig von Änderungen, die beim nächsten Aufruf angezeigt werden
 (D) Dienstwünsche eingeben, für jede Person müsste ein User erstellt werden (z.B. 'amm-bot')
 (C) wann ist collection.no_staffing und wann ist collection===undefined?
-(C) Nach uberspace portieren
+(A) Nach uberspace portieren
 (C) Wenn eine Buchung nicht möglich ist, muss die Seite neu dargestellt werden +FIX
 (B) Alle Dienste einer Person des aktuellen Monats sollen angezeigt werden
 (C) Urlaube in der Planungsansicht der Dienste anzeigen
@@ -29,8 +29,9 @@
 (B) Testen mit Firefox headless oder PhantomJS
 (A) Aktion Aktualisieren ins Menu
 (A) Aktualisierung soll auch die Freigabe von Planungen vermitteln
-(A) Serverversion aktualisieren
+
 (C) meta description in base.html verbessern
 (C) In Admin der Wards nur aktuelle und zukünftige Kollegen auswählbar machen
-Wie erkennt man, ob eine Funktion on_call ist
-Debug Toolbar soll unabhängig vom Internet funktionieren
+(B) Debug Toolbar soll unabhängig vom Internet funktionieren
+(B) In config nur die aktuellen Ärzte anzeigen, evtl. mit Umschaltemöglichkeit
+Der Chef soll Planungen sehen aber nicht ändern können

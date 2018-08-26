@@ -5,12 +5,12 @@ from django.db import migrations
 
 
 def get_callshift(apps, schema_editor):
-    # We can't import the Person model directly as it may be a newer
+    # We can't import the Ward model directly as it may be a newer
     # version than this migration expects. We use the historical version.
-    Ward = apps.get_model("yourappname", "Ward")
+    Ward = apps.get_model("sp_app", "Ward")
     for ward in Ward.objects.all():
         ward.callshift = '"continued": false' in ward.json
-        ward.json = json.dumps(ward.toJson())
+        # ward.json = json.dumps(ward.toJson())
         ward.save()
 
 
