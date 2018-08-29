@@ -26,7 +26,7 @@
 (B) Dienste, die man für den 31.12. einträgt, werden fortgesetzt
 (D) Do https://codeburst.io/the-front-end-checklist-8b2292fdda44
 (B) Änderungsgeschichte einer Planung abrufbar machen
-(B) Testen mit Firefox headless oder PhantomJS
+(C) Testen mit Firefox headless oder PhantomJS
 (A) Aktion Aktualisieren ins Menu
 (A) Aktualisierung soll auch die Freigabe von Planungen vermitteln
 
@@ -34,4 +34,4 @@
 (C) In Admin der Wards nur aktuelle und zukünftige Kollegen auswählbar machen
 (B) Debug Toolbar soll unabhängig vom Internet funktionieren
 (B) In config nur die aktuellen Ärzte anzeigen, evtl. mit Umschaltemöglichkeit
-Der Chef soll Planungen sehen aber nicht ändern können
+(B) Der Chef soll Planungen sehen aber nicht ändern können
