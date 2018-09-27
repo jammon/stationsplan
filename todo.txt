@@ -27,7 +27,7 @@
 (D) Do https://codeburst.io/the-front-end-checklist-8b2292fdda44
 (B) Änderungsgeschichte einer Planung abrufbar machen
 (C) Testen mit Firefox headless oder PhantomJS
-(A) Aktion Aktualisieren ins Menu
+(B) Aktion Aktualisieren ins Menu
 (A) Aktualisierung soll auch die Freigabe von Planungen vermitteln
 
 (C) meta description in base.html verbessern
@@ -35,3 +35,4 @@
 (B) Debug Toolbar soll unabhängig vom Internet funktionieren
 (B) In config nur die aktuellen Ärzte anzeigen, evtl. mit Umschaltemöglichkeit
 (B) Der Chef soll Planungen sehen aber nicht ändern können
+(A) Markieren, wenn jemand verplanbar aber nicht verplant ist
