@@ -1,6 +1,6 @@
 from .base import *  # noqa: F403
 import os
-from ConfigParser import ConfigParser
+from ConfigParser import ConfigParser, NoSectionError
 
 DEBUG = False
 
@@ -17,11 +17,11 @@ STATICFILES_STORAGE = \
 CONFIG_FILE = os.path.expanduser('~/.statplan.cnf')
 DB_CONFIG_FILE = os.path.expanduser('~/.my.cnf')
 
-config = ConfigParser.ConfigParser()
+config = ConfigParser()
 config.read(CONFIG_FILE)
 try:
     SECRET_KEY = config.get('django', 'key')
-except (KeyError, ConfigParser.NoSectionError):
+except (KeyError, NoSectionError):
     if not config.has_section('django'):
         config.add_section('django')
     SECRET_KEY = random_string(50)
@@ -30,7 +30,7 @@ except (KeyError, ConfigParser.NoSectionError):
         config.write(configfile)
 
 
-db_config = ConfigParser.ConfigParser()
+db_config = ConfigParser()
 with open(DB_CONFIG_FILE) as db_conf_file:
     db_config.readfp(db_conf_file)
 
