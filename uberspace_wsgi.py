@@ -1,4 +1,4 @@
-""
+"""
 WSGI config for stationsplan project in production.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
@@ -11,9 +11,7 @@ import os
 import site
 import sys
 
-site.addsitedir('/var/www/stationsplan/priv/venv/lib/python2.7/site-packages')
-
-sys.path.insert(0, '/var/www/stationsplan/priv/stationsplan')
+sys.path.insert(0, '/home/stplan2/stationsplan')
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "stationsplan.settings.uberspace")
 

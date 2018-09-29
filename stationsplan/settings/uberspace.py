@@ -1,6 +1,10 @@
 from .base import *  # noqa: F403
 import os
-from ConfigParser import ConfigParser, NoSectionError
+from six import PY3
+if PY3:
+    from configparser import ConfigParser, NoSectionError
+else:
+    from ConfigParser import ConfigParser, NoSectionError
 
 DEBUG = False
 
