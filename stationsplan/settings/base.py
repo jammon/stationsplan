@@ -98,7 +98,8 @@ LOGIN_REDIRECT_URL = "/plan"
 
 
 def random_string(length=50):
-    return ''.join([choice(string.letters) for i in range(50)])
+    return ''.join([choice(string.ascii_letters + string.digits) 
+                    for i in range(50)])
 
 
 def read_secret(secret_file_name, content_description,
@@ -110,10 +111,7 @@ def read_secret(secret_file_name, content_description,
         pass
     if generate_secret:
         try:
-            from random import choice
-            import string
-            secret = ''.join([choice(string.ascii_letters + string.digits)
-                              for i in range(50)])
+            secret = random_string()
             with open(secret_file_name, 'w') as f:
                 f.write(secret)
             return secret

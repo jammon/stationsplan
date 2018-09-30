@@ -2,9 +2,11 @@
 
 Uberspace vorbereiten: https://lab.uberspace.de/en/guide_django.html
 
-Logs in 
-~/uwsgi/err.log 
-~/logs/supervisord.log
+`pip3.6 install -r stationsplan/requirements.txt --user`
+`touch stationsplan/uberspace.wsgi`
+`supervisorctl restart uwsgi`
+
+Logs in ~/uwsgi/err.log, ~/logs/supervisord.log
 
 - auf Uberspace `ubermigration` auschecken
 - requirements installieren

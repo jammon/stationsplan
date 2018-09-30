@@ -183,6 +183,5 @@ class TestAssertContainsDict(PopulatedTestCase):
 
     def test_assertContainsDict(self):
         self.assertContainsDict({'a': 1, 'b': 2}, {'a': 1})
-        msg = "{ u'a': 2, ...} != { u'a': 1, ...}"
-        with self.assertRaisesRegexp(AssertionError, msg):
+        with self.assertRaises(AssertionError):
             self.assertContainsDict({'a': 2}, {'a': 1})
