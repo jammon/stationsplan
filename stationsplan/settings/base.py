@@ -98,7 +98,7 @@ LOGIN_REDIRECT_URL = "/plan"
 
 
 def random_string(length=50):
-    return ''.join([choice(string.printable) for i in range(50)])
+    return ''.join([choice(string.letters) for i in range(50)])
 
 
 def read_secret(secret_file_name, content_description,
