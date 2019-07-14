@@ -33,14 +33,15 @@ db_config = configparser.ConfigParser()
 with open(DB_CONFIG_FILE) as db_conf_file:
     db_config.read_file(db_conf_file)
 
+db_username = db_config['client']['user']
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': db_config['client']['user'],
-        'USER': db_config['client']['user'],
+        'NAME': db_username,
+        'USER': db_username,
         'PASSWORD': db_config['client']['password'],
         'TEST': {
-            'NAME': 'statplan_test',
+            'NAME': db_username + '_test',
         },
         'CONN_MAX_AGE': 5,
     }

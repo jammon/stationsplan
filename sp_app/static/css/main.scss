@@ -1,13 +1,12 @@
-.container {
-    position: relative;
-    background: #fff;
-}
+// Organization of code
+// - Base (core styles for entire site)
+// - Components (ui concepts & design patterns)
+// - Modules (business logic)
 
-// Anmeldung
-.account-details {
-    float: right;
-    margin: 10px 5px 0 0;
-}
+// .container {  // Warum brauche ich das?
+//     position: relative;
+//     background: #fff;
+// }
 
 // Dienst- / Stationsplan
 .plan {
@@ -19,7 +18,8 @@
         color: #999;
     }
 }
-.period_plan, .on_call_plan {
+.period_plan,
+.on_call_plan {
     td, th {
         border: 1px solid #CCC;
     }
@@ -62,8 +62,10 @@
 td.free-day{
     font-weight: bold;
 }
-.calltallies th, .calltallies td {
-    padding: 0 1ex;
+.calltallies {
+    th, td {
+        padding: 0 1ex;
+    }
 }
 .functions_view {
     .titleline th {
@@ -92,20 +94,20 @@ td.free-day{
     list-style-type: none;
     padding-left: 0;
 }
-.glyphicon .spinning {
-    animation: spin 1s infinite linear;
-    -moz-animation: spin2 1s infinite linear;
-    -webkit-animation: spin2 1s infinite linear;
-}
-@keyframes spin {
-    from { transform: scale(1) rotate(0deg); }
-    to { transform: scale(1) rotate(360deg); }
-}
-@-moz-keyframes spin2 {
-    from { -moz-transform: rotate(0deg); }
-    to { -moz-transform: rotate(360deg); }
-}
-@-webkit-keyframes spin2 {
-    from { -webkit-transform: rotate(0deg); }
-    to { -webkit-transform: rotate(360deg); }
-}
+// .glyphicon .spinning {
+//     animation: spin 1s infinite linear;
+//     -moz-animation: spin2 1s infinite linear;
+//     -webkit-animation: spin2 1s infinite linear;
+// }
+// @keyframes spin {
+//     from { transform: scale(1) rotate(0deg); }
+//     to { transform: scale(1) rotate(360deg); }
+// }
+// @-moz-keyframes spin2 {
+//     from { -moz-transform: rotate(0deg); }
+//     to { -moz-transform: rotate(360deg); }
+// }
+// @-webkit-keyframes spin2 {
+//     from { -webkit-transform: rotate(0deg); }
+//     to { -webkit-transform: rotate(360deg); }
+// }

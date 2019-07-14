@@ -80,3 +80,5 @@ x 2018-08-06 Termine für Visitendienste nur an bestimmten Wochentagen
 x 2018-08-06 Termine für Visitendienste auch an terminlich festgelegten Tagen, ggf. auch nicht
 x 2018-08-06 Wird ward.continued noch verwendet?
 x 2018-08-17 Wie erkennt man, ob eine Funktion on_call ist
+x 2019-07-14 Planungen mit ausgeschiedenen MA beenden
+x 2019-07-14 Wenn die Endezeit für einen Mitarbeiter gesetzt wird, sollen nur die nicht-endenden Planungen der Zukunft beendet werden

@@ -218,9 +218,6 @@ class Person(models.Model):
         if self.end_date < FAR_FUTURE:
             Planning.objects.filter(
                 person=self,
-                start__gte=self.end_date).delete()
-            Planning.objects.filter(
-                person=self,
                 end__gt=self.end_date).update(end=self.end_date)
 
 

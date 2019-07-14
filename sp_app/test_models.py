@@ -27,13 +27,23 @@ class TestPerson(PopulatedTestCase):
         person = Person.objects.create(name="Heinz Müller", shortname="Mül",
                                        start_date=date(2015, 1, 1),
                                        company=self.company)
-        planning = Planning.objects.create(
+        Planning.objects.create(
             person=person, ward=self.ward_a,
             start=date(2016, 6, 1), end=FAR_FUTURE)
+        Planning.objects.create(
+            person=person, ward=self.ward_b,
+            start=date(2016, 8, 1), end=date(2016, 8, 5))
         person.end_date = date(2016, 6, 30)
         person.save()
-        planning = Planning.objects.get(person=person)
+        planning = Planning.objects.get(person=person, ward=self.ward_a)
         self.assertEqual(planning.end, date(2016, 6, 30))
+        try:
+            planning = Planning.objects.get(person=person, ward=self.ward_b)
+        except Planning.DoesNotExist:
+            self.fail("Plannings of leaving persons that end (like vacations) "
+                      "should not be deleted in case they would change their minds")
+
+
 
     def test_planning_does_not_exceed_persons_time(self):
         person = Person.objects.create(name="Heinz Müller", shortname="Mül",

@@ -1,10 +1,11 @@
 __pycache__
 *.pyc
+*.bak
 venv*/*
 cover/*
 .coverage
 db.sqlite3
 dev_static/*
 debug.log
+backup/*
 .sass-cache/*
-todo.txt.bak

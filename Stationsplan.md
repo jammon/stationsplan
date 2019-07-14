@@ -56,10 +56,6 @@ Können alles was Department Leader können auf Company-Ebene.
     + When yesterdays ward with reduced availability for the next day is added: the person is unavailable for all non-fitting staffings of the day.
     + When on_leave or yesterdays nightshift or yesterdays ward with reduced availability for the next day is removed: the availability of the person must be calculated newly.
 
-## Stationsplan nach uberspace umziehen
-- Auf jammon@lynx.uberspace.de ist die Django-App in ~/projects/stationsplan.
-- Als Domain wird zuerst stationsplan.jammon.lynx.uberspace.de (=DJANGOURL) benutzt.
-- die Admin-Static-Filea liegen in /var/www/virtual/$USER/$DJANGOURL/static/
 
 ## Planungen mit Anfang und Ende eingeben
 Wenn man eine Planung eingibt, die ein oder mehrere bisherige Planungen überdeckt, sollen diese verlinkt und als inaktiv markiert werden. So ist ein Undo möglich.
