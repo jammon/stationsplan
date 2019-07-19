@@ -40,3 +40,5 @@
 (B) Button Aufgaben ausblenden
 (C) Bedeutung der Berechtigungen von Benutzern klarer machen
 (B) Wenn man am letzten Tag eines Monat jemanden einträgt, erscheint er im Client ab dem Tag durchgehend geplant
+StatusEntry muss ein datetime haben
+StatusEntry konzeptionell von Logging abgrenzen

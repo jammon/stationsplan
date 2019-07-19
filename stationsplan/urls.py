@@ -37,13 +37,13 @@ urlpatterns = [
     url(r'^password_change', sp_views.password_change, name='password_change'),
     url(r'^admin/', admin.site.urls),
     url(r'^config/', config_site.urls),
-    url(r'^login$', auth_views.login, name='login'),
-    url('^logout/', auth_views.logout, {'next_page': '/'}, name='logout'),
+    url(r'^login$', auth_views.LoginView.as_view(), name='login'),
+    url('^logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
     url('^', include('django.contrib.auth.urls')),
 ]
 
 if settings.DEBUG:
     import debug_toolbar
     urlpatterns += [
-        url(r'^__debug__/', include(debug_toolbar.urls)),
+        url('__debug__/', include(debug_toolbar.urls)),
     ]
