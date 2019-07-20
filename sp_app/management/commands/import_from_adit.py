@@ -34,10 +34,9 @@ class Command(BaseCommand):
 
         # delete old data
         self.stdout.write("delete old data")
-        for klass in (Company, StatusEntry, Group, User, LogEntry, Holiday, Region):
+        for klass in (Company, StatusEntry, Group, LogEntry, Holiday, Region):
             klass.objects.all().delete()
-        # all other model should be deleted through the magic of on_delete=CASCADE
-        # except StatusEntries
+        User.objects.exclude(username='admin').delete()
 
         # import holidays
         self.stdout.write("import holidays")
@@ -95,6 +94,7 @@ class Command(BaseCommand):
                 nightshift=fields["nightshift"],
                 everyday=fields["everyday"],
                 freedays=fields["freedays"],
+                callshift=not fields["continued"],
                 on_leave=fields["on_leave"],
                 company_id=fields["company"],
                 position=fields["position"],
@@ -107,6 +107,10 @@ class Command(BaseCommand):
                 after_this.append((ward, fields["after_this"]))
         for ward, a_t in after_this:
             ward.after_this.add(*a_t)
+        for ward in Ward.objects.all():
+            if ward.name == "Visite":
+                ward.weekdays = "6"
+            ward.save()  # make ward.json
 
         # import differentdays
         self.stdout.write("import differentdays")
@@ -182,6 +186,9 @@ class Command(BaseCommand):
             if fields["username"] in (
                     "jammon", "harbarth", "Beichl", "jean", "luerweg", "welp"):
                 user.groups.add(editor_group)
+            if fields["username"] == "jammon":
+                user.is_superuser = True
+                user.save()
 
         # import Employees
         self.stdout.write("import Employees")

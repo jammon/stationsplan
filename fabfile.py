@@ -53,29 +53,33 @@ def server_pull(branch='master'):
         run("git pull origin " + branch)
 
 
+def install_requirements():
+    run("pip3.6 install -r stationsplan/requirements.txt --user")
+
+
 def staticfiles():
     with cd(code_dir):
-        run("source ~/priv/venv/bin/activate && ./manage.py "
-            "collectstatic --noinput")
+        run("python3.6 manage.py collectstatic --noinput")
 
 
 def migrate():
     with cd(code_dir):
-        run("source ~/priv/venv/bin/activate && ./manage.py migrate")
+        run("python3.6 manage.py migrate")
 
 
-def copy_htaccess():
-    run('cp ~/priv/stationsplan/htaccess ~/htdocs/.htaccess')
+# def copy_htaccess():
+#     run('cp ~/priv/stationsplan/htaccess ~/htdocs/.htaccess')
 
 
-def restart_server():
-    run("touch ~/htdocs/app.wsgi")
+# def restart_server():
+#     run("touch ~/htdocs/app.wsgi")
 
 
 # call with: `fab deploy:my_branch`
 def deploy(branch='master'):
     server_pull(branch)
-    staticfiles()
+    install_requirements()
     migrate()
-    copy_htaccess()
-    restart_server()
+    staticfiles()
+    # copy_htaccess()
+    # restart_server()
