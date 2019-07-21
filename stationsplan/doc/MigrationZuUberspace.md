@@ -12,10 +12,11 @@ Logs in ~/uwsgi/err.log, ~/logs/supervisord.log
 - Staticfiles sammeln (`collectstatic`)
 
 Dann:
-- Backup von ADIT einlesen: `python3 ./manage.py import_from_adit <fixture>`
-- `weekdays` im Visitendienst setzen
-- in der Django-Shell alle Wards speichern, damit Ward.json wieder richtig ist (for ward in Ward.objects.all(): ward.save())
-- Kontrollieren, ob callshifts korrekt angezeigt werden.
+- Backup bei ADIT machen; `ssh stationsplan priv/backup-stationsplan.sh && ls -l priv/backup/ `
+- hierher kopieren: `scp stationsplan:priv/backup/<...>.json aditbackup.json`
+- nach stplan2 kopieren: `scp aditbackup.json stplan2:aditbackup.json`
+- Backup von ADIT einlesen: `ssh stplan2 python3.6 stationsplan/manage.py import_from_adit aditbackup.json`
+
 
 ## Ungelöst
 - die Admin-Static-Files liegen in (wo?)

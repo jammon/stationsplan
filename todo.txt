@@ -5,7 +5,6 @@
 (D) Kommentare oder Nachrichten unabhängig von Änderungen, die beim nächsten Aufruf angezeigt werden
 (D) Dienstwünsche eingeben, für jede Person müsste ein User erstellt werden (z.B. 'amm-bot')
 (C) wann ist collection.no_staffing und wann ist collection===undefined?
-(A) Nach uberspace portieren
 (C) Wenn eine Buchung nicht möglich ist, muss die Seite neu dargestellt werden +FIX
 (B) Alle Dienste einer Person des aktuellen Monats sollen angezeigt werden
 (C) Urlaube in der Planungsansicht der Dienste anzeigen
@@ -43,3 +42,7 @@
 StatusEntry muss ein datetime haben
 StatusEntry konzeptionell von Logging abgrenzen
 Set MySQL Strict Mode
+Was passiert, wenn man Kurznamen von Stationen ändert
+Was passiert, wenn man Kurznamen von Personen ändert
+Der Kurzname einer Person und eines Wards ist in Planning.json
+(A) Editor soll in Dienste der eigene Abteilung auch geeignete Personen anderer Abteilungen eintragen können

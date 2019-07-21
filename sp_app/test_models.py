@@ -39,6 +39,8 @@ class TestPerson(PopulatedTestCase):
         self.assertEqual(planning.end, date(2016, 6, 30))
         try:
             planning = Planning.objects.get(person=person, ward=self.ward_b)
+            self.assertEqual(planning.start, date(2016, 8, 1))
+            self.assertEqual(planning.end, date(2016, 8, 5))
         except Planning.DoesNotExist:
             self.fail("Plannings of leaving persons that end (like vacations) "
                       "should not be deleted in case they would change their minds")

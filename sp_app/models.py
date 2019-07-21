@@ -214,11 +214,16 @@ class Person(models.Model):
 
     def save(self, *args, **kwargs):
         super(Person, self).save(*args, **kwargs)
-        # when a person leaves, their plannings should stop
+        # When a person leaves, their plannings should stop.
+        # Plannings with an end (like vacations) are left untouched 
+        # in case the person changes their mind
         if self.end_date < FAR_FUTURE:
             Planning.objects.filter(
-                person=self,
-                end__gt=self.end_date).update(end=self.end_date)
+                person=self, start__gt=self.end_date, end=FAR_FUTURE
+            ).delete()
+            Planning.objects.filter(
+                person=self, end=FAR_FUTURE
+            ).update(end=self.end_date)
 
 
 @python_2_unicode_compatible
