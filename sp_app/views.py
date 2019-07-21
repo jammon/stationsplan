@@ -32,13 +32,14 @@ def plan(request, month='', day=''):
     if month == '' and day:
         month = day[:6]
     department_ids = request.session.get('department_ids')
+    company_id = request.session.get('company_id')
     # Get all Persons who work here currently
     first_of_month = get_first_of_month(month)
     # start_of_data should be three months earlier
     start_of_data = (first_of_month - timedelta(88)).replace(day=1)
     persons = Person.objects.filter(
         end_date__gte=start_of_data,
-        departments__id__in=department_ids
+        company_id=company_id
     ).prefetch_related('functions')
     wards = Ward.objects.filter(departments__id__in=department_ids)
     different_days = DifferentDay.objects.filter(
