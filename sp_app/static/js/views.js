@@ -522,7 +522,8 @@ var PersonFunctionView = Backbone.View.extend({
     },
 });
 var FunctionsView = Backbone.View.extend({
-    // Edit the functions of every person
+    // Edit the functions of every person 
+    // Include persons currently available or available within 2 months
     el: "#functions_view",
     render: function() {
         var table = this.$('table');
@@ -535,6 +536,11 @@ var FunctionsView = Backbone.View.extend({
         });
         table.append(titleline);
         models.persons.each(function(person) {
+            let today = new Date();
+            let in2months = new Date(
+                today.getFullYear(), today.getMonth()+2, today.getDate());
+            if (person.get('start_date') > in2months || person.get('end_date') < today)
+                return;
             var p_line = $('<tr />');
             p_line.append($('<th />', {
                 text: person.get('name'),
