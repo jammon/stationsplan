@@ -45,4 +45,4 @@ Set MySQL Strict Mode
 Was passiert, wenn man Kurznamen von Stationen ändert
 Was passiert, wenn man Kurznamen von Personen ändert
 Der Kurzname einer Person und eines Wards ist in Planning.json
-(A) Funktionen-View soll nur für Department Editors verfügbar sein
+Debug Toolbar fixen

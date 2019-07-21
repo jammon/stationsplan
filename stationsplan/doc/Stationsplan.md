@@ -1,18 +1,5 @@
 # Stationsplan
 
-- Monatsdarstellung für Stationen und Mitarbeiter
-- neuen Monat anfügen
-- Stationen und Mitarbeiter eingeben:
-    + Station: Name, Kurzname, Stellen
-    + Mitarbeiter: Name, Kürzel
-- Wenn ein Feld bei den Stationen ausgefüllt wird:
-    + soll der Rest des Monats dem MA zugeordnet werden,
-    + sollen die Felder der MA aktualisiert werden.
-
-Ein Tag kann für jede Stelle einen Mitarbeiter haben. Er hält nach, an welchen Stellen der MA eingeplant ist.
-
-Mitarbeiter, die gestern Dienst hatten oder im Urlaub sind, dürfen nicht verplant werden.
-
 ## Krankenhaus
 Ein Krankenhaus hat verschiedene *Abteilungen*. Jede Abteilung hat mehrere *Stationen*, *Dienste* oder *Funktionen*. Diese müssen mit einer oder mehreren *Personen* besetzt werden. Personen können auch im *Urlaub/Fortbildung/Frei* oder *krank* sein und so nicht für die Planung zur Verfügung stehen.
 Jede Person gehört zu einer Abteilung. Stationen, Dienste oder Funktionen können auch von mehreren Abteilungen besetzt werden.
@@ -29,11 +16,13 @@ Angemeldete User können verschiedene Stufen von Benutzerrrechten haben. Sie kö
 Haben keine Berechtigungen, können nur ansehen.
 
 ### Editor
-Können Planungen der eigenen Abteilung ändern.
+- Können Planungen der eigenen Abteilung ändern.
+- (Haben die Permission `sp_app.add_changelogging`.)
 
 ### Department Leader
-Können Benutzer (Viewer, Editor, Department Leader) für die eigene Abteilung anlegen/bearbeiten.
-Können Stationen und Personen für die eigene Abteilung anlegen/bearbeiten.
+- Können Benutzer (Viewer, Editor, Department Leader) für die eigene Abteilung anlegen/bearbeiten.
+- Können Stationen und Personen für die eigene Abteilung anlegen/bearbeiten.
+- (Haben die Permission `sp_app.add_ward` bzw. `sp_app.add_person`.)
 
 ### Company Admins
 Können Departments anlegen/bearbeiten.

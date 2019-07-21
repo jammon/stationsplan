@@ -84,3 +84,4 @@ x 2019-07-14 Planungen mit ausgeschiedenen MA beenden
 x 2019-07-14 Wenn die Endezeit für einen Mitarbeiter gesetzt wird, sollen nur die nicht-endenden Planungen der Zukunft beendet werden
 x 2019-07-21 Nach uberspace portieren
 x 2019-07-21 Editor soll in Dienste der eigene Abteilung auch geeignete Personen anderer Abteilungen eintragen können
+x 2019-07-21 Funktionen-View soll nur für Department Editors verfügbar sein
