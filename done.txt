@@ -85,3 +85,7 @@ x 2019-07-14 Wenn die Endezeit für einen Mitarbeiter gesetzt wird, sollen nur d
 x 2019-07-21 Nach uberspace portieren
 x 2019-07-21 Editor soll in Dienste der eigene Abteilung auch geeignete Personen anderer Abteilungen eintragen können
 x 2019-07-21 Funktionen-View soll nur für Department Editors verfügbar sein
+x 2019-07-23 QuickInputView erst mal rausnehmen
+x 2019-07-23 Was passiert, wenn man Kurznamen von Stationen ändert
+x 2019-07-23 Was passiert, wenn man Kurznamen von Personen ändert
+x 2019-07-23 Der Kurzname einer Person und eines Wards ist in Planning.json +bug

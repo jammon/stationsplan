@@ -11,6 +11,19 @@ from .models import (Person, Ward, ChangeLogging, Planning, Department,
 from .forms import WardForm
 
 
+class ConfigSite(admin.sites.AdminSite):
+    """AdminSite for users"""
+    site_header = "Konfiguration der Stationsplanung"
+    site_title = "Konfiguration der Stationsplanung"
+    site_url = '/plan'
+    index_title = "Stationsplan Konfiguration"
+
+    def has_permission(self, request):
+        return request.session.get('can_config', False)
+
+config_site = ConfigSite(name='config')
+
+
 class CompanyRestrictedMixin(object):
     """ Limits access to objects, that have their "company" field set
     to the users company.
@@ -110,6 +123,8 @@ class DepartmentsListFilter(admin.SimpleListFilter):
 #
 # Admins
 #
+@admin.register(Person)
+@admin.register(Person, site=config_site)
 class PersonAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
     # filter_horizontal = ('departments', 'functions',)
     list_filter = (DepartmentsListFilter, )
@@ -133,6 +148,8 @@ class DifferentDayInline(admin.TabularInline):
     extra = 1
 
 
+@admin.register(Ward)
+@admin.register(Ward, site=config_site)
 class WardAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
     form = WardForm
     fieldsets = (
@@ -158,57 +175,38 @@ class WardAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
     ]
 
 
+@admin.register(Department)
+@admin.register(Department, site=config_site)
 class DepartmentAdmin(CompanyRestrictedMixin, admin.ModelAdmin):
-    pass
+    ordering = ('shortname',)
 
 
+@admin.register(ChangeLogging)
 class ChangeLoggingAdmin(admin.ModelAdmin):
     date_hierarchy = 'day'
     list_filter = (DepartmentsListFilter, PersonListFilter, WardListFilter,
                    'continued')
 
 
+@admin.register(Planning)
 class PlanningAdmin(admin.ModelAdmin):
     date_hierarchy = 'start'
     list_filter = (PersonListFilter, WardListFilter)
 
 
+@admin.register(StatusEntry)
 class StatusEntryAdmin(CompanyRestrictedMixin, admin.ModelAdmin):
     list_display = ('name', 'content', 'department', 'company')
 
 
+@admin.register(Holiday)
 class HolidayAdmin(admin.ModelAdmin):
     ordering = ('date', )
 
 
+@admin.register(Region)
 class RegionAdmin(admin.ModelAdmin):
     filter_horizontal = ('holidays',)
 
-admin.site.register(Person, PersonAdmin)
-admin.site.register(Ward, WardAdmin)
-admin.site.register(Department)
 admin.site.register(Company)
 admin.site.register(Employee)
-admin.site.register(ChangeLogging, ChangeLoggingAdmin)
-admin.site.register(Planning, PlanningAdmin)
-admin.site.register(StatusEntry, StatusEntryAdmin)
-admin.site.register(Holiday, HolidayAdmin)
-admin.site.register(Region, RegionAdmin)
-
-
-class ConfigSite(admin.sites.AdminSite):
-    """AdminSite for users"""
-    site_header = "Konfiguration der Stationsplanung"
-    site_title = "Konfiguration der Stationsplanung"
-    site_url = '/plan'
-    index_title = "Stationsplan Konfiguration"
-
-    def has_permission(self, request):
-        return request.session.get('can_config', False)
-
-
-config_site = ConfigSite(name='config')
-
-config_site.register(Department, DepartmentAdmin)
-config_site.register(Ward, WardAdmin)
-config_site.register(Person, PersonAdmin)

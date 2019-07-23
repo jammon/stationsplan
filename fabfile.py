@@ -67,12 +67,8 @@ def migrate():
         run("python3.6 manage.py migrate")
 
 
-# def copy_htaccess():
-#     run('cp ~/priv/stationsplan/htaccess ~/htdocs/.htaccess')
-
-
-# def restart_server():
-#     run("touch ~/htdocs/app.wsgi")
+def restart_server():
+    run("touch ~/stationsplan/stationsplan/uberspace_wsgi.py")
 
 
 # call with: `fab deploy:my_branch`

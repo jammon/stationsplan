@@ -212,8 +212,7 @@ describe("models", function() {
                 4);
             });
         });
-        describe("need for staffing", function() {
-            // implicitly tests Staffing.needs_staffing
+        describe("need for staffing (implicitly test Staffing.needs_staffing)", function() {
             it("should respect free days", function() {
                 var sunday = new models.Day({date: new Date(2015, 7, 2)});
                 var monday = new models.Day({date: new Date(2015, 7, 3)});
@@ -237,8 +236,7 @@ describe("models", function() {
                 expect(yes.ward_staffings.V.no_staffing).toBeFalsy();
             });
         });
-        describe("needs_staffing", function() {
-            // explicitly tests models.needs_staffing
+        describe("needs_staffing (explicitly test models.needs_staffing)", function() {
             it("should respect free days", function() {
                 var sunday = new models.Day({date: new Date(2015, 7, 2)});
                 var monday = new models.Day({date: new Date(2015, 7, 3)});

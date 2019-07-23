@@ -40,7 +40,6 @@ var StaffingView = StaffingDisplayView.extend({
     },
     render: function() {
         var el = this.$el;
-        var that = this;
         var staffing = this.collection;
         var approved = staffing.ward.is_approved(staffing.day.get('date'));
         el.empty();
@@ -50,11 +49,11 @@ var StaffingView = StaffingDisplayView.extend({
         // ok, we have to
         staffing.displayed.each(function(person) {
             var name = $('<div/>', {
-                text: that.display_long_name ? person.get('name') : person.id,
+                text: this.display_long_name ? person.get('name') : person.id,
                 'class': 'staff',
                 title: staffing.day.persons_duties[person.id].displayed.pluck('name').join(', '),
             });
-            if (models.user_can_change() && that.drag_n_droppable) {
+            if (models.user_can_change() && this.drag_n_droppable) {
                 name.draggable({
                     helper: function() {
                         return $('<div/>', {
@@ -67,11 +66,11 @@ var StaffingView = StaffingDisplayView.extend({
                 });
             }
             el.append(name);
-        });
+        }, this);
         el.toggleClass('lacking', staffing.lacking())
             .toggleClass('unapproved', !approved);
         this.update_today();
-        if (models.user_can_change() && that.drag_n_droppable) {
+        if (models.user_can_change() && this.drag_n_droppable) {
             el.droppable({
                 accept: function(draggable) {
                     var person = models.persons.where({ name: draggable.text() });
@@ -189,7 +188,7 @@ var PeriodView = Backbone.View.extend({
         "click .daycol": "show_day",
         "click .show-duties": "build_duties_table",
         // this is implemented only in OnCallView
-        "click .quickinput": "quickinput",
+        // "click .quickinput": "quickinput",
     },
     base_class: 'period_plan',
     slug: 'plan',
@@ -244,26 +243,26 @@ var PeriodView = Backbone.View.extend({
         });
         this.table.append(titlerow);
 
-        var that = this;
         // Construct rows for wards and persons
         // first the wards
         models.wards.each(function(ward) {
             var row_class = 'wardrow';
-            if (ward.get('callshift')) row_class = 'callshiftrow';
-            else if (ward.get('on_leave')) row_class = 'leaverow';
-            that.table.append(that.construct_row(
+            if (ward.get('callshift'))
+                row_class = 'callshiftrow';
+            else if (ward.get('on_leave'))
+                row_class = 'leaverow';
+            this.table.append(this.construct_row(
                 ward, 
                 row_class + ' approvable',
                 'ward_staffings', StaffingView));
-        });
+        }, this);
     },
     build_duties_table: function() {
-        var that = this;
         _.each(this.period_days.current_persons(), function(person) {
             if (!person.get('anonymous'))
-                that.table.append(that.construct_row(
+                this.table.append(this.construct_row(
                     person, 'personrow', 'persons_duties', DutiesView));
-        });
+        }, this);
         this.$(".show-duties").hide();
     },
     get_template_options: function() {
