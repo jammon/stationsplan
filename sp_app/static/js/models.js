@@ -129,7 +129,7 @@ function initialize_wards (wards_init, different_days) {
     }));
     on_call.each(function(ward) {
         var ward_type = ward.get_ward_type();
-        if (!on_call_types.includes(ward_type))
+        if (!_.contains(on_call_types, ward_type))
             on_call_types.push(ward_type);
     });
     _.each(different_days, function(dd) {
