@@ -592,12 +592,12 @@ describe("models", function() {
         });
         it("should initialize a CallTally for every person if the user can change",
            function() {
-            models.user_can_change(true);
+            models.user.is_editor = true;
             month_days = models.get_month_days(2016, 3);
             expect(month_days.calltallies).toBeDefined();
             // FIXME: hier kam schon mal 5 raus
             expect(month_days.calltallies.length).toBe(4);
-            models.user_can_change(false);
+            models.user.is_editor = false;
         });
         it("should not initialize a CallTally if the user cannot change",
            function() {
@@ -605,7 +605,7 @@ describe("models", function() {
             expect(month_days.calltallies).not.toBeDefined();
         });
         it("should update the CallTallies", function() {
-            models.user_can_change(true);
+            models.user.is_editor = true;
             month_days = models.get_month_days(2016, 3);
             var person_a = models.persons.get('A');
             var person_b = models.persons.get('B');
@@ -629,7 +629,7 @@ describe("models", function() {
             expect(tally.get_tally(ward_o)).toBe(0);
             expect(tally.get_tally(ward_v)).toBe(0);
             expect(tally.get('weights')).toBeUndefined();
-            models.user_can_change(false);
+            models.user.is_editor = false;
         });
     });
     describe("MonthDays.current_persons", function() {

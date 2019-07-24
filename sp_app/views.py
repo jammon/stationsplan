@@ -50,8 +50,8 @@ def plan(request, month='', day=''):
         end__gte=start_of_data,
         superseded_by=None).select_related('ward')
 
-    can_change = request.user.has_perm('sp_app.add_changelogging')
-    if not can_change:
+    is_editor = request.session.get('is_editor', False)
+    if not is_editor:
         plannings = [p for p in plannings
                      if not p.ward.approved or p.start <= p.ward.approved]
     holidays = get_holidays_for_company(request.session['company_id'])
@@ -64,7 +64,7 @@ def plan(request, month='', day=''):
             for dd in different_days]),
         'plannings': json_array(plannings),
         'user': request.user,
-        'can_change': can_change,
+        'is_editor': is_editor,
         'first_of_month': first_of_month,
         'start_of_data': start_of_data,
         'holidays': json.dumps(holidays),

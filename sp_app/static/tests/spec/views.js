@@ -9,10 +9,10 @@ describe("views", function() {
                 spyOn(changeviews.staff, 'show');
             });
             it("should show changeviews.staff if the user can change plannings", function() {
-                models.user_can_change(true);
+                models.user.is_editor = true;
                 staffingview.addstaff();
                 expect(changeviews.staff.show).toHaveBeenCalled();
-                models.user_can_change(false);
+                models.user.is_editor = false;
             });
             it("should not show changeviews.staff if the user cannot change plannings", function() {
                 staffingview.addstaff();
@@ -28,10 +28,10 @@ describe("views", function() {
                 spyOn(changeviews.staff, 'show');
             });
             it("should not show changeviews.staff if the user can change plannings", function() {
-                models.user_can_change(true);
+                models.user.is_editor = true;
                 staffingview.addstaff();
                 expect(changeviews.staff.show).not.toHaveBeenCalled();
-                models.user_can_change(false);
+                models.user.is_editor = false;
             });
             it("should not show changeviews.staff if the user cannot change plannings", function() {
                 staffingview.addstaff();

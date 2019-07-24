@@ -28,7 +28,7 @@
         <li id="nav-stationen"><a>Stationen</a></li>
         <li id="nav-dienste"><a>Dienste</a></li>
         <li id="nav-tag"><a>Heute</a></li>
-        {% if request.session.can_config %}
+        {% if request.session.is_dep_lead %}
           <li id="nav-funktionen"><a>Funktionen</a></li>
         {% endif %}
         <li class="dropdown">
@@ -196,7 +196,7 @@
           new Date({{ start_of_data|date:'Y'}}, 
                    {{ start_of_data|date:'n' }}-1, 
                    1),                       // start_of_data
-          {% if can_change %}true{% else %}false{% endif %},
+          {% if is_editor %}true{% else %}false{% endif %},
           {{ holidays|safe }},
           {{ last_change_pk }},
           {{ last_change_time }}

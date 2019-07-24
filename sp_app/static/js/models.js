@@ -5,14 +5,13 @@ var models = (function($, _, Backbone) {
 // - all the constructors for the data models (`Person`, `Ward` etc.),
 // - the data models themselves (`persons`, `wards` etc.),
 // - some data determining the working status 
-//   (like `user_can_change`, `errors` etc.)
+//   (like `user`, `errors` etc.)
 
 var default_start_for_person = [2015, 0, 1];
 var default_end_for_person = [2099, 11, 31];
-var _user_can_change = false;
-function user_can_change(can_change) {
-    if (arguments.length===0) return _user_can_change;
-    _user_can_change = can_change;
+var user = {
+    is_editor: false,
+    is_dep_lead: false,
 }
 
 var Current_Date = Backbone.Model.extend({
@@ -510,7 +509,7 @@ var PeriodDays = Backbone.Collection.extend({
         for (var i = 0; i < this.nr_days; i++) {
             this.add(days.get_day(year, month, day+i));
         }
-        if (user_can_change() && options.needs_calltallies)
+        if (user.is_editor && options.needs_calltallies)
             this.build_calltallies();
     },
     build_calltallies: function() {
@@ -826,7 +825,7 @@ return {
     apply_change: apply_change,
     errors: errors,
     reset_data: reset_data,
-    user_can_change: user_can_change,
+    user: user,
     schedule_next_update: schedule_next_update,
 };
 })($, _, Backbone);

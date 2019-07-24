@@ -22,7 +22,7 @@ var StaffingDisplayView = Backbone.View.extend({
         var approved = staffing.ward.is_approved(staffing.day.get('date'));
         el.empty();
         if (staffing.no_staffing) return this;
-        if (!models.user_can_change() && !approved) return this; // not approved
+        if (!models.user.is_editor && !approved) return this; // not approved
         el.text(staffing.displayed.pluck('name').join(", "));
         el.toggleClass('lacking', staffing.lacking());
         this.update_today();
@@ -45,7 +45,7 @@ var StaffingView = StaffingDisplayView.extend({
         el.empty();
         // do we have to render it
         if (staffing.no_staffing) return this;
-        if (!models.user_can_change() && !approved) return this; // not approved
+        if (!models.user.is_editor && !approved) return this; // not approved
         // ok, we have to
         staffing.displayed.each(function(person) {
             var name = $('<div/>', {
@@ -53,7 +53,7 @@ var StaffingView = StaffingDisplayView.extend({
                 'class': 'staff',
                 title: staffing.day.persons_duties[person.id].displayed.pluck('name').join(', '),
             });
-            if (models.user_can_change() && this.drag_n_droppable) {
+            if (models.user.is_editor && this.drag_n_droppable) {
                 name.draggable({
                     helper: function() {
                         return $('<div/>', {
@@ -70,7 +70,7 @@ var StaffingView = StaffingDisplayView.extend({
         el.toggleClass('lacking', staffing.lacking())
             .toggleClass('unapproved', !approved);
         this.update_today();
-        if (models.user_can_change() && this.drag_n_droppable) {
+        if (models.user.is_editor && this.drag_n_droppable) {
             el.droppable({
                 accept: function(draggable) {
                     var person = models.persons.where({ name: draggable.text() });
@@ -102,7 +102,7 @@ var StaffingView = StaffingDisplayView.extend({
         return this;
     },
     addstaff: function() {
-        if (models.user_can_change() && !this.collection.no_staffing)
+        if (models.user.is_editor && !this.collection.no_staffing)
             changeviews.staff.show(this.collection);
     },
 });
@@ -308,7 +308,7 @@ var PeriodView = Backbone.View.extend({
         return utils.get_day_id(next_start);
     },
     approve: function(e) {
-        if (!models.user_can_change()) return;
+        if (!models.user.is_editor) return;
         var ward = models.wards.where({name: e.currentTarget.textContent});
         if (ward.length)
             changeviews.approve.show(ward[0]);
@@ -409,7 +409,7 @@ var OnCallView = MonthView.extend({
         });
 
         // build CallTallies
-        if (models.user_can_change()) {
+        if (models.user.is_editor) {
             table = this.$(".calltallies");
             titlerow = $('<tr/>', {'class': 'titlerow'}).append($('<th/>'));
             _.each(models.on_call_types, function(on_call_type) {
@@ -614,7 +614,7 @@ var Router = Backbone.Router.extend({
         this.call_view(day_views, "#nav-tag", period_id);
     },
     funktionen: function() {
-        if (!models.user_can_change()) {
+        if (!models.user.is_editor) {
             this.navigate("plan/", {trigger: true});
             return;
         }
@@ -697,7 +697,7 @@ var ErrorView = Backbone.View.extend({
     },
 });
 var error_view;
-if (models.user_can_change )
+if (models.user.is_editor)
     error_view = new ErrorView({ el: $("#errors")});
 
 return {

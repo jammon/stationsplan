@@ -19,7 +19,7 @@ class ConfigSite(admin.sites.AdminSite):
     index_title = "Stationsplan Konfiguration"
 
     def has_permission(self, request):
-        return request.session.get('can_config', False)
+        return request.session.get('is_dep_lead', False)
 
 config_site = ConfigSite(name='config')
 

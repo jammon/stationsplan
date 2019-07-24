@@ -18,11 +18,15 @@ Haben keine Berechtigungen, können nur ansehen.
 ### Editor
 - Können Planungen der eigenen Abteilung ändern.
 - (Haben die Permission `sp_app.add_changelogging`.)
+- in Django: `request.session['is_editor']`
 
 ### Department Leader
 - Können Benutzer (Viewer, Editor, Department Leader) für die eigene Abteilung anlegen/bearbeiten.
 - Können Stationen und Personen für die eigene Abteilung anlegen/bearbeiten.
 - (Haben die Permission `sp_app.add_ward` bzw. `sp_app.add_person`.)
+- in Django: `request.session['is_dep_lead']`
+
+Editors und Department Leaders können ihr Passwort ändern und ihre Sessions laufen mit dem Schließen des Browsers ab.
 
 ### Company Admins
 Können Departments anlegen/bearbeiten.

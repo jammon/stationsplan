@@ -34,10 +34,10 @@ function setupCsrfProtection() {
 
 
 function initialize_site(persons, wards, different_days, plannings,
-                         year, month, start_of_data, can_change, holidays, 
+                         year, month, start_of_data, is_editor, holidays, 
                          last_change_pk, last_change_time) {
     setupCsrfProtection();
-    models.user_can_change(can_change);
+    models.user.is_editor = is_editor;
     models.initialize_wards(wards, different_days);
     models.persons.reset(persons);
     models.set_plannings(plannings); 
