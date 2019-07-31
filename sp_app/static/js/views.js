@@ -49,7 +49,7 @@ var StaffingView = StaffingDisplayView.extend({
         // ok, we have to
         staffing.displayed.each(function(person) {
             var name = $('<div/>', {
-                text: this.display_long_name ? person.get('name') : person.id,
+                text: person.get(this.display_long_name ? 'name': 'shortname'),
                 'class': 'staff',
                 title: staffing.day.persons_duties[person.id].displayed.pluck('name').join(', '),
             });
@@ -58,9 +58,9 @@ var StaffingView = StaffingDisplayView.extend({
                     helper: function() {
                         return $('<div/>', {
                             text: person.get('name'),
-                            ward: staffing.ward.id,
-                            day: staffing.day.id,
-                            person: person.id,
+                            ward: staffing.ward,
+                            day: staffing.day,
+                            person: person,
                         });
                     }
                 });
@@ -73,26 +73,34 @@ var StaffingView = StaffingDisplayView.extend({
         if (models.user.is_editor && this.drag_n_droppable) {
             el.droppable({
                 accept: function(draggable) {
-                    var person = models.persons.where({ name: draggable.text() });
+                    let person = models.persons.where({ name: draggable.text() });
                     return staffing.can_be_planned(person.length && person[0]);
                 },
                 drop: function(event, ui) {
+                    let helper = ui.helper;
+                    let person = helper.attr('person');
+                    let old_day = helper.attr('day')
+                    let old_ward = helper.attr('ward')
                     // Is it dropped back on the same day and ward?
-                    if (staffing.day.id == ui.helper.attr('day') &&
-                        staffing.ward.id == ui.helper.attr('ward')) return;
-                    var persons = models.persons.where({ name: ui.draggable.text() });
-                    if (persons.length) {
-                        models.save_change({
-                            day: staffing.day.id,
-                            ward: staffing.ward,
-                            continued: false,
-                            persons: [{
-                                id: persons[0].id,
-                                action: 'add',
-                            }],
-                        });
+                    if (staffing.day == old_day &&
+                        staffing.ward == old_ward) return;
+                    if (person) {
+                        models.save_change(
+                            staffing.day,
+                            staffing.ward,
+                            false,
+                            [{id: person.get('id'), action: 'add'}]);
                     }
-                    remove_person_from_helper(ui.helper);
+                    // If a person has been drag-n-dropped to a StaffingView
+                    // it has to be removed from its origin 
+                    // if that is a StaffingView as well
+                    if (old_day)
+                        models.save_change(
+                            old_day,
+                            old_ward,
+                            false,
+                            [{id: person.get('id'), action: 'remove'}],
+                        );
                 },
                 activeClass: "ui-state-highlight",
                 tolerance: "pointer",
@@ -118,22 +126,6 @@ var DutiesView = Backbone.View.extend({
         return this;
     },
 });
-
-function remove_person_from_helper(helper) {
-    // If a person has been drag-n-dropped to a StaffingView
-    // it has to be removed from its origin 
-    // if that is a StaffingView as well
-    if (helper.attr('day'))
-        models.save_change({
-            day: helper.attr('day'),
-            ward: helper.attr('ward'),
-            continued: false,
-            persons: [{
-                id: helper.attr('person'),
-                action: 'remove',
-            }],
-        });
-}
 
 var _table_template = _.template($('#table-template').html());
 function get_table_from_template(options) {
@@ -705,6 +697,5 @@ return {
     // DutiesView: DutiesView,
     // PeriodView: PeriodView,
     // router: router,
-    remove_person_from_helper: remove_person_from_helper,
 };
 })($, _, Backbone);

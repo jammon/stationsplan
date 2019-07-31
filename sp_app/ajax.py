@@ -20,10 +20,10 @@ def changes(request):
     for a *single_day* or for the future
     The data come in this form:
     {'day': <YYYYMMDD>,
-     'ward': <ward.shortname>,
+     'ward_id': <ward.id>,
      'continued': True|False|<YYYYMMDD>,
      'persons': [{
-           'id': <person.shortname>,
+           'id': <person.id>,
            'action': 'add'|'remove',
          },
          ...
@@ -36,7 +36,7 @@ def changes(request):
     data = json.loads(request.body)
     company_id = request.session['company_id']
     apply_changes(
-        request.user, company_id, data['day'], data['ward'],
+        request.user, company_id, data['day'], data['ward_id'],
         data['continued'], data['persons'])
     return get_last_changes(company_id, data['last_pk'])
 

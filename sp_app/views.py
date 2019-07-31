@@ -57,10 +57,9 @@ def plan(request, month='', day=''):
     holidays = get_holidays_for_company(request.session['company_id'])
     data = {
         'persons': json.dumps([p.toJson() for p in persons]),
-        'wards': json_array(wards),
+        'wards': json.dumps([w.toJson() for w in wards]),
         'different_days': json.dumps([
-            (dd.ward.shortname, dd.day.strftime('%Y%m%d'),
-             '+' if dd.added else '-')
+            (dd.ward.id, dd.day.strftime('%Y%m%d'), '+' if dd.added else '-')
             for dd in different_days]),
         'plannings': json_array(plannings),
         'user': request.user,

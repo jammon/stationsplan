@@ -86,6 +86,7 @@ Wenn ein Change mit add=False und angegebenem Ende andere Planungen überdeckt, 
 - 25.12.: 1. Weihnachtstag
 - 26.12.: 2. Weihnachtstag
 
+Abhängig von Ostern:
 - 14.04.: Karfreitag: -2
 - 17.04.: Ostermontag: +1
 - 25.05.: Christi Himmelfahrt: +39
@@ -144,3 +145,12 @@ you can then find the current grid option with:
 - beim Update werden die neuesten Änderungen seit der letzten bekannten pk geliefert
 - beim Speichern von changes wird ebenfalls die letzte bekannte pk mitgegeben.
 - zurückgeliefert werden dann die neuestens changes inklusive der gerade gespeicherten (wenn sie erfolgreich war).
+
+## "Id" von Personen und Funktionen (Ward)
+- Auf Serverseite ist die Id die numerische pk. 
+- In der Verarbeitung im Client werden die Personen/Wards nach ihrem shortname indiziert.
+- Vom Server werden Personen/Wards mit Id und Shortname geschickt.
+- ChangeLoggings werden vom Server geliefert in `ajax.updates` und als Antwort in `ajax.changes`. Sie enthalten die Shortnames von Personen/Wards.
+- Plannings werden vom Server geliefert in `views.plan`. Sie enthalten die Ids von Personen/Wards.
+- Changes werden vom Client an der Server in `changes` geschickt. Sie enthalten die Ids.
+

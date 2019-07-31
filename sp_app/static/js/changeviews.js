@@ -16,12 +16,10 @@ var ChangeStaffView = Backbone.View.extend({
         this.save(this.$("#date-picker").datepicker('getDate'));
     },
     save: function(continued) {
-        models.save_change({
-            day: this.staffing.day.id,
-            ward: this.staffing.ward,
-            continued: continued,
-            persons: this.collect_changes(),
-        });
+        models.save_change(this.staffing.day,
+                           this.staffing.ward, 
+                           continued,
+                           this.collect_changes());
         this.$el.modal('hide');
     },
     collect_changes: function() {
@@ -30,7 +28,7 @@ var ChangeStaffView = Backbone.View.extend({
             function(memo, cpv) { 
                 if (cpv.is_changed) {
                     memo.push({
-                       id: cpv.person.id,
+                       id: cpv.person.get('id'),
                        action: cpv.is_planned ? 'add' : 'remove',
                     });
                 }
@@ -310,15 +308,13 @@ var QuickInputView = Backbone.View.extend({
             this.start_date.getTime() + (forward ? ONEDAY : -ONEDAY)));
     },
     plan_person: function(person, staffing) {
-        var persons = [{ id: person.id, action: 'add' }];
+        var persons = [{ id: person.get('id'), action: 'add' }];
         if (staffing.length>0)
             persons.push({ id: staffing.at(0).id, action: 'remove' });
-        models.save_change({
-            day: staffing.day.id,
-            ward: staffing.ward,
-            continued: false,
-            persons: persons,
-        });
+        models.save_change(staffing.day,
+                           staffing.ward,
+                           false,
+                           persons);
         this.next_day();
     },
 });

@@ -14,7 +14,7 @@ from .models import (Ward, Person, Company, Department, ChangeLogging,
 
 
 def json_array(data):
-    return '[' + ', '.join(d.json for d in data) + ']'
+    return f"[{', '.join(d.json for d in data)}]"
 
 
 def get_first_of_month(month=''):
@@ -52,19 +52,19 @@ def get_holidays_for_company(company_id):
     return dict((h.date.strftime('%Y%m%d'), h.name) for h in holidays)
 
 
-def apply_changes(user, company_id, day, ward, continued, persons):
+def apply_changes(user, company_id, day, ward_id, continued, persons):
     """ Apply changes for this day and ward.
     Return a list of dicts of effective changes to be returned to the client
     'persons' is a list of dicts like
-    {'id': <shortname>,
+    {'id': <id>,
      'action': ‘add'|'remove'}
     """
-    ward = get_for_company(Ward, company_id=company_id, shortname=ward)
+    ward = get_for_company(Ward, company_id=company_id, id=ward_id)
     assert ward is not None
     known_persons = {
-        person.shortname: person for person in Person.objects.filter(
+        person.id: person for person in Person.objects.filter(
             company__id=company_id,
-            shortname__in=(p['id'] for p in persons))}
+            id__in=(p['id'] for p in persons))}
     data = dict(company_id=company_id, user=user, ward=ward,
                 day=datetime.strptime(day, '%Y%m%d').date(),
                 continued=continued,

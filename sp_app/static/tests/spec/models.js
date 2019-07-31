@@ -511,37 +511,44 @@ describe("models", function() {
         });
         describe("apply plannings", function() {
             it("should apply plannings for the day", function() {
-                var day = new models.Day({
+                let day = new models.Day({
                     date: new Date(2016, 2, 10),
                 });
-                day.apply_planning({ person: 'A', ward: 'A',
+                let person_a = models.persons.get('A');
+                let person_b = models.persons.get('B');
+                let ward_a = models.wards.get('A');
+                let ward_b = models.wards.get('B');
+                day.apply_planning({ person: person_a, ward: ward_a,
                     start: '20160310',
                     end: '20160310',
                 });
-                day.apply_planning({ person: 'A', ward: 'B',
+                day.apply_planning({ person: person_a, ward: ward_b,
                     start: '20160301',
                     end: '20160320',
                 });
-                day.apply_planning({ person: 'B', ward: 'A',
+                day.apply_planning({ person: person_b, ward: ward_a,
                     start: '20160301',
                     end: '20160310',
                 });
-                day.apply_planning({ person: 'B', ward: 'B',
+                day.apply_planning({ person: person_b, ward: ward_b,
                     start: '20160310',
                     end: '20160320',
                 });
-                expect(day.ward_staffings.A.pluck('id')).toEqual(['A', 'B']);
-                expect(day.ward_staffings.B.pluck('id')).toEqual(['A', 'B']);
+                expect(day.ward_staffings.A.pluck('shortname')).toEqual(['A', 'B']);
+                expect(day.ward_staffings.B.pluck('shortname')).toEqual(['A', 'B']);
             });
             it("should not apply plannings for other days", function() {
                 var day = new models.Day({
                     date: new Date(2016, 2, 10),
                 });
-                day.apply_planning({ person: 'A', ward: 'A',
+                let person_a = models.persons.get('A');
+                let person_b = models.persons.get('B');
+                let ward_a = models.wards.get('A');
+                day.apply_planning({ person: person_a, ward: ward_a,
                     start: '20160210',
                     end: '20160210',
                 });
-                day.apply_planning({ person: 'B', ward: 'A',
+                day.apply_planning({ person: person_b, ward: ward_a,
                     start: '20160311',
                     end: '20160320',
                 });
@@ -637,9 +644,9 @@ describe("models", function() {
             var month_days;
             models.days.reset();
             models.persons.add([
-                { name: 'No More', id: 'X', end_date: [2016, 2, 31] },
-                { name: 'Not Yet', id: 'Y', start_date: [2016, 4, 1] },
-                { name: 'Short Time', id: 'Z',
+                { name: 'No More', shortname: 'X', end_date: [2016, 2, 31] },
+                { name: 'Not Yet', shortname: 'Y', start_date: [2016, 4, 1] },
+                { name: 'Short Time', shortname: 'Z',
                   start_date: [2016, 2, 1], end_date: [2016, 4, 31], },
             ]);
             month_days = models.get_month_days(2016, 3);
@@ -659,15 +666,15 @@ describe("models", function() {
         afterEach(function() {
             models.days.reset();
         });
-        function test_staffing(day_or_day_id, person_ids) {
+        function test_staffing(day_or_day_id, person_shortnames) {
             if (_.isString(day_or_day_id)) {
                 expect(models.days.get(day_or_day_id)
-                    .ward_staffings.A.pluck('id'))
-                    .toEqual(person_ids);
+                    .ward_staffings.A.pluck('shortname'))
+                    .toEqual(person_shortnames);
             } else {
                 expect(day_or_day_id
-                    .ward_staffings.A.pluck('id'))
-                    .toEqual(person_ids);
+                    .ward_staffings.A.pluck('shortname'))
+                    .toEqual(person_shortnames);
             }
         }
         function test_duties(day_or_day_id, staff_ids) {

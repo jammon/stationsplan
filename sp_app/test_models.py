@@ -16,7 +16,8 @@ class TestPerson(PopulatedTestCase):
                                        company=self.company)
         self.assertEqual(person.toJson(),
                          {'name': "Heinz Müller",
-                          'id': "Mül",
+                          'shortname': "Mül",
+                          'id': person.id,
                           'start_date': [2015, 0, 1],
                           'end_date': [2015, 11, 31],
                           'functions': [],
@@ -61,7 +62,7 @@ class TestPerson(PopulatedTestCase):
 class TestWard(PopulatedTestCase):
 
     def test_ward(self):
-        ward = Ward(
+        ward = Ward.objects.create(
             name="Station A", shortname="A",
             min=1, max=3, nightshift=False, everyday=False,
             freedays=False, on_leave=False,
@@ -69,6 +70,7 @@ class TestWard(PopulatedTestCase):
         self.assertEqual(ward.toJson(),
                          {'name': "Station A",
                           'shortname': "A",
+                          'id': ward.id,
                           'min': 1,
                           'max': 3,
                           'nightshift': False,
@@ -92,7 +94,7 @@ class TestChanges(PopulatedTestCase):
         c = ChangeLogging(person=self.person_a, ward=self.ward_a,
                           day=date(2015, 10, 2),
                           added=True)
-        expected = {'person': "A", 'ward': "A", 'day': "20151002",
+        expected = {"person": self.person_a.id, "ward":self.ward_a.id, 'day': "20151002",
                     'continued': True, 'action': "add", }
         self.assertContainsDict(c.toJson(), expected)
         c.added = False

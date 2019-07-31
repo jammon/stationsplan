@@ -30,13 +30,15 @@ var current_date = new Current_Date();
 
 // A person has a
 //     - name
-//     - id    = short form of the name
+//     - shortname = short form of the name
+//     - id
 //     - start_date = begin of job
 //     - end_date = end of job
 //     - functions = Array of Wards/Tasks that can be done
 //     - position = position in the listing
 //     - anonymous = true if it represents a different department
 var Person = Backbone.Model.extend({
+    idAttribute: "shortname",
     initialize: function() {
         var start = this.get('start_date') || [2015, 0, 1];
         this.set('start_date', new Date(start[0], start[1], start[2]));
@@ -66,6 +68,7 @@ var persons = new Persons();
 // It has a 
 //     - name
 //     - shortname = short form of the name
+//     - id
 //     - max = maximum staffing
 //     - min = minimum staffing
 //     - nightshift = if truthy, staffing can not be planned on the next day.
@@ -412,9 +415,7 @@ var Day = Backbone.Model.extend({
     },
     apply_planning: function(pl) {
         if (this.id>=pl.start && this.id<=pl.end) {
-            this.ward_staffings[pl.ward].add(persons.get(pl.person), {
-                continued: false
-            });
+            this.ward_staffings[pl.ward.id].add(pl.person, {continued: false});
             return true;
         }
         return false;
@@ -429,8 +430,8 @@ var Day = Backbone.Model.extend({
         // remove all plannings, that have ended
         current_plannings = _.filter(current_plannings, function(planning) {
             if (planning.end<next_day.id) {
-                next_day.ward_staffings[planning.ward].remove(
-                    persons.get(planning.person));
+                next_day.ward_staffings[planning.ward.id].remove(
+                    planning.person);
                 return false;
             }
             return true;
@@ -618,9 +619,9 @@ var CallTallies = Backbone.Collection.extend({
 });
 
 
-function save_change(data) {
-    // data should have these attributes: 
-    //   day: a models.Day or its id
+function save_change(day, ward, continued, persons) {
+    // Parameters: 
+    //   day: a models.Day
     //   ward: a models.Ward
     //   continued: a Boolean or a Date
     //   persons: an Array of {
@@ -628,12 +629,12 @@ function save_change(data) {
     //       action: 'add' or 'remove'
     //   }
     var json_data = JSON.stringify({
-        day: data.day.id || data.day,
-        ward: data.ward.id || data.ward,
-        continued: _.isDate(data.continued) ?
-            utils.get_day_id(data.continued) :
-            data.continued,
-        persons: data.persons,
+        day: day.id,
+        ward_id: ward.get('id'),
+        continued: _.isDate(continued) ?
+            utils.get_day_id(continued) :
+            continued,
+        persons: persons,
         last_pk: _last_change_pk,
     });
     var url = '/changes';
@@ -732,6 +733,12 @@ function save_function(person, ward, added) {
 
 
 function set_plannings(p) {
+    _.each(p, function(planning) {
+        if (Number.isInteger(planning.person))
+            planning.person = persons.findWhere({id: planning.person});
+        if (Number.isInteger(planning.ward))
+            planning.ward = wards.findWhere({id: planning.ward});
+    });
     plannings = p;
 }
 
@@ -739,6 +746,10 @@ function set_plannings(p) {
 function apply_change(change) {
     var changed_day = days.get(change.day);
     var staffing;
+    if (Number.isInteger(change.person))
+        change.person = persons.findWhere({id: change.person}).id;
+    if (Number.isInteger(change.ward))
+        change.ward = wards.findWhere({id: change.ward}).id;
     if (changed_day) {
         staffing = changed_day.ward_staffings[change.ward];
         if (staffing) {

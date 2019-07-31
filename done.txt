@@ -89,3 +89,4 @@ x 2019-07-23 QuickInputView erst mal rausnehmen
 x 2019-07-23 Was passiert, wenn man Kurznamen von Stationen ändert
 x 2019-07-23 Was passiert, wenn man Kurznamen von Personen ändert
 x 2019-07-23 Der Kurzname einer Person und eines Wards ist in Planning.json +bug
+x 2019-07-31 Kurzname von Personen ändern können +feature - in Planning.json und Changelogging.json pk verwenden

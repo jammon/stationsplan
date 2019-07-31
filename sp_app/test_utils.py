@@ -94,32 +94,32 @@ class TestApplyChanges(PopulatedTestCase):
     def test_apply_1_change(self):
         day = '20160328'
         continued = True
-        persons = [{'id': 'A', 'action': 'add'}]
+        persons = [{'id': self.person_a.id, 'action': 'add'}]
         cls = apply_changes(self.user, company_id=self.company.id,
-                            day=day, ward=self.ward_a.shortname,
+                            day=day, ward_id=self.ward_a.id,
                             continued=continued, persons=persons)
         self.assertEqual(len(cls), 1)
         self.assertContainsDict(
             cls[0],
-            {"person": "A", "ward": "A",
+            {"person": self.person_a.id, "ward":self.ward_a.id,
              "action": "add", "continued": True, "day": "20160328"})
 
     def test_apply_2_changes(self):
         day = '20160328'
         continued = True
-        persons = [{'id': 'A', 'action': 'add'},
-                   {'id': 'B', 'action': 'add'}]
+        persons = [{'id': self.person_a.id, 'action': 'add'},
+                   {'id': self.person_b.id, 'action': 'add'}]
         cls = apply_changes(self.user, company_id=self.company.id,
-                            day=day, ward=self.ward_a.shortname,
+                            day=day, ward_id=self.ward_a.id,
                             continued=continued, persons=persons)
         self.assertEqual(len(cls), 2)
         self.assertContainsDict(
             cls[0],
-            {"person": "A", "ward": "A",
+            {"person": self.person_a.id, "ward":self.ward_a.id,
              "action": "add", "continued": True, "day": "20160328"})
         self.assertContainsDict(
             cls[1],
-            {"person": "B", "ward": "A",
+            {"person": self.person_b.id, "ward":self.ward_a.id,
              "action": "add", "continued": True, "day": "20160328"})
 
     def test_apply_2_changes_nonsensical(self):
@@ -127,15 +127,15 @@ class TestApplyChanges(PopulatedTestCase):
         """
         day = '20160328'
         continued = True
-        persons = [{'id': 'A', 'action': 'add'},
-                   {'id': 'B', 'action': 'remove'}]
+        persons = [{'id': self.person_a.id, 'action': 'add'},
+                   {'id': self.person_b.id, 'action': 'remove'}]
         cls = apply_changes(self.user, company_id=self.company.id,
-                            day=day, ward=self.ward_a.shortname,
+                            day=day, ward_id=self.ward_a.id,
                             continued=continued, persons=persons)
         self.assertEqual(len(cls), 1)
         self.assertContainsDict(
             cls[0],
-            {"person": "A", "ward": "A",
+            {"person": self.person_a.id, "ward":self.ward_a.id,
              "action": "add", "continued": True, "day": "20160328"})
 
 

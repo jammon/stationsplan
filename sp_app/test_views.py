@@ -41,6 +41,15 @@ class ViewsTestCase(PopulatedTestCase):
             user=self.user, company=self.company)
         self.employee.departments.add(self.department)
         self.client.login(username='user', password='password')
+        self.DATA_FOR_CHANGE ={
+            'day': '20160120',
+            'ward_id': self.ward_a.id,
+            'continued': False,
+            'persons': [
+                {'id': self.person_a.id, 'action': 'add', },
+                {'id': self.person_b.id, 'action': 'remove', },
+            ],
+            'last_pk': 0}
 
 
 class TestPlan(ViewsTestCase):
@@ -67,24 +76,13 @@ class TestPlan(ViewsTestCase):
                 {'start': '20160401', 'end': '20160430'},
                 {'start': '20160401', 'end': '20160531'},
                 {'start': '20160501', 'end': '20160531'})):
-            self.assertEqual(value['person'], 'A')
-            self.assertEqual(value['ward'], 'A')
+            self.assertEqual(value['person'], self.person_a.id)
+            self.assertEqual(value['ward'], self.ward_a.id)
             self.assertEqual(value['start'], expected['start'])
             self.assertEqual(value['end'], expected['end'])
 
 
 # Tests for sp_app.ajax
-
-DATA_FOR_CHANGE = {
-    'day': '20160120',
-    'ward': 'A',
-    'continued': False,
-    'persons': [
-        {'id': 'A', 'action': 'add', },
-        {'id': 'B', 'action': 'remove', },
-    ],
-    'last_pk': 0}
-
 
 class TestChangeForbidden(ViewsTestCase):
     """ User without permission to add changes
@@ -93,7 +91,7 @@ class TestChangeForbidden(ViewsTestCase):
     def test_changes(self):
         response = self.client.post(
             reverse('changes'),
-            json.dumps(DATA_FOR_CHANGE),
+            json.dumps(self.DATA_FOR_CHANGE),
             "text/json",
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(response.status_code, 403)
@@ -121,7 +119,7 @@ class TestChangeMore(ViewsWithPermissionTestCase):
     def test_with_valid_data(self):
         self.client.post(
             reverse('changes'),
-            json.dumps(DATA_FOR_CHANGE),
+            json.dumps(self.DATA_FOR_CHANGE),
             "text/json",
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         cls = ChangeLogging.objects.all().order_by('person__shortname')
@@ -139,8 +137,8 @@ class TestChangeMore(ViewsWithPermissionTestCase):
             'user: Person A ist am 20.01.2016 für Ward A eingeteilt')
         self.assertContainsDict(
             json.loads(cl.json),
-            {"action": "add", "person": "A", "ward": "A", "day": "20160120",
-             "continued": False})
+            {"action": "add", "person": self.person_a.id, "ward":self.ward_a.id,
+             "day": "20160120", "continued": False})
         self.assertEqual(cl.version, 1)
         cl = cls[1]
         self.assertEqual(cl.person, self.person_b)
@@ -154,8 +152,8 @@ class TestChangeMore(ViewsWithPermissionTestCase):
             'eingeteilt')
         self.assertContainsDict(
             json.loads(cl.json),
-            {"action": "remove", "person": "B", "ward": "A", "day": "20160120",
-             "continued": False})
+            {"action": "remove", "person": self.person_b.id, "ward":self.ward_a.id, 
+             "day": "20160120", "continued": False})
         self.assertEqual(cl.version, 1)
 
 

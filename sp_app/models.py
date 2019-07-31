@@ -103,7 +103,6 @@ class Ward(models.Model):
         'self', verbose_name=_('after this'), symmetrical=False, blank=True,
         help_text=_('if not empty, '
                     'only these functions can be planned on the next day'))
-    json = models.CharField(max_length=511)
     weight = models.IntegerField(
         default=0,
         help_text=_('if this is a call shift, the weight reflects its '
@@ -117,13 +116,10 @@ class Ward(models.Model):
     def __str__(self):
         return self.name
 
-    def save(self, *args, **kwargs):
-        self.json = json.dumps(self.toJson())
-        super(Ward, self).save(*args, **kwargs)
-
     def toJson(self):
         res = {'name': self.name,
                'shortname': self.shortname,
+               'id': self.id,
                'min': self.min,
                'max': self.max,
                'nightshift': self.nightshift,
@@ -204,7 +200,8 @@ class Person(models.Model):
 
     def toJson(self):
         return {'name': self.name,
-                'id': self.shortname,
+                'shortname': self.shortname,
+                'id': self.id,
                 'start_date': date_to_json(self.start_date),
                 'end_date': date_to_json(self.end_date),
                 'functions': [f.shortname for f in self.functions.all()],
@@ -256,8 +253,8 @@ class ChangeLogging(models.Model):
 
     def toJson(self):
         data = {
-            'person': self.person.shortname,
-            'ward': self.ward.shortname,
+            'person': self.person.id,
+            'ward': self.ward.id,
             'day': self.day.strftime('%Y%m%d'),
             'action': 'add' if self.added else 'remove',
             'continued': self.continued,
@@ -277,17 +274,14 @@ class ChangeLogging(models.Model):
             pk=self.pk).update(json=self.json)
 
     def make_description(self):
-        template = (
-            '{user_name}: {self.person.name} ist {relation} {date}{until} '
-            '{added}für {self.ward.name} eingeteilt')
-        self.description = template.format(
-            user_name=self.user.last_name or self.user.get_username(),
-            self=self,
-            relation='ab' if self.continued else 'am',
-            date=self.day.strftime('%d.%m.%Y'),
-            until=(' bis {}'.format(self.until.strftime('%d.%m.%Y'))
-                   if self.until else ''),
-            added='' if self.added else 'nicht mehr ')
+        until = (f" bis {self.until.strftime('%d.%m.%Y')}"
+               if self.until else '')
+        self.description = (
+            f'{self.user.last_name or self.user.get_username()}: '
+            f'{self.person.name} ist {"ab" if self.continued else "am"} '
+            f'{self.day.strftime("%d.%m.%Y")}{until} '
+            f'{"" if self.added else "nicht mehr "}für {self.ward.name} eingeteilt')
+        
 
     def __str__(self):
         return self.description
@@ -405,8 +399,8 @@ class Planning(models.Model):
 
     def toJson(self):
         return {
-            'person': self.person.shortname,
-            'ward': self.ward.shortname,
+            'person': self.person.id,
+            'ward': self.ward.id,
             'start': self.start.strftime('%Y%m%d'),
             'end': self.end.strftime('%Y%m%d'),
         }
@@ -421,13 +415,11 @@ class Planning(models.Model):
         super(Planning, self).save(*args, **kwargs)
 
     def __str__(self):
-        one_sided = ("{0.person.name} ist ab {0.start:%d.%m.%Y} "
-                     "für {0.ward.name} geplant.")
-        two_sided = ("{0.person.name} ist von {0.start:%d.%m.%Y} bis "
-                     "{0.end:%d.%m.%Y} für {0.ward.name} geplant.")
         if self.end == FAR_FUTURE:
-            return one_sided.format(self)
-        return two_sided.format(self)
+            return (f"{self.person.name} ist ab {self.start:%d.%m.%Y} "
+                    f"für {self.ward.name} geplant.")
+        return (f"{self.person.name} ist von {self.start:%d.%m.%Y} bis "
+                f"{self.end:%d.%m.%Y} für {self.ward.name} geplant.")
 
 
 @python_2_unicode_compatible

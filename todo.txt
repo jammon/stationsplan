@@ -9,7 +9,6 @@
 (B) Alle Dienste einer Person des aktuellen Monats sollen angezeigt werden
 (C) Urlaube in der Planungsansicht der Dienste anzeigen
 (C) Visitendienst in einer Zeile
-(A) Kurzname von Personen ändern können +feature - in Planning.json und Changelogging.json pk verwenden
 (C) Die Dienste jeder Person als Kalender zur Verfügung stellen, mit Updates +Public
 (B) Doppelclick auf voriger oder nächster Monat soll nur einmal wirken
 (C) Jeder Editor darf nur Wards der eigenen Abteilung approven +Public
@@ -45,4 +44,5 @@ StatusEntry konzeptionell von Logging abgrenzen +polish
 (B) Debug Toolbar fixen +bug
 (B) Department Leaders sollen einen Link zu /config haben  +feature
 In QuickInputView wird die vorherige Personenauswahl nicht gelöscht +bug
-Wenn man einen Diensthabenden draggt, geht nach dem Droppen das Besetzung ändern-Fenster auf für den Ausgangstag +bug
+(A) Wenn man einen Diensthabenden draggt, geht nach dem Droppen das Besetzung ändern-Fenster auf für den Ausgangstag +bug
+(C) var durch let ersetzen
