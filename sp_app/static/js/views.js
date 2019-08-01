@@ -164,7 +164,8 @@ var DayTitleView = Backbone.View.extend({
             }),
             day_id: utils.get_day_id(date),
         });
-        this.$el.toggleClass('today', this.model.get('is_today'));
+        el.addClass('daycol');
+        el.toggleClass('today', this.model.get('is_today'));
         return this;
     },
 });

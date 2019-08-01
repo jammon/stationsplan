@@ -30,7 +30,7 @@
 (B) Debug Toolbar soll unabhängig vom Internet funktionieren
 (B) In config nur die aktuellen Ärzte anzeigen, evtl. mit Umschaltemöglichkeit
 (B) Der Chef soll Planungen sehen aber nicht ändern können
-(A) Markieren, wenn jemand verplanbar aber nicht verplant ist
+(A) Markieren, wenn jemand verplanbar aber nicht verplant ist (das könnte 'Aufgaben' ersetzen)
 (B) Wird ward.continued noch verwendet?
 (B) Anordnung der Diensthabenden in der Stationsansicht so, dass sie immer auf einer Reihe sind
 (C) Vorläufige Planungen zulassen, die erst auf Anforderungen zum Server übertragen werden
