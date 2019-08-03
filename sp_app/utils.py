@@ -75,7 +75,7 @@ def apply_changes(user, company_id, day, ward_id, continued, persons):
     cls = []
     for p in persons:
         assert p['id'] in known_persons, \
-            "%s is not in the persons database" % p['id']
+            "{p['id']} is not in the persons database"
         cl = ChangeLogging.objects.create(
             person=known_persons[p['id']],
             added=p['action'] == 'add',
@@ -154,8 +154,8 @@ class PopulatedTestCase(TestCase):
         self.user = User.objects.create(username='Mr. User', password='123456')
 
     def assertContainsDict(self, given, expected):
-        msg = "{{ {0}: {1}, ...}} != {{ {0}: {2}, ...}}"
         for key, value in expected.items():
             self.assertEqual(
                 given[key], value,
-                msg.format(repr(key), repr(given[key]), repr(value)))
+                f"{{ {repr(key)}: {repr(given[key])}, ...}} != "
+                f"{{ {repr(key)}: {repr(value)}, ...}}")

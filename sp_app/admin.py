@@ -83,7 +83,7 @@ class PersonWardListFilter(admin.SimpleListFilter):
         value = self.value()
         if value:
             return queryset.filter(**{
-                "{}_id".format(self.parameter_name): int(value)})
+                f"{self.parameter_name}_id": int(value)})
         return queryset
 
 

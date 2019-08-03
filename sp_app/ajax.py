@@ -55,14 +55,12 @@ def change_approved(request):
     data = json.loads(request.body)
     res = set_approved(data['wards'], data['date'],
                        request.session['company_id'])
-    template = ('{user_name}: {wards} ist {limit} sichtbar')
-    content = template.format(
-        user_name=request.user.last_name or request.user.get_username(),
-        wards=', '.join(res['wards']),
-        limit=('bis ' + res['approved']) if res['approved'] else 'unbegrenzt')
+    user_name = request.user.last_name or request.user.get_username()
+    wards = ', '.join(res['wards'])
+    limit = ('bis ' + res['approved']) if res['approved'] else 'unbegrenzt'
     StatusEntry.objects.create(
         name='Approval',
-        content=content,
+        content=f'{user_name}: {wards} ist {limit} sichtbar',
         department=None,
         company_id=request.session['company_id'])
     return JsonResponse(res, safe=False)
@@ -102,11 +100,11 @@ def change_function(request):
             'functions': [f.shortname for f in person.functions.all()],
         }
     except Person.DoesNotExist as e:
-        res['reason'] = 'Person {} not found'.format(data['person'])
+        res['reason'] = f'Person {data["person"]} not found'
     except Person.MultipleObjectsReturned as e:
-        res['reason'] = 'Person {} found multiple times'.format(data['person'])
+        res['reason'] = f'Person {data["person"]} found multiple times'
     except Ward.DoesNotExist as e:
-        res['reason'] = 'Ward {} not found'.format(data['ward'])
+        res['reason'] = f'Ward {data["ward"]} not found'
     except Ward.MultipleObjectsReturned as e:
-        res['reason'] = 'Ward {} found multiple times'.format(data['ward'])
+        res['reason'] = f'Ward {data["ward"]} found multiple times'
     return JsonResponse(res, safe=False)

@@ -23,8 +23,7 @@ class TestFirstOfMonth(TestCase):
             got = get_first_of_month(given)
             self.assertEqual(
                 got, expected,
-                msg="get_first_of_month for {} should be {}, got {}".format(
-                    given, expected, got))
+                msg=f"get_first_of_month for {given} should be {expected}, got {got}")
 
 
 class TestLastDayOfMonth(TestCase):
@@ -41,8 +40,7 @@ class TestLastDayOfMonth(TestCase):
         for given, expected in data:
             self.assertEqual(
                 last_day_of_month(given), expected,
-                msg="Last day of month for {} should be {}".format(
-                    given, expected))
+                msg=f"Last day of month for {given} should be {expected}")
 
 
 class TestGetForCompany(TestCase):

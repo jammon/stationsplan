@@ -51,7 +51,7 @@ class Department(models.Model):
         verbose_name_plural = _('Departments')
 
     def __str__(self):
-        return "{} ({})".format(self.name, self.shortname)
+        return f"{self.name} ({self.shortname})"
 
 
 @python_2_unicode_compatible
@@ -196,7 +196,7 @@ class Person(models.Model):
         verbose_name_plural = _('Persons')
 
     def __str__(self):
-        return "{} ({})".format(self.name, self.shortname)
+        return f"{self.name} ({self.shortname})"
 
     def toJson(self):
         return {'name': self.name,
@@ -439,10 +439,10 @@ class Employee(models.Model):
         verbose_name_plural = _('Employees')
 
     def __str__(self):
-        return '{}, {}, {}'.format(
-            self.user.get_full_name() or self.user.get_username(),
-            ', '.join([d.name for d in self.departments.all()]),
-            self.company.name)
+        return '; '.join(
+            (self.user.get_full_name() or self.user.get_username(),
+             ', '.join([d.name for d in self.departments.all()]),
+             self.company.name))
 
 
 @python_2_unicode_compatible
@@ -460,7 +460,7 @@ class StatusEntry(models.Model):
         help_text=_('Can be empty'), on_delete=models.SET_NULL)
 
     def __str__(self):
-        return '{}: {}'.format(self.name, self.content)
+        return f'{self.name}: {self.content}'
 
 
 @python_2_unicode_compatible
@@ -473,7 +473,7 @@ class Holiday(models.Model):
         verbose_name_plural = _('Holidays')
 
     def __str__(self):
-        return '{}: {}'.format(self.date, self.name)
+        return f'{self.date}: {self.name}'
 
 
 @python_2_unicode_compatible

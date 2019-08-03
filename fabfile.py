@@ -11,7 +11,7 @@ code_dir = '~/stationsplan'
 
 def test(verbosity='1'):
     local("python ./manage.py test sp_app "
-          "--settings=stationsplan.settings.dev -v %s" % verbosity)
+          f"--settings=stationsplan.settings.dev -v {verbosity}")
 
 
 def makemigrations():
