@@ -186,7 +186,7 @@ class ChangeLoggingAdmin(admin.ModelAdmin):
     date_hierarchy = 'day'
     list_filter = (DepartmentsListFilter, PersonListFilter, WardListFilter,
                    'continued')
-
+    list_display = ('description', 'change_time', )
 
 @admin.register(Planning)
 class PlanningAdmin(admin.ModelAdmin):

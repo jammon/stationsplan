@@ -46,3 +46,4 @@ StatusEntry konzeptionell von Logging abgrenzen +polish
 In QuickInputView wird die vorherige Personenauswahl nicht gelöscht +bug
 (A) Wenn man einen Diensthabenden draggt, geht nach dem Droppen das Besetzung ändern-Fenster auf für den Ausgangstag +bug
 (C) var durch let ersetzen
+listfilter für Person nach aktueller Anwesenheit

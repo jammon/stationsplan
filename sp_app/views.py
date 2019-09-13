@@ -31,6 +31,7 @@ def plan(request, month='', day=''):
     """
     if month == '' and day:
         month = day[:6]
+    # TODO: was wenn in der session keine department_ids sind?
     department_ids = request.session.get('department_ids')
     company_id = request.session.get('company_id')
     # Get all Persons who work here currently
