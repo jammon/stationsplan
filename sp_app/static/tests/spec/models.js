@@ -1,4 +1,4 @@
-init_hospital();
+beforeEach(init_hospital);
 describe("models", function() {
     describe("Initializing data", function() {
         it("should have the persons and wards set", function() {
@@ -276,7 +276,7 @@ describe("models", function() {
             });
         });
         describe("interaction with previous planning", function() {
-            var yesterday, today, tomorrow;
+            var yesterday, today, tomorrow, person_a;
             beforeEach(function() {
                 yesterday = new models.Day({
                     date: new Date(2015, 7, 3),
@@ -289,6 +289,7 @@ describe("models", function() {
                     date: new Date(2015, 7, 5),
                     yesterday: today,
                 });
+                person_a = models.persons.get('A');
             });
             function test_staffing (day, staffing, total, displayed) {
                 var st = day.ward_staffings[staffing];
@@ -298,7 +299,6 @@ describe("models", function() {
             it("should strike off yesterdays nightshift for today, "+
                 "and continue the duties tomorrow, "+
                 "if they are to be continued", function() {
-                var person_a = models.persons.get('A');
                 yesterday.ward_staffings.A.add(person_a, {continued: true});
                 yesterday.ward_staffings.O.add(person_a, {continued: false});
                 yesterday.ward_staffings.N.add(person_a, {continued: false});
@@ -317,7 +317,6 @@ describe("models", function() {
             });
             it("should strike off persons for wards, "+
                 "that are not possible after their yesterdays duties", function() {
-                var person_a = models.persons.get('A');
                 var person_b = models.persons.get('B');
                 yesterday.ward_staffings.A.add(person_a, {continued: true});
                 yesterday.ward_staffings.S.add(person_a);
@@ -331,7 +330,6 @@ describe("models", function() {
                 test_staffing(tomorrow,  'B', 1, 1);
             });
             it("should continue yesterdays planning", function() {
-                var person_a = models.persons.get('A');
                 yesterday.ward_staffings.A.add(person_a, {continued: true});
                 expect(today.ward_staffings.A.length).toBe(1);
                 expect(today.ward_staffings.A.models[0].id).toBe('A');
@@ -345,7 +343,6 @@ describe("models", function() {
                     "'<%= action1 %> <%= cont1 %>' <%= relation %> " +
                     "'<%= action2 %> <%= cont2 %>' <%= change %> '<%= result %>' " +
                     "(<%= sensible %>sensible change)");
-                var person_a = models.persons.get('A');
                 function do_test(action1, cont1, relation, action2, cont2, 
                                  change, result, sensible) {
                     
@@ -421,7 +418,6 @@ describe("models", function() {
 
             });
             it("should set a persons duties", function() {
-                var person_a = models.persons.get('A');
                 expect(today.persons_duties.A.length).toBe(0);
                 today.ward_staffings.A.add(person_a);
                 expect(today.persons_duties.A.length).toBe(1);
@@ -430,7 +426,6 @@ describe("models", function() {
                 expect(today.persons_duties.A.length).toBe(0);
             });
             it("should make a person available after the vacation ends", function() {
-                var person_a = models.persons.get('A');
                 var ward_a = models.wards.get('A');
                 expect(yesterday.get_available(ward_a).length).toBe(4);
                 expect(today.get_available(ward_a).length).toBe(4);
@@ -447,7 +442,6 @@ describe("models", function() {
                 expect(tomorrow.get_available(ward_a).length).toBe(4);
             });
             it("should continue a persons duties after the vacation ends", function() {
-                var person_a = models.persons.get('A');
                 var person_b = models.persons.get('B');
                 // A is on ward A
                 yesterday.ward_staffings.A.add(person_a, {continued: true});
