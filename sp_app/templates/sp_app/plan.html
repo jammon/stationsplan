@@ -198,6 +198,7 @@
                    1),                       // start_of_data
           {% if is_editor %}true{% else %}false{% endif %},
           {{ holidays|safe }},
+          {{ department_ids|safe}},
           {{ last_change_pk }},
           {{ last_change_time }}
     /* jshint ignore:end */

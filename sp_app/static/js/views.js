@@ -114,7 +114,20 @@ var StaffingView = StaffingDisplayView.extend({
             changeviews.staff.show(this.collection);
     },
 });
-
+var NotPlannedView = Backbone.View.extend({
+    tagName: 'td',
+    initialize: function(options) {
+        this.day = options.day;
+        this.listenTo(this.day, 'person-changed', this.render)
+    },
+    render: function() {
+        this.$el.text(
+            _.map(this.day.not_planned, function(person) {
+                return person.get('shortname');
+            }).join(", "));
+        return this;
+    },
+});
 var DutiesView = Backbone.View.extend({
     tagName: 'td',
     initialize: function() {
@@ -227,6 +240,15 @@ var PeriodView = Backbone.View.extend({
         });
         return row;
     },
+    construct_not_planned: function() {
+        var row = $('<tr/>', {'class': 'not_planned'});
+        row.append($('<th/>', { text: 'unverplant'}));
+        this.period_days.each(function(day) {
+            let view = new NotPlannedView({day: day});
+            row.append(view.render().$el);
+        });
+        return row;
+    },
     build_table: function() {
         this.table = this.$(".plan");
         var titlerow = $('<tr/>', {'class': 'titlerow'}).append($('<th/>'));
@@ -249,6 +271,7 @@ var PeriodView = Backbone.View.extend({
                 row_class + ' approvable',
                 'ward_staffings', StaffingView));
         }, this);
+        this.table.append(this.construct_not_planned());
     },
     build_duties_table: function() {
         _.each(this.period_days.current_persons(), function(person) {

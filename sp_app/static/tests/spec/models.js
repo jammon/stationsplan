@@ -557,6 +557,38 @@ describe("models", function() {
                 expect(day.get_month_id()).toBe('201603');
             });
         });
+        describe("not_planned", function() {
+            it("should have all persons not planned initially", function() {
+                var today = new models.Day({ date: new Date(2019, 8, 27) });
+                expect(today.not_planned.length).toBe(4);
+            });
+            it("should respect todays planning", function() {
+                let today = new models.Day({ date: new Date(2019, 8, 27) });
+                let person_a = models.persons.get('A');
+                let person_b = models.persons.get('B');
+                today.ward_staffings.A.add(person_a);
+                expect(today.not_planned.length).toBe(3);
+                expect(today.not_planned).not.toContain(person_a);
+                expect(today.not_planned).toContain(person_b);
+            });
+            it("should respect yesterdays nightshift", function() {
+                let yesterday = new models.Day({ 
+                    date: new Date(2019, 8, 26) });
+                let today = new models.Day({ 
+                    date: new Date(2019, 8, 27),
+                    yesterday: yesterday,
+                });
+                let person_a = models.persons.get('A');
+                let person_b = models.persons.get('B');
+                today.ward_staffings.A.add(person_a);
+                yesterday.ward_staffings.N.add(person_b);
+
+                expect(today.not_planned.length).toBe(2);
+                expect(today.not_planned).not.toContain(person_a);
+                expect(today.not_planned).not.toContain(person_b);
+                expect(today.not_planned).toContain(models.persons.get('C'));
+            });
+        });
     });
     describe("get_month_days and MonthDays", function() {
         var month_days;

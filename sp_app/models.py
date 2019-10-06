@@ -184,7 +184,8 @@ class Person(models.Model):
         _('position'),
         default=1,
         help_text=_('Ordering in the display. '
-                    'Should not be more than two digits.'))
+                    'Should not be more than two digits. '
+                    '>80 means "Chefarzt"'))
     anonymous = models.BooleanField(
         _('Anonymous'),
         default=False,
@@ -205,6 +206,7 @@ class Person(models.Model):
                 'start_date': date_to_json(self.start_date),
                 'end_date': date_to_json(self.end_date),
                 'functions': [f.shortname for f in self.functions.all()],
+                'departments': [d.id for d in self.departments.all()],
                 'position': '%02d' % self.position,
                 'anonymous': self.anonymous,
                 }

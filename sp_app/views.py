@@ -68,6 +68,7 @@ def plan(request, month='', day=''):
         'first_of_month': first_of_month,
         'start_of_data': start_of_data,
         'holidays': json.dumps(holidays),
+        'department_ids': json.dumps(department_ids),
     }
     last_change = ChangeLogging.objects.filter(
         company_id=request.session['company_id'],

@@ -35,6 +35,7 @@ var current_date = new Current_Date();
 //     - start_date = begin of job
 //     - end_date = end of job
 //     - functions = Array of Wards/Tasks that can be done
+//     - departments = Array of Department-Ids the person belongs to
 //     - position = position in the listing
 //     - anonymous = true if it represents a different department
 var Person = Backbone.Model.extend({
@@ -60,6 +61,12 @@ var Persons = Backbone.Collection.extend({
     model: Person,
     comparator: function(person) {
         return person.get('position') + person.get('name');
+    },
+    // all persons available on this date
+    available: function(date) {
+        return this.filter(function(person) {
+            return person.is_available(date);
+        });
     },
 });
 var persons = new Persons();
@@ -117,9 +124,9 @@ var WARD_COLLECTION = {
 };
 var Wards = Backbone.Collection.extend(WARD_COLLECTION);
 var wards = new Wards();
-var nightshifts = new Backbone.Collection(WARD_COLLECTION);
-var on_leave = new Backbone.Collection(WARD_COLLECTION);
-var on_call = new Backbone.Collection(WARD_COLLECTION);
+var nightshifts = new Backbone.Collection(null, WARD_COLLECTION);
+var on_leave = new Backbone.Collection(null, WARD_COLLECTION);
+var on_call = new Backbone.Collection(null, WARD_COLLECTION);
 var on_call_types = [];  // List of the ward_types of on-call shifts
 
 function initialize_wards (wards_init, different_days) {
@@ -278,10 +285,11 @@ var Duties = Backbone.Collection.extend({
         this.displayed = new Backbone.Collection(null, {model: Ward});
     },
     calc_displayed: function() {
-        var that = this;
+        let ward_staffings = this.day.ward_staffings;
+        let person = this.person;
         this.displayed.reset(
             this.filter(function(ward) {
-                return that.day.ward_staffings[ward.id].displayed.get(that.person);
+                return ward_staffings[ward.id].displayed.get(person);
             }));
     },
 });
@@ -306,19 +314,22 @@ var Day = Backbone.Model.extend({
 
         this.ward_staffings = {};
         this.persons_duties = {};
+        this.update_not_planned();
 
         wards.each(function(ward) {
-            this.ward_staffings[ward.id] = new Staffing([], 
-                { ward: ward, day: this });
+            this.ward_staffings[ward.id] = new Staffing(
+                [], { ward: ward, day: this });
         }, this);
         persons.each(function(person) {
-            this.persons_duties[person.id] = new Duties([], 
-                { person: person, day: this });
+            let duties = this.persons_duties[person.id] = new Duties(
+                [], { person: person, day: this });
         }, this);
 
         this.on('on_leave-changed', this.calc_persons_display, this);
+        this.on('person-changed', this.update_not_planned, this);
         if (yesterday) {
             yesterday.on('nightshift-changed', this.calc_persons_display, this);
+            yesterday.on('nightshift-changed', this.update_not_planned, this);
             yesterday.on('special-duty-changed', this.calc_persons_display, this);
             this.continue_yesterdays_staffings();
         }
@@ -396,6 +407,7 @@ var Day = Backbone.Model.extend({
     person_changed: function(action, person, staffing, options) {
         var ward = staffing.ward;
         this.persons_duties[person.id][action](ward);
+        this.trigger('person-changed', action, person, staffing);
         if (ward.get('on_leave')) {
             this.trigger('on_leave-changed', person, action);
         }
@@ -447,6 +459,52 @@ var Day = Backbone.Model.extend({
     },
     get_month_id: function() {
         return  this.id.slice(0, 6);
+    },
+    update_not_planned: function() {
+        // not planned ist everybody who 
+        // - is not anonymous
+        // - belongs to the current department
+        // - has no duties 
+        // - is not yesterdays nightshift
+        // - is not Chefarzt
+
+        // not applicable on free days
+        if (this.get('is_free')) return [];
+
+        // not anonymous
+        // belongs to the current department
+        // not Chefarzt
+        this.not_planned = _.filter(
+            persons.available(this.get('date')), 
+            function(person) { 
+                let not_anonymous = !person.get('anonymous');
+                let own_department = person.get('own_department');
+                let not_chefarzt = (person.get('position') < '80'); 
+                return not_anonymous && own_department && not_chefarzt;
+            }
+        );
+        // no duties
+        if (!_.isEmpty(this.persons_duties)) {
+            this.not_planned = _.filter(
+                this.not_planned,
+                function(person) {
+                    let duties = this.persons_duties[person.id];
+                    return !(duties && duties.length>0);
+                }, 
+                this);
+        }
+        // not yesterdays nightshift
+        let yesterday = this.get('yesterday');
+        if (yesterday) {
+            let yesterdays_nightshifters = nightshifts.map(function(ward) {
+                return yesterday.ward_staffings[ward.id].models;
+            });
+            let yesterdays_nightshift = _.union(...yesterdays_nightshifters)
+            this.not_planned = _.difference(
+                this.not_planned,
+                yesterdays_nightshift
+            );
+        }
     },
 });
 

@@ -35,11 +35,20 @@ function setupCsrfProtection() {
 
 function initialize_site(persons, wards, different_days, plannings,
                          year, month, start_of_data, is_editor, holidays, 
-                         last_change_pk, last_change_time) {
+                         department_ids, last_change_pk, last_change_time) {
     setupCsrfProtection();
     models.user.is_editor = is_editor;
     models.initialize_wards(wards, different_days);
     models.persons.reset(persons);
+    models.persons.each(function(person) {
+        person.set(
+            'own_department',
+            _.intersection(
+                person.get('departments'),
+                department_ids
+            ).length>0
+        ); 
+    });
     models.set_plannings(plannings); 
     utils.set_holidays(holidays);
     models.start_day_chain(start_of_data.getFullYear(),

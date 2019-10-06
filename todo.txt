@@ -30,7 +30,6 @@
 (B) Debug Toolbar soll unabhängig vom Internet funktionieren
 (B) In config nur die aktuellen Ärzte anzeigen, evtl. mit Umschaltemöglichkeit
 (B) Der Chef soll Planungen sehen aber nicht ändern können
-(A) Markieren, wenn jemand verplanbar aber nicht verplant ist (das könnte 'Aufgaben' ersetzen)
 (B) Wird ward.continued noch verwendet?
 (B) Anordnung der Diensthabenden in der Stationsansicht so, dass sie immer auf einer Reihe sind
 (C) Vorläufige Planungen zulassen, die erst auf Anforderungen zum Server übertragen werden
@@ -47,3 +46,6 @@ In QuickInputView wird die vorherige Personenauswahl nicht gelöscht +bug
 (A) Wenn man einen Diensthabenden draggt, geht nach dem Droppen das Besetzung ändern-Fenster auf für den Ausgangstag +bug
 (C) var durch let ersetzen
 listfilter für Person nach aktueller Anwesenheit
+(A) Zusätzliche Zeile für die nicht verplanten Kollegen +feature
+In Admin - Änderungen listfilter nach Editor
+In Admin - Änderungen listfilter nach Person aktuell oder zukünftig anwesend
