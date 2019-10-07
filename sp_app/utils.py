@@ -86,21 +86,27 @@ def apply_changes(user, company_id, day, ward_id, continued, persons):
     return cls
 
 
-def set_approved(wards, approved, company_id):
+def set_approved(wards, approved, department_ids):
     """
     wards is [<ward.shortname>, ...],
     approved is False|<YYYYMMDD>, (False means unlimited approval)
     company_id is <company.id>
     """
-    wards = Ward.objects.filter(company_id=company_id,
-                                shortname__in=wards)
+    to_approve = Ward.objects.filter(
+        departments__id__in=department_ids, shortname__in=wards)
     # TODO: test for malformatted input
     approval = (datetime.strptime(approved, '%Y%m%d').date()
                 if approved else None)
-    for ward in wards:
+    to_approve_sn = []
+    for ward in to_approve:
         ward.approved = approval
         ward.save()
-    return {'wards': [ward.shortname for ward in wards], 'approved': approved}
+        to_approve_sn.append(ward.shortname)
+    return {
+        'wards': to_approve_sn,
+        'approved': approved,
+        'not approved wards': [ward for ward in wards if ward not in to_approve_sn]
+    }
 
 
 def get_last_changes(company_id, last_change_pk):

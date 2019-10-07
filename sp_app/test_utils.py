@@ -8,7 +8,7 @@ from .utils import (get_first_of_month, last_day_of_month,
                     get_for_company, get_holidays_for_company,
                     apply_changes, set_approved, get_last_changes,
                     PopulatedTestCase)
-from .models import Company, Person, Ward, Holiday, Region, ChangeLogging
+from .models import Company, Department, Person, Ward, Holiday, Region, ChangeLogging
 
 
 class TestFirstOfMonth(TestCase):
@@ -139,21 +139,36 @@ class TestApplyChanges(PopulatedTestCase):
 
 class TestSetApproved(PopulatedTestCase):
 
+    def do_test(self, ward_id, approval):
+        ward = get_for_company(Ward, company_id=self.company.id,
+                               shortname=ward_id)
+        self.assertEqual(ward.approved, approval)
+
     def test_set_approved(self):
-        def test_ward(ward_id, approval):
-            ward = get_for_company(Ward, company_id=self.company.id,
-                                   shortname=ward_id)
-            self.assertEqual(ward.approved, approval)
+        res = set_approved(['A', 'B'], '20170401', [self.department.id])
+        self.assertEqual(res.get('wards'), ['A', 'B'])
+        self.assertEqual(res.get('approved'), '20170401')
+        self.do_test('A', date(2017, 4, 1))
+        self.do_test('B', date(2017, 4, 1))
 
-        res = set_approved(['A', 'B'], '20170401', self.company.id)
-        self.assertEqual(res, {'wards': ['A', 'B'], 'approved': '20170401'})
-        test_ward('A', date(2017, 4, 1))
-        test_ward('B', date(2017, 4, 1))
+        res = set_approved(['A'], False, [self.department.id])
+        self.assertEqual(res.get('wards'), ['A'])
+        self.assertEqual(res.get('approved'), False)
+        self.do_test('A', None)
+        self.do_test('B', date(2017, 4, 1))
 
-        res = set_approved(['A'], False, self.company.id)
-        self.assertEqual(res, {'wards': ['A'], 'approved': False})
-        test_ward('A', None)
-        test_ward('B', date(2017, 4, 1))
+    def test_wrong_department(self):
+        department2 = Department.objects.create(
+            name="Department 2", shortname="Dep2", company=self.company)
+        ward_z = Ward.objects.create(
+            name="Ward Z", shortname="Z", max=3, min=2,
+            company=self.company)
+        ward_z.departments.add(department2)
+        res = set_approved(['Z'], '20170401', [self.department.id])
+        self.assertFalse(res.get('wards'))
+        self.assertEqual(res.get('not approved wards'), ['Z'])
+        self.do_test('Z', None)
+
 
 
 class TestGetLastChanges(PopulatedTestCase):

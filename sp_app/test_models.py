@@ -14,6 +14,7 @@ class TestPerson(PopulatedTestCase):
                                        start_date=date(2015, 1, 1),
                                        end_date=date(2015, 12, 31),
                                        company=self.company)
+        person.departments.add(self.department)
         self.assertEqual(person.toJson(),
                          {'name': "Heinz Müller",
                           'shortname': "Mül",
@@ -21,6 +22,7 @@ class TestPerson(PopulatedTestCase):
                           'start_date': [2015, 0, 1],
                           'end_date': [2015, 11, 31],
                           'functions': [],
+                          'departments': [self.department.id],
                           'position': '01',
                           'anonymous': False, })
 

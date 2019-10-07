@@ -54,7 +54,7 @@ def change_approved(request):
     """
     data = json.loads(request.body)
     res = set_approved(data['wards'], data['date'],
-                       request.session['company_id'])
+                       request.session['department_ids'])
     user_name = request.user.last_name or request.user.get_username()
     wards = ', '.join(res['wards'])
     limit = ('bis ' + res['approved']) if res['approved'] else 'unbegrenzt'

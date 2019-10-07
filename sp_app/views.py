@@ -84,11 +84,6 @@ def plan(request, month='', day=''):
 
 
 @login_required
-def previous_months(request):
-    pass
-
-
-@login_required
 def password_change(request):
     return auth_views.password_change(
         request, template_name='registration/password_change.html',
