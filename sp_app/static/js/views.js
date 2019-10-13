@@ -292,17 +292,9 @@ var PeriodView = Backbone.View.extend({
             content: this.template(),
         };
     },
-    is_first_loaded_view: function() {
-        return models.days.first().id===this.start_id;
-    },
     render: function() {
         this.$el.html(get_table_from_template(this.get_template_options()));
         this.build_table();
-
-        // display only the currently loaded days
-        if (this.is_first_loaded_view()) {
-            this.$(".prev-view").hide();
-        }
         $(".plans").append(this.$el);
         return this;
     },
@@ -621,13 +613,13 @@ var Router = Backbone.Router.extend({
         "funktionen(/)": "funktionen"
     },
     plan: function(period_id) {
-        this.call_view(month_views, "#nav-stationen", period_id);
+        this.call_view(month_views, "#nav-stationen", period_id, 'plan');
     },
     dienste: function(period_id) {
-        this.call_view(on_call_views, "#nav-dienste", period_id);
+        this.call_view(on_call_views, "#nav-dienste", period_id, 'dienste');
     },
     tag: function(period_id) {
-        this.call_view(day_views, "#nav-tag", period_id);
+        this.call_view(day_views, "#nav-tag", period_id, 'tag');
     },
     funktionen: function() {
         if (!models.user.is_editor) {
@@ -638,8 +630,12 @@ var Router = Backbone.Router.extend({
             functionsview = (new FunctionsView()).render();
         this.make_current(functionsview, "#nav-funktionen");
     },
-    call_view: function(views_coll, nav_id, period_id) {
-        var view = views_coll.get_view({
+    call_view: function(views_coll, nav_id, period_id, slug) {
+        if (period_id && period_id < models.days.first().id) {
+            document.location = "/" + slug + "/" + period_id;
+            return;
+        }
+        let view = views_coll.get_view({
             start_id: period_id || utils.get_day_id(new Date()),
             size: current_size,
         });

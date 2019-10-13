@@ -451,6 +451,8 @@ class Employee(models.Model):
 class StatusEntry(models.Model):
     ''' Saves some detail about the current status of the planning
     or the program
+
+    Currently is only for setting the approved date of wards
     '''
     name = models.CharField(max_length=30)
     content = models.CharField(max_length=255)

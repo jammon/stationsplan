@@ -34,8 +34,6 @@
 (B) Button Aufgaben ausblenden
 (C) Bedeutung der Berechtigungen von Benutzern klarer machen
 (B) Wenn man am letzten Tag eines Monat jemanden einträgt, erscheint er im Client ab dem Tag durchgehend geplant +bug
-StatusEntry muss ein datetime haben +feature
-StatusEntry konzeptionell von Logging abgrenzen +polish
 (C) Set MySQL Strict Mode +deploy
 (B) Debug Toolbar fixen +bug
 (B) Department Leaders sollen einen Link zu /config haben  +feature
