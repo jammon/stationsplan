@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
+import datetime
 from django import forms
 from django.db import models
 from django.contrib import admin
@@ -99,6 +101,21 @@ class PersonListFilter(PersonWardListFilter):
     model = Person
 
 
+class PersonListFilter(PersonWardListFilter):
+    title = _('Person')
+    parameter_name = 'person'
+    model = Person
+
+
+class CurrentPersonListFilter(PersonListFilter):
+    """Doesn't show former employees"""
+    def lookups(self, request, model_admin):
+        return self.model.objects.filter(
+            company_id=request.session.get('company_id'),
+            end_date__gte=datetime.date.today()
+        ).values_list('id', 'name')
+
+
 class DepartmentsListFilter(admin.SimpleListFilter):
     # Human-readable title which will be displayed in the
     # right admin sidebar just above the filter options.
@@ -184,8 +201,8 @@ class DepartmentAdmin(CompanyRestrictedMixin, admin.ModelAdmin):
 @admin.register(ChangeLogging)
 class ChangeLoggingAdmin(admin.ModelAdmin):
     date_hierarchy = 'day'
-    list_filter = (DepartmentsListFilter, PersonListFilter, WardListFilter,
-                   'continued')
+    list_filter = (DepartmentsListFilter, CurrentPersonListFilter, WardListFilter,
+                   'user', 'continued')
     list_display = ('description', 'change_time', )
 
 @admin.register(Planning)

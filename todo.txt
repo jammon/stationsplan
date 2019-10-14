@@ -42,5 +42,4 @@ In QuickInputView wird die vorherige Personenauswahl nicht gelöscht +bug
 (C) var durch let ersetzen
 listfilter für Person nach aktueller Anwesenheit
 (A) Zusätzliche Zeile für die nicht verplanten Kollegen +feature
-In Admin - Änderungen listfilter nach Editor
-In Admin - Änderungen listfilter nach Person aktuell oder zukünftig anwesend
+Features in der Konfiguration an- oder ausschalten
