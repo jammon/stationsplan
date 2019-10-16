@@ -94,3 +94,4 @@ x 2019-10-07 Jeder Editor darf nur Wards der eigenen Abteilung approven +Public
 x 2019-10-13 Klick auf Voriger Monat soll immer ein Ergebnis liefern
 x 2019-10-14 In Admin - Änderungen listfilter nach Editor
 x 2019-10-14 In Admin - Änderungen listfilter nach Person aktuell oder zukünftig anwesend
+x 2019-10-14 listfilter für Person nach aktueller Anwesenheit

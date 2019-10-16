@@ -26,11 +26,3 @@ def write_department_id_to_session(sender, **kwargs):
         request.session.set_expiry(0)
         request.session['is_editor'] = True
         request.session['can_change_password'] = True
-
-
-@receiver(m2m_changed, sender=Ward.after_this.through)
-def save_ward(sender, **kwargs):
-    """ If Ward.after_this changes, the json of ward has to be updated
-    """
-    if kwargs['action'].startswith('post_'):
-        kwargs['instance'].save()
