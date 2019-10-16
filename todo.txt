@@ -17,7 +17,6 @@
 (C) Assets komprimieren
 (C) Flags für Betatester
 (C) Administration für User bauen +Public
-(B) Dienste, die man für den 31.12. einträgt, werden fortgesetzt
 (B) Änderungsgeschichte einer Planung abrufbar machen
 (C) Testen mit Firefox headless oder PhantomJS
 (B) Aktion Aktualisieren ins Menu
@@ -40,5 +39,4 @@
 In QuickInputView wird die vorherige Personenauswahl nicht gelöscht +bug
 (A) Wenn man einen Diensthabenden draggt, geht nach dem Droppen das Besetzung ändern-Fenster auf für den Ausgangstag +bug
 (C) var durch let ersetzen
-(A) Zusätzliche Zeile für die nicht verplanten Kollegen +feature
-Features in der Konfiguration an- oder ausschalten
+(C) day.get_available umschreiben

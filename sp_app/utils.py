@@ -141,12 +141,12 @@ class PopulatedTestCase(TestCase):
             name="Department 1", shortname="Dep1", company=self.company)
         self.ward_a = Ward.objects.create(
             name="Ward A", shortname="A", max=3, min=2,
-            nightshift=False, everyday=False, on_leave=False,
+            everyday=False, on_leave=False,
             company=self.company)
         self.ward_a.departments.add(self.department)
         self.ward_b = Ward.objects.create(
             name="Ward B", shortname="B", max=2, min=1,
-            nightshift=False, everyday=False, on_leave=False,
+            everyday=False, on_leave=False,
             company=self.company)
         self.ward_b.departments.add(self.department)
         self.person_a = Person.objects.create(

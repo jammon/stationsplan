@@ -45,9 +45,9 @@ Können alles was Department Leader können auf Company-Ebene.
 - Bei Urlaub oder Krank behält die Person ihre Funktionen, sie werden aber für diesen Tag nicht angezeigt.
 - Bei Nachtdienst werden für diesen Tag alle anderen Funktionen nicht angezeigt, für den Folgetag nur die dazu Passenden (wieder Nachtdienst), die anderen nicht.
 - Ablauf:
-    + When on_leave or yesterdays nightshift is added: the person is unavailable for all staffings of the day.
+    + When on_leave is added: the person is unavailable for all staffings of the day.
     + When yesterdays ward with reduced availability for the next day is added: the person is unavailable for all non-fitting staffings of the day.
-    + When on_leave or yesterdays nightshift or yesterdays ward with reduced availability for the next day is removed: the availability of the person must be calculated newly.
+    + When on_leave or yesterdays ward with reduced availability for the next day is removed: the availability of the person must be calculated newly.
 
 
 ## Planungen mit Anfang und Ende eingeben

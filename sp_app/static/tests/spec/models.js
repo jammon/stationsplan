@@ -2,7 +2,6 @@ beforeEach(init_hospital);
 describe("models", function() {
     describe("Initializing data", function() {
         it("should have the persons and wards set", function() {
-            // FIXME: hier kam schon mal 7 raus
             expect(models.persons.length).toBe(4);
             expect(models.wards.length).toBe(8);
             var person_a = models.persons.get('A');
@@ -165,8 +164,13 @@ describe("models", function() {
             expect(today.ward_staffings.A.length).toBe(0);
         });
         describe("check availability:", function() {
-            function check_availability (action, nr_avail, first_avail) {
-                // perform an action
+            function check_availability (
+                    day,
+                    ward_id,
+                    person_id,
+                    nr_avail,
+                    first_avail) {
+                // add a person to a staffing on a day
                 // then check the number of available persons 
                 // and the name of the first available (if given)
                 var yesterday = new models.Day({
@@ -176,40 +180,40 @@ describe("models", function() {
                     date: new Date(2015, 7, 7),  // Friday
                     yesterday: yesterday,
                 });
-                action(today, yesterday);
-                var available = today.get_available(models.wards.get('A'));
+                if (day) {
+                    let _day = day=='today' ? today : yesterday;
+                    _day.ward_staffings[ward_id].add(models.persons.get(person_id));
+                }
+                let available = today.get_available(models.wards.get('A'));
                 expect(available.length).toEqual(nr_avail);
                 if (first_avail) {
                     expect(available[0].id).toEqual(first_avail);
                 }
             }
             it("usually everybody is available", function() {
-                check_availability(function(today, yesterday) {},
-                4);
+                check_availability(
+                    '', '', '', 
+                    4);
             });
             it("who is on leave isn't available", function() {
-                check_availability(function(today, yesterday) {
-                    today.ward_staffings.L.add(models.persons.get('A'));
-                },
-                3, 'B');
+                check_availability(
+                    'today', 'L', 'A',
+                    3, 'B');
             });
             it("who was on nightshift yesterday isn't available", function() {
-                check_availability(function(today, yesterday) {
-                    yesterday.ward_staffings.N.add(models.persons.get('A'));
-                },
-                3, 'B');
+                check_availability(
+                    'yesterday', 'N', 'A',
+                    3, 'B');
             });
             it("who is on nightshift today is available", function() {
-                check_availability(function(today, yesterday) {
-                    today.ward_staffings.N.add(models.persons.get('A'));
-                },
-                4);
+                check_availability(
+                    'today', 'N', 'A',
+                    4);
             });
             it("who is planned for a different ward today is available", function() {
-                check_availability(function(today, yesterday) {
-                    today.ward_staffings.B.add(models.persons.get('A'));
-                },
-                4);
+                check_availability(
+                    'today', 'B', 'A',
+                    4);
             });
         });
         describe("need for staffing (implicitly test Staffing.needs_staffing)", function() {
@@ -558,16 +562,16 @@ describe("models", function() {
             });
         });
         describe("not_planned", function() {
-            it("should have all persons not planned initially", function() {
+            it("should have all persons not planned initially except the anonymous ones", function() {
                 var today = new models.Day({ date: new Date(2019, 8, 27) });
-                expect(today.not_planned.length).toBe(4);
+                expect(today.not_planned.length).toBe(3);
             });
             it("should respect todays planning", function() {
                 let today = new models.Day({ date: new Date(2019, 8, 27) });
                 let person_a = models.persons.get('A');
                 let person_b = models.persons.get('B');
                 today.ward_staffings.A.add(person_a);
-                expect(today.not_planned.length).toBe(3);
+                expect(today.not_planned.length).toBe(2);
                 expect(today.not_planned).not.toContain(person_a);
                 expect(today.not_planned).toContain(person_b);
             });
@@ -583,7 +587,7 @@ describe("models", function() {
                 today.ward_staffings.A.add(person_a);
                 yesterday.ward_staffings.N.add(person_b);
 
-                expect(today.not_planned.length).toBe(2);
+                expect(today.not_planned.length).toBe(1);
                 expect(today.not_planned).not.toContain(person_a);
                 expect(today.not_planned).not.toContain(person_b);
                 expect(today.not_planned).toContain(models.persons.get('C'));
@@ -628,7 +632,6 @@ describe("models", function() {
             models.user.is_editor = true;
             month_days = models.get_month_days(2016, 3);
             expect(month_days.calltallies).toBeDefined();
-            // FIXME: hier kam schon mal 5 raus
             expect(month_days.calltallies.length).toBe(4);
             models.user.is_editor = false;
         });

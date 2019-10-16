@@ -66,7 +66,7 @@ class TestWard(PopulatedTestCase):
     def test_ward(self):
         ward = Ward.objects.create(
             name="Station A", shortname="A",
-            min=1, max=3, nightshift=False, everyday=False,
+            min=1, max=3, everyday=False,
             freedays=False, on_leave=False,
             company=self.company, position=2)
         self.assertEqual(ward.toJson(),
@@ -75,7 +75,6 @@ class TestWard(PopulatedTestCase):
                           'id': ward.id,
                           'min': 1,
                           'max': 3,
-                          'nightshift': False,
                           'everyday': False,
                           'freedays': False,
                           'weekdays': '',

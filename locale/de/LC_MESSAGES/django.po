@@ -80,10 +80,6 @@ msgstr "Maximale Besetzung"
 msgid "minimum staffing"
 msgstr "Minimale Besetzung"
 
-#: sp_app/models.py:64
-msgid "nightshift"
-msgstr "Nachtdienst"
-
 #: sp_app/models.py:66
 msgid "if True, staffing can not be planned on the next day."
 msgstr "Der Diensthabende kann nicht für den nächsten Tag verplant werden"

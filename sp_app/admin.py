@@ -173,7 +173,7 @@ class WardAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
         (None, {'fields': (
             (('name', 'shortname', 'position'),
              ('max', 'min', 'approved'),
-             ('nightshift', 'everyday', 'freedays', 'on_leave', 'callshift', ),
+             ('everyday', 'freedays', 'on_leave', 'callshift', ),
              ('weekdays', ),
              ('ward_type', 'weight',),
              'departments',

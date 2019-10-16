@@ -40,11 +40,21 @@ var current_date = new Current_Date();
 //     - anonymous = true if it represents a different department
 var Person = Backbone.Model.extend({
     idAttribute: "shortname",
+    defaults: {
+        'start_date': [2015, 0, 1],
+        'end_date': [2099, 11, 31],
+        'position': '01',
+        'anonymous': false,
+    },
     initialize: function() {
-        var start = this.get('start_date') || [2015, 0, 1];
+        var start = this.get('start_date');
         this.set('start_date', new Date(start[0], start[1], start[2]));
-        var end = this.get('end_date') || [2099, 11, 31];
+        var end = this.get('end_date');
         this.set('end_date', new Date(end[0], end[1], end[2]));
+        this.set(
+            'own_department',
+            _.intersection(this.get('departments'), user.department_ids).length>0
+        );
     },
     is_available: function(date) {
         var begin = this.get('start_date');
@@ -78,7 +88,6 @@ var persons = new Persons();
 //     - id
 //     - max = maximum staffing
 //     - min = minimum staffing
-//     - nightshift = if truthy, staffing can not be planned on the next day.
 //     - everyday = if truthy, is to be planned also on free days.
 //     - freedays = if truthy, is to be planned only on free days.
 //     - weekdays = Days of the week when this is to be planned.
@@ -124,6 +133,7 @@ var WARD_COLLECTION = {
 };
 var Wards = Backbone.Collection.extend(WARD_COLLECTION);
 var wards = new Wards();
+// nightshifts - wards with an limited list of "after_this"
 var nightshifts = new Backbone.Collection(null, WARD_COLLECTION);
 var on_leave = new Backbone.Collection(null, WARD_COLLECTION);
 var on_call = new Backbone.Collection(null, WARD_COLLECTION);
@@ -131,7 +141,9 @@ var on_call_types = [];  // List of the ward_types of on-call shifts
 
 function initialize_wards (wards_init, different_days) {
     wards.reset(wards_init);
-    nightshifts.reset(wards.where({'nightshift': true}));
+    nightshifts.reset(wards.filter(function(ward) { 
+        return ward.get('after_this'); 
+    }));
     on_leave.reset(wards.where({'on_leave': true}));
     on_call.reset(wards.filter(function(ward) {
         return ward.get('callshift');
@@ -188,7 +200,6 @@ var Staffing = Backbone.Collection.extend({
             var current_ward_id = this.ward.id;
             if (yesterday) {
                 return yesterday.persons_duties[person.id].every(function(ward) {
-                    if (ward.get('nightshift')) return false;
                     var after_this = ward.get('after_this');
                     if (after_this && !_.contains(after_this, current_ward_id)) {
                         return false;
@@ -328,9 +339,8 @@ var Day = Backbone.Model.extend({
         this.on('on_leave-changed', this.calc_persons_display, this);
         this.on('person-changed', this.update_not_planned, this);
         if (yesterday) {
-            yesterday.on('nightshift-changed', this.calc_persons_display, this);
-            yesterday.on('nightshift-changed', this.update_not_planned, this);
             yesterday.on('special-duty-changed', this.calc_persons_display, this);
+            yesterday.on('special-duty-changed', this.update_not_planned, this);
             this.continue_yesterdays_staffings();
         }
         this.update_is_today();
@@ -370,6 +380,7 @@ var Day = Backbone.Model.extend({
             return persons.models;
         }
         function get_unavailables (day, wards) {
+            // all persons working on this ward at this day are unavailable
             wards.each(function(ward) {
                 var staffing = day.ward_staffings[ward.id];
                 if (staffing) {
@@ -380,7 +391,9 @@ var Day = Backbone.Model.extend({
             });
         }
         // yesterdays nightshift
-        if (yesterday) get_unavailables(yesterday, nightshifts);
+        // FIXME: it should take "after_this" into account
+        if (yesterday)
+            get_unavailables(yesterday, nightshifts);
         // persons on leave
         get_unavailables(this, on_leave);
 
@@ -410,9 +423,6 @@ var Day = Backbone.Model.extend({
         this.trigger('person-changed', action, person, staffing);
         if (ward.get('on_leave')) {
             this.trigger('on_leave-changed', person, action);
-        }
-        if (ward.get('nightshift')) {
-            this.trigger('nightshift-changed', person, action);
         }
         if (ward.get('after_this') !== void 0) {
             this.trigger('special-duty-changed', person, ward, action);
@@ -474,8 +484,9 @@ var Day = Backbone.Model.extend({
         // not anonymous
         // belongs to the current department
         // not Chefarzt
+        let available = persons.available(this.get('date'));
         this.not_planned = _.filter(
-            persons.available(this.get('date')), 
+            available, 
             function(person) { 
                 let not_anonymous = !person.get('anonymous');
                 let own_department = person.get('own_department');

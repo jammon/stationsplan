@@ -38,17 +38,9 @@ function initialize_site(persons, wards, different_days, plannings,
                          department_ids, last_change_pk, last_change_time) {
     setupCsrfProtection();
     models.user.is_editor = is_editor;
+    models.user.department_ids = department_ids;
     models.initialize_wards(wards, different_days);
     models.persons.reset(persons);
-    models.persons.each(function(person) {
-        person.set(
-            'own_department',
-            _.intersection(
-                person.get('departments'),
-                department_ids
-            ).length>0
-        ); 
-    });
     models.set_plannings(plannings); 
     utils.set_holidays(holidays);
     models.start_day_chain(start_of_data.getFullYear(),

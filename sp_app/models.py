@@ -60,10 +60,6 @@ class Ward(models.Model):
     shortname = models.CharField(_('Short Name'), max_length=10)
     max = models.IntegerField(help_text=_('maximum staffing'))
     min = models.IntegerField(help_text=_('minimum staffing'))
-    nightshift = models.BooleanField(
-        _('nightshift'),
-        default=False,
-        help_text=_('if True, staffing can not be planned on the next day.'))
     everyday = models.BooleanField(
         _('everyday'),
         default=False,
@@ -122,7 +118,6 @@ class Ward(models.Model):
                'id': self.id,
                'min': self.min,
                'max': self.max,
-               'nightshift': self.nightshift,
                'everyday': self.everyday,
                'freedays': self.freedays,
                'weekdays': self.weekdays,

@@ -271,7 +271,8 @@ var PeriodView = Backbone.View.extend({
                 row_class + ' approvable',
                 'ward_staffings', StaffingView));
         }, this);
-        this.table.append(this.construct_not_planned());
+        if (models.user.is_editor)
+            this.table.append(this.construct_not_planned());
     },
     build_duties_table: function() {
         _.each(this.period_days.current_persons(), function(person) {
