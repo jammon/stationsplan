@@ -30,7 +30,6 @@
 (B) Anordnung der Diensthabenden in der Stationsansicht so, dass sie immer auf einer Reihe sind
 (C) Vorläufige Planungen zulassen, die erst auf Anforderungen zum Server übertragen werden
 (C) Heilig-Abend und Sylvester bei den Feiertagen in allen Regionen hinzufügen +Public
-(B) Button Aufgaben ausblenden
 (C) Bedeutung der Berechtigungen von Benutzern klarer machen
 (B) Wenn man am letzten Tag eines Monat jemanden einträgt, erscheint er im Client ab dem Tag durchgehend geplant +bug
 (C) Set MySQL Strict Mode +deploy

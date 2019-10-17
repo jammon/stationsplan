@@ -96,3 +96,4 @@ x 2019-10-14 In Admin - Änderungen listfilter nach Editor
 x 2019-10-14 In Admin - Änderungen listfilter nach Person aktuell oder zukünftig anwesend
 x 2019-10-14 listfilter für Person nach aktueller Anwesenheit
 x 2019-10-16 Zusätzliche Zeile für die nicht verplanten Kollegen +feature
+x 2019-10-17 Button Aufgaben ausblenden

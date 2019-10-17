@@ -29,9 +29,11 @@
   <div class="inner">
     <table class="plan"></table>
   </div>
-  <div>
-    <button class="show-duties">Aufgaben</button>
-  </div>
+  {% if is_editor %}
+    <div>
+      <button class="show-duties">Aufgaben</button>
+    </div>
+  {% endif %}
 </script>
 
 <!-- Template for the table of on-call services
