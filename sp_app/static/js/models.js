@@ -510,7 +510,7 @@ var Day = Backbone.Model.extend({
             let yesterdays_nightshifters = nightshifts.map(function(ward) {
                 return yesterday.ward_staffings[ward.id].models;
             });
-            let yesterdays_nightshift = _.union(...yesterdays_nightshifters)
+            let yesterdays_nightshift = _.uniq(_.flatten(yesterdays_nightshifters))
             this.not_planned = _.difference(
                 this.not_planned,
                 yesterdays_nightshift
@@ -803,10 +803,8 @@ function save_function(person, ward, added) {
 
 function set_plannings(p) {
     _.each(p, function(planning) {
-        if (Number.isInteger(planning.person))
-            planning.person = persons.findWhere({id: planning.person});
-        if (Number.isInteger(planning.ward))
-            planning.ward = wards.findWhere({id: planning.ward});
+        planning.person = persons.findWhere({id: planning.person});
+        planning.ward = wards.findWhere({id: planning.ward});
     });
     plannings = p;
 }
