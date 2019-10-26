@@ -92,7 +92,6 @@ Abhängig von Ostern:
 - 25.05.: Christi Himmelfahrt: +39
 - 05.06.: Pfingstmontag: +50
 - 15.06.: Fronleichnam: +60
-- 22.11.: Buß- und Bettag: 
 
 Ostertermine
 2017 - 16.04.
@@ -109,6 +108,8 @@ Ostertermine
 2028 - 16.04.
 2029 - 1.04.
 2030 - 21.04.
+
+Buß- und Bettag: Mittwoch vor dem 23.11.
 
 ## Tabelle an Screengröße anpassen
 ### Tabellenbreite

@@ -8,7 +8,7 @@ from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
 from .models import (Person, Ward, ChangeLogging, Planning, Department,
-                     Company, Employee, StatusEntry, Holiday, Region,
+                     Company, Employee, StatusEntry, Holiday, CalculatedHoliday, Region,
                      DifferentDay)
 from .forms import WardForm
 
@@ -220,6 +220,11 @@ class StatusEntryAdmin(CompanyRestrictedMixin, admin.ModelAdmin):
 class HolidayAdmin(admin.ModelAdmin):
     ordering = ('date', )
 
+@admin.register(CalculatedHoliday)
+class CalculatedHolidayAdmin(admin.ModelAdmin):
+    ordering = ('name', )
+    radio_fields = {"mode": admin.HORIZONTAL}
+    # fields = (('name', 'mode'), ('day', 'month', 'year'))
 
 @admin.register(Region)
 class RegionAdmin(admin.ModelAdmin):

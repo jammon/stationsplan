@@ -6,7 +6,6 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext as _
-from django.utils.encoding import python_2_unicode_compatible
 
 
 FAR_FUTURE = date(2099, 12, 31)
@@ -17,7 +16,6 @@ def date_to_json(date):
     return [date.year, date.month - 1, date.day]
 
 
-@python_2_unicode_compatible
 class Company(models.Model):
     name = models.CharField(_('Name'), max_length=50)
     shortname = models.CharField(_('Short Name'), max_length=10)
@@ -38,7 +36,6 @@ class Company(models.Model):
         return self.name
 
 
-@python_2_unicode_compatible
 class Department(models.Model):
     name = models.CharField(_('Name'), max_length=50)
     shortname = models.CharField(_('Short Name'), max_length=10)
@@ -54,7 +51,6 @@ class Department(models.Model):
         return f"{self.name} ({self.shortname})"
 
 
-@python_2_unicode_compatible
 class Ward(models.Model):
     name = models.CharField(_('Name'), max_length=50)
     shortname = models.CharField(_('Short Name'), max_length=10)
@@ -143,7 +139,6 @@ class Ward(models.Model):
             })
 
 
-@python_2_unicode_compatible
 class DifferentDay(models.Model):
     """ A ward can be planned or not planned out of schedule """
     day = models.DateField(_('day'), help_text=_('Day that is different'))
@@ -158,7 +153,6 @@ class DifferentDay(models.Model):
         verbose_name_plural = _('Different Days')
 
 
-@python_2_unicode_compatible
 class Person(models.Model):
     ''' A person (worker) who can be planned for work
     '''
@@ -220,7 +214,6 @@ class Person(models.Model):
             ).update(end=self.end_date)
 
 
-@python_2_unicode_compatible
 class ChangeLogging(models.Model):
     ''' Logs who has made which changes.
     The change can be for one day (continued==False) or continued
@@ -369,7 +362,6 @@ def process_change(cl):
     return json.loads(cl.json)
 
 
-@python_2_unicode_compatible
 class Planning(models.Model):
     """ One time period, where one person is planned for one ward.
 
@@ -419,7 +411,6 @@ class Planning(models.Model):
                 f"{self.end:%d.%m.%Y} für {self.ward.name} geplant.")
 
 
-@python_2_unicode_compatible
 class Employee(models.Model):
     ''' Somebody who uses the plan.
     Can be anyone who works there, but also other involved personnel,
@@ -442,7 +433,6 @@ class Employee(models.Model):
              self.company.name))
 
 
-@python_2_unicode_compatible
 class StatusEntry(models.Model):
     ''' Saves some detail about the current status of the planning
     or the program
@@ -462,7 +452,6 @@ class StatusEntry(models.Model):
         return f'{self.name}: {self.content}'
 
 
-@python_2_unicode_compatible
 class Holiday(models.Model):
     date = models.DateField(_('Date'))
     name = models.CharField(_('Name'), max_length=50)
@@ -474,8 +463,31 @@ class Holiday(models.Model):
     def __str__(self):
         return f'{self.date}: {self.name}'
 
+class CalculatedHoliday(models.Model):
+    """A Holiday with calculated dates"""
+    name = models.CharField(_('Name'), max_length=50)
+    mode = models.CharField(
+        _('Mode'), max_length=3,
+        choices=(('abs', _('Absolute')),
+                 ('rel', _('Easter-related'))))
+    day = models.IntegerField(
+        _('Day'), help_text=_('day of month or distance from Easter in days'))
+    month = models.IntegerField(_('Month'), null=True, blank=True)
+    year = models.IntegerField(_('Year'), null=True, blank=True)
+        
+    class Meta:
+        verbose_name = _('Calculated Holiday')
+        verbose_name_plural = _('Calculated Holidays')
 
-@python_2_unicode_compatible
+    def __str__(self):
+        if self.mode=='abs':
+            return f"{self.name}: {self.day}.{self.month}.{self.year or ''}"
+        if self.day>0:
+            return  f"{self.name}: {self.day} Tage nach Ostern"
+        else:
+            return  f"{self.name}: {-self.day} Tage vor Ostern"
+
+
 class Region(models.Model):
     """ Aggregates the usual holidays for that region
     """
@@ -483,6 +495,8 @@ class Region(models.Model):
     shortname = models.CharField(_('Short Name'), max_length=10, unique=True)
     holidays = models.ManyToManyField(Holiday, verbose_name=_('Holidays'),
                                       related_name='regions')
+    calc_holidays = models.ManyToManyField(
+        CalculatedHoliday, verbose_name=_('Holidays'), related_name='regions')
 
     class Meta:
         verbose_name = _('Region')
