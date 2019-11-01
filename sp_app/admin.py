@@ -220,7 +220,7 @@ class StatusEntryAdmin(CompanyRestrictedMixin, admin.ModelAdmin):
 class HolidayAdmin(admin.ModelAdmin):
     ordering = ('date', )
 
-@admin.register(CalculatedHoliday)
+# @admin.register(CalculatedHoliday)
 class CalculatedHolidayAdmin(admin.ModelAdmin):
     ordering = ('name', )
     radio_fields = {"mode": admin.HORIZONTAL}

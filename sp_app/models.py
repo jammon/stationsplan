@@ -495,8 +495,8 @@ class Region(models.Model):
     shortname = models.CharField(_('Short Name'), max_length=10, unique=True)
     holidays = models.ManyToManyField(Holiday, verbose_name=_('Holidays'),
                                       related_name='regions')
-    calc_holidays = models.ManyToManyField(
-        CalculatedHoliday, verbose_name=_('Holidays'), related_name='regions')
+    # calc_holidays = models.ManyToManyField(
+    #     CalculatedHoliday, verbose_name=_('Holidays'), related_name='regions')
 
     class Meta:
         verbose_name = _('Region')
