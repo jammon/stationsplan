@@ -168,6 +168,7 @@ describe("models", function() {
                     day,
                     ward_id,
                     person_id,
+                    ward_to_check,
                     nr_avail,
                     first_avail) {
                 // add a person to a staffing on a day
@@ -184,7 +185,7 @@ describe("models", function() {
                     let _day = day=='today' ? today : yesterday;
                     _day.ward_staffings[ward_id].add(models.persons.get(person_id));
                 }
-                let available = today.get_available(models.wards.get('A'));
+                let available = today.get_available(models.wards.get(ward_to_check));
                 expect(available.length).toEqual(nr_avail);
                 if (first_avail) {
                     expect(available[0].id).toEqual(first_avail);
@@ -193,26 +194,43 @@ describe("models", function() {
             it("usually everybody is available", function() {
                 check_availability(
                     '', '', '', 
+                    'A',
                     4);
             });
             it("who is on leave isn't available", function() {
                 check_availability(
                     'today', 'L', 'A',
+                    'A',
                     3, 'B');
             });
             it("who was on nightshift yesterday isn't available", function() {
                 check_availability(
                     'yesterday', 'N', 'A',
+                    'A',
+                    3, 'B');
+            });
+            it("who was on nightshift yesterday is available for todays nightshift", function() {
+                check_availability(
+                    'yesterday', 'N', 'A',
+                    'N',
+                    2);
+            });
+            it("who was on nightshift yesterday isn't available", function() {
+                check_availability(
+                    'yesterday', 'N', 'A',
+                    'A',
                     3, 'B');
             });
             it("who is on nightshift today is available", function() {
                 check_availability(
                     'today', 'N', 'A',
+                    'A',
                     4);
             });
             it("who is planned for a different ward today is available", function() {
                 check_availability(
                     'today', 'B', 'A',
+                    'A',
                     4);
             });
         });

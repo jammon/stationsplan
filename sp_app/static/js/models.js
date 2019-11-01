@@ -379,21 +379,27 @@ var Day = Backbone.Model.extend({
         if (ward.get('on_leave')) {  // everybody can be on leave
             return persons.models;
         }
+        function ward_unavailable(day, unavailable_ward) {
+            let staffing = day.ward_staffings[unavailable_ward.id];
+            if (staffing) {
+                staffing.each(function(person) {
+                    unavailable[person.id] = true;
+                });
+            }
+        }
         function get_unavailables (day, wards) {
             // all persons working on this ward at this day are unavailable
             wards.each(function(ward) {
-                var staffing = day.ward_staffings[ward.id];
-                if (staffing) {
-                    staffing.each(function(person) {
-                        unavailable[person.id] = true;
-                    });
-                }
+                ward_unavailable(day, ward);
             });
         }
         // yesterdays nightshift
-        // FIXME: it should take "after_this" into account
-        if (yesterday)
-            get_unavailables(yesterday, nightshifts);
+        if (yesterday) {
+            nightshifts.each(function(nightshift) {
+                if (!_.contains(nightshift.get('after_this'), ward.id))
+                    ward_unavailable(yesterday, nightshift);
+            });
+        }
         // persons on leave
         get_unavailables(this, on_leave);
 
