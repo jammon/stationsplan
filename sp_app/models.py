@@ -264,14 +264,20 @@ class ChangeLogging(models.Model):
             pk=self.pk).update(json=self.json)
 
     def make_description(self):
-        until = (f" bis {self.until.strftime('%d.%m.%Y')}"
-               if self.until else '')
+        day = self.day.strftime("%d.%m.%Y")
+        if not self.continued or (self.until and self.until == self.day):
+            # am 19.11.2019
+            time = f"am {day}"
+        elif self.until:
+            # von 19.11.2019 bis 20.11.2019
+            time = f"von {day} bis {self.until.strftime('%d.%m.%Y')}"
+        else:
+            # ab 19.11.2019
+            time = f"ab {day}"
         self.description = (
             f'{self.user.last_name or self.user.get_username()}: '
-            f'{self.person.name} ist {"ab" if self.continued else "am"} '
-            f'{self.day.strftime("%d.%m.%Y")}{until} '
+            f'{self.person.name} ist {time} '
             f'{"" if self.added else "nicht mehr "}für {self.ward.name} eingeteilt')
-        
 
     def __str__(self):
         return self.description

@@ -125,7 +125,7 @@ class TestChanges(PopulatedTestCase):
         cl.make_description()
         self.assertEqual(
             cl.description,
-            "Mr. User: Person A ist ab 14.09.2015 bis 16.09.2015 "
+            "Mr. User: Person A ist von 14.09.2015 bis 16.09.2015 "
             "für Ward A eingeteilt")
 
 
