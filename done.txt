@@ -98,3 +98,4 @@ x 2019-10-14 listfilter für Person nach aktueller Anwesenheit
 x 2019-10-16 Zusätzliche Zeile für die nicht verplanten Kollegen +feature
 x 2019-10-17 Button Aufgaben ausblenden
 x 2019-11-19 ChangeLogging str soll darauf reagieren, wenn es sich nur auf einen Tag bezieht
+x 2019-11-19 Es gibt Fehler, wenn zusätzliche Visitendiensttage eingetragen sind
