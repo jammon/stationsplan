@@ -40,3 +40,5 @@ In QuickInputView wird die vorherige Personenauswahl nicht gelöscht +bug
 (C) var durch let ersetzen
 (C) day.get_available umschreiben
 start_of_data should be one month earlier to speed up building of page
+Dienstlasttabelle erscheint nicht mehr
+Wenn ein Nachtdiensthabender krank wird, ist er doch am nächsten Tag nicht zu verplanen
