@@ -99,7 +99,7 @@ var StaffingView = StaffingDisplayView.extend({
                             old_day,
                             old_ward,
                             false,
-                            [{id: person.get('id'), action: 'remove'}],
+                            [{id: person.get('id'), action: 'remove'}]
                         );
                 },
                 activeClass: "ui-state-highlight",
