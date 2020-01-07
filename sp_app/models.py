@@ -203,7 +203,7 @@ class Person(models.Model):
     def save(self, *args, **kwargs):
         super(Person, self).save(*args, **kwargs)
         # When a person leaves, their plannings should stop.
-        # Plannings with an end (like vacations) are left untouched 
+        # Plannings with an end (like vacations) are left untouched
         # in case the person changes their mind
         if self.end_date < FAR_FUTURE:
             Planning.objects.filter(
@@ -277,7 +277,8 @@ class ChangeLogging(models.Model):
         self.description = (
             f'{self.user.last_name or self.user.get_username()}: '
             f'{self.person.name} ist {time} '
-            f'{"" if self.added else "nicht mehr "}für {self.ward.name} eingeteilt')
+            f'{"" if self.added else "nicht mehr "}für {self.ward.name}'
+            f' eingeteilt')
 
     def __str__(self):
         return self.description
@@ -469,6 +470,7 @@ class Holiday(models.Model):
     def __str__(self):
         return f'{self.date}: {self.name}'
 
+
 class CalculatedHoliday(models.Model):
     """A Holiday with calculated dates"""
     name = models.CharField(_('Name'), max_length=50)
@@ -480,18 +482,18 @@ class CalculatedHoliday(models.Model):
         _('Day'), help_text=_('day of month or distance from Easter in days'))
     month = models.IntegerField(_('Month'), null=True, blank=True)
     year = models.IntegerField(_('Year'), null=True, blank=True)
-        
+
     class Meta:
         verbose_name = _('Calculated Holiday')
         verbose_name_plural = _('Calculated Holidays')
 
     def __str__(self):
-        if self.mode=='abs':
+        if self.mode == 'abs':
             return f"{self.name}: {self.day}.{self.month}.{self.year or ''}"
-        if self.day>0:
-            return  f"{self.name}: {self.day} Tage nach Ostern"
+        if self.day > 0:
+            return f"{self.name}: {self.day} Tage nach Ostern"
         else:
-            return  f"{self.name}: {-self.day} Tage vor Ostern"
+            return f"{self.name}: {-self.day} Tage vor Ostern"
 
 
 class Region(models.Model):

@@ -187,9 +187,13 @@
       $(function(){
         main.initialize_site(
     /* jshint ignore:start */
+    // persons
           {{ persons|safe }},
+    // wards
           {{ wards|safe }},
+    // different_days
           {{ different_days|safe }},
+    // plannings
           {{ plannings|safe }},
           {{ first_of_month|date:'Y' }},     // curr_year
           {{ first_of_month|date:'n' }} - 1, // curr_month
@@ -197,9 +201,13 @@
                    {{ start_of_data|date:'n' }}-1, 
                    1),                       // start_of_data
           {% if is_editor %}true{% else %}false{% endif %},
+    // holidays
           {{ holidays|safe }},
+    // department_ids
           {{ department_ids|safe}},
+    // last_change_pk
           {{ last_change_pk }},
+    // last_change_time
           {{ last_change_time }}
     /* jshint ignore:end */
         );
