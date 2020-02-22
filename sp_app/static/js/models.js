@@ -817,21 +817,13 @@ function set_plannings(p) {
 
 
 function apply_change(change) {
+    // 'change' ist der Output von sp_app.models.ChangeLogging.to_Json
     var changed_day = days.get(change.day);
     var staffing;
-    if (Number.isInteger(change.person))
-        change.person = persons.findWhere({id: change.person}).id;
-    if (Number.isInteger(change.ward))
-        change.ward = wards.findWhere({id: change.ward}).id;
-    if (changed_day) {
-        staffing = changed_day.ward_staffings[change.ward];
-        if (staffing) {
-            staffing.apply_change(change);
-            return;
-        }
-    }
-    // Something went wrong
-    console.log(change);
+    change.person = persons.findWhere({id: change.person}).id;
+    change.ward = wards.findWhere({id: change.ward}).id;
+    if (changed_day)
+        changed_day.apply_change(change);
 }
 
 var _min_update_intervall = 10;  // 10 sec
