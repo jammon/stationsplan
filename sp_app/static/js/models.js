@@ -448,6 +448,12 @@ var Day = Backbone.Model.extend({
         }
         return false;
     },
+    apply_change: function(change) {
+        let staffing = this.ward_staffings[change.ward.id];
+        if (staffing) {
+            staffing.apply_change(change);
+        }
+    },
     make_next_day: function() {
         var date = this.get('date');
         var next_day = days.add({
