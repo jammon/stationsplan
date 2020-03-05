@@ -449,7 +449,7 @@ var Day = Backbone.Model.extend({
         return false;
     },
     apply_change: function(change) {
-        let staffing = this.ward_staffings[change.ward.id];
+        let staffing = this.ward_staffings[change.ward];
         if (staffing) {
             staffing.apply_change(change);
         }
@@ -826,8 +826,8 @@ function apply_change(change) {
     // 'change' ist der Output von sp_app.models.ChangeLogging.to_Json
     var changed_day = days.get(change.day);
     var staffing;
-    change.person = persons.findWhere({id: change.person}).id;
-    change.ward = wards.findWhere({id: change.ward}).id;
+    change.person = persons.findWhere({id: change.person}).id;  // FIXME
+    change.ward = wards.findWhere({id: change.ward}).id;  // FIXME
     if (changed_day)
         changed_day.apply_change(change);
 }
