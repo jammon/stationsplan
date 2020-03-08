@@ -243,8 +243,8 @@ class ChangeLogging(models.Model):
 
     def toJson(self):
         data = {
-            'person': self.person.id,  # FIXME
-            'ward': self.ward.id,  # hier muesste wohl .shortname stehen
+            'person': self.person.shortname,
+            'ward': self.ward.shortname,
             'day': self.day.strftime('%Y%m%d'),
             'action': 'add' if self.added else 'remove',
             'continued': self.continued,

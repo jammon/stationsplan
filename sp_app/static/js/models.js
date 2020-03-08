@@ -825,9 +825,6 @@ function set_plannings(p) {
 function apply_change(change) {
     // 'change' ist der Output von sp_app.models.ChangeLogging.to_Json
     var changed_day = days.get(change.day);
-    var staffing;
-    change.person = persons.findWhere({id: change.person}).id;  // FIXME
-    change.ward = wards.findWhere({id: change.ward}).id;  // FIXME
     if (changed_day)
         changed_day.apply_change(change);
 }
