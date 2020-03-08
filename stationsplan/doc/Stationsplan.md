@@ -49,11 +49,21 @@ Können alles was Department Leader können auf Company-Ebene.
     + When yesterdays ward with reduced availability for the next day is added: the person is unavailable for all non-fitting staffings of the day.
     + When on_leave or yesterdays ward with reduced availability for the next day is removed: the availability of the person must be calculated newly.
 
+## Change(Logging) vs. Planning
+Ein *Change* wird vom Nutzer eingegeben, auf dem Server mit den anderen Planungen abgeglichen und dann zurückgegeben und ins UI eingearbeitet.
+Ein *Planning* ist das Ergebnis der konsolidierten Changes, das initial beim Aufruf der Seite übergeben wird.
+
+Wenn die Seite aufgerufen wird,
+- `main.initialize_site`: initialisiert alle Variablen, dann
+    - `models.start_day_chain`: initialisiert nur den ersten Tag
+    - ruft über Backbone.history.start die View auf
+- die View ruft über Umwege `models.get_period_days` auf
+- hier werden die Tage über `days.get_day` initialisiert.
 
 ## Planungen mit Anfang und Ende eingeben
-Wenn man eine Planung eingibt, die ein oder mehrere bisherige Planungen überdeckt, sollen diese verlinkt und als inaktiv markiert werden. So ist ein Undo möglich.
+Wenn man einen Change eingibt, der ein oder mehrere bisherige Planungen überdeckt, sollen diese verlinkt und als inaktiv markiert werden. So ist ein Undo möglich.
 
-Wenn eine neue Planung eine alte teilweise überlappt, wird sie so beschnitten, dass sie direkt anschließt und nicht mehr überlappt. (Nach dem bisherigen UI kann die neue Planung nur mit ihrem Ende den Anfang einer alten Planung überdecken.)
+Wenn ein neuer Change eine alte Planung teilweise überlappt, wird sie so beschnitten, dass sie direkt anschließt und nicht mehr überlappt. (Nach dem bisherigen UI kann die neue Planung nur mit ihrem Ende den Anfang einer alten Planung überdecken.)
 
 Wenn ein Change mit add=False und angegebenem Ende andere Planungen überdeckt, werden diese gekürzt oder gelöscht.
 
