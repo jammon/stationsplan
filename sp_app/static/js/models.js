@@ -477,6 +477,7 @@ var Day = Backbone.Model.extend({
                 current_plannings.push(planning);
             }
         });
+        // FIXME: check new changes
         return next_day;
     },
     get_month_id: function() {
@@ -536,27 +537,26 @@ var current_plannings = [];
 
 var Days = Backbone.Collection.extend({
     model: Day,
-    get_day: function(year_or_date, month_or_offset, day) {
-        // month is 0..11 like in javascript
+    get_day: function(date, offset) {
+        // Days.get_day(date) - get the day on this date
+        // Days.get_day(date, offset) - get the day <offset> days after this date
         var result, day_id;
         var ONEDAY = 24 * 60 * 60 * 1000;
-        var date;
-        if (day === void 0) {
-            if (month_or_offset)
-                date = new Date(year_or_date.getTime() + ONEDAY * month_or_offset);
-            else
-                date = year_or_date;
-        } else date = new Date(year_or_date, month_or_offset, day);
-        if (date.getFullYear()<2015) return;
+        var _date;
+        if (offset)
+            _date = new Date(date.getTime() + ONEDAY * offset);
+        else
+            _date = date;
+        if (_date.getFullYear()<2015) return;
         if (this.length===0) {
             // Start day chain
-            result = this.add({ date: date });
+            result = this.add({ date: _date });
             // Start application of the plannings
             current_plannings = _.filter(plannings, result.apply_planning, result);
             return result;
         }
         // Retrieve result, if it exists already
-        day_id = utils.get_day_id(date);
+        day_id = utils.get_day_id(_date);
         result = this.get(day_id);
         if (result) 
             return result;
@@ -577,7 +577,7 @@ var Days = Backbone.Collection.extend({
 var days = new Days();
 
 function start_day_chain(year, month) {
-    days.get_day(year, month, 1);
+    days.get_day(new Date(year, month, 1));
 }
 
 // the 'Day's of one period.
@@ -589,7 +589,7 @@ var PeriodDays = Backbone.Collection.extend({
         var month = this.first_day.getMonth();
         var day = this.first_day.getDate();
         for (var i = 0; i < this.nr_days; i++) {
-            this.add(days.get_day(year, month, day+i));
+            this.add(days.get_day(new Date(year, month, day+i)));
         }
         if (user.is_editor && options.needs_calltallies)
             this.build_calltallies();
@@ -825,6 +825,13 @@ function set_plannings(p) {
 function apply_change(change) {
     // 'change' ist der Output von sp_app.models.ChangeLogging.to_Json
     var changed_day = days.get(change.day);
+    // provide enough days, so that the change can be fully applied
+    if (change.until) {
+        if (change.until>=days.last().id)
+            days.get_day(utils.get_date(change.until), 1);
+    }
+    else if (change.day==days.last().id && !change.continued)
+        days.get_day(utils.get_date(change.day), 1);
     if (changed_day)
         changed_day.apply_change(change);
 }

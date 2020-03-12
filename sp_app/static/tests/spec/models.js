@@ -1,3 +1,4 @@
+// jshint esversion: 6
 beforeEach(init_hospital);
 describe("models", function() {
     describe("Initializing data", function() {
@@ -509,16 +510,15 @@ describe("models", function() {
         describe("get_day and Day.make_next_day", function() {
             it("should start the day chain", function() {
                 expect(models.days.length).toBe(0);
-                var day = models.days.get_day(2016, 2, 24);
+                var day = models.days.get_day(new Date(2016, 2, 24));
                 expect(day).toBeDefined();
                 expect(models.days.get('20160324')).toEqual(day);
 
-                expect(models.days.get_day(new Date(2016, 2, 24))).toEqual(day);
                 expect(models.days.get_day(new Date(2016, 2, 21), 3)).toEqual(day);
 
                 var next_day = day.make_next_day();
                 expect(models.days.get('20160325')).toEqual(next_day);
-                var future_day = models.days.get_day(2016, 2, 27);
+                var future_day = models.days.get_day(new Date(2016, 2, 27));
                 models.days.get('20160326').get('yesterday').marker = 'testmarker';
                 expect(next_day.marker).toEqual('testmarker');
                 // Why does this fail?
@@ -636,6 +636,46 @@ describe("models", function() {
             expect(period_days.at(13).id).toEqual('20170618');
             models.days.reset();
         });
+        describe("Bugfix", function() {
+            [{
+                msg: "should not continue the last planning if planned for the last day",
+                day: '20200310', 
+                next: '20200311', 
+            }, {
+                msg: "should not continue the last planning if planned until the last day",
+                day: '20200308', 
+                until: '20200310', 
+                next: '20200311', 
+            }, {
+                msg: "should not continue the last planning if planned after the last day",
+                day: '20200308', 
+                until: '20200312', 
+                next: '20200313', 
+            }].forEach(function(test) {
+                it(test.msg, function() {
+                    models.days.reset();
+                    let days = models.get_period_days(new Date(2020, 2, 1), 10);
+                    let change = {
+                        person: 'A',
+                        ward: 'A',
+                        day: test.day,
+                        action: 'add',
+                        continued: !!test.until,
+                        pk: 1,
+                    };
+                    if (test.until)
+                        change.until = test.until;
+                    models.apply_change(change);
+                    // get next period
+                    let next_period = models.get_period_days(
+                        new Date(2020, 2, 11), 10);
+                    expect(next_period.get(test.next).ward_staffings.A.length).toBe(0);
+                    models.days.reset();
+                });
+
+            });
+
+        });
     });
     describe("get_month_days and CallTallies", function() {
         var month_days;
@@ -707,8 +747,8 @@ describe("models", function() {
         beforeEach(function() {
             // initialize August 3 through 7
             models.days.reset();
-            models.days.get_day(2015, 7, 3);
-            models.days.get_day(2015, 7, 7);
+            models.days.get_day(new Date(2015, 7, 3));
+            models.days.get_day(new Date(2015, 7, 7));
         });
         afterEach(function() {
             models.days.reset();
