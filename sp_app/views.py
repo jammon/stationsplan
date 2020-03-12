@@ -12,9 +12,7 @@ from .utils import (get_first_of_month, json_array, get_holidays_for_company)
 
 
 def home(request):
-    if (callable(request.user.is_authenticated) and
-        request.user.is_authenticated() or
-        request.user.is_authenticated):
+    if request.user.is_authenticated:
             return redirect('plan')
     return render(request, "sp_app/index.html", context={'next': '/plan'})
 

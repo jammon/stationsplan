@@ -467,7 +467,7 @@ var DayView = PeriodView.extend({
         // options can be like { start_id: '20160610' }
         this.start_id = options.start_id;
         _.extend(this, utils.get_year_month_day(this.start_id));
-        this.day_obj = models.days.get_day(this.year, this.month, this.day);
+        this.day_obj = models.days.get_day(new Date(this.year, this.month, this.day));
     },
     get_template_options: function() {
         var date = this.day_obj.get('date');
