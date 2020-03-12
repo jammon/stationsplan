@@ -95,7 +95,8 @@ class TestChanges(PopulatedTestCase):
         c = ChangeLogging(person=self.person_a, ward=self.ward_a,
                           day=date(2015, 10, 2),
                           added=True)
-        expected = {"person": self.person_a.id, "ward":self.ward_a.id, 'day': "20151002",
+        expected = {"person": self.person_a.shortname,
+                    "ward": self.ward_a.shortname, 'day': "20151002",
                     'continued': True, 'action': "add", }
         self.assertContainsDict(c.toJson(), expected)
         c.added = False

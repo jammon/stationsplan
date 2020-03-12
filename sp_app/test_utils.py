@@ -99,7 +99,7 @@ class TestApplyChanges(PopulatedTestCase):
         self.assertEqual(len(cls), 1)
         self.assertContainsDict(
             cls[0],
-            {"person": self.person_a.id, "ward":self.ward_a.id,
+            {"person": self.person_a.shortname, "ward":self.ward_a.shortname,
              "action": "add", "continued": True, "day": "20160328"})
 
     def test_apply_2_changes(self):
@@ -113,11 +113,11 @@ class TestApplyChanges(PopulatedTestCase):
         self.assertEqual(len(cls), 2)
         self.assertContainsDict(
             cls[0],
-            {"person": self.person_a.id, "ward":self.ward_a.id,
+            {"person": self.person_a.shortname, "ward": self.ward_a.shortname,
              "action": "add", "continued": True, "day": "20160328"})
         self.assertContainsDict(
             cls[1],
-            {"person": self.person_b.id, "ward":self.ward_a.id,
+            {"person": self.person_b.shortname, "ward": self.ward_a.shortname,
              "action": "add", "continued": True, "day": "20160328"})
 
     def test_apply_2_changes_nonsensical(self):
@@ -133,7 +133,8 @@ class TestApplyChanges(PopulatedTestCase):
         self.assertEqual(len(cls), 1)
         self.assertContainsDict(
             cls[0],
-            {"person": self.person_a.id, "ward":self.ward_a.id,
+            {"person": self.person_a.shortname,
+             "ward": self.ward_a.shortname,
              "action": "add", "continued": True, "day": "20160328"})
 
 

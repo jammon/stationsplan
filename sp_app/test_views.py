@@ -137,7 +137,9 @@ class TestChangeMore(ViewsWithPermissionTestCase):
             'user: Person A ist am 20.01.2016 für Ward A eingeteilt')
         self.assertContainsDict(
             json.loads(cl.json),
-            {"action": "add", "person": self.person_a.id, "ward":self.ward_a.id,
+            {"action": "add",
+             "person": self.person_a.shortname,
+             "ward": self.ward_a.shortname,
              "day": "20160120", "continued": False})
         self.assertEqual(cl.version, 1)
         cl = cls[1]
@@ -152,7 +154,9 @@ class TestChangeMore(ViewsWithPermissionTestCase):
             'eingeteilt')
         self.assertContainsDict(
             json.loads(cl.json),
-            {"action": "remove", "person": self.person_b.id, "ward":self.ward_a.id, 
+            {"action": "remove",
+             "person": self.person_b.shortname,
+             "ward":self.ward_a.shortname,
              "day": "20160120", "continued": False})
         self.assertEqual(cl.version, 1)
 
