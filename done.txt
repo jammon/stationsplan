@@ -100,3 +100,5 @@ x 2019-10-17 Button Aufgaben ausblenden
 x 2019-11-19 ChangeLogging str soll darauf reagieren, wenn es sich nur auf einen Tag bezieht
 x 2019-11-19 Es gibt Fehler, wenn zusätzliche Visitendiensttage eingetragen sind
 x 2020-02-22 Number unterstützt in IE isInteger nicht - models.js 822
+x 2020-03-12 Wenn man am letzten Tag eines Monat jemanden einträgt, erscheint er im Client ab dem Tag durchgehend geplant +bug
+x 2020-03-12 In FunctionsView als title die Namen von Person und Ward

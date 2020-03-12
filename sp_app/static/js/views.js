@@ -514,7 +514,10 @@ var PersonFunctionView = Backbone.View.extend({
         this.listenTo(this.person, "change:functions", this.render);
     },
     render: function() { 
-        var attr = {type: 'checkbox'};
+        var attr = {
+            type: 'checkbox',
+            title: this.person.get('name') + ' - ' + this.ward.get('name'),
+        };
         if (this.person.can_work_on(this.ward))
             attr.checked = 'checked';
         var input = $('<input>').attr(attr);

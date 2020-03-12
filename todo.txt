@@ -31,7 +31,6 @@
 (C) Vorläufige Planungen zulassen, die erst auf Anforderungen zum Server übertragen werden
 (C) Heilig-Abend und Sylvester bei den Feiertagen in allen Regionen hinzufügen +Public
 (C) Bedeutung der Berechtigungen von Benutzern klarer machen
-(B) Wenn man am letzten Tag eines Monat jemanden einträgt, erscheint er im Client ab dem Tag durchgehend geplant +bug
 (C) Set MySQL Strict Mode +deploy https://docs.djangoproject.com/en/2.2/ref/databases/#mysql-sql-mode
 (B) Debug Toolbar fixen +bug
 (B) Department Leaders sollen einen Link zu /config haben  +feature

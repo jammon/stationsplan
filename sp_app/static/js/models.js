@@ -837,7 +837,7 @@ function apply_change(change) {
 }
 
 var _min_update_intervall = 10;  // 10 sec
-var _max_update_intervall = 300;  // 5 min
+var _max_update_intervall = 120;  // 2 min
 var _next_check_id;
 var _last_change_pk;
 function schedule_next_update(last_change) {
