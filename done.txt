@@ -102,3 +102,5 @@ x 2019-11-19 Es gibt Fehler, wenn zusätzliche Visitendiensttage eingetragen sin
 x 2020-02-22 Number unterstützt in IE isInteger nicht - models.js 822
 x 2020-03-12 Wenn man am letzten Tag eines Monat jemanden einträgt, erscheint er im Client ab dem Tag durchgehend geplant +bug
 x 2020-03-12 In FunctionsView als title die Namen von Person und Ward
+x 2020-03-12 Wird ward.continued noch verwendet?
+x 2020-03-31 CallTallyView wird nicht angezeigt

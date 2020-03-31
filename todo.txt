@@ -8,8 +8,8 @@
 (C) Urlaube in der Planungsansicht der Dienste anzeigen
 (C) Visitendienst in einer Zeile
 (C) Die Dienste jeder Person als Kalender zur Verfügung stellen, mit Updates +Public
-(B) Doppelclick auf voriger oder nächster Monat soll nur einmal wirken
-(B) Wenn man einen Diensthabenden dragt und auf das gleiche Feld wieder dropt, wird er ausgetragen
+(C) Doppelclick auf voriger oder nächster Monat soll nur einmal wirken
+(C) Wenn man einen Diensthabenden dragt und auf das gleiche Feld wieder dropt, wird er ausgetragen
 (C) Integrationtests in jasmine einbauen +Public
 (C) Favicon bauen +Public https://codeburst.io/the-front-end-checklist-8b2292fdda44
 (C) YSlow einsetzen +Public
@@ -20,13 +20,12 @@
 (B) Änderungsgeschichte einer Planung abrufbar machen
 (C) Testen mit Firefox headless oder PhantomJS
 (B) Aktion Aktualisieren ins Menu
-(A) Aktualisierung soll auch die Freigabe von Planungen vermitteln
+(B) Aktualisierung soll auch die Freigabe von Planungen vermitteln
 (C) meta description in base.html verbessern
 (C) In Admin der Wards nur aktuelle und zukünftige Kollegen auswählbar machen
 (B) Debug Toolbar soll unabhängig vom Internet funktionieren
 (B) In config nur die aktuellen Ärzte anzeigen, evtl. mit Umschaltemöglichkeit
 (B) Der Chef soll Planungen sehen aber nicht ändern können
-(B) Wird ward.continued noch verwendet?
 (B) Anordnung der Diensthabenden in der Stationsansicht so, dass sie immer auf einer Reihe sind
 (C) Vorläufige Planungen zulassen, die erst auf Anforderungen zum Server übertragen werden
 (C) Heilig-Abend und Sylvester bei den Feiertagen in allen Regionen hinzufügen +Public
@@ -35,7 +34,7 @@
 (B) Debug Toolbar fixen +bug
 (B) Department Leaders sollen einen Link zu /config haben  +feature
 In QuickInputView wird die vorherige Personenauswahl nicht gelöscht +bug
-(A) Wenn man einen Diensthabenden draggt, geht nach dem Droppen das Besetzung ändern-Fenster auf für den Ausgangstag +bug
+(C) Wenn man einen Diensthabenden draggt, geht nach dem Droppen das Besetzung ändern-Fenster auf für den Ausgangstag +bug
 (C) var durch let ersetzen
 (C) day.get_available umschreiben
 start_of_data should be one month earlier to speed up building of page
