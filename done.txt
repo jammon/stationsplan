@@ -104,3 +104,6 @@ x 2020-03-12 Wenn man am letzten Tag eines Monat jemanden einträgt, erscheint e
 x 2020-03-12 In FunctionsView als title die Namen von Person und Ward
 x 2020-03-12 Wird ward.continued noch verwendet?
 x 2020-03-31 CallTallyView wird nicht angezeigt
+x 2020-04-10 In config nur die aktuellen Ärzte anzeigen, evtl. mit Umschaltemöglichkeit
+x 2020-04-10 Dienstlasttabelle erscheint nicht mehr
+x 2020-04-10 start_of_data should be one month earlier to speed up building of page

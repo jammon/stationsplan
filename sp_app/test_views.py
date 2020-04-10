@@ -56,8 +56,8 @@ class TestPlan(ViewsTestCase):
     """ Test views.plan """
     def test_plan(self):
         for start, end in (
-                (date(2015, 12, 1), date(2015, 12, 31)),  # older than 3 mon
-                (date(2015, 12, 1), date(2016, 1, 1)),  # less than 3 mon
+                (date(2016, 1, 1), date(2016, 1, 31)),  # older than 1 mon
+                (date(2016, 2, 1), date(2016, 3, 1)),  # less than 1 mon
                 (date(2016, 1, 1), date(2016, 4, 15)),
                 (date(2016, 1, 1), date(2016, 5, 31)),
                 (date(2016, 4, 1), date(2016, 4, 30)),
@@ -70,7 +70,7 @@ class TestPlan(ViewsTestCase):
         self.assertEqual(response.status_code, 200)
         plannings = json.loads(response.context['plannings'])
         for value, expected in zip(plannings, (
-                {'start': '20151201', 'end': '20160101'},
+                {'start': '20160201', 'end': '20160301'},
                 {'start': '20160101', 'end': '20160415'},
                 {'start': '20160101', 'end': '20160531'},
                 {'start': '20160401', 'end': '20160430'},

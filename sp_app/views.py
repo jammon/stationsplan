@@ -34,8 +34,8 @@ def plan(request, month='', day=''):
     company_id = request.session.get('company_id')
     # Get all Persons who work here currently
     first_of_month = get_first_of_month(month)
-    # start_of_data should be three months earlier
-    start_of_data = (first_of_month - timedelta(88)).replace(day=1)
+    # start_of_data should be one month earlier
+    start_of_data = (first_of_month - timedelta(28)).replace(day=1)
     persons = Person.objects.filter(
         end_date__gte=start_of_data,
         company_id=company_id
