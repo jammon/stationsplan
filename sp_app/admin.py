@@ -75,7 +75,9 @@ class RestrictFields(object):
 # Filters
 #
 class PersonWardListFilter(admin.SimpleListFilter):
-
+    """ Return only models of the current Company and filter for
+    self.parameter_name
+    """
     def lookups(self, request, model_admin):
         return self.model.objects.filter(
             company_id=request.session.get('company_id')
@@ -101,10 +103,22 @@ class PersonListFilter(PersonWardListFilter):
     model = Person
 
 
-class PersonListFilter(PersonWardListFilter):
-    title = _('Person')
-    parameter_name = 'person'
-    model = Person
+class IsEmployedListFilter(admin.SimpleListFilter):
+    """ Toggle if former employees are displayed
+    """
+    title = _('Anstellungsstatus')
+    parameter_name = 'current'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('current', _('aktuelle Mitarbeiter')),
+        )
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if self.value() == "current":
+            return queryset.filter(end_date__gte=datetime.date.today())
+        return queryset
 
 
 class CurrentPersonListFilter(PersonListFilter):
@@ -144,7 +158,7 @@ class DepartmentsListFilter(admin.SimpleListFilter):
 @admin.register(Person, site=config_site)
 class PersonAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
     # filter_horizontal = ('departments', 'functions',)
-    list_filter = (DepartmentsListFilter, )
+    list_filter = (IsEmployedListFilter, DepartmentsListFilter, )
     ordering = ('position', 'name',)
     list_display = ('name', 'shortname', 'position')
     list_editable = ('position',)

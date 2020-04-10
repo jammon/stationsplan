@@ -1,13 +1,10 @@
 from __future__ import with_statement
 from fabric.api import cd, env, local, run
 
-# env.user = 'stationsplan'
-# env.hosts = ['stationsplan.de']
-# code_dir = '~/priv/stationsplan'
-
 env.user = 'stplan2'
 env.hosts = ['stplan2.uber.space']
 code_dir = '~/stationsplan'
+
 
 def test(verbosity='1'):
     local("python ./manage.py test sp_app "
