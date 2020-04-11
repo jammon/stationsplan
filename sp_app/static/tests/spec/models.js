@@ -133,6 +133,11 @@ describe("models", function() {
                 yesterday.ward_staffings.N.add(person_a);
                 expect(staffing_a.can_be_planned(person_a)).toBeFalsy();
             });
+            it("who was planned on call last night but became ill, can be planned", function() {
+                yesterday.ward_staffings.N.add(person_a);
+                yesterday.ward_staffings.L.add(person_a);
+                expect(staffing_a.can_be_planned(person_a)).toBeTruthy();
+            });
             it("who cannot work on this ward, cannot be planned", function() {
                 expect(today.ward_staffings.N.can_be_planned(
                     models.persons.get('C'))).toBeFalsy();

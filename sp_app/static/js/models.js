@@ -189,9 +189,8 @@ var Staffing = Backbone.Collection.extend({
         // a vacation can always be planned
         if (this.ward.get('on_leave')) return true;
         // is she/he on leave?
-        if (this.day.persons_duties[person.id].any(function(ward) {
-            return ward.get('on_leave');
-        })) return false;
+        if (this.day.persons_duties[person.id].where({on_leave: true}).length>0)
+            return false;
         // Is this ward in their portfolio?
         if (!person.can_work_on(this.ward)) return false;
         // does yesterdays planning allow this?
@@ -199,6 +198,10 @@ var Staffing = Backbone.Collection.extend({
             var yesterday = this.day.get('yesterday');
             var current_ward_id = this.ward.id;
             if (yesterday) {
+                // if they were on leave yesterday, they can be planned
+                if (yesterday.persons_duties[person.id].where({on_leave: true}).length>0)
+                    return true;
+                // do yesterdays plannings allow this?
                 return yesterday.persons_duties[person.id].every(function(ward) {
                     var after_this = ward.get('after_this');
                     if (after_this && !_.contains(after_this, current_ward_id)) {
