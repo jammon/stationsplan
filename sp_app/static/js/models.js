@@ -1,3 +1,4 @@
+// jshint esversion: 6
 var models = (function($, _, Backbone) {
 "use strict";
 
@@ -414,6 +415,9 @@ var Day = Backbone.Model.extend({
         return available;
     },
 
+    get_staffing: function(ward) {
+        return this.ward_staffings[ward.id];
+    },
     yesterdays_staffing: function(ward) {
         var yesterday = this.get('yesterday');
         return yesterday && yesterday.ward_staffings[ward.id];
@@ -543,35 +547,35 @@ var Days = Backbone.Collection.extend({
     get_day: function(date, offset) {
         // Days.get_day(date) - get the day on this date
         // Days.get_day(date, offset) - get the day <offset> days after this date
-        var result, day_id;
-        var ONEDAY = 24 * 60 * 60 * 1000;
-        var _date;
+        let result;
+        let _date = new Date(date);
         if (offset)
-            _date = new Date(date.getTime() + ONEDAY * offset);
-        else
-            _date = date;
-        if (_date.getFullYear()<2015) return;
+            _date.setDate(_date.getDate() + parseInt(offset));
+        if (_date.getFullYear()<2015)
+            // should not happen
+            // we don't deal with historical plans 
+            return void 0;
         if (this.length===0) {
             // Start day chain
             result = this.add({ date: _date });
             // Start application of the plannings
             current_plannings = _.filter(plannings, result.apply_planning, result);
-            return result;
-        }
-        // Retrieve result, if it exists already
-        day_id = utils.get_day_id(_date);
-        result = this.get(day_id);
-        if (result) 
-            return result;
-        // Build new days 
-        result = this.last();
-        if (day_id < result.id) {
-            // requested day is before the start of the day chain
-            // should not happen
-            return void 0;
-        }
-        while (result.id < day_id) {
-            result = result.make_next_day();
+        } else {
+            // Retrieve result, if it exists already
+            let day_id = utils.get_day_id(_date);
+            result = this.get(day_id);
+            if (!result) {
+                // Build new days 
+                result = this.last();
+                if (day_id < result.id) {
+                    // requested day is before the start of the day chain
+                    // should not happen
+                    return void 0;
+                }
+                while (result.id < day_id) {
+                    result = result.make_next_day();
+                }
+            }
         }
         return result;
     },    

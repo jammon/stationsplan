@@ -32,9 +32,9 @@
 (C) Set MySQL Strict Mode +deploy https://docs.djangoproject.com/en/2.2/ref/databases/#mysql-sql-mode
 (B) Debug Toolbar fixen +bug
 (B) Department Leaders sollen einen Link zu /config haben  +feature
-In QuickInputView wird die vorherige Personenauswahl nicht gelöscht +bug
 (C) Wenn man einen Diensthabenden draggt, geht nach dem Droppen das Besetzung ändern-Fenster auf für den Ausgangstag +bug
 (C) var durch let ersetzen
 (C) day.get_available umschreiben
-Impressum verfassen
-Datenschutzerklärung verfassen
+(B) Impressum verfassen +Public
+(B) Datenschutzerklärung verfassen +Public
+(B) Wenn man sich bei /admin einloggt, soll trotzdem die Session korrekt initialisiert werden

@@ -108,3 +108,4 @@ x 2020-04-10 In config nur die aktuellen Ärzte anzeigen, evtl. mit Umschaltemö
 x 2020-04-10 Dienstlasttabelle erscheint nicht mehr
 x 2020-04-10 start_of_data should be one month earlier to speed up building of page
 x 2020-04-11 Wenn ein Nachtdiensthabender krank wird, ist er doch am nächsten Tag nicht zu verplanen
+x 2020-04-19 In QuickInputView wird die vorherige Personenauswahl nicht gelöscht +bug

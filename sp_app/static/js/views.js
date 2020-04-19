@@ -194,7 +194,7 @@ var PeriodView = Backbone.View.extend({
         "click .daycol": "show_day",
         "click .show-duties": "build_duties_table",
         // this is implemented only in OnCallView
-        // "click .quickinput": "quickinput",
+        "click .quickinput": "quickinput",
     },
     base_class: 'period_plan',
     slug: 'plan',
@@ -381,7 +381,7 @@ var OnCallRowView = Backbone.View.extend({
         }));
 
         models.on_call.each(function(task) {
-            var collection = day.ward_staffings[task.id];
+            var collection = day.get_staffing(task);
             var view = (collection && !collection.no_staffing) ?
                 (new StaffingView({ 
                     collection: collection,
@@ -483,10 +483,10 @@ var DayView = PeriodView.extend({
         var table = this.$(".plan");
         var day = this.day_obj;
         models.wards.each(function(ward) {
-            if (!day.ward_staffings[ward.id].no_staffing) {
+            if (!day.get_staffing(ward).no_staffing) {
                 var row = $('<tr/>').append($('<th/>').text(ward.get("name")));
                 var view = new StaffingDisplayView({ 
-                    collection: day.ward_staffings[ward.id],
+                    collection: day.get_staffing(ward),
                     className: day.get('is_free') ? 'free-day' : '',
                 });
                 row.append(view.render().$el);
