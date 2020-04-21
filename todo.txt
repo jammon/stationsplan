@@ -24,8 +24,8 @@
 (C) meta description in base.html verbessern
 (C) In Admin der Wards nur aktuelle und zukünftige Kollegen auswählbar machen
 (B) Debug Toolbar soll unabhängig vom Internet funktionieren
-(B) Der Chef soll Planungen sehen aber nicht ändern können
-(B) Anordnung der Diensthabenden in der Stationsansicht so, dass sie immer auf einer Reihe sind
+(C) Der Chef soll Planungen sehen aber nicht ändern können
+(C) Anordnung der Diensthabenden in der Stationsansicht so, dass sie immer auf einer Reihe sind
 (C) Vorläufige Planungen zulassen, die erst auf Anforderungen zum Server übertragen werden
 (C) Heilig-Abend und Sylvester bei den Feiertagen in allen Regionen hinzufügen +Public
 (C) Bedeutung der Berechtigungen von Benutzern klarer machen
@@ -33,8 +33,6 @@
 (B) Debug Toolbar fixen +bug
 (B) Department Leaders sollen einen Link zu /config haben  +feature
 (C) Wenn man einen Diensthabenden draggt, geht nach dem Droppen das Besetzung ändern-Fenster auf für den Ausgangstag +bug
-(C) var durch let ersetzen
-(C) day.get_available umschreiben
 (B) Impressum verfassen +Public
 (B) Datenschutzerklärung verfassen +Public
 (B) Wenn man sich bei /admin einloggt, soll trotzdem die Session korrekt initialisiert werden

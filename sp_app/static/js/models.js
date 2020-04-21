@@ -300,11 +300,11 @@ var Duties = Backbone.Collection.extend({
         this.displayed = new Backbone.Collection(null, {model: Ward});
     },
     calc_displayed: function() {
-        let ward_staffings = this.day.ward_staffings;
+        let day = this.day;
         let person = this.person;
         this.displayed.reset(
             this.filter(function(ward) {
-                return ward_staffings[ward.id].displayed.get(person);
+                return day.get_staffing(ward).displayed.get(person);
             }));
     },
 });
@@ -356,7 +356,7 @@ var Day = Backbone.Model.extend({
     continue_yesterdays_staffings: function() {
         var date = this.get('date');
         wards.each(function(ward) {
-            var staffing = this.ward_staffings[ward.id];
+            var staffing = this.get_staffing(ward);
             var yesterdays_staffing = this.yesterdays_staffing(ward);
             if (yesterdays_staffing) {
                 yesterdays_staffing.on({
@@ -384,7 +384,7 @@ var Day = Backbone.Model.extend({
             return persons.models;
         }
         function ward_unavailable(day, unavailable_ward) {
-            let staffing = day.ward_staffings[unavailable_ward.id];
+            let staffing = day.get_staffing(unavailable_ward);
             if (staffing) {
                 staffing.each(function(person) {
                     unavailable[person.id] = true;
@@ -420,7 +420,7 @@ var Day = Backbone.Model.extend({
     },
     yesterdays_staffing: function(ward) {
         var yesterday = this.get('yesterday');
-        return yesterday && yesterday.ward_staffings[ward.id];
+        return yesterday && yesterday.get_staffing(ward);
     },
 
     // The next two functions are called when the staffing changes
@@ -443,14 +443,13 @@ var Day = Backbone.Model.extend({
         this.persons_duties[person.id].calc_displayed();
     },
     calc_persons_display: function(person) {
-        var ward_staffings = this.ward_staffings;
         this.persons_duties[person.id].each(function(ward) {
-            ward_staffings[ward.id].calc_displayed(person);
-        });
+            this.get_staffing(ward).calc_displayed(person);
+        }, this);
     },
     apply_planning: function(pl) {
         if (this.id>=pl.start && this.id<=pl.end) {
-            this.ward_staffings[pl.ward.id].add(pl.person, {continued: false});
+            this.get_staffing(pl.ward).add(pl.person, {continued: false});
             return true;
         }
         return false;
@@ -471,7 +470,7 @@ var Day = Backbone.Model.extend({
         // remove all plannings, that have ended
         current_plannings = _.filter(current_plannings, function(planning) {
             if (planning.end<next_day.id) {
-                next_day.ward_staffings[planning.ward.id].remove(
+                next_day.get_staffing(planning.ward).remove(
                     planning.person);
                 return false;
             }
@@ -528,9 +527,9 @@ var Day = Backbone.Model.extend({
         let yesterday = this.get('yesterday');
         if (yesterday) {
             let yesterdays_nightshifters = nightshifts.map(function(ward) {
-                return yesterday.ward_staffings[ward.id].models;
+                return yesterday.get_staffing(ward).models;
             });
-            let yesterdays_nightshift = _.uniq(_.flatten(yesterdays_nightshifters))
+            let yesterdays_nightshift = _.uniq(_.flatten(yesterdays_nightshifters));
             this.not_planned = _.difference(
                 this.not_planned,
                 yesterdays_nightshift
@@ -608,7 +607,7 @@ var PeriodDays = Backbone.Collection.extend({
         });
         this.each(function(day) {
             on_call.each(function(ward) {
-                var displayed = day.ward_staffings[ward.id].displayed;
+                var displayed = day.get_staffing(ward).displayed;
                 displayed.each(function(person) {
                     calltallies.on_call_added(person, displayed);
                 });
