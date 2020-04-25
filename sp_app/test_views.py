@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from datetime import date
+from datetime import date, datetime
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth.models import User, Permission
@@ -41,7 +41,7 @@ class ViewsTestCase(PopulatedTestCase):
             user=self.user, company=self.company)
         self.employee.departments.add(self.department)
         self.client.login(username='user', password='password')
-        self.DATA_FOR_CHANGE ={
+        self.DATA_FOR_CHANGE = {
             'day': '20160120',
             'ward_id': self.ward_a.id,
             'continued': False,
@@ -186,3 +186,78 @@ class TestChangeApproval(ViewsWithPermissionTestCase):
         self.assertEqual(ward.approved, None)
         ward = Ward.objects.get(shortname='B')
         self.assertEqual(ward.approved, date(2017, 4, 14))
+
+
+class TestChangeHistory(ViewsTestCase):
+    """ Get the change history for a day and ward
+    """
+
+    def test_empty(self):
+        response = self.client.get(
+            reverse('changehistory', kwargs={'date': '20200424', 'ward_id': '3'}),
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, b'[]')
+
+    def test_with_data(self):
+        user_with_name = User.objects.create_user(
+            'hmueller', 'user@domain.tld', 'password',
+            first_name='Heinz', last_name='Müller')
+        employee = Employee.objects.create(
+            user=user_with_name, company=self.company)
+        employee.departments.add(self.department)
+        data = (
+            # ongoing assignment
+            (self.user, self.person_a, self.ward_a, date(2020, 4, 1), True,
+                True, None, datetime(2020, 3, 1, 10)),
+            # stop it
+            (self.user, self.person_a, self.ward_a, date(2020, 4, 10), False,
+                True, None, datetime(2020, 3, 1, 10, 10)),
+            # just some time until today
+            (self.user, self.person_a, self.ward_a, date(2020, 4, 20), True,
+                True, date(2020, 4, 24), datetime(2020, 3, 1, 10, 20)),
+            # just some time from today
+            (user_with_name, self.person_b, self.ward_a, date(2020, 4, 24), True,
+                True, date(2020, 4, 30), datetime(2020, 3, 1, 10, 30)),
+            # but not today
+            (user_with_name, self.person_b, self.ward_a, date(2020, 4, 24), False,
+                False, None, datetime(2020, 3, 1, 10, 40)),
+            # different ward
+            (user_with_name, self.person_b, self.ward_b, date(2020, 4, 24), False,
+                False, None, datetime(2020, 3, 1, 10, 50)),
+        )
+        for user, person, ward, day, added, continued, until, change_time in data:
+            ChangeLogging.objects.create(
+                company=self.company,
+                user=user, person=person, ward=ward, day=day, added=added,
+                continued=continued, until=until, change_time=change_time)
+        response = self.client.get(
+            reverse('changehistory', kwargs={
+                'date': '20200424',
+                'ward_id': str(self.ward_a.id)}),
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(response.status_code, 200)
+
+        expected = [
+            {'user': 'Heinz Müller', 'person': 'B', 'ward': 'A',
+             'day': '2020-04-24', 'added': False, 'continued': False,
+             'until': None},
+            {'user': 'Heinz Müller', 'person': 'B', 'ward': 'A',
+             'day': '2020-04-24', 'added': True, 'continued': True,
+             'until': '2020-04-30'},
+            {'user': 'user', 'person': 'A', 'ward': 'A',
+             'day': '2020-04-20', 'added': True, 'continued': True,
+             'until': '2020-04-24'},
+            {'user': 'user', 'person': 'A', 'ward': 'A',
+             'day': '2020-04-10', 'added': False, 'continued': True,
+             'until': None},
+            {'user': 'user', 'person': 'A', 'ward': 'A',
+             'day': '2020-04-01', 'added': True, 'continued': True,
+             'until': None},
+        ]
+        got = json.loads(response.content)
+        self.assertEqual(len(got), 5)
+        for res, exp in zip(got, expected):
+            for key in ('user', 'person', 'ward', 'day', 'added', 'continued', 'until'):
+                self.assertEqual(res[key], exp[key], msg=str(exp))
+

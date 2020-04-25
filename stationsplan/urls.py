@@ -30,6 +30,8 @@ urlpatterns = [
     url(r'^funktionen/?$', sp_views.plan, name='functions'),
     url(r'^change_function/?$', sp_ajax.change_function, name='change_function'),
     url(r'^changes$', sp_ajax.changes, name='changes'),
+    url(r'^changehistory/(?P<date>[0-9]+)/(?P<ward_id>[0-9]+)$',
+        sp_ajax.change_history, name='changehistory'),
     url(r'^set_approved$', sp_ajax.change_approved, name='set_approved'),
     url(r'^updates/([0-9]+)/?$', sp_ajax.updates, name='updates'),
     url(r'^tests$', TemplateView.as_view(template_name="sp_app/tests.html"),

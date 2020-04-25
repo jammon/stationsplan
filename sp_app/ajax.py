@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from datetime import datetime
 from django.contrib.auth.decorators import login_required, permission_required
+from django.db.models import Q
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 
 import json
 
 from .utils import apply_changes, set_approved, get_last_changes
-from .models import StatusEntry, Person, Ward
+from .models import StatusEntry, Person, Ward, ChangeLogging
 
 
 @login_required
@@ -108,3 +110,31 @@ def change_function(request):
     except Ward.MultipleObjectsReturned as e:
         res['reason'] = f'Ward {data["ward"]} found multiple times'
     return JsonResponse(res, safe=False)
+
+
+@login_required
+def change_history(request, date, ward_id):
+    """Get all changes to a staffing on one day and ward
+
+    date: "YYYYMMDD"
+    ward: <ward.id>
+    """
+    day = datetime.strptime(date, '%Y%m%d').date()
+    # Get all ChangeLoggings for this day or that include this day
+    cls = ChangeLogging.objects.filter(
+        Q(continued=False, day=day) |
+        Q(continued=True, day__lte=day, until__gte=day) |
+        Q(continued=True, day__lte=day, until__isnull=True),
+        company__id=request.session['company_id'],
+        ward__id=int(ward_id),
+    ).select_related('user', 'person', 'ward').order_by('-change_time')
+    return JsonResponse([{
+        'user': c.user.get_full_name() or c.user.get_username(),
+        'person': c.person.shortname,
+        'ward': c.ward.shortname,
+        'day': c.day,
+        'added': c.added,
+        'continued': c.continued,
+        'until': c.until,
+        'change_time': c.change_time,
+    } for c in cls], safe=False)

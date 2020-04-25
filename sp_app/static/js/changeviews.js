@@ -88,11 +88,56 @@ var ChangeStaffView = Backbone.View.extend({
     show: function(staffing) {
         this.staffing = staffing;
         this.render().calc_changes().$el.modal('show');
+        this.show_changehistory();
     },
     calc_changes: function() {
         this.changes = this.collect_changes();
         this.$(".submitbuttons button").toggleClass("disabled", this.changes.length===0);
         return this;
+    },
+    show_changehistory: function() {
+        let div = this.$("#changehistory");
+        div.empty();
+        $.ajax({
+            type: "GET",
+            url: '/changehistory/'+this.staffing.day.id+'/'+this.staffing.ward.get('id'), 
+            contentType: "application/json; charset=utf-8",
+            success: write_data,
+        });
+        function write_data(data) {
+            _.each(data, function(cl) {
+                let person = models.persons.get(cl.person);
+                if (!person) return;  // only show current persons
+                // Don't show changes older than 3 months
+                if (new Date() - new Date(cl.change_time) > 90*24*60*60*1000)
+                    return;
+                let day = date2str(cl.day);
+                let time;
+                if (!cl.continued || (cl.until && (cl.until==cl.day))) 
+                    time = 'am ' + day;
+                else if (cl.until)
+                    time = 'von ' + day + ' bis ' + date2str(cl.until);
+                else
+                    time = 'ab ' + day;
+                let text = cl.user + ': ' + person.get('name') +
+                    ' ist ' + time + (cl.added ? '' : ' nicht mehr') + ' für ' +
+                    models.wards.get(cl.ward).get('name') + ' eingeteilt. (' +
+                    datetime2str(cl.change_time) + ')';
+                $("<div>").text(text).appendTo(div);
+            });
+        }
+        function date2str(date) {
+            return date.slice(8, 10) + '.' +
+                date.slice(5, 7) + '.' +
+                date.slice(0, 4);
+        }
+        function datetime2str(date) {
+            return date.slice(8, 10) + '.' +
+                date.slice(5, 7) + '.' +
+                date.slice(0, 4) + ', ' +
+                date.slice(11, 13) + ':' +
+                date.slice(14, 16) + ' Uhr';
+        }
     },
     one_click_plan: function() {
         if (this.no_dblclick) return;

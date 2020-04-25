@@ -6,9 +6,13 @@ env.hosts = ['stplan2.uber.space']
 code_dir = '~/stationsplan'
 
 
-def test(verbosity='1'):
-    local("python ./manage.py test sp_app "
-          f"--settings=stationsplan.settings.dev -v {verbosity}")
+def test(verbosity='1', case=''):
+    if case:
+        local(f"python ./manage.py test {case} "
+              f"--settings=stationsplan.settings.dev -v {verbosity}")
+    else:
+        local("python ./manage.py test sp_app "
+              f"--settings=stationsplan.settings.dev -v {verbosity}")
 
 
 def makemigrations():
