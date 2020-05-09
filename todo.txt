@@ -36,3 +36,4 @@
 (B) Datenschutzerklärung verfassen +Public
 (B) Wenn man sich bei /admin einloggt, soll trotzdem die Session korrekt initialisiert werden
 (A) In Views kaputte Eingaben abfangen
+django.views.decorators.http.condition einsetzen https://docs.djangoproject.com/en/3.0/topics/conditional-view-processing/
