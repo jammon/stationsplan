@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 import json
+from django.core.cache import cache
 from unittest import TestCase
 from datetime import date
 
 from .utils import (get_first_of_month, last_day_of_month,
                     get_for_company, get_holidays_for_company,
-                    apply_changes, set_approved, get_last_changes,
+                    apply_changes, set_approved, get_last_change_response,
+                    get_cached_last_change_pk, set_cached_last_change_pk,
                     PopulatedTestCase)
 from .models import Company, Department, Person, Ward, Holiday, Region, ChangeLogging
 
@@ -171,10 +172,21 @@ class TestSetApproved(PopulatedTestCase):
         self.do_test('Z', None)
 
 
-
 class TestGetLastChanges(PopulatedTestCase):
 
-    def test_get_last_changes(self):
+    def setUp(self):
+        super(TestGetLastChanges, self).setUp()
+        self.key = f"last_change_pk-{self.company.id}"
+        cache.set(self.key, None)
+
+    def test_get_cached_last_change_pk(self):
+        self.assertIsNone(cache.get(self.key))
+        self.assertIsNone(get_cached_last_change_pk(self.company.id))
+        set_cached_last_change_pk("abcd", self.company.id)
+        self.assertEqual(get_cached_last_change_pk(self.company.id), "abcd")
+        self.assertEqual(cache.get(self.key), "abcd")
+
+    def test_get_last_change_response(self):
         c_dict = dict(
             company=self.company, user_id=1, person=self.person_a,
             ward=self.ward_a, added=True, continued=False)
@@ -182,14 +194,23 @@ class TestGetLastChanges(PopulatedTestCase):
         c2 = ChangeLogging.objects.create(day=date(2017, 10, 28), **c_dict)
         c3 = ChangeLogging.objects.create(day=date(2017, 10, 29), **c_dict)
 
-        response = get_last_changes(self.company.id, c1.pk)
+        response = get_last_change_response(self.company.id, c1.pk)
         content = json.loads(response.content)
+        self.assertIn('cls', content)
         self.assertEqual(len(content['cls']), 2)
         self.assertEqual(content['last_change']['pk'], c3.pk)
 
-        response = get_last_changes(self.company.id, c2.pk)
+        response = get_last_change_response(self.company.id, c2.pk)
         content = json.loads(response.content)
         self.assertEqual(len(content['cls']), 1)
+        self.assertEqual(
+            content['cls'][0],
+            {'person': 'A',
+             'ward': 'A',
+             'day': '20171029',
+             'action': 'add',
+             'continued': False,
+             'pk': c3.pk})
         self.assertEqual(content['last_change']['pk'], c3.pk)
 
 

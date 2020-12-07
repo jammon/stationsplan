@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 import json
 from datetime import date, timedelta
 from django.contrib.auth.models import User

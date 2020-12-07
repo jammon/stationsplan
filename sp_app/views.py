@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 import json
 import pytz
 from datetime import date, timedelta, datetime
@@ -13,7 +12,7 @@ from .utils import (get_first_of_month, json_array, get_holidays_for_company)
 
 def home(request):
     if request.user.is_authenticated:
-            return redirect('plan')
+        return redirect('plan')
     return render(request, "sp_app/index.html", context={'next': '/plan'})
 
 
@@ -29,7 +28,6 @@ def plan(request, month='', day=''):
     """
     if month == '' and day:
         month = day[:6]
-    # TODO: was wenn in der session keine department_ids sind?
     department_ids = request.session.get('department_ids')
     company_id = request.session.get('company_id')
     # Get all Persons who work here currently

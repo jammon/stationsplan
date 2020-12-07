@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-import pytz
 import json
+import logging
+import pytz
 
 from datetime import timedelta, datetime, date
+from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -83,6 +85,9 @@ def apply_changes(user, company_id, day, ward_id, continued, persons):
         cl_dict = process_change(cl)
         if cl_dict:
             cls.append(cl_dict)
+    if len(cls):
+        set_cached_last_change_pk(
+            max(cl["pk"] for cl in cls), company_id)
     return cls
 
 
@@ -94,7 +99,6 @@ def set_approved(wards, approved, department_ids):
     """
     to_approve = Ward.objects.filter(
         departments__id__in=department_ids, shortname__in=wards)
-    # TODO: test for malformatted input
     approval = (datetime.strptime(approved, '%Y%m%d').date()
                 if approved else None)
     to_approve_sn = []
@@ -109,19 +113,47 @@ def set_approved(wards, approved, department_ids):
     }
 
 
-def get_last_changes(company_id, last_change_pk):
+def get_cached_last_change_pk(company_id):
+    """ Returns the pk of the last changelogging or None if not set
+    """
+    return cache.get(f"last_change_pk-{company_id}")
+
+
+def set_cached_last_change_pk(last_change_pk, company_id):
+    """ Sets the pk of the last changelogging
+    """
+    return cache.set(f"last_change_pk-{company_id}", last_change_pk)
+
+
+def get_last_change_response(company_id, last_change_pk):
     """ Return a JsonResponse with the changes since last_change_pk
     and pk and elapsed time of the last change.
-
-    TODO: Sending changes triggers more frequent updates
     """
+    _lc_pk = get_cached_last_change_pk(company_id)
+    if _lc_pk and (_lc_pk == last_change_pk):
+        return JsonResponse({}, status=304)
+
     cls = list(ChangeLogging.objects.filter(
         company_id=company_id,
         pk__gt=last_change_pk
     ).order_by('pk'))
     if len(cls) == 0:
-        return JsonResponse({})
+        if _lc_pk is None:
+            # Set cache
+            try:
+                last_cl = ChangeLogging.objects.filter(
+                    company_id=company_id,
+                ).order_by('-pk')[0]
+                set_cached_last_change_pk(last_cl.pk, company_id)
+            except IndexError:
+                logging.debug("No ChangeLoggings found")
+        else:
+            logging.debug(
+                "Found no new ChangeLoggings, although cache "
+                "was different from the requested last_change_pk")
+        return JsonResponse({}, status_code=304)
     last_cl = cls[-1]
+    set_cached_last_change_pk(last_cl.pk, company_id)
     time_diff = datetime.now(pytz.utc) - last_cl.change_time
     return JsonResponse({
         'cls': [json.loads(cl.json) or cl.toJson() for cl in cls],

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 from datetime import datetime
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import Q
@@ -8,7 +7,7 @@ from django.http import JsonResponse
 
 import json
 
-from .utils import apply_changes, set_approved, get_last_changes
+from .utils import apply_changes, set_approved, get_last_change_response
 from .models import StatusEntry, Person, Ward, ChangeLogging
 
 
@@ -40,7 +39,7 @@ def changes(request):
     apply_changes(
         request.user, company_id, data['day'], data['ward_id'],
         data['continued'], data['persons'])
-    return get_last_changes(company_id, data['last_pk'])
+    return get_last_change_response(company_id, data['last_pk'])
 
 
 @login_required
@@ -70,7 +69,7 @@ def change_approved(request):
 
 @login_required
 def updates(request, last_change=0):
-    return get_last_changes(request.session['company_id'], last_change)
+    return get_last_change_response(request.session['company_id'], last_change)
 
 
 @login_required

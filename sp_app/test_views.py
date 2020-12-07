@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 from datetime import date, datetime
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth.models import User, Permission
 import json
+import logging
 
 from .utils import PopulatedTestCase
 from .models import Ward, Employee, ChangeLogging, Planning, StatusEntry
@@ -88,21 +88,23 @@ class TestChangeForbidden(ViewsTestCase):
     """ User without permission to add changes
     """
 
-    def test_changes(self):
+    def do_test(self, view, data):
+        # Disable logging of "PermissionDenied",
+        # so not to clutter debug.log
+        logging.disable(logging.CRITICAL)
         response = self.client.post(
-            reverse('changes'),
-            json.dumps(self.DATA_FOR_CHANGE),
+            reverse(view),
+            data,
             "text/json",
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(response.status_code, 403)
+        logging.disable(logging.NOTSET)
+
+    def test_changes(self):
+        self.do_test('changes', json.dumps(self.DATA_FOR_CHANGE))
 
     def test_approval(self):
-        response = self.client.post(
-            reverse('set_approved'),
-            'data',
-            "text/json",
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        self.assertEqual(response.status_code, 403)
+        self.do_test('set_approved', 'data')
 
 
 class ViewsWithPermissionTestCase(ViewsTestCase):

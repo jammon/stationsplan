@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 from datetime import date, timedelta
 
 from .models import (Person, Ward, ChangeLogging, Planning, process_change,
