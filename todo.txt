@@ -35,12 +35,13 @@
 (B) Impressum verfassen +Public
 (B) Datenschutzerklärung verfassen +Public
 (B) Wenn man sich bei /admin einloggt, soll trotzdem die Session korrekt initialisiert werden
-(A) In Views kaputte Eingaben abfangen
+(B) In Views kaputte Eingaben abfangen
 (C) django.views.decorators.http.condition einsetzen https://docs.djangoproject.com/en/3.0/topics/conditional-view-processing/
-Write test if redis is running in production (redis.ping)
-Write test for caching in production
-Write test for http.condition in production
+(B) Write test if redis is running in production (redis.ping)
+(B) Write test for caching in production
+(B) Write test for http.condition in production
 (A) Server-Error wenn man bei admin-changelogging department=1 auswählt
 (B) Nicht jede Funktion muss eine Abteilung haben
 (B) Geplante Dienste anzeigen, auch wenn sich die Tagesverteilung des Dienstes geändert hat
-Wenn in Ajax 403 zurückkommt, redirect auf /login
+(A) Wenn in Ajax 403 zurückkommt, redirect auf /login
+Zusätzliche Feiertage des Krankenhauses werden nicht berücksichtigt

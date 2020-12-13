@@ -9,7 +9,8 @@ from .utils import (get_first_of_month, last_day_of_month,
                     apply_changes, set_approved, get_last_change_response,
                     get_cached_last_change_pk, set_cached_last_change_pk,
                     PopulatedTestCase)
-from .models import Company, Department, Person, Ward, Holiday, Region, ChangeLogging
+from .models import (Company, Department, Person, Ward, CalculatedHoliday,
+                     Region, ChangeLogging)
 
 
 class TestFirstOfMonth(TestCase):
@@ -24,7 +25,8 @@ class TestFirstOfMonth(TestCase):
             got = get_first_of_month(given)
             self.assertEqual(
                 got, expected,
-                msg=f"get_first_of_month for {given} should be {expected}, got {got}")
+                msg=f"get_first_of_month for {given} should be {expected}, "
+                    f"got {got}")
 
 
 class TestLastDayOfMonth(TestCase):
@@ -65,27 +67,22 @@ class TestGetForCompany(TestCase):
 class TestGetHolidaysForCompany(PopulatedTestCase):
 
     def test_get_holidays_for_company(self):
-        weihnachten = Holiday.objects.create(
-            name='Weihnachten', date=date(2017, 12, 25))
-        neujahr = Holiday.objects.create(
-            name='Neujahr', date=date(2018, 1, 1))
-        dreikoenig = Holiday.objects.create(
-            name='Dreikönig', date=date(2018, 1, 6))
+        weihnachten = CalculatedHoliday.objects.create(
+            name='Weihnachten', mode='abs', day=25, month=12)
+        ostern = CalculatedHoliday.objects.create(
+            name='Ostern', mode='rel', day=0)
+        dreikoenig = CalculatedHoliday.objects.create(
+            name='Dreikönig', mode='abs', day=6, month=1)
         testregion = Region.objects.create(
             name="Testregion", shortname="Test")
-        testregion.holidays.add(weihnachten, neujahr)
+        testregion.calc_holidays.add(weihnachten, ostern)
         self.company.region = testregion
         self.company.save()
 
-        holidays = get_holidays_for_company(self.company.id)
-        self.assertEqual(holidays['20171225'], 'Weihnachten')
-        self.assertEqual(holidays['20180101'], 'Neujahr')
-        self.assertNotIn('20180106', holidays)
-
-        self.company.extra_holidays.add(dreikoenig)
-        holidays = get_holidays_for_company(self.company.id)
-        self.assertEqual(len(holidays), 3)
-        self.assertEqual(holidays['20180106'], 'Dreikönig')
+        holidays = [h.id for h in get_holidays_for_company(self.company.id)]
+        self.assertIn(weihnachten.id, holidays)
+        self.assertIn(ostern.id, holidays)
+        self.assertNotIn(dreikoenig.id, holidays)
 
 
 class TestApplyChanges(PopulatedTestCase):
@@ -100,7 +97,7 @@ class TestApplyChanges(PopulatedTestCase):
         self.assertEqual(len(cls), 1)
         self.assertContainsDict(
             cls[0],
-            {"person": self.person_a.shortname, "ward":self.ward_a.shortname,
+            {"person": self.person_a.shortname, "ward": self.ward_a.shortname,
              "action": "add", "continued": True, "day": "20160328"})
 
     def test_apply_2_changes(self):

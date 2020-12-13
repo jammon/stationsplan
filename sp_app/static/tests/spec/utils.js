@@ -7,9 +7,37 @@ describe("utils", function() {
             expect(utils.is_free(new Date(2015, 7, 10))).toBe(false);  // Monday
         });
         it("should identify special holidays", function() {
-            utils.set_holidays({'20171003': 'Tag der deutschen Einheit'});
-            expect(utils.is_free(new Date(2017, 9, 3))).toBe(true);
-            expect(utils.is_free(new Date(2017, 9, 4))).toBe(false);
+            utils.set_holidays([
+                {name: 'Tag der deutschen Einheit',
+                 mode: 'abs',
+                 day: 3,
+                 month: 10},
+                {name: 'Reformationstag',
+                 mode: 'abs',
+                 day: 31,
+                 month: 10,
+                 year: 2017},
+                {name: 'Himmelfahrt',
+                 mode: 'rel',
+                 day: 39},
+                ]);
+            // TODO: this test fails sometimes with 
+            // utils._free_dates being empty
+            let res = utils.is_free(new Date(2017, 9, 3));
+            expect(res).toBe(true);
+            res = !utils.is_free(new Date(2017, 9, 4));
+            expect(res).toBe(true);
+            res = utils.is_free(new Date(2017, 4, 25));
+            expect(res).toBe(true);
+            res = utils.is_free(new Date(2017, 9, 31));
+            expect(res).toBe(true);
+            res = !utils.is_free(new Date(2018, 9, 31));
+            expect(res).toBe(true);
+            // expect(utils.is_free(new Date(2017, 9, 3))).toBe(true);
+            // expect(utils.is_free(new Date(2017, 9, 4))).toBe(false);
+            // expect(utils.is_free(new Date(2017, 4, 25))).toBe(true);
+            // expect(utils.is_free(new Date(2017, 9, 31))).toBe(true);
+            // expect(utils.is_free(new Date(2018, 9, 31))).toBe(false);
         });
     });
     describe("function get_next_month", function() {

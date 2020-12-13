@@ -63,7 +63,7 @@ def plan(request, month='', day=''):
         'is_editor': is_editor,
         'first_of_month': first_of_month,
         'start_of_data': start_of_data,
-        'holidays': json.dumps(holidays),
+        'holidays': json.dumps([h.toJson() for h in holidays]),
         'department_ids': json.dumps(department_ids),
     }
     last_change = ChangeLogging.objects.filter(

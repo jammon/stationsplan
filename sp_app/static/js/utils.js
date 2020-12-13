@@ -1,22 +1,59 @@
+// jshint esversion: 6
 var utils = (function($, _, Backbone) {
 "use strict";
 
-var _holidays = {};
+var _holidays = [];
 var _free_dates = [];
+var _calculated_years = [];
+var _easters = {
+    2014: new Date(2014, 3, 20),
+    2015: new Date(2015, 3, 5),
+    2016: new Date(2016, 2, 27),
+    2017: new Date(2017, 3, 16),
+    2018: new Date(2018, 3, 1),
+    2019: new Date(2019, 3, 21),
+    2020: new Date(2020, 3, 12),
+    2021: new Date(2021, 3, 4),
+    2022: new Date(2022, 3, 17),
+    2023: new Date(2023, 3, 9),
+    2024: new Date(2024, 2, 31),
+    2025: new Date(2025, 3, 20),
+    2026: new Date(2026, 3, 5),
+    2027: new Date(2027, 2, 28),
+    2028: new Date(2028, 3, 16),
+    2029: new Date(2029, 3, 1),
+};
 
 function is_free(date) {
+    // date is a Javascript Date
     var weekday = date.getDay();
     if (weekday===6 || weekday===0) {
         return true;
     }
+    if (_calculated_years.indexOf(date.getFullYear()) == -1)
+        calc_free_dates(date.getFullYear());
     return (_free_dates.indexOf(get_day_id(date)) > -1);
 }
 
+function calc_free_dates(year) {
+    _holidays.forEach(function(holiday) {
+        if (holiday.mode=='abs') {
+            if (!holiday.year || holiday.year==year)
+                _free_dates.push(
+                    get_day_id(year, holiday.month-1, holiday.day));
+        } else {
+            let easter = _easters[year];
+            _free_dates.push(
+                get_day_id(new Date(
+                    year, easter.getMonth(), easter.getDate() + holiday.day)));
+        }
+    });
+    _calculated_years.push(year);
+}
+
 function set_holidays(holidays) {
-    // holidays should be in the form of
-    // {'YYYYMMDD': 'Name of the holiday', ...}
+    // holidays is a list of models.CalculatedHoliday.toJson
     _holidays = holidays;
-    _free_dates = _.keys(holidays);
 }
 var month_names = ["Januar", "Februar", "März", "April", "Mai", "Juni", 
     "Juli", "August", "September", "Oktober", "November", "Dezember"];

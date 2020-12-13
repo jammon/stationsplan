@@ -21,6 +21,7 @@ class ConfigSite(admin.sites.AdminSite):
     def has_permission(self, request):
         return request.session.get('is_dep_lead', False)
 
+
 config_site = ConfigSite(name='config')
 
 
@@ -229,18 +230,22 @@ class StatusEntryAdmin(CompanyRestrictedMixin, admin.ModelAdmin):
 
 
 @admin.register(Holiday)
+@admin.register(Holiday, site=config_site)
 class HolidayAdmin(admin.ModelAdmin):
     ordering = ('date', )
 
-# @admin.register(CalculatedHoliday)
+
+@admin.register(CalculatedHoliday)
 class CalculatedHolidayAdmin(admin.ModelAdmin):
     ordering = ('name', )
     radio_fields = {"mode": admin.HORIZONTAL}
-    # fields = (('name', 'mode'), ('day', 'month', 'year'))
+    fields = (('name', 'mode'), ('day', 'month', 'year'))
+
 
 @admin.register(Region)
 class RegionAdmin(admin.ModelAdmin):
-    filter_horizontal = ('holidays',)
+    filter_horizontal = ('calc_holidays',)
+
 
 admin.site.register(Company)
 admin.site.register(Employee)

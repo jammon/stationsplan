@@ -23,9 +23,6 @@ class Company(models.Model):
         help_text=_('Region that determines the legal holidays '
                     'for this company'),
         on_delete=models.PROTECT)
-    extra_holidays = models.ManyToManyField(
-        'Holiday', verbose_name=_('Additional Holidays'),
-        related_name='companies', blank=True)
 
     class Meta:
         verbose_name = _('Company')
@@ -471,7 +468,13 @@ class Holiday(models.Model):
 
 
 class CalculatedHoliday(models.Model):
-    """A Holiday with calculated dates"""
+    """A Holiday with calculated dates
+
+    If mode is 'abs', the holiday is on that day and month,
+    if year is not None, it is on that specific date.
+
+    If mode is 'rel', then the holiday is 'day' days before or after easter.
+    """
     name = models.CharField(_('Name'), max_length=50)
     mode = models.CharField(
         _('Mode'), max_length=3,
@@ -489,10 +492,19 @@ class CalculatedHoliday(models.Model):
     def __str__(self):
         if self.mode == 'abs':
             return f"{self.name}: {self.day}.{self.month}.{self.year or ''}"
-        if self.day > 0:
+        if self.day >= 0:
             return f"{self.name}: {self.day} Tage nach Ostern"
         else:
             return f"{self.name}: {-self.day} Tage vor Ostern"
+
+    def toJson(self):
+        return {
+            "name": self.name,
+            "mode": self.mode,
+            "day": self.day,
+            "month": self.month or 0,
+            "year": self.year or 0,
+        }
 
 
 class Region(models.Model):
@@ -500,10 +512,10 @@ class Region(models.Model):
     """
     name = models.CharField(_('Name'), max_length=50)
     shortname = models.CharField(_('Short Name'), max_length=10, unique=True)
-    holidays = models.ManyToManyField(Holiday, verbose_name=_('Holidays'),
-                                      related_name='regions')
-    # calc_holidays = models.ManyToManyField(
-    #     CalculatedHoliday, verbose_name=_('Holidays'), related_name='regions')
+    # holidays = models.ManyToManyField(Holiday, verbose_name=_('Holidays'),
+    #                                   related_name='regions')
+    calc_holidays = models.ManyToManyField(
+        CalculatedHoliday, verbose_name=_('Holidays'), related_name='regions')
 
     class Meta:
         verbose_name = _('Region')

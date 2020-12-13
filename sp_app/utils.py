@@ -12,7 +12,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.test import TestCase
 from .models import (Ward, Person, Company, Department, ChangeLogging,
-                     Holiday, process_change)
+                     CalculatedHoliday, process_change)
 
 
 def json_array(data):
@@ -48,10 +48,8 @@ def get_for_company(klass, request=None, company_id='', **kwargs):
 
 
 def get_holidays_for_company(company_id):
-    holidays = Holiday.objects.filter(
-        Q(regions__companies__id=company_id) |
-        Q(companies__id=company_id))
-    return dict((h.date.strftime('%Y%m%d'), h.name) for h in holidays)
+    return CalculatedHoliday.objects.filter(
+        regions__companies__id=company_id)
 
 
 def apply_changes(user, company_id, day, ward_id, continued, persons):

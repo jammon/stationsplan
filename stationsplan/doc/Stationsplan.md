@@ -83,25 +83,29 @@ Wenn ein Change mit add=False und angegebenem Ende andere Planungen überdeckt, 
 - Wenn Dienste in einem freigegebenen Ward geändert werden, werden diese für eine Benachrichtigung vorgemerkt. Der Editor kann dann die Personen über die Änderungen mit einem Kommentar per Mail benachrichtigen.
 
 ## Feiertage
-`feiertage.py` lädt die Feiertage von www.feiertage.net und schreibt sie in `holidays.csv`. Mit `python manage.py read_holidays` kann man sie einlesen.
+Feiertage werden berechnet.
 
 ### Feiertage an festen Terminen
 - 01.01.: Neujahr
 - 06.01.: Heilige Drei Könige
+- 08.03.: Frauentag
 - 01.05.: Maifeiertag
+- 08.08.: Augsburger Hohes Friedensfest
 - 15.08.: Mariä Himmelfahrt
+- 20.09.: Weltkindertag
 - 03.10.: Tag der Deutschen Einheit
 - 31.10.: Reformationstag
 - 01.11.: Allerheiligen
 - 25.12.: 1. Weihnachtstag
 - 26.12.: 2. Weihnachtstag
 
-Abhängig von Ostern:
-- 14.04.: Karfreitag: -2
-- 17.04.: Ostermontag: +1
-- 25.05.: Christi Himmelfahrt: +39
-- 05.06.: Pfingstmontag: +50
-- 15.06.: Fronleichnam: +60
+### Abhängig von Ostern:
+- Rosenmontag -48
+- Karfreitag: -2
+- Ostermontag: +1
+- Christi Himmelfahrt: +39
+- Pfingstmontag: +50
+- Fronleichnam: +60
 
 Ostertermine
 2017 - 16.04.
@@ -120,6 +124,8 @@ Ostertermine
 2030 - 21.04.
 
 Buß- und Bettag: Mittwoch vor dem 23.11.
+
+Jedes Krankenhaus gehört zu einer Region, die die Feiertage definiert. Sollte ein Krankenhaus zusätzliche Feiertage haben, muss dafür eine neue Region definiert werden.
 
 ## Tabelle an Screengröße anpassen
 ### Tabellenbreite
@@ -165,3 +171,15 @@ you can then find the current grid option with:
 - Plannings werden vom Server geliefert in `views.plan`. Sie enthalten die Ids von Personen/Wards.
 - Changes werden vom Client an der Server in `changes` geschickt. Sie enthalten die Ids.
 
+## Verwaltung von Personen und Funktionen für Nutzer
+- Personen
+    + Neue Person eingeben
+    + Person bearbeiten
+    + Person soll vorübergehend nicht planbar sein (Rotation, Elternzeit, Forschungsaufenthalt)
+- Funktionen
+    + Neue Funktion eingeben
+    + Funktion bearbeiten
+- Personen einer Funktion zuordnen √
+
+## Was Nutzer nicht bearbeiten können
+- Feiertage
