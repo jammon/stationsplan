@@ -111,3 +111,8 @@ x 2020-04-11 Wenn ein Nachtdiensthabender krank wird, ist er doch am nächsten T
 x 2020-04-19 In QuickInputView wird die vorherige Personenauswahl nicht gelöscht +bug
 x 2020-04-25 Änderungsgeschichte einer Planung abrufbar machen
 x 2020-12-07 unicode_literals rausschmeißen
+x 2020-12-13 Zusätzliche Feiertage des Krankenhauses werden nicht berücksichtigt
+x 2020-12-13 Feiertage auf algorithmisch berechnete Daten umstellen
+x 2020-12-13 Nicht jede Funktion muss eine Abteilung haben
+x 2020-12-13 Server-Error wenn man bei admin-changelogging department=1 auswählt
+x 2020-12-15 Wenn in Ajax 403 zurückkommt, redirect auf /login

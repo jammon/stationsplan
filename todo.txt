@@ -13,7 +13,6 @@
 (C) Integrationtests in jasmine einbauen +Public
 (C) Favicon bauen +Public https://codeburst.io/the-front-end-checklist-8b2292fdda44
 (C) YSlow einsetzen +Public
-(C) Feiertage auf algorithmisch berechnete Daten umstellen
 (C) Assets komprimieren
 (C) Flags für Betatester
 (C) Administration für User bauen +Public
@@ -40,8 +39,5 @@
 (B) Write test if redis is running in production (redis.ping)
 (B) Write test for caching in production
 (B) Write test for http.condition in production
-(A) Server-Error wenn man bei admin-changelogging department=1 auswählt
-(B) Nicht jede Funktion muss eine Abteilung haben
 (B) Geplante Dienste anzeigen, auch wenn sich die Tagesverteilung des Dienstes geändert hat
-(A) Wenn in Ajax 403 zurückkommt, redirect auf /login
-Zusätzliche Feiertage des Krankenhauses werden nicht berücksichtigt
+(B) Nicht jede Funktion muss eine Abteilung haben

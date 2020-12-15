@@ -130,11 +130,7 @@ class CurrentPersonListFilter(PersonListFilter):
 
 
 class DepartmentsListFilter(admin.SimpleListFilter):
-    # Human-readable title which will be displayed in the
-    # right admin sidebar just above the filter options.
     title = _('Department')
-
-    # Parameter for the filter that will be used in the URL query.
     parameter_name = 'departments'
 
     def lookups(self, request, model_admin):
@@ -211,12 +207,31 @@ class DepartmentAdmin(CompanyRestrictedMixin, admin.ModelAdmin):
     ordering = ('shortname',)
 
 
+class PersonDepartmentsListFilter(admin.SimpleListFilter):
+    title = _('Department')
+    parameter_name = 'departments'
+
+    def lookups(self, request, model_admin):
+        return Department.objects.filter(
+            company_id=request.session.get('company_id')
+        ).values_list('id', 'name')
+
+    def queryset(self, request, queryset):
+        qs = queryset.filter(company_id=request.session.get('company_id'))
+        value = self.value()
+        if value is not None:
+            qs = qs.filter(person__departments__id=int(value))
+        return qs
+
+
 @admin.register(ChangeLogging)
 class ChangeLoggingAdmin(admin.ModelAdmin):
     date_hierarchy = 'day'
-    list_filter = (DepartmentsListFilter, CurrentPersonListFilter, WardListFilter,
+    list_filter = (PersonDepartmentsListFilter,
+                   CurrentPersonListFilter, WardListFilter,
                    'user', 'continued')
     list_display = ('description', 'change_time', )
+
 
 @admin.register(Planning)
 class PlanningAdmin(admin.ModelAdmin):

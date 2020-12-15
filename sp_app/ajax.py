@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 from django.contrib.auth.decorators import login_required, permission_required
+from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
+from functools import wraps
 
 import json
 
@@ -11,7 +13,19 @@ from .utils import apply_changes, set_approved, get_last_change_response
 from .models import StatusEntry, Person, Ward, ChangeLogging
 
 
-@login_required
+def ajax_login_required(function=None):
+    """
+    Decorator for views that checks that the user is logged in, redirecting
+    to the log-in page if necessary.
+    """
+    def _wrapped_view(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            raise PermissionDenied
+        return function(request, *args, **kwargs)
+    return _wrapped_view
+
+
+@ajax_login_required
 @require_POST
 @permission_required('sp_app.add_changelogging', raise_exception=True)
 def changes(request):
@@ -42,7 +56,7 @@ def changes(request):
     return get_last_change_response(company_id, data['last_pk'])
 
 
-@login_required
+@ajax_login_required
 @require_POST
 @permission_required('sp_app.add_changelogging', raise_exception=True)
 def change_approved(request):
@@ -67,12 +81,12 @@ def change_approved(request):
     return JsonResponse(res, safe=False)
 
 
-@login_required
+@ajax_login_required
 def updates(request, last_change=0):
     return get_last_change_response(request.session['company_id'], last_change)
 
 
-@login_required
+@ajax_login_required
 @require_POST
 @permission_required('sp_app.add_person', raise_exception=True)
 def change_function(request):
@@ -100,18 +114,18 @@ def change_function(request):
             'person': person.shortname,
             'functions': [f.shortname for f in person.functions.all()],
         }
-    except Person.DoesNotExist as e:
+    except Person.DoesNotExist:
         res['reason'] = f'Person {data["person"]} not found'
-    except Person.MultipleObjectsReturned as e:
+    except Person.MultipleObjectsReturned:
         res['reason'] = f'Person {data["person"]} found multiple times'
-    except Ward.DoesNotExist as e:
+    except Ward.DoesNotExist:
         res['reason'] = f'Ward {data["ward"]} not found'
-    except Ward.MultipleObjectsReturned as e:
+    except Ward.MultipleObjectsReturned:
         res['reason'] = f'Ward {data["ward"]} found multiple times'
     return JsonResponse(res, safe=False)
 
 
-@login_required
+@ajax_login_required
 def change_history(request, date, ward_id):
     """Get all changes to a staffing on one day and ward
 

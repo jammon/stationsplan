@@ -715,7 +715,7 @@ function save_change(day, ward, continued, persons) {
     //       id: a persons id,
     //       action: 'add' or 'remove'
     //   }
-    var json_data = JSON.stringify({
+    var json_data = {
         day: day.id,
         ward_id: ward.get('id'),
         continued: _.isDate(continued) ?
@@ -723,26 +723,9 @@ function save_change(day, ward, continued, persons) {
             continued,
         persons: persons,
         last_pk: _last_change_pk,
-    });
+    };
     var url = '/changes';
-    function error (jqXHR, textStatus, errorThrown) {
-        models.errors.add({
-            textStatus: textStatus, 
-            errorThrown: errorThrown,
-            responseText: jqXHR.responseText,
-            url: url,
-            data: json_data,
-        });
-    }
-    $.ajax({
-        type: "POST",
-        url: url, 
-        data: json_data,
-        dataType: "json",
-        contentType: "application/json; charset=utf-8",
-        error: error,
-        success: process_changes,
-    });
+    do_ajax_call(url, json_data, process_changes);
 }
 function process_changes(data) {
     _.each(data.cls, models.apply_change);
@@ -753,53 +736,27 @@ function save_approval(ward_ids, date) {
     // data should have these attributes: 
     //   date: a Date or false
     //   ward_ids: an Array of <ward_ids>
-    var json_data = JSON.stringify({
+    var json_data = {
         date: date ? utils.get_day_id(date) : false,
         wards: ward_ids,
-    });
+    };
     var url = '/set_approved';
-    function error (jqXHR, textStatus, errorThrown) {
-        models.errors.add({
-            textStatus: textStatus, 
-            errorThrown: errorThrown,
-            responseText: jqXHR.responseText,
-            url: url,
-            data: json_data,
-        });
-    }
     function success (data, textStatus, jqXHR) {
         var approved = data.approved ? utils.get_date(data.approved) : false;
         _.each(data.wards, function(ward_id) {
             wards.get(ward_id).set('approved', approved);
         });
     }
-    $.ajax({
-        type: "POST",
-        url: url,
-        data: json_data,
-        dataType: "json",
-        contentType: "application/json; charset=utf-8",
-        error: error,
-        success: success,
-    });
+    do_ajax_call(url, json_data, success);
 }
 
 function save_function(person, ward, added) {
-    var json_data = JSON.stringify({
+    var json_data = {
         person: person.id,
         ward: ward.id,
         add: added,
-    });
+    };
     var url = '/change_function';
-    function error (jqXHR, textStatus, errorThrown) {
-        models.errors.add({
-            textStatus: textStatus, 
-            errorThrown: errorThrown,
-            responseText: jqXHR.responseText,
-            url: url,
-            data: json_data,
-        });
-    }
     function success (data, textStatus, jqXHR) {
         if (data.status=='ok') {
             persons.get(data.person).set('functions', data.functions);
@@ -807,17 +764,36 @@ function save_function(person, ward, added) {
             error(jqXHR, textStatus, data.reason);
         }
     }
+    do_ajax_call(url, json_data, success);
+}
+
+function redirect_to_login() {
+    window.location.reload();
+}
+
+function do_ajax_call(url, json_data, success) {
+    function error (jqXHR, textStatus, errorThrown) {
+        if (jqXHR.status == 403)
+            window.location.reload();
+        models.errors.add({
+            textStatus: textStatus, 
+            errorThrown: errorThrown,
+            responseText: jqXHR.responseText,
+            url: url,
+            data: json_data,
+        });
+    }
     $.ajax({
         type: "POST",
         url: url,
         data: json_data,
         dataType: "json",
         contentType: "application/json; charset=utf-8",
+        statusCode: { 403: redirect_to_login },
         error: error,
         success: success,
     });
 }
-
 
 function set_plannings(p) {
     _.each(p, function(planning) {

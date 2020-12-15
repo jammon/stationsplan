@@ -15,7 +15,6 @@ class TestViewsAnonymously(TestCase):
     def test_view_redirects_to_login(self):
         c = Client()
         for name, url in (
-                ('changes', 'changes'),
                 ('plan', 'plan'),
                 ('functions', 'funktionen')):
             response = c.get(reverse(name))
@@ -25,10 +24,12 @@ class TestViewsAnonymously(TestCase):
                 self.assertRedirects(response, '/login?next=/' + url,
                                      msg_prefix=url)
 
-    def test_status_post(self):
+    def test_changes(self):
         c = Client()
+        response = c.get(reverse('changes'), {})
+        self.assertEqual(response.status_code, 403)
         response = c.post(reverse('changes'), {})
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 403)
 
 
 class ViewsTestCase(PopulatedTestCase):
