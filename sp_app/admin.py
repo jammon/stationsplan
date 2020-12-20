@@ -202,7 +202,6 @@ class WardAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
 
 
 @admin.register(Department)
-@admin.register(Department, site=config_site)
 class DepartmentAdmin(CompanyRestrictedMixin, admin.ModelAdmin):
     ordering = ('shortname',)
 
@@ -245,7 +244,6 @@ class StatusEntryAdmin(CompanyRestrictedMixin, admin.ModelAdmin):
 
 
 @admin.register(Holiday)
-@admin.register(Holiday, site=config_site)
 class HolidayAdmin(admin.ModelAdmin):
     ordering = ('date', )
 

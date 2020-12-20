@@ -18,7 +18,7 @@
 (C) Administration für User bauen +Public
 (C) Testen mit Firefox headless oder PhantomJS
 (B) Aktion Aktualisieren ins Menu
-(B) Aktualisierung soll auch die Freigabe von Planungen vermitteln
+(C) Aktualisierung soll auch die Freigabe von Planungen vermitteln
 (C) meta description in base.html verbessern
 (C) In Admin der Wards nur aktuelle und zukünftige Kollegen auswählbar machen
 (C) Debug Toolbar soll unabhängig vom Internet funktionieren
@@ -29,7 +29,7 @@
 (C) Bedeutung der Berechtigungen von Benutzern klarer machen
 (C) Set MySQL Strict Mode +deploy https://docs.djangoproject.com/en/2.2/ref/databases/#mysql-sql-mode
 (C) Debug Toolbar fixen +bug
-(B) Department Leaders sollen einen Link zu /config haben  +feature
+(A) Department Leaders sollen einen Link zu /config haben  +feature
 (C) Wenn man einen Diensthabenden draggt, geht nach dem Droppen das Besetzung ändern-Fenster auf für den Ausgangstag +bug
 (B) Impressum verfassen +Public
 (B) Datenschutzerklärung verfassen +Public

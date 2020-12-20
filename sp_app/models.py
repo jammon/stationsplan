@@ -74,7 +74,8 @@ class Ward(models.Model):
         default=False,
         help_text=_('if True, then persons planned for this are on leave'))
     departments = models.ManyToManyField(
-        Department, verbose_name=_('Departments'), related_name='wards')
+        Department, verbose_name=_('Departments'), related_name='wards',
+        help_text=_('Departments whose schedule contains this ward'))
     company = models.ForeignKey(Company, related_name='wards',
                                 on_delete=models.CASCADE)
     position = models.IntegerField(
