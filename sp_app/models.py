@@ -171,12 +171,12 @@ class Person(models.Model):
         default=1,
         help_text=_('Ordering in the display. '
                     'Should not be more than two digits. '
-                    '>80 means "Chefarzt"'))
+                    'A number greater than 80 means Head of Department'))
     anonymous = models.BooleanField(
         _('Anonymous'),
         default=False,
         help_text=_('if True this person represents multiple other persons, '
-                    'e.g. an appartment'))
+                    'e.g. a department'))
 
     class Meta:
         verbose_name = _('Person')

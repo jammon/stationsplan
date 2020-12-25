@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-20 11:33+0100\n"
+"POT-Creation-Date: 2020-12-25 08:22+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,7 +34,7 @@ msgstr "Anstellungsstatus"
 msgid "current employees"
 msgstr "aktuelle Mitarbeiter"
 
-#: sp_app/admin.py:133 sp_app/admin.py:210 sp_app/models.py:43
+#: sp_app/admin.py:133 sp_app/admin.py:226 sp_app/models.py:43
 msgid "Department"
 msgstr "Abteilung"
 
@@ -232,12 +232,11 @@ msgid "position"
 msgstr "Position"
 
 #: sp_app/models.py:172
-#, fuzzy
-#| msgid "Ordering in the display. Should not be more than two digits."
 msgid ""
-"Ordering in the display. Should not be more than two digits. >80 means "
-"\"Chefarzt\""
-msgstr "Position in der Anzeige. Sollte nicht mehr als zwei Stellen haben."
+"Ordering in the display. Should not be more than two digits. A number "
+"greater than 80 means Head of Department"
+msgstr "Position in der Anzeige. Sollte nicht mehr als zwei Stellen haben. "
+"Eine Zahl größer als 80 bedeutet Chefarzt"
 
 #: sp_app/models.py:176
 msgid "Anonymous"
@@ -895,7 +894,7 @@ msgstr ""
 #, fuzzy, python-format
 #| msgid "Please correct the error below."
 msgid "Please correct the duplicate data for %(field)s."
-msgstr "Bitte korrigieren Sie diesen Fehler"
+msgstr "Bitte korrigieren Sie den Fehler bei %(field)s."
 
 #: venv3/lib/python3.6/site-packages/django/forms/models.py:755
 #, python-format

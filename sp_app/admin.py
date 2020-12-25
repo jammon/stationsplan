@@ -105,12 +105,12 @@ class PersonListFilter(PersonWardListFilter):
 class IsEmployedListFilter(admin.SimpleListFilter):
     """ Toggle if former employees are displayed
     """
-    title = _('Anstellungsstatus')
+    title = _('Employment status')
     parameter_name = 'current'
 
     def lookups(self, request, model_admin):
         return (
-            ('current', _('aktuelle Mitarbeiter')),
+            ('current', _('current employees')),
         )
 
     def queryset(self, request, queryset):
@@ -151,7 +151,8 @@ class DepartmentsListFilter(admin.SimpleListFilter):
 #
 @admin.register(Person)
 @admin.register(Person, site=config_site)
-class PersonAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
+class PersonAdmin(
+        CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
     # filter_horizontal = ('departments', 'functions',)
     list_filter = (IsEmployedListFilter, DepartmentsListFilter, )
     ordering = ('position', 'name',)
@@ -162,11 +163,21 @@ class PersonAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
             'widget': forms.CheckboxSelectMultiple
         },
     }
-    fields = (
-        ('name', 'shortname'),
-        ('start_date', 'end_date'),
-        ('departments', 'functions'),
-        ('position', 'anonymous'), )
+    fieldsets = (
+        (None, {'fields': (
+            (('name', 'shortname'),
+             ('start_date', 'end_date'),
+             ('departments', 'functions'),
+             ))
+        }),
+        ('Advanced options', {
+            'classes': ('collapse',),
+            'fields': (
+                'position',
+                'anonymous',
+            ),
+        }),
+    )
 
 
 class DifferentDayInline(admin.TabularInline):
@@ -182,13 +193,19 @@ class WardAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
         (None, {'fields': (
             (('name', 'shortname', 'position'),
              ('max', 'min', 'approved'),
-             ('everyday', 'freedays', 'on_leave', 'callshift', ),
-             ('weekdays', ),
-             ('ward_type', 'weight',),
+             ('everyday', 'freedays'),
+             ('on_leave', 'callshift'),
              'departments',
              'staff',
-             'after_this',
              ))
+        }),
+        ('Advanced options', {
+            'classes': ('collapse',),
+            'fields': (
+                'weekdays',
+                ('ward_type', 'weight',),
+                'after_this',
+            ),
         }),
     )
     filter_horizontal = ('departments', 'after_this')
