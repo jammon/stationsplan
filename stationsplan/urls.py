@@ -27,7 +27,7 @@ urlpatterns = [
     url(r'^plan(/(?P<month>[0-9]+))?/?$', sp_views.plan, name='plan'),
     url(r'^dienste(/(?P<month>[0-9]+))?/?$', sp_views.plan, name='dienste'),
     url(r'^tag(/(?P<day>[0-9]+))?/?$', sp_views.plan, name='tag'),
-    url(r'^funktionen/?$', sp_views.plan, name='functions'),
+    url(r'^zuordnung/?$', sp_views.plan, name='functions'),
     url(r'^change_function/?$', sp_ajax.change_function, name='change_function'),
     url(r'^changes$', sp_ajax.changes, name='changes'),
     url(r'^changehistory/(?P<date>[0-9]+)/(?P<ward_id>[0-9]+)$',

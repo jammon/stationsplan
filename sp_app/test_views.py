@@ -16,7 +16,7 @@ class TestViewsAnonymously(TestCase):
         c = Client()
         for name, url in (
                 ('plan', 'plan'),
-                ('functions', 'funktionen')):
+                ('functions', 'zuordnung')):
             response = c.get(reverse(name))
             self.assertEqual(response.status_code, 302, msg=name)
             for f in (c.get, c.post):

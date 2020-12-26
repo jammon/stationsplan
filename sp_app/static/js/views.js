@@ -614,7 +614,7 @@ var Router = Backbone.Router.extend({
         "plan(/:period_id)(/)": "plan",    // #plan
         "dienste(/:period_id)(/)": "dienste",    // #dienste
         "tag(/:day_id)(/)": "tag",    // #Aufgaben an einem Tag
-        "funktionen(/)": "funktionen"
+        "zuordnung(/)": "zuordnung"
     },
     plan: function(period_id) {
         this.call_view(month_views, "#nav-stationen", period_id, 'plan');
@@ -625,7 +625,7 @@ var Router = Backbone.Router.extend({
     tag: function(period_id) {
         this.call_view(day_views, "#nav-tag", period_id, 'tag');
     },
-    funktionen: function() {
+    zuordnung: function() {
         if (!models.user.is_editor) {
             this.navigate("plan/", {trigger: true});
             return;
@@ -667,6 +667,8 @@ var NavView = Backbone.View.extend({
         "click #nav-dienste": "dienste",
         "click #nav-tag": "tag",
         "click #nav-funktionen": "funktionen",
+        "click #nav-personen": "personen",
+        "click #nav-zuordnung": "zuordnung",
     },
     stationen: function() {
         this.navigate_to("plan/" + current_day_id);
@@ -677,8 +679,14 @@ var NavView = Backbone.View.extend({
     tag: function() {
         this.navigate_to("tag/" + utils.get_day_id(new Date()));
     },
+    zuordnung: function(event) {
+        router.navigate("zuordnung/", {trigger: true});
+    },
     funktionen: function(event) {
-        router.navigate("funktionen/", {trigger: true});
+        window.location = "/config/sp_app/ward/";
+    },
+    personen: function(event) {
+        window.location = "/config/sp_app/person/";
     },
     navigate_to: function(path) {
         update_current_day();
