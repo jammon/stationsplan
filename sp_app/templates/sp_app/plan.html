@@ -28,17 +28,6 @@
         <li id="nav-stationen"><a>Stationen</a></li>
         <li id="nav-dienste"><a>Dienste</a></li>
         <li id="nav-tag"><a>Heute</a></li>
-        {% if request.session.is_dep_lead %}
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-            Konfiguration <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li id="nav-funktionen"><a>Funktionen</a></li>
-            <li id="nav-personen"><a>Personen</a></li>
-            <li id="nav-zuordnung"><a>Zuordnung</a></li>
-          </ul>
-        </li>
-        {% endif %}
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
             <span class="glyphicon glyphicon-cog"></span>
@@ -46,7 +35,16 @@
           <ul class="dropdown-menu">
             <li><a href="/logout">Abmelden</a></li>
             {% if request.session.can_change_password %}
-            <li><a href="/password_change">Passwort ändern</a></li>
+              <li><a href="/password_change">Passwort ändern</a></li>
+            {% endif %}
+            {% if request.session.is_dep_lead %}
+              <div class="dropdown-divider"></div>
+              <li id="nav-funktionen"><a>Funktionen</a></li>
+              <li id="nav-personen"><a>Personen</a></li>
+              <li id="nav-zuordnung"><a>Zuordnung</a></li>
+            {% endif %}
+            {% if request.user.is_staff %}
+              <li id="nav-admin"><a>Admin-Seite</a></li>
             {% endif %}
           </ul>
         </li>

@@ -39,4 +39,3 @@
 (B) Write test for caching in production
 (B) Write test for http.condition in production
 (B) Geplante Dienste anzeigen, auch wenn sich die Tagesverteilung des Dienstes geändert hat
-(B) Nicht jede Funktion muss eine Abteilung haben

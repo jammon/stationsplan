@@ -1,8 +1,7 @@
 from django.contrib.auth.signals import user_logged_in
-from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
 
-from .models import Ward, Employee
+from .models import Employee
 
 
 @receiver(user_logged_in)

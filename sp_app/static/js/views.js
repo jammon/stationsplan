@@ -609,6 +609,11 @@ var on_call_views = new PeriodViews(OnCallView);
 var day_views = new PeriodViews(DayView);
 
 
+var is_top_level_nav = {
+    "#nav-stationen": true,
+    "#nav-dienste": true,
+    "#nav-tag": true,
+};
 var Router = Backbone.Router.extend({
     routes: {
         "plan(/:period_id)(/)": "plan",    // #plan
@@ -653,7 +658,8 @@ var Router = Backbone.Router.extend({
         view.$el.addClass('current');
         this.current_view = view;
         nav_view.$(".active").removeClass("active");
-        nav_view.$(nav_id).addClass("active");
+        if (is_top_level_nav[nav_id])
+            nav_view.$(nav_id).addClass("active");
     },
     size_changed: function() {
         Backbone.history.loadUrl(Backbone.history.fragment);
@@ -669,6 +675,7 @@ var NavView = Backbone.View.extend({
         "click #nav-funktionen": "funktionen",
         "click #nav-personen": "personen",
         "click #nav-zuordnung": "zuordnung",
+        "click #nav-admin": "admin",
     },
     stationen: function() {
         this.navigate_to("plan/" + current_day_id);
@@ -687,6 +694,9 @@ var NavView = Backbone.View.extend({
     },
     personen: function(event) {
         window.location = "/config/sp_app/person/";
+    },
+    admin: function(event) {
+        window.location = "/admin/";
     },
     navigate_to: function(path) {
         update_current_day();
