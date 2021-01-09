@@ -79,12 +79,5 @@ def plan(request, month='', day=''):
     return render(request, 'sp_app/plan.html', data)
 
 
-@login_required
-def password_change(request):
-    return auth_views.password_change(
-        request, template_name='registration/password_change.html',
-        post_change_redirect='/plan')
-
-
 def tests(request):
     return render(request, 'sp_app/tests.html', {})

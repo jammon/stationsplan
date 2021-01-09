@@ -13,10 +13,14 @@ from .models import Ward, Employee, ChangeLogging, Planning, StatusEntry
 class TestViewsAnonymously(TestCase):
 
     def test_view_redirects_to_login(self):
+        """ Test if 'plan', 'functions' and 'password_change' redirect
+            to login if not logged in
+        """
         c = Client()
         for name, url in (
                 ('plan', 'plan'),
-                ('functions', 'zuordnung')):
+                ('functions', 'zuordnung'),
+                ('password_change', 'password_change/')):
             response = c.get(reverse(name))
             self.assertEqual(response.status_code, 302, msg=name)
             for f in (c.get, c.post):
@@ -25,6 +29,8 @@ class TestViewsAnonymously(TestCase):
                                      msg_prefix=url)
 
     def test_changes(self):
+        """ Test if 'changes' return status 403 if not logged in
+        """
         c = Client()
         response = c.get(reverse('changes'), {})
         self.assertEqual(response.status_code, 403)
@@ -82,6 +88,15 @@ class TestPlan(ViewsTestCase):
             self.assertEqual(value['start'], expected['start'])
             self.assertEqual(value['end'], expected['end'])
 
+    def _test_dienste(self):
+        pass
+
+    def _test_tag(self):
+        pass
+
+    def _test_functions(self):
+        pass
+
 
 # Tests for sp_app.ajax
 
@@ -102,9 +117,13 @@ class TestChangeForbidden(ViewsTestCase):
         logging.disable(logging.NOTSET)
 
     def test_changes(self):
+        """ Test if 'changes' return status 403 if not logged in
+        """
         self.do_test('changes', json.dumps(self.DATA_FOR_CHANGE))
 
     def test_approval(self):
+        """ Test if 'set_approved' return status 403 if not logged in
+        """
         self.do_test('set_approved', 'data')
 
 
@@ -120,6 +139,8 @@ class ViewsWithPermissionTestCase(ViewsTestCase):
 class TestChangeMore(ViewsWithPermissionTestCase):
 
     def test_with_valid_data(self):
+        """ Test if post 'changes' creates the right ChangeLoggings and returns them
+        """
         self.client.post(
             reverse('changes'),
             json.dumps(self.DATA_FOR_CHANGE),
@@ -167,6 +188,8 @@ class TestChangeMore(ViewsWithPermissionTestCase):
 class TestChangeApproval(ViewsWithPermissionTestCase):
 
     def test_change_approved(self):
+        """ Test if post 'set_approved' sets approvals
+        """
         self.client.post(
             reverse('set_approved'),
             json.dumps({'wards': ['A', 'B'], 'date': '20170414'}),
@@ -194,15 +217,25 @@ class TestChangeApproval(ViewsWithPermissionTestCase):
 class TestChangeHistory(ViewsTestCase):
     """ Get the change history for a day and ward
     """
+    expected = [
+        {'user': 'Heinz Müller', 'person': 'B', 'ward': 'A',
+         'day': '2020-04-24', 'added': False, 'continued': False,
+         'until': None},
+        {'user': 'Heinz Müller', 'person': 'B', 'ward': 'A',
+         'day': '2020-04-24', 'added': True, 'continued': True,
+         'until': '2020-04-30'},
+        {'user': 'user', 'person': 'A', 'ward': 'A',
+         'day': '2020-04-20', 'added': True, 'continued': True,
+         'until': '2020-04-24'},
+        {'user': 'user', 'person': 'A', 'ward': 'A',
+         'day': '2020-04-10', 'added': False, 'continued': True,
+         'until': None},
+        {'user': 'user', 'person': 'A', 'ward': 'A',
+         'day': '2020-04-01', 'added': True, 'continued': True,
+         'until': None},
+    ]
 
-    def test_empty(self):
-        response = self.client.get(
-            reverse('changehistory', kwargs={'date': '20200424', 'ward_id': '3'}),
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, b'[]')
-
-    def test_with_data(self):
+    def _apply_changes(self):
         user_with_name = User.objects.create_user(
             'hmueller', 'user@domain.tld', 'password',
             first_name='Heinz', last_name='Müller')
@@ -225,6 +258,9 @@ class TestChangeHistory(ViewsTestCase):
             # but not today
             (user_with_name, self.person_b, self.ward_a, date(2020, 4, 24), False,
                 False, None, datetime(2020, 3, 1, 10, 40)),
+            # different day
+            (user_with_name, self.person_b, self.ward_a, date(2020, 4, 25), False,
+                False, None, datetime(2020, 3, 1, 10, 50)),
             # different ward
             (user_with_name, self.person_b, self.ward_b, date(2020, 4, 24), False,
                 False, None, datetime(2020, 3, 1, 10, 50)),
@@ -234,6 +270,20 @@ class TestChangeHistory(ViewsTestCase):
                 company=self.company,
                 user=user, person=person, ward=ward, day=day, added=added,
                 continued=continued, until=until, change_time=change_time)
+
+    def test_changehistory_empty(self):
+        """ Test 'changehistory' with no data
+        """
+        response = self.client.get(
+            reverse('changehistory', kwargs={'date': '20200424', 'ward_id': '3'}),
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, b'[]')
+
+    def test_changehistory_with_data(self):
+        """ Test 'changehistory' with data
+        """
+        self._apply_changes()
         response = self.client.get(
             reverse('changehistory', kwargs={
                 'date': '20200424',
@@ -241,26 +291,76 @@ class TestChangeHistory(ViewsTestCase):
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(response.status_code, 200)
 
-        expected = [
-            {'user': 'Heinz Müller', 'person': 'B', 'ward': 'A',
-             'day': '2020-04-24', 'added': False, 'continued': False,
-             'until': None},
-            {'user': 'Heinz Müller', 'person': 'B', 'ward': 'A',
-             'day': '2020-04-24', 'added': True, 'continued': True,
-             'until': '2020-04-30'},
-            {'user': 'user', 'person': 'A', 'ward': 'A',
-             'day': '2020-04-20', 'added': True, 'continued': True,
-             'until': '2020-04-24'},
-            {'user': 'user', 'person': 'A', 'ward': 'A',
-             'day': '2020-04-10', 'added': False, 'continued': True,
-             'until': None},
-            {'user': 'user', 'person': 'A', 'ward': 'A',
-             'day': '2020-04-01', 'added': True, 'continued': True,
-             'until': None},
-        ]
         got = json.loads(response.content)
         self.assertEqual(len(got), 5)
-        for res, exp in zip(got, expected):
+        for res, exp in zip(got, self.expected):
             for key in ('user', 'person', 'ward', 'day', 'added', 'continued', 'until'):
                 self.assertEqual(res[key], exp[key], msg=str(exp))
 
+    def test_updates(self):
+        """ Test if 'updates' return the right data
+        """
+        self._apply_changes()
+        response = self.client.get(
+            "/updates/0",
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(response.status_code, 200)
+        res = json.loads(response.content)
+        self.assertEqual(
+            res['cls'],
+            [{'action': 'add',
+              'continued': True,
+              'day': '20200401',
+              'person': 'A',
+              'pk': 1,
+              'ward': 'A'},
+             {'action': 'remove',
+              'continued': True,
+              'day': '20200410',
+              'person': 'A',
+              'pk': 2,
+              'ward': 'A'},
+             {'action': 'add',
+              'continued': True,
+              'day': '20200420',
+              'person': 'A',
+              'pk': 3,
+              'until': '20200424',
+              'ward': 'A'},
+             {'action': 'add',
+              'continued': True,
+              'day': '20200424',
+              'person': 'B',
+              'pk': 4,
+              'until': '20200430',
+              'ward': 'A'},
+             {'action': 'remove',
+              'continued': False,
+              'day': '20200424',
+              'person': 'B',
+              'pk': 5,
+              'ward': 'A'},
+             {'action': 'remove',
+              'continued': False,
+              'day': '20200425',
+              'person': 'B',
+              'pk': 6,
+              'ward': 'A'},
+             {'action': 'remove',
+              'continued': False,
+              'day': '20200424',
+              'person': 'B',
+              'pk': 7,
+              'ward': 'B'}])
+        self.assertEqual(
+            res['last_change']['pk'],
+            ChangeLogging.objects.filter(
+                company=self.company).order_by('pk').last().pk)
+
+
+class TestChangePassword(ViewsTestCase):
+
+    def test_password_change(self):
+        """ Test if 'password_change' answers at all """
+        response = self.client.get(reverse('password_change'))
+        self.assertEqual(response.status_code, 200)

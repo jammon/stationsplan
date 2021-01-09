@@ -36,7 +36,11 @@ urlpatterns = [
     url(r'^updates/([0-9]+)/?$', sp_ajax.updates, name='updates'),
     url(r'^tests$', TemplateView.as_view(template_name="sp_app/tests.html"),
         name='tests'),
-    url(r'^password_change', sp_views.password_change, name='password_change'),
+    url(r'^password_change',
+        auth_views.PasswordChangeView.as_view(
+            template_name='registration/password_change.html',
+            success_url='/plan'),
+        name='password_change'),
     url(r'^admin/', admin.site.urls),
     url(r'^config/', config_site.urls),
     url(r'^login$', auth_views.LoginView.as_view(), name='login'),
