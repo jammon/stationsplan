@@ -727,9 +727,13 @@ function save_change(day, ward, continued, persons) {
     var url = '/changes';
     do_ajax_call(url, json_data, process_changes);
 }
-function process_changes(data) {
-    _.each(data.cls, models.apply_change);
-    models.schedule_next_update(data.last_change);
+function process_changes(data, textStatus, jqXHR) {
+    if (jqXHR.status == 304) {
+        models.schedule_next_update();
+    } else {
+        _.each(data.cls, models.apply_change);
+        models.schedule_next_update(data.last_change);
+    }
 }
 
 function save_approval(ward_ids, date) {
