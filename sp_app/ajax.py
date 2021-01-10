@@ -53,7 +53,7 @@ def changes(request):
     apply_changes(
         request.user, company_id, data['day'], data['ward_id'],
         data['continued'], data['persons'])
-    return get_last_change_response(company_id, data['last_pk'])
+    return get_last_change_response(company_id, int(data['last_pk']))
 
 
 @ajax_login_required
@@ -83,7 +83,8 @@ def change_approved(request):
 
 @ajax_login_required
 def updates(request, last_change=0):
-    return get_last_change_response(request.session['company_id'], last_change)
+    return get_last_change_response(
+        request.session['company_id'], int(last_change))
 
 
 @ajax_login_required

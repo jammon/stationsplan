@@ -12,6 +12,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.test import TestCase
 from http import HTTPStatus
+from numbers import Number
 from .models import (Ward, Person, Company, Department, ChangeLogging,
                      CalculatedHoliday, process_change)
 
@@ -128,6 +129,7 @@ def get_last_change_response(company_id, last_change_pk):
     """ Return a JsonResponse with the changes since last_change_pk
     and pk and elapsed time of the last change.
     """
+    assert isinstance(last_change_pk, Number)
     _lc_pk = get_cached_last_change_pk(company_id)
     if _lc_pk and (_lc_pk == last_change_pk):
         # Nothing changed

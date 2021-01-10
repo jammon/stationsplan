@@ -328,6 +328,24 @@ class TestChangeHistory(ViewsTestCase):
             ChangeLogging.objects.filter(
                 company=self.company).order_by('pk').last().pk)
 
+        response = self.client.get(
+            "/updates/5",
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        res = json.loads(response.content)
+        for cl_dict in [
+             {'action': 'remove', 'continued': False, 'day': '20200425',
+              'person': 'B', 'pk': 6, 'ward': 'A'},
+             {'action': 'remove', 'continued': False, 'day': '20200424',
+              'person': 'B', 'pk': 7, 'ward': 'B'}]:
+            self.assertIn(cl_dict, res['cls'])
+        self.assertEqual(len(res['cls']), 2)
+
+        response = self.client.get(
+            "/updates/7",
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(response.status_code, HTTPStatus.NOT_MODIFIED)
+
 
 class TestChangePassword(ViewsTestCase):
 
