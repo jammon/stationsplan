@@ -1,101 +1,98 @@
-.container {
-  position: relative;
-  background: #fff; }
-
-.account-details {
-  float: right;
-  margin: 10px 5px 0 0; }
-
 .plan td, .plan th {
   padding: 0 2px;
-  vertical-align: top; }
+  vertical-align: top;
+}
 .plan .unapproved {
-  color: #999; }
+  color: #999;
+}
 
-.period_plan, .on_call_plan {
-  font-size: 12px; }
-  .period_plan td, .period_plan th, .on_call_plan td, .on_call_plan th {
-    border: 1px solid #CCC; }
+.period_plan,
+.on_call_plan {
+  font-size: 12px;
+}
+.period_plan td, .period_plan th,
+.on_call_plan td,
+.on_call_plan th {
+  border: 1px solid #CCC;
+}
 
 .period_plan .today {
   border-left: 2px solid #888;
-  border-right: 2px solid #888; }
+  border-right: 2px solid #888;
+}
 
 .on_call_plan .today {
   border-top: 2px solid #888;
-  border-bottom: 2px solid #888; }
+  border-bottom: 2px solid #888;
+}
 
 .day_plan {
-  font-size: 14px; }
+  font-size: 14px;
+}
 
 .contentview {
-  display: none; }
-  .contentview.current {
-    display: block; }
+  display: none;
+}
+.contentview.current {
+  display: block;
+}
 
 .personrow {
-  background-color: #DDD; }
+  background-color: #DDD;
+}
 
 .on-call {
-  background-color: #CCF; }
+  background-color: #CCF;
+}
 
 .leaverow {
-  background-color: #EEE; }
+  background-color: #EEE;
+}
 
 .lacking {
-  background-color: #FCC; }
+  background-color: #FCC;
+}
 
 .horizontal .free-day {
   border-left-color: #999;
-  border-right-color: #999; }
+  border-right-color: #999;
+}
 
 .vertical .free-day,
 td.free-day {
-  font-weight: bold; }
+  font-weight: bold;
+}
 
 .calltallies th, .calltallies td {
-  padding: 0 1ex; }
+  padding: 0 1ex;
+}
 
 .functions_view .titleline th {
-  width: 40px; }
+  width: 40px;
+}
 
 #changestafftable {
-  margin-bottom: 2ex; }
-  #changestafftable td {
-    vertical-align: middle;
-    padding: 1px 4px; }
-  #changestafftable .changed {
-    box-shadow: 0 0 5px 2px #ff4406; }
+  margin-bottom: 2ex;
+}
+#changestafftable td {
+  vertical-align: middle;
+  padding: 1px 4px;
+}
+#changestafftable .changed {
+  box-shadow: 0 0 5px 2px #ff4406;
+}
 
 .submitbuttons > div {
-  padding: 1px 4px; }
+  padding: 1px 4px;
+}
 
 #date-picker td.disabled {
-  color: #cccccc; }
+  color: #cccccc;
+}
 
 .errorlist {
   list-style-type: none;
-  padding-left: 0; }
-
-.glyphicon .spinning {
-  animation: spin 1s infinite linear;
-  -moz-animation: spin2 1s infinite linear;
-  -webkit-animation: spin2 1s infinite linear; }
-
-@keyframes spin {
-  from {
-    transform: scale(1) rotate(0deg); }
-  to {
-    transform: scale(1) rotate(360deg); } }
-@-moz-keyframes spin2 {
-  from {
-    -moz-transform: rotate(0deg); }
-  to {
-    -moz-transform: rotate(360deg); } }
-@-webkit-keyframes spin2 {
-  from {
-    -webkit-transform: rotate(0deg); }
-  to {
-    -webkit-transform: rotate(360deg); } }
+  padding-left: 0;
+}
 
 /*# sourceMappingURL=main.css.map */

@@ -2,14 +2,18 @@
 .addstaff,
 .logout,
 .show-duties {
-  display: none; }
+  display: none;
+}
 
 .container {
-  width: 100%; }
+  width: 100%;
+}
 
 .period_plan td, .period_plan th, .on_call_plan td, .on_call_plan th {
-  border: none; }
+  border: none;
+}
 .period_plan .lacking, .on_call_plan .lacking {
-  border: 0.5px solid black !important; }
+  border: 0.5px solid black !important;
+}
 
 /*# sourceMappingURL=print.css.map */

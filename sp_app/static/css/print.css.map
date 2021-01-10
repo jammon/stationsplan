@@ -1,7 +1,1 @@
-{
-"version": 3,
-"mappings": "AAAA;;;YAGa;EACT,OAAO,EAAE,IAAI;;AAEjB,UAAW;EACP,KAAK,EAAE,IAAI;;AAGX,oEAAO;EACH,MAAM,EAAE,IAAI;AAEhB,6CAAS;EACL,MAAM,EAAE,4BAA4B",
-"sources": ["print.scss"],
-"names": [],
-"file": "print.css"
-}
+{"version":3,"sourceRoot":"","sources":["print.scss"],"names":[],"mappings":"AAAA;AAAA;AAAA;AAAA;EAII;;;AAEJ;EACI;;;AAGA;EACI;;AAEJ;EACI","file":"print.css"}
