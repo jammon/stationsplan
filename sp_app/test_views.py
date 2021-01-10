@@ -88,14 +88,13 @@ class TestPlan(ViewsTestCase):
             self.assertEqual(value['start'], expected['start'])
             self.assertEqual(value['end'], expected['end'])
 
-    def _test_dienste(self):
-        pass
-
-    def _test_tag(self):
-        pass
-
-    def _test_functions(self):
-        pass
+    def test_other_entries(self):
+        response = self.client.get('/dienste/201604')
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get('/tag/201604')
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get('/zuordnung/')
+        self.assertEqual(response.status_code, 200)
 
 
 # Tests for sp_app.ajax
