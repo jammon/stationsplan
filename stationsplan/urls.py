@@ -45,6 +45,9 @@ urlpatterns = [
     url(r'^config/', config_site.urls),
     url(r'^login$', auth_views.LoginView.as_view(), name='login'),
     url('^logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
+    url('robots.txt',
+        TemplateView.as_view(
+            template_name="robots.txt", content_type="text/plain")),
     url('^', include('django.contrib.auth.urls')),
 ]
 

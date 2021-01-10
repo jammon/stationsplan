@@ -11,6 +11,7 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.test import TestCase
+from http import HTTPStatus
 from .models import (Ward, Person, Company, Department, ChangeLogging,
                      CalculatedHoliday, process_change)
 
@@ -129,30 +130,31 @@ def get_last_change_response(company_id, last_change_pk):
     """
     _lc_pk = get_cached_last_change_pk(company_id)
     if _lc_pk and (_lc_pk == last_change_pk):
-        return JsonResponse({}, status=304)
+        # Nothing changed
+        return JsonResponse({}, status=HTTPStatus.NOT_MODIFIED)
 
+    # get all ChangeLoggings since and including last_change_pk
     cls = list(ChangeLogging.objects.filter(
         company_id=company_id,
-        pk__gt=last_change_pk
+        pk__gte=last_change_pk
     ).order_by('pk'))
     if len(cls) == 0:
-        if _lc_pk is None:
-            # Set cache
-            try:
-                last_cl = ChangeLogging.objects.filter(
-                    company_id=company_id,
-                ).order_by('-pk')[0]
-                set_cached_last_change_pk(last_cl.pk, company_id)
-            except IndexError:
-                logging.debug("No ChangeLoggings found")
-        else:
-            logging.debug(
-                "Found no new ChangeLoggings, although cache "
-                "was different from the requested last_change_pk")
-        return JsonResponse({}, status_code=304)
+        # Only older ChangeLoggings, so last_change_pk is wrong
+        cls = [ChangeLogging.objects.order_by('pk').last()]
+        if len(cls) == 0:
+            # No ChangeLoggings
+            logging.debug("No ChangeLoggings found")
+            return JsonResponse({}, status=HTTPStatus.NOT_MODIFIED)
+    if cls[0].pk == last_change_pk:
+        if len(cls) == 1:
+            # No newer ChangeLoggings
+            return JsonResponse({}, status=HTTPStatus.NOT_MODIFIED)
+        cls = cls[1:]
     last_cl = cls[-1]
-    set_cached_last_change_pk(last_cl.pk, company_id)
     time_diff = datetime.now(pytz.utc) - last_cl.change_time
+    if _lc_pk is None:
+        # Set cache
+        set_cached_last_change_pk(last_cl.pk, company_id)
     return JsonResponse({
         'cls': [json.loads(cl.json) or cl.toJson() for cl in cls],
         'last_change': {

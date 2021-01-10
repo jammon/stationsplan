@@ -3,6 +3,7 @@ import json
 from django.core.cache import cache
 from unittest import TestCase
 from datetime import date
+from http import HTTPStatus
 
 from .utils import (get_first_of_month, last_day_of_month,
                     get_for_company, get_holidays_for_company,
@@ -192,12 +193,14 @@ class TestGetLastChanges(PopulatedTestCase):
         c3 = ChangeLogging.objects.create(day=date(2017, 10, 29), **c_dict)
 
         response = get_last_change_response(self.company.id, c1.pk)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         content = json.loads(response.content)
         self.assertIn('cls', content)
         self.assertEqual(len(content['cls']), 2)
         self.assertEqual(content['last_change']['pk'], c3.pk)
 
         response = get_last_change_response(self.company.id, c2.pk)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         content = json.loads(response.content)
         self.assertEqual(len(content['cls']), 1)
         self.assertEqual(

@@ -3,6 +3,7 @@ from datetime import date, datetime
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth.models import User, Permission
+from http import HTTPStatus
 import json
 import logging
 
@@ -22,20 +23,20 @@ class TestViewsAnonymously(TestCase):
                 ('functions', 'zuordnung'),
                 ('password_change', 'password_change/')):
             response = c.get(reverse(name))
-            self.assertEqual(response.status_code, 302, msg=name)
+            self.assertEqual(response.status_code, HTTPStatus.FOUND, msg=name)
             for f in (c.get, c.post):
                 response = f(reverse(name), follow=True)
                 self.assertRedirects(response, '/login?next=/' + url,
                                      msg_prefix=url)
 
     def test_changes(self):
-        """ Test if 'changes' return status 403 if not logged in
+        """ Test if 'changes' return status HTTPStatus.FORBIDDEN if not logged in
         """
         c = Client()
         response = c.get(reverse('changes'), {})
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
         response = c.post(reverse('changes'), {})
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
 
 
 class ViewsTestCase(PopulatedTestCase):
@@ -74,7 +75,7 @@ class TestPlan(ViewsTestCase):
                 company=self.company, person=self.person_a,
                 ward=self.ward_a, start=start, end=end)
         response = self.client.get('/plan/201604')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         plannings = json.loads(response.context['plannings'])
         for value, expected in zip(plannings, (
                 {'start': '20160201', 'end': '20160301'},
@@ -90,11 +91,11 @@ class TestPlan(ViewsTestCase):
 
     def test_other_entries(self):
         response = self.client.get('/dienste/201604')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         response = self.client.get('/tag/201604')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         response = self.client.get('/zuordnung/')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
 
 # Tests for sp_app.ajax
@@ -112,16 +113,16 @@ class TestChangeForbidden(ViewsTestCase):
             data,
             "text/json",
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
         logging.disable(logging.NOTSET)
 
     def test_changes(self):
-        """ Test if 'changes' return status 403 if not logged in
+        """ Test if 'changes' return status HTTPStatus.FORBIDDEN if not logged in
         """
         self.do_test('changes', json.dumps(self.DATA_FOR_CHANGE))
 
     def test_approval(self):
-        """ Test if 'set_approved' return status 403 if not logged in
+        """ Test if 'set_approved' return status HTTPStatus.FORBIDDEN if not logged in
         """
         self.do_test('set_approved', 'data')
 
@@ -276,7 +277,7 @@ class TestChangeHistory(ViewsTestCase):
         response = self.client.get(
             reverse('changehistory', kwargs={'date': '20200424', 'ward_id': '3'}),
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(response.content, b'[]')
 
     def test_changehistory_with_data(self):
@@ -288,7 +289,7 @@ class TestChangeHistory(ViewsTestCase):
                 'date': '20200424',
                 'ward_id': str(self.ward_a.id)}),
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
         got = json.loads(response.content)
         self.assertEqual(len(got), 5)
@@ -303,54 +304,25 @@ class TestChangeHistory(ViewsTestCase):
         response = self.client.get(
             "/updates/0",
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         res = json.loads(response.content)
-        self.assertEqual(
-            res['cls'],
-            [{'action': 'add',
-              'continued': True,
-              'day': '20200401',
-              'person': 'A',
-              'pk': 1,
-              'ward': 'A'},
-             {'action': 'remove',
-              'continued': True,
-              'day': '20200410',
-              'person': 'A',
-              'pk': 2,
-              'ward': 'A'},
-             {'action': 'add',
-              'continued': True,
-              'day': '20200420',
-              'person': 'A',
-              'pk': 3,
-              'until': '20200424',
-              'ward': 'A'},
-             {'action': 'add',
-              'continued': True,
-              'day': '20200424',
-              'person': 'B',
-              'pk': 4,
-              'until': '20200430',
-              'ward': 'A'},
-             {'action': 'remove',
-              'continued': False,
-              'day': '20200424',
-              'person': 'B',
-              'pk': 5,
-              'ward': 'A'},
-             {'action': 'remove',
-              'continued': False,
-              'day': '20200425',
-              'person': 'B',
-              'pk': 6,
-              'ward': 'A'},
-             {'action': 'remove',
-              'continued': False,
-              'day': '20200424',
-              'person': 'B',
-              'pk': 7,
-              'ward': 'B'}])
+        for cl_dict in [
+             {'action': 'add', 'continued': True, 'day': '20200401',
+              'person': 'A', 'pk': 1, 'ward': 'A'},
+             {'action': 'remove', 'continued': True, 'day': '20200410',
+              'person': 'A', 'pk': 2, 'ward': 'A'},
+             {'action': 'add', 'continued': True, 'day': '20200420',
+              'person': 'A', 'pk': 3, 'until': '20200424', 'ward': 'A'},
+             {'action': 'add', 'continued': True, 'day': '20200424',
+              'person': 'B', 'pk': 4, 'until': '20200430', 'ward': 'A'},
+             {'action': 'remove', 'continued': False, 'day': '20200424',
+              'person': 'B', 'pk': 5, 'ward': 'A'},
+             {'action': 'remove', 'continued': False, 'day': '20200425',
+              'person': 'B', 'pk': 6, 'ward': 'A'},
+             {'action': 'remove', 'continued': False, 'day': '20200424',
+              'person': 'B', 'pk': 7, 'ward': 'B'}]:
+            self.assertIn(cl_dict, res['cls'])
+        self.assertEqual(len(res['cls']), 7)
         self.assertEqual(
             res['last_change']['pk'],
             ChangeLogging.objects.filter(
@@ -362,4 +334,19 @@ class TestChangePassword(ViewsTestCase):
     def test_password_change(self):
         """ Test if 'password_change' answers at all """
         response = self.client.get(reverse('password_change'))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+
+class TestRobotsTxt(TestCase):
+    def test_get(self):
+        response = self.client.get("/robots.txt")
+
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(response["content-type"], "text/plain")
+        lines = response.content.decode().splitlines()
+        self.assertEqual(lines[0], "User-Agent: *")
+
+    def test_post_disallowed(self):
+        response = self.client.post("/robots.txt")
+
+        self.assertEqual(HTTPStatus.METHOD_NOT_ALLOWED, response.status_code)
