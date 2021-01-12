@@ -13,7 +13,7 @@ var default_end_for_person = [2099, 11, 31];
 var user = {
     is_editor: false,
     is_dep_lead: false,
-}
+};
 
 var Current_Date = Backbone.Model.extend({
     initialize: function() {
@@ -53,8 +53,8 @@ var Person = Backbone.Model.extend({
         var end = this.get('end_date');
         this.set('end_date', new Date(end[0], end[1], end[2]));
         this.set(
-            'own_department',
-            _.intersection(this.get('departments'), user.department_ids).length>0
+            'current_department',
+            this.get('departments').indexOf(user.current_department) > -1
         );
     },
     is_available: function(date) {
@@ -187,8 +187,9 @@ var Staffing = Backbone.Collection.extend({
     },
     can_be_planned: function(person) {
         if (!person) return false;
-        // a vacation can always be planned
-        if (this.ward.get('on_leave')) return true;
+        // a vacation can be planned for the members of the current department
+        if (this.ward.get('on_leave')) 
+            return person.get('current_department');
         // is she/he on leave?
         if (this.day.persons_duties[person.id].where({on_leave: true}).length>0)
             return false;
@@ -508,9 +509,9 @@ var Day = Backbone.Model.extend({
             available, 
             function(person) { 
                 let not_anonymous = !person.get('anonymous');
-                let own_department = person.get('own_department');
+                let current_department = person.get('current_department');
                 let not_chefarzt = (person.get('position') < '80'); 
-                return not_anonymous && own_department && not_chefarzt;
+                return not_anonymous && current_department && not_chefarzt;
             }
         );
         // no duties
@@ -728,7 +729,7 @@ function save_change(day, ward, continued, persons) {
     do_ajax_call(url, json_data, process_changes);
 }
 function process_changes(data, textStatus, jqXHR) {
-    if (jqXHR.status == 304) {
+    if (jqXHR && jqXHR.status == 304) {
         models.schedule_next_update();
     } else {
         _.each(data.cls, models.apply_change);

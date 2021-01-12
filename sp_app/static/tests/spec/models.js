@@ -3,8 +3,8 @@ beforeEach(init_hospital);
 describe("models", function() {
     describe("Initializing data", function() {
         it("should have the persons and wards set", function() {
-            expect(models.persons.length).toBe(4);
-            expect(models.wards.length).toBe(8);
+            expect(models.persons.length).toBe(persons_init.length);
+            expect(models.wards.length).toBe(wards_init.length);
             var person_a = models.persons.get('A');
             expect(person_a.get('name')).toBe('Anton');
             var ward_a = models.wards.get('A');
@@ -48,28 +48,33 @@ describe("models", function() {
             var end_date = [2016, 2, 31];
             var person;
             it("should calculate availability for a person with start_date and end_date", function() {
-                person = new models.Person({start_date: start_date, end_date: end_date, });
+                person = new models.Person(
+                    {start_date: start_date, end_date: end_date, 
+                     departments: [1]});
                 expect(person.is_available(before  )).toBe(false);
                 expect(person.is_available(firstday)).toBe(true);
                 expect(person.is_available(lastday )).toBe(true);
                 expect(person.is_available(after   )).toBe(false);
             });
             it("should calculate availability for a person with start_date", function() {
-                person = new models.Person({ start_date: start_date });
+                person = new models.Person(
+                    {start_date: start_date, 
+                     departments: [1]});
                 expect(person.is_available(before  )).toBe(false);
                 expect(person.is_available(firstday)).toBe(true);
                 expect(person.is_available(lastday )).toBe(true);
                 expect(person.is_available(after   )).toBe(true);
             });
             it("should calculate availability for a person with end_date", function() {
-                person = new models.Person({ end_date: end_date });
+                person = new models.Person(
+                    {end_date: end_date, departments: [1]});
                 expect(person.is_available(before  )).toBe(true);
                 expect(person.is_available(firstday)).toBe(true);
                 expect(person.is_available(lastday )).toBe(true);
                 expect(person.is_available(after   )).toBe(false);
             });
             it("should calculate availability for a person without start_date or end_date", function() {
-                person = new models.Person();
+                person = new models.Person({departments: [1]});
                 expect(person.is_available(before  )).toBe(true);
                 expect(person.is_available(firstday)).toBe(true);
                 expect(person.is_available(lastday )).toBe(true);
@@ -142,7 +147,7 @@ describe("models", function() {
                 expect(today.ward_staffings.N.can_be_planned(
                     models.persons.get('C'))).toBeFalsy();
             });
-            it("for 'on leave', everyone can be planned", function() {
+            it("for 'on leave', the members of the current department can be planned", function() {
                 var staffing_l = today.ward_staffings.L;
                 expect(staffing_l.can_be_planned(person_a)).toBeTruthy();
                 // nightshift yesterday
@@ -151,6 +156,9 @@ describe("models", function() {
                 // on leave
                 today.ward_staffings.L.add(person_a);
                 expect(staffing_l.can_be_planned(person_a)).toBeTruthy();
+                // Different department
+                var person_d = models.persons.get('DiffDept');
+                expect(staffing_l.can_be_planned(person_d)).toBeFalsy();
             });
             it("'anonymous' persons can be planned after a call shift", function() {
                 var anon = models.persons.get('Other');
@@ -201,19 +209,19 @@ describe("models", function() {
                 check_availability(
                     '', '', '', 
                     'A',
-                    4);
+                    persons_init.length);
             });
             it("who is on leave isn't available", function() {
                 check_availability(
                     'today', 'L', 'A',
                     'A',
-                    3, 'B');
+                    persons_init.length-1, 'B');
             });
             it("who was on nightshift yesterday isn't available", function() {
                 check_availability(
                     'yesterday', 'N', 'A',
                     'A',
-                    3, 'B');
+                    persons_init.length-1, 'B');
             });
             it("who was on nightshift yesterday is available for todays nightshift", function() {
                 check_availability(
@@ -225,19 +233,19 @@ describe("models", function() {
                 check_availability(
                     'yesterday', 'N', 'A',
                     'A',
-                    3, 'B');
+                    persons_init.length-1, 'B');
             });
             it("who is on nightshift today is available", function() {
                 check_availability(
                     'today', 'N', 'A',
                     'A',
-                    4);
+                    persons_init.length);
             });
             it("who is planned for a different ward today is available", function() {
                 check_availability(
                     'today', 'B', 'A',
                     'A',
-                    4);
+                    persons_init.length);
             });
         });
         describe("need for staffing (implicitly test Staffing.needs_staffing)", function() {
@@ -455,19 +463,19 @@ describe("models", function() {
             });
             it("should make a person available after the vacation ends", function() {
                 var ward_a = models.wards.get('A');
+                expect(yesterday.get_available(ward_a).length).toBe(5);
+                expect(today.get_available(ward_a).length).toBe(5);
+                expect(tomorrow.get_available(ward_a).length).toBe(5);
+                // on leave since yesterday
+                yesterday.ward_staffings.L.add(person_a, {continued: true});
                 expect(yesterday.get_available(ward_a).length).toBe(4);
                 expect(today.get_available(ward_a).length).toBe(4);
                 expect(tomorrow.get_available(ward_a).length).toBe(4);
-                // on leave since yesterday
-                yesterday.ward_staffings.L.add(person_a, {continued: true});
-                expect(yesterday.get_available(ward_a).length).toBe(3);
-                expect(today.get_available(ward_a).length).toBe(3);
-                expect(tomorrow.get_available(ward_a).length).toBe(3);
                 // back today
                 today.ward_staffings.L.remove(person_a, {continued: true});
-                expect(yesterday.get_available(ward_a).length).toBe(3);
-                expect(today.get_available(ward_a).length).toBe(4);
-                expect(tomorrow.get_available(ward_a).length).toBe(4);
+                expect(yesterday.get_available(ward_a).length).toBe(4);
+                expect(today.get_available(ward_a).length).toBe(5);
+                expect(tomorrow.get_available(ward_a).length).toBe(5);
             });
             it("should continue a persons duties after the vacation ends", function() {
                 var person_b = models.persons.get('B');
@@ -695,7 +703,7 @@ describe("models", function() {
             models.user.is_editor = true;
             month_days = models.get_month_days(2016, 3);
             expect(month_days.calltallies).toBeDefined();
-            expect(month_days.calltallies.length).toBe(4);
+            expect(month_days.calltallies.length).toBe(persons_init.length);
             models.user.is_editor = false;
         });
         it("should not initialize a CallTally if the user cannot change",
@@ -736,14 +744,17 @@ describe("models", function() {
             var month_days;
             models.days.reset();
             models.persons.add([
-                { name: 'No More', shortname: 'X', end_date: [2016, 2, 31] },
-                { name: 'Not Yet', shortname: 'Y', start_date: [2016, 4, 1] },
+                { name: 'No More', shortname: 'X', end_date: [2016, 2, 31],
+                  departments: [1] },
+                { name: 'Not Yet', shortname: 'Y', start_date: [2016, 4, 1],
+                  departments: [1] },
                 { name: 'Short Time', shortname: 'Z',
-                  start_date: [2016, 2, 1], end_date: [2016, 4, 31], },
+                  start_date: [2016, 2, 1], end_date: [2016, 4, 31],
+                  departments: [1] },
             ]);
             month_days = models.get_month_days(2016, 3);
             expect(_.pluck(month_days.current_persons(), 'id')).toEqual(
-                ['A', 'B', 'C', 'Other', 'Z']);
+                ['A', 'B', 'C', 'DiffDept', 'Other', 'Z']);
             models.days.reset();
         });
 

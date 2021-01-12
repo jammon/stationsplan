@@ -35,10 +35,12 @@ function setupCsrfProtection() {
 
 function initialize_site(persons, wards, different_days, plannings,
                          year, month, start_of_data, is_editor, holidays, 
-                         department_ids, last_change_pk, last_change_time) {
+                         departments, last_change_pk, last_change_time) {
     setupCsrfProtection();
     models.user.is_editor = is_editor;
-    models.user.department_ids = department_ids;
+    models.user.departments = departments;
+    // just choose one department
+    models.user.current_department = departments.keys()[0];
     models.initialize_wards(wards, different_days);
     models.persons.reset(persons);
     models.set_plannings(plannings); 

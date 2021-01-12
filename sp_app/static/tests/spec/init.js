@@ -6,7 +6,9 @@ var persons_init = [
     { name: 'Conny', id: '3', shortname: 'C', 
       functions: ['A', 'B'], departments: [1]}, // no nightshifts
     { name: 'Other', id: '4', shortname: 'Other', 
-      functions: ['A', 'B'], departments: [1], anonymous: true}
+      functions: ['A', 'B'], departments: [1], anonymous: true},
+    { name: 'Different Department', id: '5', shortname: 'DiffDept', 
+      functions: ['A', 'B'], departments: [2]}
 ];
 var wards_init = [
     { name: 'Ward A', id: '1', shortname: 'A', min: 1, max: 2 },
@@ -28,7 +30,8 @@ var different_days = [
 ];
 function init_hospital() {
     // models.user.is_editor = true;
-    models.user.department_ids = [1];
+    models.user.departments = {1: 'My department'};
+    models.user.current_department = 1;
     models.initialize_wards(wards_init, different_days);
     models.persons.reset(persons_init);
 }

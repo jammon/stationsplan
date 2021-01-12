@@ -183,3 +183,10 @@ you can then find the current grid option with:
 
 ## Was Nutzer nicht bearbeiten können
 - Feiertage
+- Company
+- Abteilung
+- Bearbeiter (Employee)
+
+## Auswahl der Abteilung
+- Wenn ein Editor mehr als eine Abteilung bearbeiten kann, soll er auf die anderen Abteilungen umschalten können.
+- Bei Krank/Urlaub sollen nur die MA der aktuellen Abteilung angezeigt werden.

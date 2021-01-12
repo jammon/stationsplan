@@ -6,7 +6,8 @@ from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
-from .models import Person, Ward, DifferentDay, Planning, ChangeLogging
+from .models import (Person, Ward, DifferentDay, Planning, ChangeLogging,
+                     Department)
 from .utils import (get_first_of_month, json_array, get_holidays_for_company)
 
 
@@ -52,11 +53,16 @@ def plan(request, month='', day=''):
         plannings = [p for p in plannings
                      if not p.ward.approved or p.start <= p.ward.approved]
     holidays = get_holidays_for_company(request.session['company_id'])
+    departments = dict(
+        (d.id, d.name) for d in
+        Department.objects.filter(id__in=department_ids))
     data = {
         'persons': json.dumps([p.toJson() for p in persons]),
         'wards': json.dumps([w.toJson() for w in wards]),
         'different_days': json.dumps([
-            (dd.ward.shortname, dd.day.strftime('%Y%m%d'), '+' if dd.added else '-')
+            (dd.ward.shortname,
+             dd.day.strftime('%Y%m%d'),
+             '+' if dd.added else '-')
             for dd in different_days]),
         'plannings': json_array(plannings),
         'user': request.user,
@@ -64,7 +70,7 @@ def plan(request, month='', day=''):
         'first_of_month': first_of_month,
         'start_of_data': start_of_data,
         'holidays': json.dumps([h.toJson() for h in holidays]),
-        'department_ids': json.dumps(department_ids),
+        'departments': json.dumps(departments),
     }
     last_change = ChangeLogging.objects.filter(
         company_id=request.session['company_id'],
