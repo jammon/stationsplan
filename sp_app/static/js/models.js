@@ -792,7 +792,7 @@ function do_ajax_call(url, json_data, success) {
         url: url,
         data: json_data,
         dataType: "json",
-        contentType: "application/json; charset=utf-8",
+        // contentType: "application/json; charset=utf-8",
         statusCode: { 403: redirect_to_login },
         error: error,
         success: success,

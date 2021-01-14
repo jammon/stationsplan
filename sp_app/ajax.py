@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
+from collections import defaultdict
 from datetime import datetime
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.views.decorators.http import require_POST
-from django.http import JsonResponse
+from django.http import JsonResponse, QueryDict
 from functools import wraps
 
 import json
+import re
 
 from .utils import apply_changes, set_approved, get_last_change_response
 from .models import StatusEntry, Person, Ward, ChangeLogging
@@ -48,11 +50,17 @@ def changes(request):
     Returned are the new changes since 'last_pk',
     including the just transmitted changes, if they succeeded.
     """
-    data = json.loads(request.body)
+    data = QueryDict(request.body)
+    prog = re.compile("persons\[(\d+)\]\[(\w+)\]")
+    persons = defaultdict(dict)
+    for key, value in data.items():
+        match = prog.search(key)
+        if match:
+            persons[int(match.group(1))][match.group(2)] = value
     company_id = request.session['company_id']
     apply_changes(
         request.user, company_id, data['day'], data['ward_id'],
-        data['continued'], data['persons'])
+        data['continued'], persons.values())
     return get_last_change_response(company_id, int(data['last_pk']))
 
 
