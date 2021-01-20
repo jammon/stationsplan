@@ -50,17 +50,11 @@ def changes(request):
     Returned are the new changes since 'last_pk',
     including the just transmitted changes, if they succeeded.
     """
-    data = QueryDict(request.body)
-    prog = re.compile("persons\[(\d+)\]\[(\w+)\]")
-    persons = defaultdict(dict)
-    for key, value in data.items():
-        match = prog.search(key)
-        if match:
-            persons[int(match.group(1))][match.group(2)] = value
+    data = json.loads(request.body)
     company_id = request.session['company_id']
     apply_changes(
         request.user, company_id, data['day'], data['ward_id'],
-        data['continued'], persons.values())
+        data['continued'], data['persons'])
     return get_last_change_response(company_id, int(data['last_pk']))
 
 
