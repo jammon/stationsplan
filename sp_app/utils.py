@@ -4,10 +4,8 @@ import logging
 import pytz
 
 from datetime import timedelta, datetime, date
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import cache
-from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.test import TestCase
@@ -111,7 +109,8 @@ def set_approved(wards, approved, department_ids):
     return {
         'wards': to_approve_sn,
         'approved': approved,
-        'not approved wards': [ward for ward in wards if ward not in to_approve_sn]
+        'not approved wards':
+            [ward for ward in wards if ward not in to_approve_sn],
     }
 
 

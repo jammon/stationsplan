@@ -1,3 +1,4 @@
+// jshint esversion: 6
 var views = (function($, _, Backbone) {
 "use strict";
 
@@ -79,8 +80,8 @@ var StaffingView = StaffingDisplayView.extend({
                 drop: function(event, ui) {
                     let helper = ui.helper;
                     let person = helper.attr('person');
-                    let old_day = helper.attr('day')
-                    let old_ward = helper.attr('ward')
+                    let old_day = helper.attr('day');
+                    let old_ward = helper.attr('ward');
                     // Is it dropped back on the same day and ward?
                     if (staffing.day == old_day &&
                         staffing.ward == old_ward) return;
@@ -118,7 +119,7 @@ var NotPlannedView = Backbone.View.extend({
     tagName: 'td',
     initialize: function(options) {
         this.day = options.day;
-        this.listenTo(this.day, 'person-changed', this.render)
+        this.listenTo(this.day, 'person-changed', this.render);
     },
     render: function() {
         this.$el.text(

@@ -45,9 +45,8 @@ class TestPerson(PopulatedTestCase):
             self.assertEqual(planning.end, date(2016, 8, 5))
         except Planning.DoesNotExist:
             self.fail("Plannings of leaving persons that end (like vacations) "
-                      "should not be deleted in case they would change their minds")
-
-
+                      "should not be deleted in case they would change their "
+                      "minds")
 
     def test_planning_does_not_exceed_persons_time(self):
         person = Person.objects.create(name="Heinz Müller", shortname="Mül",

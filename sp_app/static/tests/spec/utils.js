@@ -1,3 +1,4 @@
+// jshint esversion: 6
 describe("utils", function() {
     describe("function is_free", function() {
         it("should identify weekdays", function() {

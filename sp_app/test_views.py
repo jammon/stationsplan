@@ -180,7 +180,7 @@ class TestChangeMore(ViewsWithPermissionTestCase):
             json.loads(cl.json),
             {"action": "remove",
              "person": self.person_b.shortname,
-             "ward":self.ward_a.shortname,
+             "ward": self.ward_a.shortname,
              "day": "20160120", "continued": False})
         self.assertEqual(cl.version, 1)
 
@@ -253,19 +253,20 @@ class TestChangeHistory(ViewsTestCase):
             (self.user, self.person_a, self.ward_a, date(2020, 4, 20), True,
                 True, date(2020, 4, 24), datetime(2020, 3, 1, 10, 20)),
             # just some time from today
-            (user_with_name, self.person_b, self.ward_a, date(2020, 4, 24), True,
-                True, date(2020, 4, 30), datetime(2020, 3, 1, 10, 30)),
+            (user_with_name, self.person_b, self.ward_a, date(2020, 4, 24),
+                True, True, date(2020, 4, 30), datetime(2020, 3, 1, 10, 30)),
             # but not today
-            (user_with_name, self.person_b, self.ward_a, date(2020, 4, 24), False,
-                False, None, datetime(2020, 3, 1, 10, 40)),
+            (user_with_name, self.person_b, self.ward_a, date(2020, 4, 24),
+                False, False, None, datetime(2020, 3, 1, 10, 40)),
             # different day
-            (user_with_name, self.person_b, self.ward_a, date(2020, 4, 25), False,
-                False, None, datetime(2020, 3, 1, 10, 50)),
+            (user_with_name, self.person_b, self.ward_a, date(2020, 4, 25),
+                False, False, None, datetime(2020, 3, 1, 10, 50)),
             # different ward
-            (user_with_name, self.person_b, self.ward_b, date(2020, 4, 24), False,
-                False, None, datetime(2020, 3, 1, 10, 50)),
+            (user_with_name, self.person_b, self.ward_b, date(2020, 4, 24),
+                False, False, None, datetime(2020, 3, 1, 10, 50)),
         )
-        for user, person, ward, day, added, continued, until, change_time in data:
+        for (user, person, ward, day, added, continued, until,
+             change_time) in data:
             ChangeLogging.objects.create(
                 company=self.company,
                 user=user, person=person, ward=ward, day=day, added=added,
@@ -275,7 +276,8 @@ class TestChangeHistory(ViewsTestCase):
         """ Test 'changehistory' with no data
         """
         response = self.client.get(
-            reverse('changehistory', kwargs={'date': '20200424', 'ward_id': '3'}),
+            reverse(
+                'changehistory', kwargs={'date': '20200424', 'ward_id': '3'}),
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(response.content, b'[]')
@@ -294,7 +296,8 @@ class TestChangeHistory(ViewsTestCase):
         got = json.loads(response.content)
         self.assertEqual(len(got), 5)
         for res, exp in zip(got, self.expected):
-            for key in ('user', 'person', 'ward', 'day', 'added', 'continued', 'until'):
+            for key in ('user', 'person', 'ward', 'day', 'added', 'continued',
+                        'until'):
                 self.assertEqual(res[key], exp[key], msg=str(exp))
 
     def test_updates(self):

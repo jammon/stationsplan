@@ -6,8 +6,8 @@ from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
 from .models import (Person, Ward, ChangeLogging, Planning, Department,
-                     Company, Employee, StatusEntry, Holiday, CalculatedHoliday, Region,
-                     DifferentDay)
+                     Company, Employee, StatusEntry, Holiday,
+                     CalculatedHoliday, Region, DifferentDay)
 from .forms import WardForm
 
 
@@ -114,7 +114,6 @@ class IsEmployedListFilter(admin.SimpleListFilter):
         )
 
     def queryset(self, request, queryset):
-        value = self.value()
         if self.value() == "current":
             return queryset.filter(end_date__gte=datetime.date.today())
         return queryset

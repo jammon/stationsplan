@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
-from collections import defaultdict
 from datetime import datetime
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import permission_required
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.views.decorators.http import require_POST
-from django.http import JsonResponse, QueryDict
-from functools import wraps
+from django.http import JsonResponse
 
 import json
-import re
 
 from .utils import apply_changes, set_approved, get_last_change_response
 from .models import StatusEntry, Person, Ward, ChangeLogging
