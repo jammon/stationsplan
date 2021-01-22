@@ -791,7 +791,7 @@ function do_ajax_call(url, json_data, success) {
     $.ajax({
         type: "POST",
         url: url,
-        data: json_data,
+        data: JSON.stringify(json_data),
         dataType: "json",
         contentType: "application/json; charset=utf-8",
         statusCode: { 403: redirect_to_login },

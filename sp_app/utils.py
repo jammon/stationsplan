@@ -76,10 +76,12 @@ def apply_changes(user, company_id, day, ward_id, continued, persons):
         data['continued'] = True
     cls = []
     for p in persons:
-        assert p['id'] in known_persons, \
-            "{p['id']} is not in the persons database"
+        p_id = int(p['id'])
+        # TODO: log error
+        assert p_id in known_persons, \
+            f"{p_id} is not in the persons database"
         cl = ChangeLogging.objects.create(
-            person=known_persons[p['id']],
+            person=known_persons[p_id],
             added=p['action'] == 'add',
             **data)
         cl_dict = process_change(cl)
