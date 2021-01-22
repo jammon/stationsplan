@@ -40,7 +40,7 @@ function initialize_site(persons, wards, different_days, plannings,
     models.user.is_editor = is_editor;
     models.user.departments = departments;
     // just choose one department
-    models.user.current_department = departments.keys()[0];
+    models.user.current_department = _.keys(departments)[0];
     models.initialize_wards(wards, different_days);
     models.persons.reset(persons);
     models.set_plannings(plannings); 

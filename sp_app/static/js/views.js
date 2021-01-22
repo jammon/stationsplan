@@ -299,6 +299,12 @@ var PeriodView = Backbone.View.extend({
         $(".plans").append(this.$el);
         return this;
     },
+    make_current: function() {
+        this.$el.addClass('current');
+        $(".current_dept").text(
+            models.user.departments[models.user.current_department]);
+        return this;
+    },
     prev_period: function() {
         this.change_period(false);
     },
@@ -569,6 +575,11 @@ var FunctionsView = Backbone.View.extend({
         });
         return this;
     },
+    make_current: function() {
+        this.$el.addClass('current');
+        $(".current_dept").text("Stationsplan");
+        return this;
+    },
 });
 var functionsview;
 
@@ -655,8 +666,7 @@ var Router = Backbone.Router.extend({
         if (this.current_view)
             this.current_view.$el.removeClass('current');
         // show new view
-        view.$el.addClass('current');
-        this.current_view = view;
+        this.current_view = view.make_current();
         nav_view.$(".active").removeClass("active");
         if (is_top_level_nav[nav_id])
             nav_view.$(nav_id).addClass("active");

@@ -7,6 +7,10 @@ describe("models", function() {
             expect(models.wards.length).toBe(wards_init.length);
             var person_a = models.persons.get('A');
             expect(person_a.get('name')).toBe('Anton');
+            expect(person_a.get('current_department')).toBeTruthy();
+            var person_d = models.persons.get('DiffDept');
+            expect(person_d.get('name')).toBe('Different Department');
+            expect(person_d.get('current_department')).toBeFalsy();
             var ward_a = models.wards.get('A');
             expect(ward_a.get('name')).toBe('Ward A');
             expect(ward_a.get('min')).toBe(1);
