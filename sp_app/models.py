@@ -150,6 +150,14 @@ class DifferentDay(models.Model):
         verbose_name_plural = _('Different Days')
 
 
+POSITION_CHOICES = (
+    (1, 'Assistenten'),
+    (2, 'Oberärzte'),
+    (80, 'Chefärzte'),
+    (4, 'Anonym (Abteilung)'),
+    (5, 'Externe'))
+
+
 class Person(models.Model):
     ''' A person (worker) who can be planned for work
     '''
@@ -169,6 +177,7 @@ class Person(models.Model):
     position = models.IntegerField(
         _('position'),
         default=1,
+        choices=POSITION_CHOICES,
         help_text=_('Ordering in the display. '
                     'Should not be more than two digits. '
                     'A number greater than 80 means Head of Department'))
@@ -209,6 +218,9 @@ class Person(models.Model):
             Planning.objects.filter(
                 person=self, end=FAR_FUTURE
             ).update(end=self.end_date)
+
+    def current(self):
+        return self.end_date >= date.today()
 
 
 class ChangeLogging(models.Model):

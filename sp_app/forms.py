@@ -1,13 +1,14 @@
-from django import forms
+from django.forms import (widgets, ModelForm, ModelMultipleChoiceField,
+    CheckboxSelectMultiple)
 from django.contrib import admin
 from django.utils.translation import ugettext as _
 
 from .models import Person
 
 
-class WardForm(forms.ModelForm):
+class WardForm(ModelForm):
     """ used in sp_app.admin.WardAdmin """
-    staff = forms.ModelMultipleChoiceField(
+    staff = ModelMultipleChoiceField(
         Person.objects.all(),
         # Add this line to use the double list widget
         widget=admin.widgets.FilteredSelectMultiple(
@@ -39,3 +40,23 @@ class WardForm(forms.ModelForm):
                     # we add newly selected staff
                     instance.staff.add(person)
         return instance
+
+
+class RowRadioboxSelect(widgets.Select):
+    template_name = 'sp_app/row_radiobox_select.html'
+
+
+class PersonForm(ModelForm):
+    class Meta:
+        model = Person
+        fields = ['name', 'shortname', 'start_date', 'end_date', 'departments',
+                  'position']
+        widgets = {
+            'position': RowRadioboxSelect,
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for name, field in self.fields.items():
+            if name != 'position':
+                field.widget.attrs.update({'class': 'form-control'})

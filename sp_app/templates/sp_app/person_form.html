@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<h1>Mitarbeiter bearbeiten</h1>
+<form action="" method="post">{% csrf_token %}
+<div>
+{% if form.errors %}
+    <p class="errornote bg-danger">
+    {% if form.errors.items|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
+    </p>
+{% endif %}
+
+<fieldset class="form-horizontal">
+  <div class="form-group">
+    {% if form.name.errors %}<div class="col-sm-offset-3 col-sm-9 alert alert-danger">{{ form.name.errors }}</div>{% endif %}
+    <div class="col-sm-3 control-label">
+        {{ form.name.label_tag }} </div>
+    <div class="col-sm-9">
+      {{ form.name }} </div>
+  </div>
+  <div class="form-group">
+    {% if form.shortname.errors %}<div class="col-sm-offset-3 col-sm-9 alert alert-danger">{{ form.shortname.errors }}</div>{% endif %}
+    <div class="col-sm-3 control-label">
+        {{ form.shortname.label_tag }} </div>
+    <div class="col-sm-9">
+      {{ form.shortname }} </div>
+  </div>
+  <div class="form-group">
+    {% if form.start_date.errors %}<div class="col-sm-offset-3 col-sm-9 alert alert-danger">{{ form.start_date.errors }}</div>{% endif %}
+    <div class="col-sm-3 control-label">
+        Dienstantritt </div>
+    <div class="col-sm-9">
+      {{ form.start_date }} </div>
+  </div>
+  <div class="form-group">
+    {% if form.end_date.errors %}<div class="col-sm-offset-3 col-sm-9 alert alert-danger">{{ form.end_date.errors }}</div>{% endif %}
+    <div class="col-sm-3 control-label">
+        Dienstende </div>
+    <div class="col-sm-9">
+      {{ form.end_date }} </div>
+  </div>
+  <div class="form-group">
+    {% if form.departments.errors %}<div class="col-sm-offset-3 col-sm-9 alert alert-danger">{{ form.departments.errors }}</div>{% endif %}
+    <div class="col-sm-3 control-label">
+        {{ form.departments.label_tag }} </div>
+    <div class="col-sm-9">
+      {{ form.departments }} </div>
+  </div>
+  <div class="form-group">
+    {% if form.position.errors %}<div class="col-sm-offset-3 col-sm-9 alert alert-danger">{{ form.position.errors }}</div>{% endif %}
+    <div class="col-sm-3 control-label">
+        {{ form.position.label_tag }} </div>
+    <div class="col-sm-9">
+      {{ form.position }} </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-3 col-sm-9">
+      <button type="submit" class="btn btn-default">Speichern</button>
+    </div>
+  </div>
+</fieldset>
+</div>
+</form>
+{% endblock content %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Mitarbeiter/innen</h1>
+
+<h2>Aktuelle</h2>
+<ul>
+    {% for person in personen %}
+    {% if person.current %}
+        <li>
+        	<a href="/person/{{ person.pk }}">{{ person.name }}</a>
+        </li>
+    {% endif %}
+    {% endfor %}
+</ul>
+<button></button>
+<h2>Frühere</h2>
+<ul>
+    {% for person in personen %}
+    {% if not person.current %}
+        <li>
+        	<a href="/person/{{ person.pk }}">{{ person.name }}</a>
+        </li>
+    {% endif %}
+    {% endfor %}
+</ul>
+{% endblock %}

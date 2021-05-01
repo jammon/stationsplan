@@ -39,5 +39,8 @@
 (B) Write test for caching in production
 (B) Write test for http.condition in production
 (B) Geplante Dienste anzeigen, auch wenn sich die Tagesverteilung des Dienstes geändert hat
-Bei mehreren Abteilungen diese auswählbar machen
-Bei Krank/Urlaub sollen nur die MA der aktuellen Abteilung angezeigt werden
+(B) Bei Krank/Urlaub sollen nur die MA der aktuellen Abteilung angezeigt werden
+(A) Bei mehreren Abteilungen diese auswählbar machen
+(B) Feiertage mit Namen im Plan anzeigen
+Anlage von Editoren automatisieren, dass sie immer eine Abteilung bekommen
+Admin soll nur für die eigene Abteilung Personen anlegen können

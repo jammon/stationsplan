@@ -3,8 +3,12 @@ import json
 import pytz
 from datetime import date, timedelta, datetime
 from django.contrib.auth.decorators import login_required
+from django.http import Http404
 from django.shortcuts import render, redirect
+from django.urls import reverse
+from django.views.generic import ListView, CreateView, UpdateView
 
+from sp_app import forms
 from .models import (Person, Ward, DifferentDay, Planning, ChangeLogging,
                      Department)
 from .utils import (get_first_of_month, json_array, get_holidays_for_company)
@@ -84,5 +88,35 @@ def plan(request, month='', day=''):
     return render(request, 'sp_app/plan.html', data)
 
 
-def tests(request):
-    return render(request, 'sp_app/tests.html', {})
+class PersonenView(ListView):
+    context_object_name = 'personen'
+
+    def get_queryset(self):
+        department_ids = self.request.session.get('department_ids')
+        return Person.objects.filter(
+            departments__id__in=department_ids
+        ).order_by('position', 'name')
+
+
+class FunktionenView(ListView):
+    model = Ward
+    ordering = ['position', 'name']
+
+
+class PersonMixin:
+    model = Person
+    form_class = forms.PersonForm
+
+
+class PersonCreateView(PersonMixin, CreateView):
+    success_url = '/zuordnung'
+
+    def get_initial(self):
+        return {
+            'company_id': self.request.session['company_id']
+        }
+
+
+class PersonUpdateView(PersonMixin, UpdateView):
+    success_url = '/personen'
+
