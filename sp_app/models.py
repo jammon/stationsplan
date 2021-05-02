@@ -150,17 +150,21 @@ class DifferentDay(models.Model):
         verbose_name_plural = _('Different Days')
 
 
-POSITION_CHOICES = (
-    (1, 'Assistenten'),
-    (2, 'Oberärzte'),
-    (80, 'Chefärzte'),
-    (4, 'Anonym (Abteilung)'),
-    (5, 'Externe'))
-
-
 class Person(models.Model):
     ''' A person (worker) who can be planned for work
     '''
+    POSITION_ASSISTENTEN = 1
+    POSITION_OBERAERZTE = 2
+    POSITION_CHEFAERZTE = 80
+    POSITION_ANONYM = 4
+    POSITION_EXTERNE = 5
+    POSITION_CHOICES = (
+        (POSITION_ASSISTENTEN, 'Assistenten'),
+        (POSITION_OBERAERZTE, 'Oberärzte'),
+        (POSITION_CHEFAERZTE, 'Chefärzte'),
+        (POSITION_ANONYM, 'Anonym (Abteilung)'),
+        (POSITION_EXTERNE, 'Externe'))
+
     name = models.CharField(_('Name'), max_length=50)
     shortname = models.CharField(_('Short Name'), max_length=10)
     start_date = models.DateField(_('start date'), default=date(2015, 1, 1),
@@ -207,6 +211,9 @@ class Person(models.Model):
                 }
 
     def save(self, *args, **kwargs):
+        created = not self.pk
+        if created and self.position == Person.POSITION_ANONYM:
+            self.anonymous = True
         super(Person, self).save(*args, **kwargs)
         # When a person leaves, their plannings should stop.
         # Plannings with an end (like vacations) are left untouched
@@ -218,6 +225,10 @@ class Person(models.Model):
             Planning.objects.filter(
                 person=self, end=FAR_FUTURE
             ).update(end=self.end_date)
+        if created and not self.anonymous:
+            self.functions.add(*list(Ward.objects.filter(
+                            company_id=self.company_id,
+                            on_leave=True)))
 
     def current(self):
         return self.end_date >= date.today()
