@@ -50,7 +50,7 @@ class PersonForm(ModelForm):
     class Meta:
         model = Person
         fields = ['name', 'shortname', 'start_date', 'end_date', 'departments',
-                  'position']
+                  'position', 'company']
         widgets = {
             'position': RowRadioboxSelect,
         }

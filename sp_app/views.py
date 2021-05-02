@@ -10,7 +10,7 @@ from django.views.generic import ListView, CreateView, UpdateView
 
 from sp_app import forms
 from .models import (Person, Ward, DifferentDay, Planning, ChangeLogging,
-                     Department)
+                     Department, Company)
 from .utils import (get_first_of_month, json_array, get_holidays_for_company)
 
 
@@ -112,8 +112,10 @@ class PersonCreateView(PersonMixin, CreateView):
     success_url = '/zuordnung'
 
     def get_initial(self):
+        company = Company.objects.get(id=self.request.session['company_id'])
         return {
-            'company_id': self.request.session['company_id']
+            'company': company,
+            'start_date': get_first_of_month(),
         }
 
 

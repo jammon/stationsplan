@@ -4,7 +4,11 @@
     {% comment %}Ignoring groups for now{% endcomment %}
     {% for option in options %}
 			  <label class="form-check-label checkbox-inline" for="id_{{ option.name }}_{{ option.index }}">
-			    <input class="form-check-input" type="radio" id="id_{{ option.name }}_{{ option.index }}" value="{{ option.value|stringformat:'s' }}" name="{{ option.name }}">
+			    <input class="form-check-input" type="radio"
+			     id="id_{{ option.name }}_{{ option.index }}" 
+			     value="{{ option.value|stringformat:'s' }}" name="{{ option.name }}"
+			     {% include "django/forms/widgets/attrs.html" %}
+			     {% if option.selected %} checked="checked"{% endif %}>
 			    {{ option.label }}
 			  </label>
     {% endfor %}

@@ -704,7 +704,7 @@ var NavView = Backbone.View.extend({
         window.location = "/config/sp_app/ward/";
     },
     personen: function(event) {
-        window.location = "/config/sp_app/person/";
+        window.location = "/personen";
     },
     admin: function(event) {
         window.location = "/admin/";
