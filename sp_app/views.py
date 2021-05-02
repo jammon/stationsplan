@@ -41,8 +41,10 @@ def plan(request, month='', day=''):
     persons = Person.objects.filter(
         end_date__gte=start_of_data,
         company_id=company_id
-    ).prefetch_related('functions')
-    wards = Ward.objects.filter(departments__id__in=department_ids)
+    ).prefetch_related('functions', 'departments')
+    wards = Ward.objects.filter(
+        departments__id__in=department_ids
+    ).prefetch_related('after_this')
     different_days = DifferentDay.objects.filter(
         ward__departments__id__in=department_ids,
         day__gte=start_of_data).select_related('ward')

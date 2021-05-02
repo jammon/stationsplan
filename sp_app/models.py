@@ -119,7 +119,7 @@ class Ward(models.Model):
                'company_id': self.company_id,
                'position': '%02d' % self.position,
                'after_this': '' if not self.pk else ','.join(
-                   self.after_this.values_list('shortname', flat=True)),
+                   (w.shortname for w in self.after_this.all())),
                'ward_type': self.ward_type,
                'weight': self.weight}
         if self.approved is not None:
