@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 {% load i18n %}
+
+{% block navigation %}
+{% include "sp_app/navigation.html" %}
+{% endblock navigation %}
+
 {% block content %}
 <h1>Mitarbeiter bearbeiten</h1>
 <form action="" method="post">{% csrf_token %}
