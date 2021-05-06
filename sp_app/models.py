@@ -180,7 +180,7 @@ class Person(models.Model):
         help_text=_('Functions that he or she can  perform.'))
     position = models.IntegerField(
         _('position'),
-        default=1,
+        default=POSITION_ASSISTENTEN,
         choices=POSITION_CHOICES,
         help_text=_('Ordering in the display. '
                     'Should not be more than two digits. '

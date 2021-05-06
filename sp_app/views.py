@@ -114,9 +114,8 @@ class PersonCreateView(PersonMixin, CreateView):
     success_url = '/zuordnung'
 
     def get_initial(self):
-        company = Company.objects.get(id=self.request.session['company_id'])
         return {
-            'company': company,
+            'company': self.request.session['company_id'],
             'start_date': get_first_of_month(),
         }
 

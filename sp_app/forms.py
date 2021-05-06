@@ -1,9 +1,9 @@
 from django.forms import (widgets, ModelForm, ModelMultipleChoiceField,
-    CheckboxSelectMultiple)
+                          CheckboxSelectMultiple)
 from django.contrib import admin
 from django.utils.translation import ugettext as _
 
-from .models import Person
+from .models import Person, Department
 
 
 class WardForm(ModelForm):
@@ -46,6 +46,10 @@ class RowRadioboxSelect(widgets.Select):
     template_name = 'sp_app/row_radiobox_select.html'
 
 
+class RowCheckboxSelectMultiple(CheckboxSelectMultiple):
+    template_name = 'sp_app/row_checkbox_select.html'
+
+
 class PersonForm(ModelForm):
     class Meta:
         model = Person
@@ -53,10 +57,15 @@ class PersonForm(ModelForm):
                   'position', 'company']
         widgets = {
             'position': RowRadioboxSelect,
+            'departments': RowCheckboxSelectMultiple,
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for name, field in self.fields.items():
-            if name != 'position':
+            if name not in ('position', 'departments'):
                 field.widget.attrs.update({'class': 'form-control'})
+        self.fields['departments'].choices = (
+            (d.id, d.name) for d in Department.objects.filter(
+                company__id=self.initial['company']
+            ).exclude(shortname='keine'))

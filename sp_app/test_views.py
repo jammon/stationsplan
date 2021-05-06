@@ -96,7 +96,7 @@ class TestPlan(ViewsTestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
         response = self.client.get('/tag/201604')
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        response = self.client.get('/zuordnung/')
+        response = self.client.get('/zuordnung')
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
 
