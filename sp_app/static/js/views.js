@@ -548,9 +548,11 @@ var FunctionsView = Backbone.View.extend({
         var titleline = $('<tr />', {'class': 'titleline'});
         titleline.append($('<td />'));
         models.wards.each(function(ward) {
-            titleline.append($('<th />', {
+            titleline.append($('<th />').append($('<a/>', {
                 text: ward.get('shortname'),
-            }));
+                href: '/config/sp_app/ward/' + ward.get('id'),
+                // href: '/funktion/' + ward.get('id'),
+            })));
         });
         table.append(titleline);
         models.persons.each(function(person) {
@@ -559,10 +561,11 @@ var FunctionsView = Backbone.View.extend({
                 today.getFullYear(), today.getMonth()+2, today.getDate());
             if (person.get('start_date') > in2months || person.get('end_date') < today)
                 return;
-            var p_line = $('<tr />');
-            p_line.append($('<th />', {
+            var person_title = $('<th />').append($('<a/>', {
                 text: person.get('name'),
+                href: '/person/' + person.get('id'),
             }));
+            var p_line = $('<tr />').append(person_title);
             models.wards.each(function(ward) {
                 var view = new PersonFunctionView({
                     person: person,

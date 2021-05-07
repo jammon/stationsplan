@@ -108,10 +108,10 @@ class FunktionenView(ListView):
 class PersonMixin:
     model = Person
     form_class = forms.PersonForm
+    success_url = '/zuordnung'
 
 
 class PersonCreateView(PersonMixin, CreateView):
-    success_url = '/zuordnung'
 
     def get_initial(self):
         return {
@@ -121,5 +121,5 @@ class PersonCreateView(PersonMixin, CreateView):
 
 
 class PersonUpdateView(PersonMixin, UpdateView):
-    success_url = '/personen'
+    pass
 
