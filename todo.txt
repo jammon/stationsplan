@@ -15,20 +15,17 @@
 (C) YSlow einsetzen +Public
 (C) Assets komprimieren
 (C) Flags für Betatester
-(C) Administration für User bauen +Public
+(A) Administration für User bauen +Public
 (C) Testen mit Firefox headless oder PhantomJS
 (B) Aktion Aktualisieren ins Menu
 (C) Aktualisierung soll auch die Freigabe von Planungen vermitteln
 (C) meta description in base.html verbessern
 (C) In Admin der Wards nur aktuelle und zukünftige Kollegen auswählbar machen
-(C) Debug Toolbar soll unabhängig vom Internet funktionieren
-(C) Der Chef soll Planungen sehen aber nicht ändern können
 (C) Anordnung der Diensthabenden in der Stationsansicht so, dass sie immer auf einer Reihe sind
 (C) Vorläufige Planungen zulassen, die erst auf Anforderungen zum Server übertragen werden
 (C) Heilig-Abend und Sylvester bei den Feiertagen in allen Regionen hinzufügen +Public
 (C) Bedeutung der Berechtigungen von Benutzern klarer machen
 (C) Set MySQL Strict Mode +deploy https://docs.djangoproject.com/en/2.2/ref/databases/#mysql-sql-mode
-(C) Debug Toolbar fixen +bug
 (C) Wenn man einen Diensthabenden draggt, geht nach dem Droppen das Besetzung ändern-Fenster auf für den Ausgangstag +bug
 (B) Impressum verfassen +Public
 (B) Datenschutzerklärung verfassen +Public
@@ -38,9 +35,10 @@
 (B) Write test if redis is running in production (redis.ping)
 (B) Write test for caching in production
 (B) Write test for http.condition in production
-(B) Geplante Dienste anzeigen, auch wenn sich die Tagesverteilung des Dienstes geändert hat
 (B) Bei Krank/Urlaub sollen nur die MA der aktuellen Abteilung angezeigt werden
-(A) Bei mehreren Abteilungen diese auswählbar machen
+(C) Bei mehreren Abteilungen diese auswählbar machen
 (B) Feiertage mit Namen im Plan anzeigen
 Anlage von Editoren automatisieren, dass sie immer eine Abteilung bekommen
 Admin soll nur für die eigene Abteilung Personen anlegen können
+Shortname in Zuordnung?
+Anforderung für Zusätzliche Tage in plan integrieren

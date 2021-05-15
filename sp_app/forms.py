@@ -1,13 +1,16 @@
 from django.forms import (widgets, ModelForm, ModelMultipleChoiceField,
-                          CheckboxSelectMultiple)
+                          MultipleChoiceField, CheckboxSelectMultiple)
 from django.contrib import admin
 from django.utils.translation import ugettext as _
 
-from .models import Person, Department
+from .models import Person, Ward, Department
 
 
-class WardForm(ModelForm):
-    """ used in sp_app.admin.WardAdmin """
+class WardAdminForm(ModelForm):
+    """ used in sp_app.admin.WardAdmin
+
+    Restricts staffing to Persons of the same Company
+    """
     staff = ModelMultipleChoiceField(
         Person.objects.all(),
         # Add this line to use the double list widget
@@ -18,7 +21,7 @@ class WardForm(ModelForm):
     )
 
     def __init__(self, *args, **kwargs):
-        super(WardForm, self).__init__(*args, **kwargs)
+        super(WardAdminForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
             # if this is not a new object, we load related staff
             self.initial['staff'] = self.instance.staff.values_list(
@@ -29,7 +32,7 @@ class WardForm(ModelForm):
             self.fields['staff'].queryset = Person.objects.none()
 
     def save(self, *args, **kwargs):
-        instance = super(WardForm, self).save(*args, **kwargs)
+        instance = super(WardAdminForm, self).save(*args, **kwargs)
         if instance.pk:
             for person in instance.staff.all():
                 if person not in self.cleaned_data['staff']:
@@ -68,4 +71,42 @@ class PersonForm(ModelForm):
         self.fields['departments'].choices = (
             (d.id, d.name) for d in Department.objects.filter(
                 company__id=self.initial['company']
-            ).exclude(shortname='keine'))
+            ))
+
+
+class WardForm(ModelForm):
+    wkdys = MultipleChoiceField(
+        label='Wochentage',
+        choices=(('1', 'Mo'), ('2', 'Di'), ('3', 'Mi'), ('4', 'Do'),
+                 ('5', 'Fr'), ('6', 'Sa'), ('0', 'So')),
+        widget=RowCheckboxSelectMultiple,
+        required=False,
+        help_text="Wenn kein Wochentag ausgewählt ist, wird die Funktion für "
+        "alle üblichen Tage geplant.")
+
+    class Meta:
+        model = Ward
+        fields = ['name', 'shortname', 'max', 'min', 'everyday', 'freedays',
+                  'wkdys', 'weekdays', 'callshift', 'on_leave',
+                  'departments', 'company', 'position',
+                  # 'ward_type', 'approved', 'after_this', 'weight', 'active'
+                  ]
+        widgets = {
+            'departments': RowCheckboxSelectMultiple,
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['departments'].choices = (
+            (d.id, d.name) for d in Department.objects.filter(
+                company__id=self.initial['company']
+            ))
+
+    def get_initial_for_field(self, field, field_name):
+        if field_name == 'wkdys':
+            return list(self.initial.get('weekdays', ''))
+        return super().get_initial_for_field(field, field_name)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        cleaned_data['weekdays'] = ''.join(self.cleaned_data.get('wkdys', []))

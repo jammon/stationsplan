@@ -118,3 +118,4 @@ x 2020-12-13 Server-Error wenn man bei admin-changelogging department=1 auswähl
 x 2020-12-15 Wenn in Ajax 403 zurückkommt, redirect auf /login
 x 2020-12-26 Department Leaders sollen einen Link zu /config haben  +feature
 x 2020-12-26 Nicht jede Funktion muss eine Abteilung haben
+x 2021-05-12 Debug Toolbar soll unabhängig vom Internet funktionieren

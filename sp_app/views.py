@@ -123,3 +123,20 @@ class PersonCreateView(PersonMixin, CreateView):
 class PersonUpdateView(PersonMixin, UpdateView):
     pass
 
+
+class WardMixin:
+    model = Ward
+    form_class = forms.WardForm
+    success_url = '/zuordnung'
+
+
+class WardCreateView(WardMixin, CreateView):
+
+    def get_initial(self):
+        return {
+            'company': self.request.session['company_id'],
+        }
+
+
+class WardUpdateView(WardMixin, UpdateView):
+    pass

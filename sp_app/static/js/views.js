@@ -550,8 +550,8 @@ var FunctionsView = Backbone.View.extend({
         models.wards.each(function(ward) {
             titleline.append($('<th />').append($('<a/>', {
                 text: ward.get('shortname'),
-                href: '/config/sp_app/ward/' + ward.get('id'),
-                // href: '/funktion/' + ward.get('id'),
+                // href: '/config/sp_app/ward/' + ward.get('id'),
+                href: '/funktion/' + ward.get('id'),
             })));
         });
         table.append(titleline);

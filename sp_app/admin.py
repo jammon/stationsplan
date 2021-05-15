@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from .models import (Person, Ward, ChangeLogging, Planning, Department,
                      Company, Employee, StatusEntry, Holiday,
                      CalculatedHoliday, Region, DifferentDay)
-from .forms import WardForm
+from .forms import WardAdminForm
 
 
 class ConfigSite(admin.sites.AdminSite):
@@ -187,13 +187,14 @@ class DifferentDayInline(admin.TabularInline):
 @admin.register(Ward)
 @admin.register(Ward, site=config_site)
 class WardAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
-    form = WardForm
+    form = WardAdminForm
     fieldsets = (
         (None, {'fields': (
             (('name', 'shortname', 'position'),
              ('max', 'min', 'approved'),
              ('everyday', 'freedays'),
              ('on_leave', 'callshift'),
+             'active',
              'departments',
              'staff',
              ))

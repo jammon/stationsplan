@@ -16,48 +16,30 @@
 {% endif %}
 
 <fieldset class="form-horizontal">
-  <div class="form-group">
-    {% if form.name.errors %}<div class="col-sm-offset-3 col-sm-9 alert alert-danger">{{ form.name.errors }}</div>{% endif %}
-    <div class="col-sm-3 control-label">
-        {{ form.name.label_tag }} </div>
-    <div class="col-sm-9">
-      {{ form.name }} </div>
-  </div>
-  <div class="form-group">
-    {% if form.shortname.errors %}<div class="col-sm-offset-3 col-sm-9 alert alert-danger">{{ form.shortname.errors }}</div>{% endif %}
-    <div class="col-sm-3 control-label">
-        {{ form.shortname.label_tag }} </div>
-    <div class="col-sm-9">
-      {{ form.shortname }} </div>
-  </div>
-  <div class="form-group">
-    {% if form.start_date.errors %}<div class="col-sm-offset-3 col-sm-9 alert alert-danger">{{ form.start_date.errors }}</div>{% endif %}
-    <div class="col-sm-3 control-label">
-        Dienstantritt </div>
-    <div class="col-sm-9">
-      {{ form.start_date }} </div>
-  </div>
-  <div class="form-group">
-    {% if form.end_date.errors %}<div class="col-sm-offset-3 col-sm-9 alert alert-danger">{{ form.end_date.errors }}</div>{% endif %}
-    <div class="col-sm-3 control-label">
-        Dienstende </div>
-    <div class="col-sm-9">
-      {{ form.end_date }} </div>
-  </div>
-  <div class="form-group">
-    {% if form.departments.errors %}<div class="col-sm-offset-3 col-sm-9 alert alert-danger">{{ form.departments.errors }}</div>{% endif %}
-    <div class="col-sm-3 control-label">
-        {{ form.departments.label_tag }} </div>
-    <div class="col-sm-9">
-      {{ form.departments }} </div>
-  </div>
-  <div class="form-group">
-    {% if form.position.errors %}<div class="col-sm-offset-3 col-sm-9 alert alert-danger">{{ form.position.errors }}</div>{% endif %}
-    <div class="col-sm-3 control-label">
-        {{ form.position.label_tag }} </div>
-    <div class="col-sm-9">
-      {{ form.position }} </div>
-  </div>
+{% with form.name as field %}
+    {% include "sp_app/field_template.html" %}
+{% endwith %}
+
+{% with form.shortname as field %}
+    {% include "sp_app/field_template.html" %}
+{% endwith %}
+
+{% with form.start_date as field %}
+    {% include "sp_app/field_template.html" %}
+{% endwith %}
+
+{% with form.end_date as field %}
+    {% include "sp_app/field_template.html" %}
+{% endwith %}
+
+{% with form.departments as field %}
+    {% include "sp_app/field_template.html" %}
+{% endwith %}
+
+{% with form.position as field %}
+    {% include "sp_app/field_template.html" %}
+{% endwith %}
+
   {{ form.company.as_hidden }}
   <div class="form-group">
     <div class="col-sm-offset-3 col-sm-9">

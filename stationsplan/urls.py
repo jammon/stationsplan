@@ -42,6 +42,8 @@ urlpatterns = [
     path('person/add/', sp_views.PersonCreateView.as_view(), name='person-add'),
     path('person/<int:pk>/', sp_views.PersonUpdateView.as_view(), name='person-update'),
     path('funktionen', sp_views.FunktionenView.as_view(), name='wards'),
+    path('funktion/add/', sp_views.WardCreateView.as_view(), name='ward-add'),
+    path('funktion/<int:pk>/', sp_views.WardUpdateView.as_view(), name='ward-update'),
     # Other
     path('tests', TemplateView.as_view(template_name="sp_app/tests.html"),
          name='tests'),
