@@ -103,8 +103,8 @@ def change_function(request):
     res = {'status': 'error'}
     try:
         person = Person.objects.get(
-            shortname=data['person'], company_id=company_id)
-        ward = Ward.objects.get(shortname=data['ward'], company_id=company_id)
+            id=data['person'], company_id=company_id)
+        ward = Ward.objects.get(id=data['ward'], company_id=company_id)
         if data['add']:
             person.functions.add(ward)
         else:
@@ -116,12 +116,8 @@ def change_function(request):
         }
     except Person.DoesNotExist:
         res['reason'] = f'Person {data["person"]} not found'
-    except Person.MultipleObjectsReturned:
-        res['reason'] = f'Person {data["person"]} found multiple times'
     except Ward.DoesNotExist:
         res['reason'] = f'Ward {data["ward"]} not found'
-    except Ward.MultipleObjectsReturned:
-        res['reason'] = f'Ward {data["ward"]} found multiple times'
     return JsonResponse(res, safe=False)
 
 

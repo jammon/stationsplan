@@ -757,8 +757,8 @@ function save_approval(ward_ids, date) {
 
 function save_function(person, ward, added) {
     var json_data = {
-        person: person.id,
-        ward: ward.id,
+        person: person.get('id'),
+        ward: ward.get('id'),
         add: added,
     };
     var url = '/change_function';
