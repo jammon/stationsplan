@@ -97,6 +97,7 @@ var persons = new Persons();
 //     - approved = The date until which the plan is approved or false
 //     - after_this = an Array of wards, that can be planned after this one
 //     - ward_type = none or '' or type of ward (for handling of call shifts)
+//     - active = Boolean; if false, this ward should not be shown
 var Ward = Backbone.Model.extend({
     initialize: function() {
         var approved = this.get('approved');

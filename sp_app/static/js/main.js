@@ -33,23 +33,20 @@ function setupCsrfProtection() {
 }
 
 
-function initialize_site(persons, wards, different_days, plannings,
-                         year, month, start_of_data, is_editor, holidays, 
-                         departments, last_change_pk, last_change_time) {
+function initialize_site(data) {
     setupCsrfProtection();
-    models.user.is_editor = is_editor;
-    models.user.departments = departments;
+    models.user.is_editor = data.is_editor;
+    models.user.departments = data.departments;
     // just choose one department
-    models.user.current_department = parseInt(_.keys(departments)[0]);
-    models.initialize_wards(wards, different_days);
-    models.persons.reset(persons);
-    models.set_plannings(plannings); 
-    utils.set_holidays(holidays);
-    models.start_day_chain(start_of_data.getFullYear(),
-        start_of_data.getMonth());
+    models.user.current_department = parseInt(_.keys(data.departments)[0]);
+    models.initialize_wards(data.wards, data.different_days);
+    models.persons.reset(data.persons);
+    models.set_plannings(data.plannings); 
+    utils.set_holidays(data.holidays);
+    models.start_day_chain(data.data_year, data.data_month);
     models.schedule_next_update({
-        pk: last_change_pk, 
-        time: last_change_time
+        pk: data.last_change_pk, 
+        time: data.last_change_time
     });
     Backbone.history.start({ pushState: true });
 }

@@ -146,30 +146,7 @@
     <script src="{% static 'js/main.js' %}"></script>
     <script>
       $(function(){
-        main.initialize_site(
-    // persons
-          {{ persons|safe }},
-    // wards
-          {{ wards|safe }},
-    // different_days
-          {{ different_days|safe }},
-    // plannings
-          {{ plannings|safe }},
-          {{ first_of_month|date:'Y' }},     // curr_year
-          {{ first_of_month|date:'n' }} - 1, // curr_month
-          new Date({{ start_of_data|date:'Y'}}, 
-                   {{ start_of_data|date:'n' }}-1, 
-                   1),                       // start_of_data
-          {% if is_editor %}true{% else %}false{% endif %},
-    // holidays
-          {{ holidays|safe }},
-    // departments
-          {{ departments|safe}},
-    // last_change_pk
-          {{ last_change_pk }},
-    // last_change_time
-          {{ last_change_time }}
-        );
+        main.initialize_site({{ data|safe }});
       });
     </script>
 {% endblock extrascripts %}

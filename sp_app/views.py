@@ -62,20 +62,21 @@ def plan(request, month='', day=''):
         (d.id, d.name) for d in
         Department.objects.filter(id__in=department_ids))
     data = {
-        'persons': json.dumps([p.toJson() for p in persons]),
-        'wards': json.dumps([w.toJson() for w in wards]),
-        'different_days': json.dumps([
+        'persons': [p.toJson() for p in persons],
+        'wards': [w.toJson() for w in wards if w.active],
+        'inactive_wards':
+            [w.toJson() for w in wards if not w.active],
+        'different_days': [
             (dd.ward.shortname,
              dd.day.strftime('%Y%m%d'),
              '+' if dd.added else '-')
-            for dd in different_days]),
-        'plannings': json_array(plannings),
-        'user': request.user,
+            for dd in different_days],
+        'plannings': [p.toJson() for p in plannings],
         'is_editor': is_editor,
-        'first_of_month': first_of_month,
-        'start_of_data': start_of_data,
-        'holidays': json.dumps([h.toJson() for h in holidays]),
-        'departments': json.dumps(departments),
+        'data_year': start_of_data.year,
+        'data_month': start_of_data.month - 1,
+        'holidays': [h.toJson() for h in holidays],
+        'departments': departments,
     }
     last_change = ChangeLogging.objects.filter(
         company_id=request.session['company_id'],
@@ -85,9 +86,7 @@ def plan(request, month='', day=''):
         data['last_change_pk'] = last_change['pk']
         data['last_change_time'] = time_diff.days * 86400 + time_diff.seconds
 
-    if first_of_month > date.today():
-        data['prev_month'] = (first_of_month - timedelta(1)).strftime('%Y%m')
-    return render(request, 'sp_app/plan.html', data)
+    return render(request, 'sp_app/plan.html', {'data': json.dumps(data)})
 
 
 class PersonenView(ListView):

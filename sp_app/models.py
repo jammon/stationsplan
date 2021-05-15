@@ -96,6 +96,9 @@ class Ward(models.Model):
         default=0,
         help_text=_('if this is a call shift, the weight reflects its '
                     'burden on the persons doing the shift'))
+    active = models.BooleanField(
+        _('Active'), default=True,
+        help_text=_('This function should currently be displayed'))
 
     class Meta:
         verbose_name = _('Task')
@@ -121,7 +124,8 @@ class Ward(models.Model):
                'after_this': '' if not self.pk else ','.join(
                    (w.shortname for w in self.after_this.all())),
                'ward_type': self.ward_type,
-               'weight': self.weight}
+               'weight': self.weight,
+               'active': self.active}
         if self.approved is not None:
             res['approved'] = date_to_json(self.approved)
         return res
