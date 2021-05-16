@@ -63,6 +63,10 @@
     {% include "sp_app/field_template.html" %}
 {% endwith %}
 
+{% with form.inactive as field %}
+    {% include "sp_app/helptextfield_template.html" %}
+{% endwith %}
+
   {{ form.weekdays.as_hidden }}
   {{ form.company.as_hidden }}
   <div class="form-group">

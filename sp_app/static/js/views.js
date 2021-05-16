@@ -587,6 +587,14 @@ var FunctionsView = Backbone.View.extend({
 });
 var functionsview;
 
+// Former Persons and Inactive Wards
+["#former_persons", "#inactive_wards"].forEach(function(id) {
+    $(id).click(function() {
+        $(id).hide();
+        $(id + '_list').removeClass("hidden");
+    });
+});
+
 var current_day_id;   // the currently displayed day
 function update_current_day(day_id) {
     current_day_id = day_id || utils.get_day_id(new Date());

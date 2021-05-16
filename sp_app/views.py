@@ -38,13 +38,11 @@ def plan(request, month='', day=''):
     first_of_month = get_first_of_month(month)
     # start_of_data should be one month earlier
     start_of_data = (first_of_month - timedelta(28)).replace(day=1)
-    persons = Person.objects.filter(
-        end_date__gte=start_of_data,
-        company_id=company_id
-    ).prefetch_related('functions', 'departments')
+    persons_qs = Person.objects.filter(company_id=company_id).order_by(
+        'position', 'name').prefetch_related('functions', 'departments')
     wards = Ward.objects.filter(
-        departments__id__in=department_ids
-    ).prefetch_related('after_this')
+        departments__id__in=department_ids).order_by(
+        'position', 'name').prefetch_related('after_this')
     different_days = DifferentDay.objects.filter(
         ward__departments__id__in=department_ids,
         day__gte=start_of_data).select_related('ward')
@@ -62,10 +60,9 @@ def plan(request, month='', day=''):
         (d.id, d.name) for d in
         Department.objects.filter(id__in=department_ids))
     data = {
-        'persons': [p.toJson() for p in persons],
+        'persons': [p.toJson() for p in persons_qs
+                    if p.end_date >= start_of_data],
         'wards': [w.toJson() for w in wards if w.active],
-        'inactive_wards':
-            [w.toJson() for w in wards if not w.active],
         'different_days': [
             (dd.ward.shortname,
              dd.day.strftime('%Y%m%d'),
@@ -86,7 +83,12 @@ def plan(request, month='', day=''):
         data['last_change_pk'] = last_change['pk']
         data['last_change_time'] = time_diff.days * 86400 + time_diff.seconds
 
-    return render(request, 'sp_app/plan.html', {'data': json.dumps(data)})
+    return render(request, 'sp_app/plan.html', {
+        'data': json.dumps(data),
+        'former_persons': [p for p in persons_qs
+                           if p.end_date < start_of_data],
+        'inactive_wards': [w for w in wards if not w.active],
+    })
 
 
 class PersonenView(ListView):

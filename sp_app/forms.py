@@ -1,5 +1,6 @@
 from django.forms import (widgets, ModelForm, ModelMultipleChoiceField,
-                          MultipleChoiceField, CheckboxSelectMultiple)
+                          MultipleChoiceField, CheckboxSelectMultiple,
+                          BooleanField)
 from django.contrib import admin
 from django.utils.translation import ugettext as _
 
@@ -83,13 +84,17 @@ class WardForm(ModelForm):
         required=False,
         help_text="Wenn kein Wochentag ausgewählt ist, wird die Funktion für "
         "alle üblichen Tage geplant.")
+    inactive = BooleanField(
+        label='Deaktiviert',
+        help_text="Nicht mehr für die Planung verwenden.")
 
     class Meta:
         model = Ward
         fields = ['name', 'shortname', 'max', 'min', 'everyday', 'freedays',
                   'wkdys', 'weekdays', 'callshift', 'on_leave',
                   'departments', 'company', 'position',
-                  # 'ward_type', 'approved', 'after_this', 'weight', 'active'
+                  'active', 'inactive',
+                  # 'ward_type', 'approved', 'after_this', 'weight', 
                   ]
         widgets = {
             'departments': RowCheckboxSelectMultiple,
@@ -105,8 +110,11 @@ class WardForm(ModelForm):
     def get_initial_for_field(self, field, field_name):
         if field_name == 'wkdys':
             return list(self.initial.get('weekdays', ''))
+        if field_name == 'inactive':
+            return not self.initial.get('active', True)
         return super().get_initial_for_field(field, field_name)
 
     def clean(self):
         cleaned_data = super().clean()
         cleaned_data['weekdays'] = ''.join(self.cleaned_data.get('wkdys', []))
+        cleaned_data['active'] = not cleaned_data['inactive']
