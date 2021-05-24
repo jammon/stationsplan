@@ -459,10 +459,72 @@ var QuickDateViews = Backbone.View.extend({
     },
 });
 
+// ---------------------------------------------------------------------
+var DifferentDayView = Backbone.View.extend({
+    // Do the planning of one Ward on one Day different to the normal schedule
+    events: {
+        "click #differentdaybutton": "save",
+    },
+    save: function(continued) {
+        let that = this;
+        $.ajax({
+            type: "POST",
+            url: ['/different_day', this.action,
+                  this.staffing.ward.get('id'),
+                  this.staffing.day.id].join('/'),
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            statusCode: { 403: models.redirect_to_login },
+            success: function(data) {
+                if (data.status=='ok')
+                    window.location.reload();
+                else 
+                    that.$el(".errors").text(data.message);
+            },
+        });
+    },
+    render: function() {
+        let day = this.staffing.day;
+        this.current_date = day.get('date');
+        let datestr = utils.day_long_names[this.current_date.getDay()] +
+            ', ' + utils.datestr(this.current_date);
+        let ward = this.staffing.ward;
+        let action_string = "zusätzlich planen";
+        let dd = ward.different_days[day.id];
+        if (dd) {
+            if (dd=='+') {
+                this.action = "remove_additional";
+                action_string = "nicht planen";
+            }
+            else
+                this.action = "remove_cancelation";
+        } else {
+            if (this.staffing.no_staffing)
+                this.action = "add_additional";
+            else {
+                this.action = "add_cancelation";
+                action_string = "nicht planen";
+            }
+        }
+        this.$(".changedate").text(datestr);
+        this.$(".changeward").text(ward.get('name'));
+        this.$(".differentaction").text(action_string);
+        return this;
+    },
+    show: function(staffing) {
+        this.staffing = staffing;
+        this.render().$el.modal('show');
+    },
+});
+var differentdayview = new DifferentDayView({
+    el: $("#differentday"),
+});
+
 return {
     staff: changestaffview,
     approve: approvestaffingview,
     quickinput: quickinputview,
+    differentday: differentdayview,
     test: {
         QuickInputView: QuickInputView,
     },

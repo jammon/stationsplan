@@ -17,17 +17,24 @@ var StaffingDisplayView = Backbone.View.extend({
             this.$el.addClass('on-call');
         this.listenTo(this.collection.day, "change:day_id", this.update_today);
     },
+    render_staffing: function(el, staffing, approved){
+        el.text(staffing.displayed.pluck('name').join(", "));
+    },
+    extra_rendering: function(el, staffing, approved) {},
     render: function() {
         var el = this.$el;
         var staffing = this.collection;
         var approved = staffing.ward.is_approved(staffing.day.get('date'));
         el.empty();
+        // do we have to render it
         if (staffing.no_staffing) return this;
         if (!models.user.is_editor && !approved) return this; // not approved
-        el.text(staffing.displayed.pluck('name').join(", "));
+        // ok, we have to
+        this.render_staffing(el, staffing, approved);
         el.toggleClass('lacking', staffing.lacking());
         this.update_today();
         el.toggleClass('unapproved', !approved);
+        this.extra_rendering(el, staffing, approved);
         return this;
     },
     update_today: function() {
@@ -38,16 +45,9 @@ var StaffingDisplayView = Backbone.View.extend({
 var StaffingView = StaffingDisplayView.extend({
     events: {
         "click": "addstaff",
+        "contextmenu": "differentday",
     },
-    render: function() {
-        var el = this.$el;
-        var staffing = this.collection;
-        var approved = staffing.ward.is_approved(staffing.day.get('date'));
-        el.empty();
-        // do we have to render it
-        if (staffing.no_staffing) return this;
-        if (!models.user.is_editor && !approved) return this; // not approved
-        // ok, we have to
+    render_staffing: function(el, staffing, approved) {
         staffing.displayed.each(function(person) {
             var name = $('<div/>', {
                 text: person.get(this.display_long_name ? 'name': 'shortname'),
@@ -68,9 +68,8 @@ var StaffingView = StaffingDisplayView.extend({
             }
             el.append(name);
         }, this);
-        el.toggleClass('lacking', staffing.lacking())
-            .toggleClass('unapproved', !approved);
-        this.update_today();
+    },
+    extra_rendering: function(el, staffing, approved) {
         if (models.user.is_editor && this.drag_n_droppable) {
             el.droppable({
                 accept: function(draggable) {
@@ -78,18 +77,15 @@ var StaffingView = StaffingDisplayView.extend({
                     return staffing.can_be_planned(person.length && person[0]);
                 },
                 drop: function(event, ui) {
-                    let helper = ui.helper;
-                    let person = helper.attr('person');
-                    let old_day = helper.attr('day');
-                    let old_ward = helper.attr('ward');
+                    let person = ui.helper.attr('person');
+                    let old_day = ui.helper.attr('day');
+                    let old_ward = ui.helper.attr('ward');
                     // Is it dropped back on the same day and ward?
                     if (staffing.day == old_day &&
                         staffing.ward == old_ward) return;
                     if (person) {
                         models.save_change(
-                            staffing.day,
-                            staffing.ward,
-                            false,
+                            staffing.day, staffing.ward, false,
                             [{id: person.get('id'), action: 'add'}]);
                     }
                     // If a person has been drag-n-dropped to a StaffingView
@@ -97,9 +93,7 @@ var StaffingView = StaffingDisplayView.extend({
                     // if that is a StaffingView as well
                     if (old_day)
                         models.save_change(
-                            old_day,
-                            old_ward,
-                            false,
+                            old_day, old_ward, false,
                             [{id: person.get('id'), action: 'remove'}]
                         );
                 },
@@ -108,11 +102,16 @@ var StaffingView = StaffingDisplayView.extend({
                 cursor: "pointer",
             });
         }
-        return this;
     },
     addstaff: function() {
         if (models.user.is_editor && !this.collection.no_staffing)
             changeviews.staff.show(this.collection);
+    },
+    differentday: function(e) {
+        if (models.user.is_editor) {
+            e.preventDefault();
+            changeviews.differentday.show(this.collection);
+        }
     },
 });
 var NotPlannedView = Backbone.View.extend({

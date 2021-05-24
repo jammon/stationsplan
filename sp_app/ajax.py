@@ -5,11 +5,12 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 
 import json
 
 from .utils import apply_changes, set_approved, get_last_change_response
-from .models import StatusEntry, Person, Ward, ChangeLogging
+from .models import StatusEntry, Person, Ward, DifferentDay, ChangeLogging
 
 
 def ajax_login_required(function=None):
@@ -147,3 +148,32 @@ def change_history(request, date, ward_id):
         'until': c.until,
         'change_time': c.change_time,
     } for c in cls], safe=False)
+
+
+@ajax_login_required
+def differentday(request, action, ward, day_id):
+    # Make sure it's the right company
+    ward = get_object_or_404(
+        Ward, pk=ward, company__id=request.session['company_id'])
+    day = datetime.strptime(day_id, '%Y%m%d').date()
+    try:
+        dd = DifferentDay.objects.get(ward=ward, day=day)
+        if action.startswith('add'):
+            return JsonResponse({
+                'status': 'error',
+                'message': 'There is a different planning already'})
+        if (dd.added and action == 'remove_cancelation' or
+                not dd.added and action == 'remove_additional'):
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Wrong action'})
+        DifferentDay.objects.filter(id=dd.id).delete()
+        return JsonResponse({'status': 'ok'})
+    except DifferentDay.DoesNotExist:
+        if action.startswith('remove'):
+            return JsonResponse({
+                'status': 'error',
+                'message': 'There is no different planning for this day'})
+        DifferentDay.objects.create(
+            ward=ward, day=day, added=(action == 'add_additional'))
+        return JsonResponse({'status': 'ok'})

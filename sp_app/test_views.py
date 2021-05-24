@@ -352,6 +352,11 @@ class TestChangeHistory(ViewsTestCase):
         self.assertEqual(response.status_code, HTTPStatus.NOT_MODIFIED)
 
 
+class TestDifferentDays(ViewsTestCase):
+    """ Set different planning for a day and ward
+    """
+
+
 class TestChangePassword(ViewsTestCase):
 
     def test_password_change(self):

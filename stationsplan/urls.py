@@ -44,6 +44,8 @@ urlpatterns = [
     path('funktionen', sp_views.FunktionenView.as_view(), name='wards'),
     path('funktion/add/', sp_views.WardCreateView.as_view(), name='ward-add'),
     path('funktion/<int:pk>/', sp_views.WardUpdateView.as_view(), name='ward-update'),
+    path('different_day/<str:action>/<int:ward>/<str:day_id>',
+         sp_ajax.differentday, name='different-day'),
     # Other
     path('tests', TemplateView.as_view(template_name="sp_app/tests.html"),
          name='tests'),

@@ -119,6 +119,7 @@ var Ward = Backbone.Model.extend({
         return !approved || (date <= approved);
     },
     set_different_day: function(date_id, key) {
+        // key is '+' if added else '-'
         this.different_days[date_id] = key;
     },
 });
@@ -897,6 +898,7 @@ return {
     save_function: save_function,
     set_plannings: set_plannings,
     apply_change: apply_change,
+    redirect_to_login: redirect_to_login,
     errors: errors,
     reset_data: reset_data,
     user: user,
