@@ -40,6 +40,10 @@ def last_day_of_month(date):
 
 
 def get_for_company(klass, request=None, company_id='', **kwargs):
+    """ Return a model for this company
+
+    Raises Http404 if not found
+    """
     if request is None:
         return get_object_or_404(
             klass, company__id=company_id, **kwargs)
@@ -60,7 +64,6 @@ def apply_changes(user, company_id, day, ward_id, continued, persons):
      'action': ‘add'|'remove'}
     """
     ward = get_for_company(Ward, company_id=company_id, id=ward_id)
-    assert ward is not None
     known_persons = {
         person.id: person for person in Person.objects.filter(
             company__id=company_id,

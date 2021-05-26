@@ -27,7 +27,7 @@ def ajax_login_required(function=None):
 
 @ajax_login_required
 @require_POST
-@permission_required('sp_app.add_changelogging', raise_exception=True)
+@permission_required('sp_app.is_editor', raise_exception=True)
 def changes(request):
     """Some *person*s are added to or removed (*action*)
     from the staffing of a *ward*
@@ -58,7 +58,7 @@ def changes(request):
 
 @ajax_login_required
 @require_POST
-@permission_required('sp_app.add_changelogging', raise_exception=True)
+@permission_required('sp_app.is_editor', raise_exception=True)
 def change_approved(request):
     """Set the approved date for a ward.
 
@@ -89,7 +89,7 @@ def updates(request, last_change=0):
 
 @ajax_login_required
 @require_POST
-@permission_required('sp_app.add_person', raise_exception=True)
+@permission_required('sp_app.is_dep_lead', raise_exception=True)
 def change_function(request):
     """Change the ability of a person to perform a function.
 

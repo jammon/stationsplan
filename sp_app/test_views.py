@@ -9,6 +9,7 @@ import logging
 
 from .utils import PopulatedTestCase
 from .models import Ward, Employee, ChangeLogging, Planning, StatusEntry
+from .business_logic import get_plan_data
 
 
 class TestViewsAnonymously(TestCase):
@@ -41,6 +42,40 @@ class TestViewsAnonymously(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
 
 
+class TestPlanData(PopulatedTestCase):
+    """ Test business logic for views.plan """
+
+    def test_get_plan_data(self):
+        for start, end in (
+                (date(2016, 1, 1), date(2016, 1, 31)),  # older than 1 mon
+                (date(2016, 2, 1), date(2016, 3, 1)),  # less than 1 mon
+                (date(2016, 1, 1), date(2016, 4, 15)),
+                (date(2016, 1, 1), date(2016, 5, 31)),
+                (date(2016, 4, 1), date(2016, 4, 30)),
+                (date(2016, 4, 1), date(2016, 5, 31)),
+                (date(2016, 5, 1), date(2016, 5, 31))):
+            Planning.objects.create(
+                company=self.company, person=self.person_a,
+                ward=self.ward_a, start=start, end=end)
+        plan_data = get_plan_data(
+            {'department_ids': [self.department.id],
+             'company_id': self.company.id},
+            '201604')
+        data = json.loads(plan_data['data'])
+        plannings = data['plannings']
+        for value, expected in zip(plannings, (
+                {'start': '20160201', 'end': '20160301'},
+                {'start': '20160101', 'end': '20160415'},
+                {'start': '20160101', 'end': '20160531'},
+                {'start': '20160401', 'end': '20160430'},
+                {'start': '20160401', 'end': '20160531'},
+                {'start': '20160501', 'end': '20160531'})):
+            self.assertEqual(value['person'], self.person_a.id)
+            self.assertEqual(value['ward'], self.ward_a.id)
+            self.assertEqual(value['start'], expected['start'])
+            self.assertEqual(value['end'], expected['end'])
+
+
 class ViewsTestCase(PopulatedTestCase):
 
     def setUp(self):
@@ -64,33 +99,10 @@ class ViewsTestCase(PopulatedTestCase):
 
 class TestPlan(ViewsTestCase):
     """ Test views.plan """
+
     def test_plan(self):
-        for start, end in (
-                (date(2016, 1, 1), date(2016, 1, 31)),  # older than 1 mon
-                (date(2016, 2, 1), date(2016, 3, 1)),  # less than 1 mon
-                (date(2016, 1, 1), date(2016, 4, 15)),
-                (date(2016, 1, 1), date(2016, 5, 31)),
-                (date(2016, 4, 1), date(2016, 4, 30)),
-                (date(2016, 4, 1), date(2016, 5, 31)),
-                (date(2016, 5, 1), date(2016, 5, 31))):
-            Planning.objects.create(
-                company=self.company, person=self.person_a,
-                ward=self.ward_a, start=start, end=end)
         response = self.client.get('/plan/201604')
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        data = json.loads(response.context['data'])
-        plannings = data['plannings']
-        for value, expected in zip(plannings, (
-                {'start': '20160201', 'end': '20160301'},
-                {'start': '20160101', 'end': '20160415'},
-                {'start': '20160101', 'end': '20160531'},
-                {'start': '20160401', 'end': '20160430'},
-                {'start': '20160401', 'end': '20160531'},
-                {'start': '20160501', 'end': '20160531'})):
-            self.assertEqual(value['person'], self.person_a.id)
-            self.assertEqual(value['ward'], self.ward_a.id)
-            self.assertEqual(value['start'], expected['start'])
-            self.assertEqual(value['end'], expected['end'])
 
     def test_other_entries(self):
         response = self.client.get('/dienste/201604')
@@ -135,7 +147,7 @@ class ViewsWithPermissionTestCase(ViewsTestCase):
     def setUp(self):
         super(ViewsWithPermissionTestCase, self).setUp()
         self.user.user_permissions.add(
-            Permission.objects.get(codename='add_changelogging'))
+            Permission.objects.get(codename='is_editor'))
         self.user = User.objects.get(pk=self.user.pk)  # -> permission cache
 
 
