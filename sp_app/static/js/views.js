@@ -17,10 +17,10 @@ var StaffingDisplayView = Backbone.View.extend({
             this.$el.addClass('on-call');
         this.listenTo(this.collection.day, "change:day_id", this.update_today);
     },
-    render_staffing: function(el, staffing, approved){
+    render_staffing: function(el, staffing){
         el.text(staffing.displayed.pluck('name').join(", "));
     },
-    extra_rendering: function(el, staffing, approved) {},
+    extra_rendering: function(el, staffing) {},
     render: function() {
         var el = this.$el;
         var staffing = this.collection;
@@ -30,11 +30,11 @@ var StaffingDisplayView = Backbone.View.extend({
         if (staffing.no_staffing) return this;
         if (!models.user.is_editor && !approved) return this; // not approved
         // ok, we have to
-        this.render_staffing(el, staffing, approved);
+        this.render_staffing(el, staffing);
         el.toggleClass('lacking', staffing.lacking());
         this.update_today();
         el.toggleClass('unapproved', !approved);
-        this.extra_rendering(el, staffing, approved);
+        this.extra_rendering(el, staffing);
         return this;
     },
     update_today: function() {
@@ -47,7 +47,7 @@ var StaffingView = StaffingDisplayView.extend({
         "click": "addstaff",
         "contextmenu": "differentday",
     },
-    render_staffing: function(el, staffing, approved) {
+    render_staffing: function(el, staffing) {
         staffing.displayed.each(function(person) {
             var name = $('<div/>', {
                 text: person.get(this.display_long_name ? 'name': 'shortname'),
@@ -69,7 +69,7 @@ var StaffingView = StaffingDisplayView.extend({
             el.append(name);
         }, this);
     },
-    extra_rendering: function(el, staffing, approved) {
+    extra_rendering: function(el, staffing) {
         if (models.user.is_editor && this.drag_n_droppable) {
             el.droppable({
                 accept: function(draggable) {
