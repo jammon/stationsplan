@@ -75,6 +75,22 @@ class TestPlanData(PopulatedTestCase):
             self.assertEqual(value['start'], expected['start'])
             self.assertEqual(value['end'], expected['end'])
 
+    def test_inactive_ward(self):
+        for ward in (self.ward_a, self.ward_b):
+            Planning.objects.create(
+                company=self.company, person=self.person_a,
+                ward=ward, start=date(2016, 4, 1), end=date(2016, 4, 10))
+        Ward.objects.filter(shortname='B').update(active=False)
+
+        plan_data = get_plan_data(
+            {'department_ids': [self.department.id],
+             'company_id': self.company.id},
+            '201604')
+        data = json.loads(plan_data['data'])
+        plannings = data['plannings']
+        self.assertEqual(len(plannings), 1)
+        self.assertEqual(plannings[0]['ward'], self.ward_a.id)
+
 
 class ViewsTestCase(PopulatedTestCase):
 

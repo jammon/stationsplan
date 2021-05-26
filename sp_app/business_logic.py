@@ -32,6 +32,7 @@ def get_plan_data(session, month='', day=''):
         day__gte=start_of_data).select_related('ward')
     plannings = Planning.objects.filter(
         ward__in=wards,
+        ward__active=True,
         end__gte=start_of_data,
         superseded_by=None).select_related('ward')
 

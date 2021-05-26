@@ -86,6 +86,7 @@ class WardForm(ModelForm):
         "alle üblichen Tage geplant.")
     inactive = BooleanField(
         label='Deaktiviert',
+        required=False,
         help_text="Nicht mehr für die Planung verwenden.")
 
     class Meta:
