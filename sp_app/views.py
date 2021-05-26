@@ -3,15 +3,14 @@ import json
 import pytz
 from datetime import date, timedelta, datetime
 from django.contrib.auth.decorators import login_required
-from django.http import Http404
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import render, redirect
-from django.urls import reverse
 from django.views.generic import ListView, CreateView, UpdateView
 
 from sp_app import forms
 from .models import (Person, Ward, DifferentDay, Planning, ChangeLogging,
-                     Department, Company)
-from .utils import (get_first_of_month, json_array, get_holidays_for_company)
+                     Department)
+from .utils import (get_first_of_month, get_holidays_for_company)
 
 
 def home(request):
@@ -70,6 +69,8 @@ def plan(request, month='', day=''):
             for dd in different_days],
         'plannings': [p.toJson() for p in plannings],
         'is_editor': is_editor,
+        'is_dep_lead': request.session.get('is_dep_lead', False),
+        'is_company_admin': request.session.get('is_company_admin', False),
         'data_year': start_of_data.year,
         'data_month': start_of_data.month - 1,
         'holidays': [h.toJson() for h in holidays],
@@ -91,7 +92,11 @@ def plan(request, month='', day=''):
     })
 
 
-class PersonenView(ListView):
+class DepLeadRequiredMixin(PermissionRequiredMixin):
+    permission_required = 'sp_app.is_dep_lead'
+
+
+class PersonenView(DepLeadRequiredMixin, ListView):
     context_object_name = 'personen'
 
     def get_queryset(self):
@@ -101,12 +106,12 @@ class PersonenView(ListView):
         ).order_by('position', 'name')
 
 
-class FunktionenView(ListView):
+class FunktionenView(DepLeadRequiredMixin, ListView):
     model = Ward
     ordering = ['position', 'name']
 
 
-class PersonMixin:
+class PersonMixin(DepLeadRequiredMixin):
     model = Person
     form_class = forms.PersonForm
     success_url = '/zuordnung'
@@ -125,7 +130,7 @@ class PersonUpdateView(PersonMixin, UpdateView):
     pass
 
 
-class WardMixin:
+class WardMixin(DepLeadRequiredMixin):
     model = Ward
     form_class = forms.WardForm
     success_url = '/zuordnung'

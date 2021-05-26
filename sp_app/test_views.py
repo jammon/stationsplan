@@ -78,7 +78,8 @@ class TestPlan(ViewsTestCase):
                 ward=self.ward_a, start=start, end=end)
         response = self.client.get('/plan/201604')
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        plannings = json.loads(response.context['plannings'])
+        data = json.loads(response.context['data'])
+        plannings = data['plannings']
         for value, expected in zip(plannings, (
                 {'start': '20160201', 'end': '20160301'},
                 {'start': '20160101', 'end': '20160415'},

@@ -456,6 +456,11 @@ class Employee(models.Model):
     class Meta:
         verbose_name = _('Employee')
         verbose_name_plural = _('Employees')
+        permissions = [
+            ("is_editor", "is editor for a department"),
+            ("is_dep_lead", "is leader of a department"),
+            ("is_company_admin", "is admin of the company"),
+        ]
 
     def __str__(self):
         return '; '.join(

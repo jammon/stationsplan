@@ -5,32 +5,14 @@ Ein Krankenhaus hat verschiedene *Abteilungen*. Jede Abteilung hat mehrere *Stat
 Jede Person gehört zu einer Abteilung. Stationen, Dienste oder Funktionen können auch von mehreren Abteilungen besetzt werden.
 
 ## User
-Angemeldete User können verschiedene Stufen von Benutzerrrechten haben. Sie können:
-- eine Planung ansehen, - Viewer
-- die Planung von verschiedenen Stationen bearbeiten, - Editor
-- Benutzer anlegen, bearbeiten oder löschen, - Department Leader
-- Stationen und Personen anlegen, bearbeiten oder löschen, - Department Leader
-- für mehrere Abteilungen (einer Klinik) Administratorfunktionen wahrnehmen. - Company Admins
+Angemeldete User können verschiedene Stufen von Benutzerrrechten haben. 
+- **Viewer**: können eine Planung ansehen.
+- **Editor**: können die Planung von verschiedenen Stationen bearbeiten. (Haben die Permission `sp_app.is_editor`.)
+- **Department Leader**: können Benutzer, Stationen und Personen für die eigene Abteilung anlegen, bearbeiten oder löschen. (Haben die Permission `sp_app.is_dep_lead`.)
+- **Company Admins**: können Benutzer (Viewer, Editor, Department Leader), Stationen und Personen für alle Abteilungen anlegen/bearbeiten. (Haben die Permission `sp_app.is_company_admin`.)
 
-### Viewer
-Haben keine Berechtigungen, können nur ansehen.
-
-### Editor
-- Können Planungen der eigenen Abteilung ändern.
-- (Haben die Permission `sp_app.add_changelogging`.)
-- in Django: `request.session['is_editor']`
-
-### Department Leader
-- Können Benutzer (Viewer, Editor, Department Leader) für die eigene Abteilung anlegen/bearbeiten.
-- Können Stationen und Personen für die eigene Abteilung anlegen/bearbeiten.
-- (Haben die Permission `sp_app.add_ward` bzw. `sp_app.add_person`.)
-- in Django: `request.session['is_dep_lead']`
-
-Editors und Department Leaders können ihr Passwort ändern und ihre Sessions laufen mit dem Schließen des Browsers ab.
-
-### Company Admins
-Können Departments anlegen/bearbeiten.
-Können alles was Department Leader können auf Company-Ebene.
+Die genannten Permissions werden in der Session gespeichert.
+Alle außer Viewer können ihr Passwort ändern und ihre Sessions laufen mit dem Schließen des Browsers ab.
 
 ## Backend
 - Der Monat soll gespeichert werden, wenn er erstellt ist

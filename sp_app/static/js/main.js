@@ -36,6 +36,8 @@ function setupCsrfProtection() {
 function initialize_site(data) {
     setupCsrfProtection();
     models.user.is_editor = data.is_editor;
+    models.user.is_dep_lead = data.is_dep_lead;
+    models.user.is_company_admin = data.is_company_admin;
     models.user.departments = data.departments;
     // just choose one department
     models.user.current_department = parseInt(_.keys(data.departments)[0]);
