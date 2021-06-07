@@ -7,9 +7,10 @@ from http import HTTPStatus
 import json
 import logging
 
-from .utils import PopulatedTestCase
-from .models import Ward, Employee, ChangeLogging, Planning, StatusEntry
-from .business_logic import get_plan_data
+from sp_app.utils import PopulatedTestCase
+from sp_app.models import (Ward, Employee, ChangeLogging, Planning,
+                           StatusEntry)
+from sp_app.business_logic import get_plan_data
 
 
 class TestViewsAnonymously(TestCase):
@@ -298,6 +299,7 @@ class TestChangeHistory(ViewsTestCase):
         )
         for (user, person, ward, day, added, continued, until,
              change_time) in data:
+            # Create the objects one at a time, so that the json is constructed
             ChangeLogging.objects.create(
                 company=self.company,
                 user=user, person=person, ward=ward, day=day, added=added,

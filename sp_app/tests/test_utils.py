@@ -1,54 +1,47 @@
 # -*- coding: utf-8 -*-
 import json
+import pytest
 from django.core.cache import cache
 from unittest import TestCase
 from datetime import date
 from http import HTTPStatus
 
-from .utils import (get_first_of_month, last_day_of_month,
-                    get_for_company, get_holidays_for_company,
-                    apply_changes, set_approved, get_last_change_response,
-                    get_cached_last_change_pk, set_cached_last_change_pk,
-                    PopulatedTestCase)
-from .models import (Company, Department, Person, Ward, CalculatedHoliday,
-                     Region, ChangeLogging)
+from sp_app.utils import (
+    get_first_of_month, last_day_of_month, get_for_company,
+    get_holidays_for_company, apply_changes, set_approved,
+    get_last_change_response, get_cached_last_change_pk,
+    set_cached_last_change_pk, PopulatedTestCase)
+from sp_app.models import (
+    Company, Department, Person, Ward, CalculatedHoliday, Region,
+    ChangeLogging)
 
 
-class TestFirstOfMonth(TestCase):
-
-    def test_gfom(self):
-        data = (
-            ("201510", date(2015, 10, 1)),
-            ("20151001", date(2015, 10, 1)),
-            ("20151031", date(2015, 10, 1)),
-        )
-        for given, expected in data:
-            got = get_first_of_month(given)
-            self.assertEqual(
-                got, expected,
-                msg=f"get_first_of_month for {given} should be {expected}, "
-                    f"got {got}")
+def test_get_first_of_month():
+    data = (
+        ("201510", date(2015, 10, 1)),
+        ("20151001", date(2015, 10, 1)),
+        ("20151031", date(2015, 10, 1)),
+    )
+    for given, expected in data:
+        assert expected == get_first_of_month(given)
 
 
-class TestLastDayOfMonth(TestCase):
-
-    def test_ldom(self):
-        data = (
-            (date(2015, 1, 1), date(2015, 1, 31)),
-            (date(2015, 1, 31), date(2015, 1, 31)),
-            (date(2015, 2, 1), date(2015, 2, 28)),
-            (date(2015, 2, 28), date(2015, 2, 28)),
-            (date(2016, 2, 1), date(2016, 2, 29)),
-            (date(2016, 2, 29), date(2016, 2, 29)),
-        )
-        for given, expected in data:
-            self.assertEqual(
-                last_day_of_month(given), expected,
-                msg=f"Last day of month for {given} should be {expected}")
+def test_ldom():
+    data = (
+        (date(2015, 1, 1), date(2015, 1, 31)),
+        (date(2015, 1, 31), date(2015, 1, 31)),
+        (date(2015, 2, 1), date(2015, 2, 28)),
+        (date(2015, 2, 28), date(2015, 2, 28)),
+        (date(2016, 2, 1), date(2016, 2, 29)),
+        (date(2016, 2, 29), date(2016, 2, 29)),
+    )
+    for given, expected in data:
+        assert last_day_of_month(given) == expected
 
 
 class TestGetForCompany(TestCase):
 
+    @pytest.mark.django_db  # Why is this the only test that fails because of db access?
     def test_get_for_company(self):
         company_a = Company.objects.create(name="Company A", shortname="C-A")
         company_b = Company.objects.create(name="Company B", shortname="C-B")

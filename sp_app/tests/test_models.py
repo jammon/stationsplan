@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from datetime import date, timedelta
 
-from .models import (Person, Ward, ChangeLogging, Planning, process_change,
-                     FAR_FUTURE)
-from .utils import PopulatedTestCase
+from sp_app.models import (Person, Ward, ChangeLogging, Planning,
+                           process_change, FAR_FUTURE)
+from sp_app.utils import PopulatedTestCase
 
 
 class TestPerson(PopulatedTestCase):
