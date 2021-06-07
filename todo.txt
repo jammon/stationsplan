@@ -11,7 +11,6 @@
 (C) Wenn man einen Diensthabenden dragt und auf das gleiche Feld wieder dropt, wird er ausgetragen
 (C) Integrationtests in jasmine einbauen +Public
 (C) Favicon bauen +Public https://codeburst.io/the-front-end-checklist-8b2292fdda44
-(C) YSlow einsetzen +Public
 (C) Assets komprimieren
 (C) Flags für Betatester
 (C) Testen mit Firefox headless oder PhantomJS
@@ -36,6 +35,5 @@
 (B) Feiertage mit Namen im Plan anzeigen
 (C) Anlage von Editoren automatisieren, dass sie immer eine Abteilung bekommen
 (C) Admin soll nur für die eigene Abteilung Personen anlegen können
-(A) Anforderung für Zusätzliche Tage in plan integrieren
-(A) Berechtigungen für die neuen Funktionen
-Test ward.active
+(A) Backup-Routine für den Server schreiben
+(A) Upgrade Django

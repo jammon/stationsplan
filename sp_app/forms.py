@@ -2,7 +2,7 @@ from django.forms import (widgets, ModelForm, ModelMultipleChoiceField,
                           MultipleChoiceField, CheckboxSelectMultiple,
                           BooleanField)
 from django.contrib import admin
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from .models import Person, Ward, Department
 

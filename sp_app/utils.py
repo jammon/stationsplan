@@ -162,7 +162,8 @@ def get_last_change_response(company_id, last_change_pk):
         # Set cache
         set_cached_last_change_pk(last_cl.pk, company_id)
     return JsonResponse({
-        'cls': [json.loads(cl.json) or cl.toJson() for cl in cls],
+        'cls': [json.loads(cl.json) if cl.json else cl.toJson()
+                for cl in cls],
         'last_change': {
             'pk': last_cl.pk,
             'time': time_diff.days * 86400 + time_diff.seconds,

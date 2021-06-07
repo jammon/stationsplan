@@ -121,3 +121,6 @@ x 2020-12-26 Nicht jede Funktion muss eine Abteilung haben
 x 2021-05-12 Debug Toolbar soll unabhängig vom Internet funktionieren
 x 2021-05-16 Shortname in Zuordnung?
 x 2021-05-16 Administration für User bauen +Public
+x 2021-05-26 Test ward.active
+x 2021-05-26 Anforderung für Zusätzliche Tage in plan integrieren
+x 2021-05-26 Berechtigungen für die neuen Funktionen

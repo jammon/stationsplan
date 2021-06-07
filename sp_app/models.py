@@ -4,7 +4,7 @@ from datetime import date, timedelta
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 
 FAR_FUTURE = date(2099, 12, 31)
