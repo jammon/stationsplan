@@ -419,8 +419,8 @@ class Planning(models.Model):
 
     def toJson(self):
         return {
-            'person': self.person.id,
-            'ward': self.ward.id,
+            'person': self.person_id,
+            'ward': self.ward_id,
             'start': self.start.strftime('%Y%m%d'),
             'end': self.end.strftime('%Y%m%d'),
         }
