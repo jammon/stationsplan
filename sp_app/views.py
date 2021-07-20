@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, CreateView, UpdateView
@@ -29,18 +29,23 @@ def plan(request, month='', day=''):
                   business_logic.get_plan_data(request.session, month, day))
 
 
+@permission_required('sp_app.is_dep_lead')
+def personen_funktionen(request):
+    department_ids = request.session.get('department_ids')
+    personen = Person.objects.filter(
+        departments__id__in=department_ids
+    ).order_by('position', 'name')
+    funktionen = Ward.objects.filter(
+        departments__id__in=department_ids
+    ).order_by('position', 'name').distinct()
+    return render(request, 'sp_app/person_list.html', {
+        'personen': personen,
+        'funktionen': funktionen,
+    })
+
+
 class DepLeadRequiredMixin(PermissionRequiredMixin):
     permission_required = 'sp_app.is_dep_lead'
-
-
-class PersonenView(DepLeadRequiredMixin, ListView):
-    context_object_name = 'personen'
-
-    def get_queryset(self):
-        department_ids = self.request.session.get('department_ids')
-        return Person.objects.filter(
-            departments__id__in=department_ids
-        ).order_by('position', 'name')
 
 
 class FunktionenView(DepLeadRequiredMixin, ListView):

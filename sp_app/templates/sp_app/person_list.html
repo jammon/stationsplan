@@ -5,27 +5,57 @@
 {% endblock navigation %}
 
 {% block content %}
-<h1>Mitarbeiter/innen</h1>
+<div class="row">
+  <div class="col-md-3 col-sm-6">
 
-<h2>Aktuelle</h2>
-<ul>
-    {% for person in personen %}
-    {% if person.current %}
-        <li>
-        	<a href="/person/{{ person.pk }}">{{ person.name }}</a>
-        </li>
-    {% endif %}
-    {% endfor %}
-</ul>
-<a class="btn btn-default" href="/person/add/" role="button">Neue/r Mitarbeiter/in</a>
-<h2>Frühere</h2>
-<ul>
-    {% for person in personen %}
-    {% if not person.current %}
-        <li>
-        	<a href="/person/{{ person.pk }}">{{ person.name }}</a>
-        </li>
-    {% endif %}
-    {% endfor %}
-</ul>
+    <h2>Aktuelle Mitarbeiter/innen</h2>
+    <ul>
+        {% for person in personen %}
+        {% if person.current %}
+            <li>
+            	<a href="/person/{{ person.pk }}">{{ person.name }}</a>
+            </li>
+        {% endif %}
+        {% endfor %}
+    </ul>
+    <a class="btn btn-default" href="/person/add/" role="button">Neue/r Mitarbeiter/in</a>
+  </div>
+  <div class="col-md-3 col-sm-6">
+    <h2>Frühere Mitarbeiter/innen</h2>
+    <ul>
+        {% for person in personen %}
+        {% if not person.current %}
+            <li>
+            	<a href="/person/{{ person.pk }}">{{ person.name }}</a>
+            </li>
+        {% endif %}
+        {% endfor %}
+    </ul>
+  </div>
+  <div class="col-md-3 col-sm-6">
+    <h2>Funktionen</h2>
+    <ul>
+        {% for funktion in funktionen %}
+        {% if funktion.active %}
+            <li>
+              <a href="/funktion/{{ funktion.pk }}">{{ funktion.name }}</a>
+            </li>
+        {% endif %}
+        {% endfor %}
+    </ul>
+    <a class="btn btn-default" href="/funktion/add/" role="button">Neue Funktion</a>
+  </div>
+  <div class="col-md-3 col-sm-6">
+    <h2>Inaktive Funktionen</h2>
+    <ul>
+        {% for funktion in funktionen %}
+        {% if not funktion.active %}
+            <li>
+              <a href="/funktion/{{ funktion.pk }}">{{ funktion.name }}</a>
+            </li>
+        {% endif %}
+        {% endfor %}
+    </ul>
+  </div>
+</div>
 {% endblock %}
