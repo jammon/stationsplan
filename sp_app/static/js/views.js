@@ -698,14 +698,14 @@ var NavView = Backbone.View.extend({
         "click #nav-zuordnung": "zuordnung",
         "click #nav-admin": "admin",
     },
-    stationen: function() {
-        this.navigate_to("plan/" + current_day_id);
+    stationen: function(event) {
+        this.navigate_to("plan/" + current_day_id, event);
     },
-    dienste: function() {
-        this.navigate_to("dienste/" + current_day_id);
+    dienste: function(event) {
+        this.navigate_to("dienste/" + current_day_id, event);
     },
-    tag: function() {
-        this.navigate_to("tag/" + utils.get_day_id(new Date()));
+    tag: function(event) {
+        this.navigate_to("tag/" + utils.get_day_id(new Date()), event);
     },
     zuordnung: function(event) {
         router.navigate("zuordnung/", {trigger: true});
@@ -719,7 +719,8 @@ var NavView = Backbone.View.extend({
     admin: function(event) {
         window.location = "/admin/";
     },
-    navigate_to: function(path) {
+    navigate_to: function(path, event) {
+        event.preventDefault();
         update_current_day();
         router.navigate(path, {trigger: true});
     },

@@ -16,6 +16,7 @@ class TestUrls(TestCase):
                 ('/dienste/202104/', sp_views.plan, (), {'month': '202104'}),
                 ('/tag/', sp_views.plan, (), {}),
                 ('/tag/20210426/', sp_views.plan, (), {'day': '20210426'}),
+                ('/personen', sp_views.personen_funktionen, (), {}),
                 ('/zuordnung', sp_views.plan, (), {}),
                 ('/change_function', sp_ajax.change_function, (), {}),
                 ('/changes', sp_ajax.changes, (), {}),
@@ -31,8 +32,6 @@ class TestUrls(TestCase):
 
     def test_resolution_for_views_classes(self):
         for url, func_cls, args, kwargs in (
-                ('/personen', sp_views.PersonenView, (), {}),
-                ('/funktionen', sp_views.FunktionenView, (), {}),
                 ('/tests', TemplateView, (), {}),
                 ('/robots.txt', TemplateView, (), {}),
         ):

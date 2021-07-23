@@ -41,7 +41,6 @@ urlpatterns = [
     path('personen', sp_views.personen_funktionen, name='persons'),
     path('person/add/', sp_views.PersonCreateView.as_view(), name='person-add'),
     path('person/<int:pk>/', sp_views.PersonUpdateView.as_view(), name='person-update'),
-    path('funktionen', sp_views.FunktionenView.as_view(), name='wards'),
     path('funktion/add/', sp_views.WardCreateView.as_view(), name='ward-add'),
     path('funktion/<int:pk>/', sp_views.WardUpdateView.as_view(), name='ward-update'),
     path('different_day/<str:action>/<int:ward>/<str:day_id>',
