@@ -124,3 +124,4 @@ x 2021-05-16 Administration für User bauen +Public
 x 2021-05-26 Test ward.active
 x 2021-05-26 Anforderung für Zusätzliche Tage in plan integrieren
 x 2021-05-26 Berechtigungen für die neuen Funktionen
+x 2021-07-24 Backup-Routine für den Server schreiben

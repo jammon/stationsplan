@@ -35,5 +35,4 @@
 (B) Feiertage mit Namen im Plan anzeigen
 (C) Anlage von Editoren automatisieren, dass sie immer eine Abteilung bekommen
 (C) Admin soll nur für die eigene Abteilung Personen anlegen können
-(A) Backup-Routine für den Server schreiben
 (A) Upgrade Django

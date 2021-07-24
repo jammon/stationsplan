@@ -75,3 +75,8 @@ def deploy(branch='master'):
     staticfiles()
     # copy_htaccess()
     # restart_server()
+
+
+def backup():
+    run('mysqldump stplan2 | xz > '
+        '~/backup/stationsplan-`date +"%Y-%m-%d-%H-%M-%S"`.sql.xz')
