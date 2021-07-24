@@ -14,9 +14,9 @@ def migrate_permissions(apps, schema_editor):
     Group = apps.get_model('auth', 'Group')
     Permission = apps.get_model('auth', 'Permission')
     ContentType = apps.get_model('contenttypes', 'ContentType')
-    Editor = apps.get_model('sp_app', 'Editor')
+    Employee = apps.get_model('sp_app', 'Employee')
 
-    content_type = ContentType.objects.get_for_model(Editor)
+    content_type = ContentType.objects.get_for_model(Employee)
     for g, p, name in PERMISSIONS:
         group, _ = Group.objects.get_or_create(name=g)
         permission, _ = Permission.objects.get_or_create(
