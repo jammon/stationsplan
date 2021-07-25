@@ -6,7 +6,7 @@ from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
 from .models import (Person, Ward, ChangeLogging, Planning, Department,
-                     Company, Employee, StatusEntry, Holiday,
+                     Company, Employee, StatusEntry,
                      CalculatedHoliday, Region, DifferentDay)
 from .forms import WardAdminForm
 
@@ -258,11 +258,6 @@ class PlanningAdmin(admin.ModelAdmin):
 @admin.register(StatusEntry)
 class StatusEntryAdmin(CompanyRestrictedMixin, admin.ModelAdmin):
     list_display = ('name', 'content', 'department', 'company')
-
-
-@admin.register(Holiday)
-class HolidayAdmin(admin.ModelAdmin):
-    ordering = ('date', )
 
 
 @admin.register(CalculatedHoliday)

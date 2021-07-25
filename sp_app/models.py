@@ -488,18 +488,6 @@ class StatusEntry(models.Model):
         return f'{self.name}: {self.content}'
 
 
-class Holiday(models.Model):
-    date = models.DateField(_('Date'))
-    name = models.CharField(_('Name'), max_length=50)
-
-    class Meta:
-        verbose_name = _('Holiday')
-        verbose_name_plural = _('Holidays')
-
-    def __str__(self):
-        return f'{self.date}: {self.name}'
-
-
 class CalculatedHoliday(models.Model):
     """A Holiday with calculated dates
 

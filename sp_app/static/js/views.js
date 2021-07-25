@@ -160,6 +160,8 @@ function get_period_from_template(options) {
 
 var title_template = _.template("<%= day_name %>.<br> <%= day %>.");
 var date_template = _.template("<%= day %>. <%= month %> <%= year %>");
+var holiday_template = _.template("<%= day %>. <%= month %> <%= year %>"
+        + "<% if (holiday) print(' - '); %><%= holiday %>");
 var DayTitleView = Backbone.View.extend({
     tagName: "th",
     render: function() {
@@ -169,11 +171,13 @@ var DayTitleView = Backbone.View.extend({
             day_name: utils.day_names[date.getDay()],
             day: date.getDate(),
         }));
+        let holiday = this.model.get('holiday') || '';
         el.attr({
-            title: date_template({
+            title: (holiday ? holiday_template : date_template)({
                 day: date.getDate(),
                 month: utils.month_names[date.getMonth()],
                 year: date.getFullYear(),
+                holiday: holiday,
             }),
             day_id: utils.get_day_id(date),
         });

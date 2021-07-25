@@ -3,8 +3,8 @@ var utils = (function($, _, Backbone) {
 "use strict";
 
 var _holidays = [];
-var _free_dates = [];
-var _calculated_years = [];
+var _free_dates = {};
+var _calculated_years = {};
 var _easters = {
     2014: new Date(2014, 3, 20),
     2015: new Date(2015, 3, 5),
@@ -26,34 +26,38 @@ var _easters = {
 
 function is_free(date) {
     // date is a Javascript Date
+    // returns a boolean or the name of the holiday
     var weekday = date.getDay();
     if (weekday===6 || weekday===0) {
         return true;
     }
-    if (_calculated_years.indexOf(date.getFullYear()) == -1)
-        calc_free_dates(date.getFullYear());
-    return (_free_dates.indexOf(get_day_id(date)) > -1);
+    if (!_calculated_years[date.getFullYear()])
+        calc_holidays(date.getFullYear());
+    return _free_dates[get_day_id(date)] || false;
 }
 
-function calc_free_dates(year) {
+function calc_holidays(year) {
     _holidays.forEach(function(holiday) {
+        let day_id;
         if (holiday.mode=='abs') {
-            if (!holiday.year || holiday.year==year)
-                _free_dates.push(
-                    get_day_id(year, holiday.month-1, holiday.day));
+            if (holiday.year && holiday.year!=year)
+                return;
+            day_id = get_day_id(year, holiday.month-1, holiday.day);
         } else {
             let easter = _easters[year];
-            _free_dates.push(
-                get_day_id(new Date(
-                    year, easter.getMonth(), easter.getDate() + holiday.day)));
+            day_id = get_day_id(new Date(
+                year, easter.getMonth(), easter.getDate() + holiday.day));
         }
+        _free_dates[day_id] = holiday.name;
     });
-    _calculated_years.push(year);
+    _calculated_years[year] = true;
 }
 
 function set_holidays(holidays) {
     // holidays is a list of models.CalculatedHoliday.toJson
     _holidays = holidays;
+    _free_dates = {};
+    _calculated_years = {};
 }
 var month_names = ["Januar", "Februar", "März", "April", "Mai", "Juni", 
     "Juli", "August", "September", "Oktober", "November", "Dezember"];

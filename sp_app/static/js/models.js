@@ -289,7 +289,7 @@ function needs_staffing(ward, day) {
     var weekdays = ward.get('weekdays');
     if (weekdays)
         return weekdays.indexOf(day.get('date').getDay()) > -1;
-    var day_is_free = day.get('is_free');
+    var day_is_free = !!day.get('is_free'); // must be boolean
     var for_free_days = (ward.get('freedays') || false);
     return day_is_free == for_free_days;
 }
@@ -328,7 +328,10 @@ var Day = Backbone.Model.extend({
         var yesterday = this.get('yesterday');
         this.id = utils.get_day_id(this.get('date'));
         this.set({'id': this.id});
-        this.set({'is_free': utils.is_free(this.get('date'))});
+        let _is_free = utils.is_free(this.get('date'));
+        this.set({'is_free': !!_is_free});
+        if (_.isString(_is_free))
+            this.set('holiday', _is_free);
 
         this.ward_staffings = {};
         this.persons_duties = {};
