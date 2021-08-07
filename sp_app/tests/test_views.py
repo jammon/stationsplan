@@ -30,7 +30,7 @@ class TestViewsAnonymously(TestCase):
             if name != 'password_change':
                 for mode, f in (('get', c.get), ('post', c.post)):
                     response = f(reverse(name), follow=True)
-                    self.assertRedirects(response, '/login?next=' + url,
+                    self.assertRedirects(response, '/login/?next=' + url,
                                          msg_prefix=f'{mode} - {url}')
 
     def test_changes(self):
