@@ -69,10 +69,8 @@ class PersonForm(ModelForm):
         for name, field in self.fields.items():
             if name not in ('position', 'departments'):
                 field.widget.attrs.update({'class': 'form-control'})
-        self.fields['departments'].choices = (
-            (d.id, d.name) for d in Department.objects.filter(
-                company__id=self.initial['company']
-            ))
+        self.fields['departments'].queryset = Department.objects.filter(
+            company__id=self.initial['company'])
 
 
 class WardForm(ModelForm):
@@ -103,10 +101,8 @@ class WardForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['departments'].choices = (
-            (d.id, d.name) for d in Department.objects.filter(
-                company__id=self.initial['company']
-            ))
+        self.fields['departments'].queryset = Department.objects.filter(
+            company__id=self.initial['company'])
 
     def get_initial_for_field(self, field, field_name):
         if field_name == 'wkdys':
