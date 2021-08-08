@@ -29,10 +29,10 @@
             {% if request.session.is_dep_lead %}
               <div class="dropdown-divider"></div>
               <li id="nav-personen"><a href="/personen">Personen und Funktionen</a></li>
-              <li id="nav-zuordnung"><a>Zuordnung</a></li>
+              <li id="nav-zuordnung"><a href="/zuordnung">Zuordnung</a></li>
             {% endif %}
             {% if request.user.is_staff %}
-              <li id="nav-admin"><a>Admin-Seite</a></li>
+              <li id="nav-admin"><a href="/admin">Admin-Seite</a></li>
             {% endif %}
           </ul>
         </li>

@@ -712,10 +712,7 @@ var NavView = Backbone.View.extend({
         this.navigate_to("tag/" + utils.get_day_id(new Date()), event);
     },
     zuordnung: function(event) {
-        router.navigate("zuordnung/", {trigger: true});
-    },
-    funktionen: function(event) {
-        window.location = "/config/sp_app/ward/";
+        this.navigate_to("zuordnung/", event);
     },
     personen: function(event) {
         window.location = "/personen";
