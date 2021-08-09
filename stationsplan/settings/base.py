@@ -5,12 +5,24 @@ Django settings for stationsplan project.
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 import string
+import sys
 import time
 from random import choice
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(
     os.path.abspath(__file__))))
 PARENT_OF_BASE_DIR = os.path.dirname(BASE_DIR)
+
+TESTING = False
+if (len(sys.argv) >= 2 and
+    sys.argv[0].endswith('manage.py') and
+    sys.argv[1] == 'test'
+):
+    TESTING = True
+if 'pytest' in sys.argv[0].lower():
+    TESTING = True
+if TESTING:
+    PASSWORD_HASHERS = ('django.contrib.auth.hashers.MD5PasswordHasher',)
 
 VERSION = time.strftime(
     '%Y-%m-%d', time.gmtime(os.path.getmtime(os.path.join(BASE_DIR, '.git'))))
