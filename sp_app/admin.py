@@ -179,11 +179,6 @@ class PersonAdmin(
     )
 
 
-class DifferentDayInline(admin.TabularInline):
-    model = DifferentDay
-    extra = 1
-
-
 @admin.register(Ward)
 @admin.register(Ward, site=config_site)
 class WardAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
@@ -213,6 +208,11 @@ class WardAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
     ordering = ('position', 'name',)
     list_display = ('name', 'shortname', 'position')
     list_editable = ('position',)
+
+    class DifferentDayInline(admin.TabularInline):
+        model = DifferentDay
+        extra = 1
+
     inlines = [
         DifferentDayInline,
     ]
@@ -221,6 +221,29 @@ class WardAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
 @admin.register(Department)
 class DepartmentAdmin(CompanyRestrictedMixin, admin.ModelAdmin):
     ordering = ('shortname',)
+    list_filter = 'company',
+
+
+@admin.register(Company)
+class CompanyAdmin(admin.ModelAdmin):
+    class DepartmentInline(admin.TabularInline):
+        model = Department
+
+    class EmployeeInline(admin.TabularInline):
+        model = Employee
+
+        def formfield_for_manytomany(self, db_field, request, **kwargs):
+            if db_field.name == 'departments':
+                kwargs["queryset"] = request.department_qs
+            return super().formfield_for_manytomany(db_field, request, **kwargs)
+
+    inlines = DepartmentInline, EmployeeInline
+
+    def get_form(self, request, obj=None, **kwargs):
+        # just save querysets reference for future processing in Inline
+        if obj is not None:
+            request.department_qs = Department.objects.filter(company=obj)
+        return super().get_form(request, obj, **kwargs)
 
 
 class PersonDepartmentsListFilter(admin.SimpleListFilter):
@@ -270,7 +293,3 @@ class CalculatedHolidayAdmin(admin.ModelAdmin):
 @admin.register(Region)
 class RegionAdmin(admin.ModelAdmin):
     filter_horizontal = ('calc_holidays',)
-
-
-admin.site.register(Company)
-admin.site.register(Employee)
