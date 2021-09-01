@@ -129,3 +129,8 @@ x 2021-07-25 Upgrade Django
 x 2021-07-25 Feiertage mit Namen im Plan anzeigen
 x 2021-08-07 In den Views für Personen oder Funktionen Auswahl der Abteilungen beschränken
 x 2021-08-08 Admin-Link in Navigation
+x 2021-08-14 Anlage von Editoren automatisieren, dass sie immer eine Abteilung bekommen
+x 2021-08-14 Bedeutung der Berechtigungen von Benutzern klarer machen
+x 2021-08-14 Bei mehreren Abteilungen diese auswählbar machen
+x 2021-08-14 Heilig-Abend und Sylvester bei den Feiertagen in allen Regionen hinzufügen +Public
+x 2021-08-14 In Admin der Wards nur aktuelle und zukünftige Kollegen auswählbar machen

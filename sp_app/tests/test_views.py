@@ -59,9 +59,9 @@ class TestPlanData(PopulatedTestCase):
                 company=self.company, person=self.person_a,
                 ward=self.ward_a, start=start, end=end)
         plan_data = get_plan_data(
-            {'department_ids': [self.department.id],
-             'company_id': self.company.id},
-            '201604')
+            department_ids=[self.department.id],
+            company_id=self.company.id,
+            month='201604')
         data = json.loads(plan_data['data'])
         plannings = data['plannings']
         for value, expected in zip(plannings, (
@@ -84,9 +84,9 @@ class TestPlanData(PopulatedTestCase):
         Ward.objects.filter(shortname='B').update(active=False)
 
         plan_data = get_plan_data(
-            {'department_ids': [self.department.id],
-             'company_id': self.company.id},
-            '201604')
+            department_ids=[self.department.id],
+            company_id=self.company.id,
+            month='201604')
         data = json.loads(plan_data['data'])
         plannings = data['plannings']
         self.assertEqual(len(plannings), 1)

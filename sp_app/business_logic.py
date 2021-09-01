@@ -8,7 +8,8 @@ from .models import (Person, Ward, DifferentDay, Planning, ChangeLogging,
 from .utils import (get_first_of_month, get_holidays_for_company)
 
 
-def get_plan_data(session, month='', day=''):
+def get_plan_data(company_id, department_ids, month='', day='',
+                  is_editor=False, is_dep_lead=False, is_company_admin=False):
     """ Produce data for views.plan
 
     month is '' or 'YYYYMM'
@@ -16,8 +17,6 @@ def get_plan_data(session, month='', day=''):
     """
     if month == '' and day:
         month = day[:6]
-    department_ids = session.get('department_ids')
-    company_id = session.get('company_id')
     # Get all Persons who work here currently
     first_of_month = get_first_of_month(month)
     # start_of_data should be one month earlier
@@ -36,11 +35,10 @@ def get_plan_data(session, month='', day=''):
         end__gte=start_of_data,
         superseded_by=None).select_related('ward')
 
-    is_editor = session.get('is_editor', False)
     if not is_editor:
         plannings = [p for p in plannings
                      if not p.ward.approved or p.start <= p.ward.approved]
-    holidays = get_holidays_for_company(session['company_id'])
+    holidays = get_holidays_for_company(company_id)
     departments = dict(
         (d.id, d.name) for d in
         Department.objects.filter(id__in=department_ids))
@@ -55,15 +53,15 @@ def get_plan_data(session, month='', day=''):
             for dd in different_days],
         'plannings': [p.toJson() for p in plannings],
         'is_editor': is_editor,
-        'is_dep_lead': session.get('is_dep_lead', False),
-        'is_company_admin': session.get('is_company_admin', False),
+        'is_dep_lead': is_dep_lead,
+        'is_company_admin': is_company_admin,
         'data_year': start_of_data.year,
         'data_month': start_of_data.month - 1,
         'holidays': [h.toJson() for h in holidays],
         'departments': departments,
     }
     last_change = ChangeLogging.objects.filter(
-        company_id=session['company_id'],
+        company_id=company_id,
     ).values('pk', 'change_time').order_by('pk').last()
     if last_change is not None:
         time_diff = datetime.now(pytz.utc) - last_change['change_time']

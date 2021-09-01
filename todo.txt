@@ -17,20 +17,18 @@
 (B) Aktion Aktualisieren ins Menu
 (C) Aktualisierung soll auch die Freigabe von Planungen vermitteln
 (C) meta description in base.html verbessern
-(C) In Admin der Wards nur aktuelle und zukünftige Kollegen auswählbar machen
 (C) Anordnung der Diensthabenden in der Stationsansicht so, dass sie immer auf einer Reihe sind
-(C) Heilig-Abend und Sylvester bei den Feiertagen in allen Regionen hinzufügen +Public
-(C) Bedeutung der Berechtigungen von Benutzern klarer machen
 (C) Set MySQL Strict Mode +deploy https://docs.djangoproject.com/en/2.2/ref/databases/#mysql-sql-mode
 (C) Wenn man einen Diensthabenden draggt, geht nach dem Droppen das Besetzung ändern-Fenster auf für den Ausgangstag +bug
 (B) Impressum verfassen +Public
 (B) Datenschutzerklärung verfassen +Public
-(B) Wenn man sich bei /admin einloggt, soll trotzdem die Session korrekt initialisiert werden
-(B) In Views kaputte Eingaben abfangen
+(C) Wenn man sich bei /admin einloggt, soll trotzdem die Session korrekt initialisiert werden
+(C) In Views kaputte Eingaben abfangen
 (C) django.views.decorators.http.condition einsetzen https://docs.djangoproject.com/en/3.0/topics/conditional-view-processing/
-(B) Write test if redis is running in production (redis.ping)
-(B) Write test for caching in production
-(B) Write test for http.condition in production
-(C) Bei mehreren Abteilungen diese auswählbar machen
-(C) Anlage von Editoren automatisieren, dass sie immer eine Abteilung bekommen
+(C) Write test if redis is running in production (redis.ping)
+(C) Write test for caching in production
+(C) Write test for http.condition in production
 (C) Admin soll nur für die eigene Abteilung Personen anlegen können
+(C) In Admin kann man derzeit nur die Abteilungen der Klinik bearbeiten, für die man angemeldet ist.
+(A) Drag-n-drop wieder raus nehmen
+pre-commit hook implementieren https://githooks.com/ https://pre-commit.com/

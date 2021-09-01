@@ -25,8 +25,16 @@ def plan(request, month='', day=''):
     month is '' or 'YYYYMM'
     day is '' or 'YYYYMMDD' or None (for path "/tag")
     """
-    return render(request, 'sp_app/plan.html',
-                  business_logic.get_plan_data(request.session, month, day))
+    return render(
+        request, 'sp_app/plan.html',
+        business_logic.get_plan_data(
+            company_id=request.session.get('company_id'),
+            department_ids=request.session.get('department_ids'),
+            month=month,
+            day=day,
+            is_editor=request.session.get('is_editor', False),
+            is_dep_lead=request.session.get('is_dep_lead', False),
+            is_company_admin=request.session.get('is_company_admin', False)))
 
 
 @permission_required('sp_app.is_dep_lead')
