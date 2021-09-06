@@ -16,203 +16,255 @@ def date_to_json(date):
 
 
 class Company(models.Model):
-    name = models.CharField(_('Name'), max_length=50)
-    shortname = models.CharField(_('Short Name'), max_length=10)
+    name = models.CharField(_("Name"), max_length=50)
+    shortname = models.CharField(_("Short Name"), max_length=10)
     region = models.ForeignKey(
-        'Region', null=True, blank=True, related_name='companies',
-        help_text=_('Region that determines the legal holidays '
-                    'for this company'),
-        on_delete=models.PROTECT)
+        "Region",
+        null=True,
+        blank=True,
+        related_name="companies",
+        help_text=_("Region that determines the legal holidays " "for this company"),
+        on_delete=models.PROTECT,
+    )
 
     class Meta:
-        verbose_name = _('Company')
-        verbose_name_plural = _('Companies')
+        verbose_name = _("Company")
+        verbose_name_plural = _("Companies")
 
     def __str__(self):
         return self.name
 
 
 class Department(models.Model):
-    name = models.CharField(_('Name'), max_length=50)
-    shortname = models.CharField(_('Short Name'), max_length=10)
-    company = models.ForeignKey(Company, related_name='departments',
-                                help_text=_('The top organizational unit'),
-                                on_delete=models.CASCADE,)
+    name = models.CharField(_("Name"), max_length=50)
+    shortname = models.CharField(_("Short Name"), max_length=10)
+    company = models.ForeignKey(
+        Company,
+        related_name="departments",
+        help_text=_("The top organizational unit"),
+        on_delete=models.CASCADE,
+    )
 
     class Meta:
-        verbose_name = _('Department')
-        verbose_name_plural = _('Departments')
+        verbose_name = _("Department")
+        verbose_name_plural = _("Departments")
 
     def __str__(self):
         return f"{self.name} ({self.shortname})"
 
 
 class Ward(models.Model):
-    name = models.CharField(_('Name'), max_length=50)
-    shortname = models.CharField(_('Short Name'), max_length=10)
-    max = models.IntegerField(help_text=_('maximum staffing'))
-    min = models.IntegerField(help_text=_('minimum staffing'))
+    name = models.CharField(_("Name"), max_length=50)
+    shortname = models.CharField(_("Short Name"), max_length=10)
+    max = models.IntegerField(help_text=_("maximum staffing"))
+    min = models.IntegerField(help_text=_("minimum staffing"))
     everyday = models.BooleanField(
-        _('everyday'),
+        _("everyday"),
         default=False,
-        help_text=_('if True, is to be planned also on free days.'))
+        help_text=_("if True, is to be planned also on free days."),
+    )
     freedays = models.BooleanField(
-        _('freedays'),
+        _("freedays"),
         default=False,
-        help_text=_('if True, is to be planned only on free days.'))
+        help_text=_("if True, is to be planned only on free days."),
+    )
     weekdays = models.CharField(
-        _('weekdays'), max_length=7, default='', blank=True,
-        help_text=_('Days of the week when this is to be planned. '
-                    '(String of digits, 0  for sunday.)'))
+        _("weekdays"),
+        max_length=7,
+        default="",
+        blank=True,
+        help_text=_(
+            "Days of the week when this is to be planned. "
+            "(String of digits, 0  for sunday.)"
+        ),
+    )
     callshift = models.BooleanField(
-        _('callshift'),
+        _("callshift"),
         default=False,
-        help_text=_('if True, '
-                    'then this function is treated as call shift'))
+        help_text=_("if True, " "then this function is treated as call shift"),
+    )
     on_leave = models.BooleanField(
-        _('on_leave'),
+        _("on_leave"),
         default=False,
-        help_text=_('if True, then persons planned for this are on leave'))
+        help_text=_("if True, then persons planned for this are on leave"),
+    )
     departments = models.ManyToManyField(
-        Department, verbose_name=_('Departments'), related_name='wards',
-        help_text=_('Departments whose schedule contains this ward'))
-    company = models.ForeignKey(Company, related_name='wards',
-                                on_delete=models.CASCADE)
+        Department,
+        verbose_name=_("Departments"),
+        related_name="wards",
+        help_text=_("Departments whose schedule contains this ward"),
+    )
+    company = models.ForeignKey(Company, related_name="wards", on_delete=models.CASCADE)
     position = models.IntegerField(
         default=1,
-        help_text=_('Ordering in the display. '
-                    'Should not be more than two digits.'))
+        help_text=_("Ordering in the display. " "Should not be more than two digits."),
+    )
     ward_type = models.CharField(
-        _('Ward type'), max_length=50, blank=True, default='',
-        help_text=_('For sorting the CallTallies'))
+        _("Ward type"),
+        max_length=50,
+        blank=True,
+        default="",
+        help_text=_("For sorting the CallTallies"),
+    )
     approved = models.DateField(
-        null=True, blank=True,
-        help_text=_('The date until which the plan is approved'))
+        null=True, blank=True, help_text=_("The date until which the plan is approved")
+    )
     after_this = models.ManyToManyField(
-        'self', verbose_name=_('after this'), symmetrical=False, blank=True,
-        help_text=_('if not empty, '
-                    'only these functions can be planned on the next day'))
+        "self",
+        verbose_name=_("after this"),
+        symmetrical=False,
+        blank=True,
+        help_text=_(
+            "if not empty, " "only these functions can be planned on the next day"
+        ),
+    )
     weight = models.IntegerField(
         default=0,
-        help_text=_('if this is a call shift, the weight reflects its '
-                    'burden on the persons doing the shift'))
+        help_text=_(
+            "if this is a call shift, the weight reflects its "
+            "burden on the persons doing the shift"
+        ),
+    )
     active = models.BooleanField(
-        _('Active'), default=True,
-        help_text=_('This function should currently be displayed'))
+        _("Active"),
+        default=True,
+        help_text=_("This function should currently be displayed"),
+    )
 
     class Meta:
-        verbose_name = _('Task')
-        verbose_name_plural = _('Tasks')
-        ordering = ['position']
+        verbose_name = _("Task")
+        verbose_name_plural = _("Tasks")
+        ordering = ["position"]
 
     def __str__(self):
         return self.name
 
     def toJson(self):
-        res = {'name': self.name,
-               'shortname': self.shortname,
-               'id': self.id,
-               'min': self.min,
-               'max': self.max,
-               'everyday': self.everyday,
-               'freedays': self.freedays,
-               'weekdays': self.weekdays,
-               'callshift': self.callshift,
-               'on_leave': self.on_leave,
-               'company_id': self.company_id,
-               'position': '%02d' % self.position,
-               'after_this': '' if not self.pk else ','.join(
-                   (w.shortname for w in self.after_this.all())),
-               'ward_type': self.ward_type,
-               'weight': self.weight,
-               'active': self.active}
+        res = {
+            "name": self.name,
+            "shortname": self.shortname,
+            "id": self.id,
+            "min": self.min,
+            "max": self.max,
+            "everyday": self.everyday,
+            "freedays": self.freedays,
+            "weekdays": self.weekdays,
+            "callshift": self.callshift,
+            "on_leave": self.on_leave,
+            "company_id": self.company_id,
+            "position": "%02d" % self.position,
+            "after_this": ""
+            if not self.pk
+            else ",".join((w.shortname for w in self.after_this.all())),
+            "ward_type": self.ward_type,
+            "weight": self.weight,
+            "active": self.active,
+        }
         if self.approved is not None:
-            res['approved'] = date_to_json(self.approved)
+            res["approved"] = date_to_json(self.approved)
         return res
 
     def clean(self):
-        if self.shortname == 'id':
-            raise ValidationError({
-                'shortname': _('Wards cannot have the shortname "id".')})
-        if ',' in self.shortname:
-            raise ValidationError({
-                'shortname': _('Wards cannot have a comma in their shortname.')
-            })
+        if self.shortname == "id":
+            raise ValidationError(
+                {"shortname": _('Wards cannot have the shortname "id".')}
+            )
+        if "," in self.shortname:
+            raise ValidationError(
+                {"shortname": _("Wards cannot have a comma in their shortname.")}
+            )
 
 
 class DifferentDay(models.Model):
-    """ A ward can be planned or not planned out of schedule """
-    day = models.DateField(_('day'), help_text=_('Day that is different'))
+    """A ward can be planned or not planned out of schedule"""
+
+    day = models.DateField(_("day"), help_text=_("Day that is different"))
     ward = models.ForeignKey(
-        Ward, related_name='different_days', on_delete=models.CASCADE)
+        Ward, related_name="different_days", on_delete=models.CASCADE
+    )
     added = models.BooleanField(
-        _('additional'),
-        help_text=_('Planning is additional (not cancelled)'))
+        _("additional"), help_text=_("Planning is additional (not cancelled)")
+    )
 
     class Meta:
-        verbose_name = _('Different Day')
-        verbose_name_plural = _('Different Days')
+        verbose_name = _("Different Day")
+        verbose_name_plural = _("Different Days")
 
 
 class Person(models.Model):
-    ''' A person (worker) who can be planned for work
-    '''
+    """A person (worker) who can be planned for work"""
+
     POSITION_ASSISTENTEN = 1
     POSITION_OBERAERZTE = 2
     POSITION_CHEFAERZTE = 80
     POSITION_ANONYM = 4
     POSITION_EXTERNE = 5
     POSITION_CHOICES = (
-        (POSITION_ASSISTENTEN, 'Assistenten'),
-        (POSITION_OBERAERZTE, 'Oberärzte'),
-        (POSITION_CHEFAERZTE, 'Chefärzte'),
-        (POSITION_ANONYM, 'Anonym (Abteilung)'),
-        (POSITION_EXTERNE, 'Externe'))
+        (POSITION_ASSISTENTEN, "Assistenten"),
+        (POSITION_OBERAERZTE, "Oberärzte"),
+        (POSITION_CHEFAERZTE, "Chefärzte"),
+        (POSITION_ANONYM, "Anonym (Abteilung)"),
+        (POSITION_EXTERNE, "Externe"),
+    )
 
-    name = models.CharField(_('Name'), max_length=50)
-    shortname = models.CharField(_('Short Name'), max_length=10)
-    start_date = models.DateField(_('start date'), default=date(2015, 1, 1),
-                                  help_text=_('begin of job'))
-    end_date = models.DateField(_('end date'), default=FAR_FUTURE,
-                                help_text=_('end of job'))
+    name = models.CharField(_("Name"), max_length=50)
+    shortname = models.CharField(_("Short Name"), max_length=10)
+    start_date = models.DateField(
+        _("start date"), default=date(2015, 1, 1), help_text=_("begin of job")
+    )
+    end_date = models.DateField(
+        _("end date"), default=FAR_FUTURE, help_text=_("end of job")
+    )
     departments = models.ManyToManyField(
-        Department, verbose_name=_('Departments'), related_name='persons')
-    company = models.ForeignKey(Company, related_name='persons', null=True,
-                                on_delete=models.CASCADE)
+        Department, verbose_name=_("Departments"), related_name="persons"
+    )
+    company = models.ForeignKey(
+        Company, related_name="persons", null=True, on_delete=models.CASCADE
+    )
     functions = models.ManyToManyField(
-        Ward, related_name='staff', verbose_name=_('Tasks'),
-        help_text=_('Functions that he or she can  perform.'))
+        Ward,
+        related_name="staff",
+        verbose_name=_("Tasks"),
+        help_text=_("Functions that he or she can  perform."),
+    )
     position = models.IntegerField(
-        _('position'),
+        _("position"),
         default=POSITION_ASSISTENTEN,
         choices=POSITION_CHOICES,
-        help_text=_('Ordering in the display. '
-                    'Should not be more than two digits. '
-                    'A number greater than 80 means Head of Department'))
+        help_text=_(
+            "Ordering in the display. "
+            "Should not be more than two digits. "
+            "A number greater than 80 means Head of Department"
+        ),
+    )
     anonymous = models.BooleanField(
-        _('Anonymous'),
+        _("Anonymous"),
         default=False,
-        help_text=_('if True this person represents multiple other persons, '
-                    'e.g. a department'))
+        help_text=_(
+            "if True this person represents multiple other persons, "
+            "e.g. a department"
+        ),
+    )
 
     class Meta:
-        verbose_name = _('Person')
-        verbose_name_plural = _('Persons')
+        verbose_name = _("Person")
+        verbose_name_plural = _("Persons")
 
     def __str__(self):
         return f"{self.name} ({self.shortname})"
 
     def toJson(self):
-        return {'name': self.name,
-                'shortname': self.shortname,
-                'id': self.id,
-                'start_date': date_to_json(self.start_date),
-                'end_date': date_to_json(self.end_date),
-                'functions': [f.shortname for f in self.functions.all()],
-                'departments': [d.id for d in self.departments.all()],
-                'position': '%02d' % self.position,
-                'anonymous': self.anonymous,
-                }
+        return {
+            "name": self.name,
+            "shortname": self.shortname,
+            "id": self.id,
+            "start_date": date_to_json(self.start_date),
+            "end_date": date_to_json(self.end_date),
+            "functions": [f.shortname for f in self.functions.all()],
+            "departments": [d.id for d in self.departments.all()],
+            "position": "%02d" % self.position,
+            "anonymous": self.anonymous,
+        }
 
     def save(self, *args, **kwargs):
         created = not self.pk
@@ -226,23 +278,24 @@ class Person(models.Model):
             Planning.objects.filter(
                 person=self, start__gt=self.end_date, end=FAR_FUTURE
             ).delete()
-            Planning.objects.filter(
-                person=self, end=FAR_FUTURE
-            ).update(end=self.end_date)
+            Planning.objects.filter(person=self, end=FAR_FUTURE).update(
+                end=self.end_date
+            )
         if created and not self.anonymous:
-            self.functions.add(*list(Ward.objects.filter(
-                            company_id=self.company_id,
-                            on_leave=True)))
+            self.functions.add(
+                *list(Ward.objects.filter(company_id=self.company_id, on_leave=True))
+            )
 
     def current(self):
         return self.end_date >= date.today()
 
 
 class ChangeLogging(models.Model):
-    ''' Logs who has made which changes.
+    """Logs who has made which changes.
     The change can be for one day (continued==False) or continued
     If continued==True it can have an end date (`until`)
-    '''
+    """
+
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
@@ -250,11 +303,13 @@ class ChangeLogging(models.Model):
     day = models.DateField()
     added = models.BooleanField()
     continued = models.BooleanField(
-        default=True,
-        help_text='If False the change is valid for one day.')
+        default=True, help_text="If False the change is valid for one day."
+    )
     until = models.DateField(
-        null=True, blank=True,
-        help_text='The last day the change is valid. Can be blank.')
+        null=True,
+        blank=True,
+        help_text="The last day the change is valid. Can be blank.",
+    )
     description = models.CharField(max_length=255)
     json = models.CharField(max_length=255)
     change_time = models.DateTimeField(auto_now=True)
@@ -262,20 +317,20 @@ class ChangeLogging(models.Model):
     current_version = 1
 
     class Meta:
-        verbose_name = _('ChangeLogging')
-        verbose_name_plural = _('ChangeLoggings')
+        verbose_name = _("ChangeLogging")
+        verbose_name_plural = _("ChangeLoggings")
 
     def toJson(self):
         data = {
-            'person': self.person.shortname,
-            'ward': self.ward.shortname,
-            'day': self.day.strftime('%Y%m%d'),
-            'action': 'add' if self.added else 'remove',
-            'continued': self.continued,
-            'pk': self.pk,
+            "person": self.person.shortname,
+            "ward": self.ward.shortname,
+            "day": self.day.strftime("%Y%m%d"),
+            "action": "add" if self.added else "remove",
+            "continued": self.continued,
+            "pk": self.pk,
         }
         if self.until:
-            data['until'] = self.until.strftime('%Y%m%d')
+            data["until"] = self.until.strftime("%Y%m%d")
         return data
 
     def save(self, *args, **kwargs):
@@ -284,8 +339,7 @@ class ChangeLogging(models.Model):
         super(ChangeLogging, self).save(*args, **kwargs)
         # self.json contains the primary key
         self.json = json.dumps(self.toJson())
-        ChangeLogging.objects.filter(
-            pk=self.pk).update(json=self.json)
+        ChangeLogging.objects.filter(pk=self.pk).update(json=self.json)
 
     def make_description(self):
         day = self.day.strftime("%d.%m.%Y")
@@ -299,30 +353,32 @@ class ChangeLogging(models.Model):
             # ab 19.11.2019
             time = f"ab {day}"
         self.description = (
-            f'{self.user.last_name or self.user.get_username()}: '
-            f'{self.person.name} ist {time} '
+            f"{self.user.last_name or self.user.get_username()}: "
+            f"{self.person.name} ist {time} "
             f'{"" if self.added else "nicht mehr "}für {self.ward.name}'
-            f' eingeteilt')
+            f" eingeteilt"
+        )
 
     def __str__(self):
         return self.description
 
 
 def process_change(cl):
-    """ Weave the change into the existing Plannings.
+    """Weave the change into the existing Plannings.
 
     Return the json dict of the effective change to be returned to the client.
     """
-    plannings = Planning.objects.filter(person_id=cl.person_id,
-                                        ward_id=cl.ward_id)
+    plannings = Planning.objects.filter(person_id=cl.person_id, ward_id=cl.ward_id)
     pl_data = dict(person_id=cl.person_id, ward_id=cl.ward_id)
     if cl.added:
         if cl.continued:
             end = cl.until or FAR_FUTURE
-            plannings = list(plannings.filter(
-                end__gte=cl.day,
-                start__lte=end,
-            ).order_by('start'))
+            plannings = list(
+                plannings.filter(
+                    end__gte=cl.day,
+                    start__lte=end,
+                ).order_by("start")
+            )
             if len(plannings):
                 # if cl.until is given and is before the end of the last
                 #   overlapping planning
@@ -336,12 +392,12 @@ def process_change(cl):
                 else:
                     end = plannings[0].start - ONE_DAY
                 if cl.day > end:  # This can happen if cl.until==None and
-                    return {}     # change is in an existing planning
+                    return {}  # change is in an existing planning
             pl = Planning.objects.create(start=cl.day, end=end, **pl_data)
             if cl.until and len(plannings) > 0:
-                Planning.objects.filter(
-                    id__in=[_pl.id for _pl in plannings]
-                ).update(superseded_by=pl)
+                Planning.objects.filter(id__in=[_pl.id for _pl in plannings]).update(
+                    superseded_by=pl
+                )
         else:  # not continued, one day
             plannings = plannings.filter(start__lte=cl.day, end__gte=cl.day)
             if len(plannings) == 0:
@@ -351,7 +407,8 @@ def process_change(cl):
 
     else:  # removed
         plannings = plannings.filter(
-            start__lte=cl.until or cl.day, end__gte=cl.day).order_by('start')
+            start__lte=cl.until or cl.day, end__gte=cl.day
+        ).order_by("start")
         if len(plannings) == 0:
             return {}
         if cl.continued:
@@ -359,8 +416,9 @@ def process_change(cl):
                 for pl in plannings:
                     if pl.start < cl.day:
                         if pl.end > cl.until:
-                            Planning.objects.create(start=cl.until + ONE_DAY,
-                                                    end=pl.end, **pl_data)
+                            Planning.objects.create(
+                                start=cl.until + ONE_DAY, end=pl.end, **pl_data
+                            )
                         pl.end = cl.day - ONE_DAY
                         pl.save()
                     elif pl.end > cl.until:
@@ -384,9 +442,9 @@ def process_change(cl):
                     pl.save()
                 else:
                     if not pl.end == cl.day:
-                        Planning.objects.create(start=cl.day + ONE_DAY,
-                                                end=pl.end,
-                                                **pl_data)
+                        Planning.objects.create(
+                            start=cl.day + ONE_DAY, end=pl.end, **pl_data
+                        )
                     pl.end = cl.day - ONE_DAY
                     pl.save()
 
@@ -394,12 +452,13 @@ def process_change(cl):
 
 
 class Planning(models.Model):
-    """ One time period, where one person is planned for one ward.
+    """One time period, where one person is planned for one ward.
 
     Plannings for the same person and ward should not overlap.
     The time period includes 'start' and 'end',
     i.e. a planning for one day has 'start' and 'end' set to the same date.
     """
+
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     ward = models.ForeignKey(Ward, on_delete=models.CASCADE)
@@ -409,20 +468,25 @@ class Planning(models.Model):
     version = models.IntegerField(default=0)
     current_version = 1
     superseded_by = models.ForeignKey(
-        'self', on_delete=models.SET_NULL, blank=True, null=True,
-        related_name='supersedes', default=None,
-        help_text=_("Later planning that supersedes this one"))
+        "self",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="supersedes",
+        default=None,
+        help_text=_("Later planning that supersedes this one"),
+    )
 
     class Meta:
-        verbose_name = _('Planning')
-        verbose_name_plural = _('Plannings')
+        verbose_name = _("Planning")
+        verbose_name_plural = _("Plannings")
 
     def toJson(self):
         return {
-            'person': self.person_id,
-            'ward': self.ward_id,
-            'start': self.start.strftime('%Y%m%d'),
-            'end': self.end.strftime('%Y%m%d'),
+            "person": self.person_id,
+            "ward": self.ward_id,
+            "start": self.start.strftime("%Y%m%d"),
+            "end": self.end.strftime("%Y%m%d"),
         }
 
     def save(self, *args, **kwargs):
@@ -436,26 +500,31 @@ class Planning(models.Model):
 
     def __str__(self):
         if self.end == FAR_FUTURE:
-            return (f"{self.person.name} ist ab {self.start:%d.%m.%Y} "
-                    f"für {self.ward.name} geplant.")
-        return (f"{self.person.name} ist von {self.start:%d.%m.%Y} bis "
-                f"{self.end:%d.%m.%Y} für {self.ward.name} geplant.")
+            return (
+                f"{self.person.name} ist ab {self.start:%d.%m.%Y} "
+                f"für {self.ward.name} geplant."
+            )
+        return (
+            f"{self.person.name} ist von {self.start:%d.%m.%Y} bis "
+            f"{self.end:%d.%m.%Y} für {self.ward.name} geplant."
+        )
 
 
 class Employee(models.Model):
-    ''' Somebody who uses the plan.
+    """Somebody who uses the plan.
     Can be anyone who works there, but also other involved personnel,
     like management etc.
-    '''
-    user = models.OneToOneField(User, related_name='employee',
-                                on_delete=models.CASCADE)
-    departments = models.ManyToManyField(Department, related_name='employees')
-    company = models.ForeignKey(Company, related_name='employees',
-                                on_delete=models.CASCADE)
+    """
+
+    user = models.OneToOneField(User, related_name="employee", on_delete=models.CASCADE)
+    departments = models.ManyToManyField(Department, related_name="employees")
+    company = models.ForeignKey(
+        Company, related_name="employees", on_delete=models.CASCADE
+    )
 
     class Meta:
-        verbose_name = _('Employee')
-        verbose_name_plural = _('Employees')
+        verbose_name = _("Employee")
+        verbose_name_plural = _("Employees")
         permissions = [
             ("is_editor", "is editor for a department"),
             ("is_dep_lead", "is leader of a department"),
@@ -463,29 +532,43 @@ class Employee(models.Model):
         ]
 
     def __str__(self):
-        return '; '.join(
-            (self.user.get_full_name() or self.user.get_username(),
-             ', '.join([d.name for d in self.departments.all()]),
-             self.company.name))
+        return "; ".join(
+            (
+                self.user.get_full_name() or self.user.get_username(),
+                ", ".join([d.name for d in self.departments.all()]),
+                self.company.name,
+            )
+        )
 
 
 class StatusEntry(models.Model):
-    ''' Saves some detail about the current status of the planning
+    """Saves some detail about the current status of the planning
     or the program
 
     Currently is only for setting the approved date of wards
-    '''
+    """
+
     name = models.CharField(max_length=30)
     content = models.CharField(max_length=255)
     department = models.ForeignKey(
-        Department, related_name='status_entries', null=True, blank=True,
-        help_text=_('Can be empty'), on_delete=models.SET_NULL)
+        Department,
+        related_name="status_entries",
+        null=True,
+        blank=True,
+        help_text=_("Can be empty"),
+        on_delete=models.SET_NULL,
+    )
     company = models.ForeignKey(
-        Company, related_name='status_entries', null=True, blank=True,
-        help_text=_('Can be empty'), on_delete=models.SET_NULL)
+        Company,
+        related_name="status_entries",
+        null=True,
+        blank=True,
+        help_text=_("Can be empty"),
+        on_delete=models.SET_NULL,
+    )
 
     def __str__(self):
-        return f'{self.name}: {self.content}'
+        return f"{self.name}: {self.content}"
 
 
 class CalculatedHoliday(models.Model):
@@ -496,22 +579,25 @@ class CalculatedHoliday(models.Model):
 
     If mode is 'rel', then the holiday is 'day' days before or after easter.
     """
-    name = models.CharField(_('Name'), max_length=50)
+
+    name = models.CharField(_("Name"), max_length=50)
     mode = models.CharField(
-        _('Mode'), max_length=3,
-        choices=(('abs', _('Absolute')),
-                 ('rel', _('Easter-related'))))
+        _("Mode"),
+        max_length=3,
+        choices=(("abs", _("Absolute")), ("rel", _("Easter-related"))),
+    )
     day = models.IntegerField(
-        _('Day'), help_text=_('day of month or distance from Easter in days'))
-    month = models.IntegerField(_('Month'), null=True, blank=True)
-    year = models.IntegerField(_('Year'), null=True, blank=True)
+        _("Day"), help_text=_("day of month or distance from Easter in days")
+    )
+    month = models.IntegerField(_("Month"), null=True, blank=True)
+    year = models.IntegerField(_("Year"), null=True, blank=True)
 
     class Meta:
-        verbose_name = _('Calculated Holiday')
-        verbose_name_plural = _('Calculated Holidays')
+        verbose_name = _("Calculated Holiday")
+        verbose_name_plural = _("Calculated Holidays")
 
     def __str__(self):
-        if self.mode == 'abs':
+        if self.mode == "abs":
             return f"{self.name}: {self.day}.{self.month}.{self.year or ''}"
         if self.day >= 0:
             return f"{self.name}: {self.day} Tage nach Ostern"
@@ -529,18 +615,19 @@ class CalculatedHoliday(models.Model):
 
 
 class Region(models.Model):
-    """ Aggregates the usual holidays for that region
-    """
-    name = models.CharField(_('Name'), max_length=50)
-    shortname = models.CharField(_('Short Name'), max_length=10, unique=True)
+    """Aggregates the usual holidays for that region"""
+
+    name = models.CharField(_("Name"), max_length=50)
+    shortname = models.CharField(_("Short Name"), max_length=10, unique=True)
     # holidays = models.ManyToManyField(Holiday, verbose_name=_('Holidays'),
     #                                   related_name='regions')
     calc_holidays = models.ManyToManyField(
-        CalculatedHoliday, verbose_name=_('Holidays'), related_name='regions')
+        CalculatedHoliday, verbose_name=_("Holidays"), related_name="regions"
+    )
 
     class Meta:
-        verbose_name = _('Region')
-        verbose_name_plural = _('Regions')
+        verbose_name = _("Region")
+        verbose_name_plural = _("Regions")
 
     def __str__(self):
         return self.name

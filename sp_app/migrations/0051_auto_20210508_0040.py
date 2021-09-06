@@ -6,47 +6,75 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sp_app', '0050_auto_20201212_1544'),
+        ("sp_app", "0050_auto_20201212_1544"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='calculatedholiday',
-            options={'verbose_name': 'Feiertag (berechnet)', 'verbose_name_plural': 'Feiertage (berechnet)'},
+            name="calculatedholiday",
+            options={
+                "verbose_name": "Feiertag (berechnet)",
+                "verbose_name_plural": "Feiertage (berechnet)",
+            },
         ),
         migrations.AddField(
-            model_name='ward',
-            name='active',
-            field=models.BooleanField(default=True, help_text='This function should currently be displayed'),
+            model_name="ward",
+            name="active",
+            field=models.BooleanField(
+                default=True, help_text="This function should currently be displayed"
+            ),
         ),
         migrations.AlterField(
-            model_name='calculatedholiday',
-            name='day',
-            field=models.IntegerField(help_text='Tag des Monats oder Anzahl der Tage vor/nach Ostern', verbose_name='Tag'),
+            model_name="calculatedholiday",
+            name="day",
+            field=models.IntegerField(
+                help_text="Tag des Monats oder Anzahl der Tage vor/nach Ostern",
+                verbose_name="Tag",
+            ),
         ),
         migrations.AlterField(
-            model_name='calculatedholiday',
-            name='mode',
-            field=models.CharField(choices=[('abs', 'Absolut'), ('rel', 'relativ zu Ostern')], max_length=3, verbose_name='Berechnungsmodus'),
+            model_name="calculatedholiday",
+            name="mode",
+            field=models.CharField(
+                choices=[("abs", "Absolut"), ("rel", "relativ zu Ostern")],
+                max_length=3,
+                verbose_name="Berechnungsmodus",
+            ),
         ),
         migrations.AlterField(
-            model_name='calculatedholiday',
-            name='month',
-            field=models.IntegerField(blank=True, null=True, verbose_name='Monat'),
+            model_name="calculatedholiday",
+            name="month",
+            field=models.IntegerField(blank=True, null=True, verbose_name="Monat"),
         ),
         migrations.AlterField(
-            model_name='calculatedholiday',
-            name='year',
-            field=models.IntegerField(blank=True, null=True, verbose_name='Jahr'),
+            model_name="calculatedholiday",
+            name="year",
+            field=models.IntegerField(blank=True, null=True, verbose_name="Jahr"),
         ),
         migrations.AlterField(
-            model_name='person',
-            name='position',
-            field=models.IntegerField(choices=[(1, 'Assistenten'), (2, 'Oberärzte'), (80, 'Chefärzte'), (4, 'Anonym (Abteilung)'), (5, 'Externe')], default=1, help_text='Position in der Anzeige. Sollte nicht mehr als zwei Stellen haben. Eine Zahl größer als 80 bedeutet Chefarzt', verbose_name='Position'),
+            model_name="person",
+            name="position",
+            field=models.IntegerField(
+                choices=[
+                    (1, "Assistenten"),
+                    (2, "Oberärzte"),
+                    (80, "Chefärzte"),
+                    (4, "Anonym (Abteilung)"),
+                    (5, "Externe"),
+                ],
+                default=1,
+                help_text="Position in der Anzeige. Sollte nicht mehr als zwei Stellen haben. Eine Zahl größer als 80 bedeutet Chefarzt",
+                verbose_name="Position",
+            ),
         ),
         migrations.AlterField(
-            model_name='ward',
-            name='departments',
-            field=models.ManyToManyField(help_text='Abteilungen, für die diese Funktion geplant werden soll', related_name='wards', to='sp_app.Department', verbose_name='Abteilungen'),
+            model_name="ward",
+            name="departments",
+            field=models.ManyToManyField(
+                help_text="Abteilungen, für die diese Funktion geplant werden soll",
+                related_name="wards",
+                to="sp_app.Department",
+                verbose_name="Abteilungen",
+            ),
         ),
     ]

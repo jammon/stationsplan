@@ -4,31 +4,31 @@ from django.db import migrations
 
 
 PERMISSIONS = (
-    ('Editors', 'is_editor', 'is editor for a department'),
-    ('Department admins', 'is_dep_lead', 'is leader of a department'),
-    ('Company Admin', 'is_company_admin', 'is admin of the company'),
+    ("Editors", "is_editor", "is editor for a department"),
+    ("Department admins", "is_dep_lead", "is leader of a department"),
+    ("Company Admin", "is_company_admin", "is admin of the company"),
 )
 
 
 def migrate_permissions(apps, schema_editor):
-    Group = apps.get_model('auth', 'Group')
-    Permission = apps.get_model('auth', 'Permission')
-    ContentType = apps.get_model('contenttypes', 'ContentType')
-    Employee = apps.get_model('sp_app', 'Employee')
+    Group = apps.get_model("auth", "Group")
+    Permission = apps.get_model("auth", "Permission")
+    ContentType = apps.get_model("contenttypes", "ContentType")
+    Employee = apps.get_model("sp_app", "Employee")
 
     content_type = ContentType.objects.get_for_model(Employee)
     for g, p, name in PERMISSIONS:
         group, _ = Group.objects.get_or_create(name=g)
         permission, _ = Permission.objects.get_or_create(
-            codename=p,
-            defaults={'name': name, 'content_type': content_type})
+            codename=p, defaults={"name": name, "content_type": content_type}
+        )
         group.permissions.add(permission)
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sp_app', '0053_auto_20210526_0805'),
+        ("sp_app", "0053_auto_20210526_0805"),
     ]
 
     operations = [

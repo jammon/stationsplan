@@ -6,23 +6,50 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sp_app', '0048_auto_20191016_1953'),
+        ("sp_app", "0048_auto_20191016_1953"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='CalculatedHoliday',
+            name="CalculatedHoliday",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50, verbose_name='Name')),
-                ('mode', models.CharField(choices=[('abs', 'Absolute'), ('rel', 'Easter-related')], max_length=3, verbose_name='Mode')),
-                ('day', models.IntegerField(help_text='day of month or distance from Easter in days', verbose_name='Day')),
-                ('month', models.IntegerField(blank=True, null=True, verbose_name='Month')),
-                ('year', models.IntegerField(blank=True, null=True, verbose_name='Year')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=50, verbose_name="Name")),
+                (
+                    "mode",
+                    models.CharField(
+                        choices=[("abs", "Absolute"), ("rel", "Easter-related")],
+                        max_length=3,
+                        verbose_name="Mode",
+                    ),
+                ),
+                (
+                    "day",
+                    models.IntegerField(
+                        help_text="day of month or distance from Easter in days",
+                        verbose_name="Day",
+                    ),
+                ),
+                (
+                    "month",
+                    models.IntegerField(blank=True, null=True, verbose_name="Month"),
+                ),
+                (
+                    "year",
+                    models.IntegerField(blank=True, null=True, verbose_name="Year"),
+                ),
             ],
             options={
-                'verbose_name': 'Calculated Holiday',
-                'verbose_name_plural': 'Calculated Holidays',
+                "verbose_name": "Calculated Holiday",
+                "verbose_name_plural": "Calculated Holidays",
             },
         ),
     ]

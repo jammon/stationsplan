@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 
+
 def copy_departments(apps, schema_editor):
     # We can't import the Person model directly as it may be a newer
     # version than this migration expects. We use the historical version.
@@ -15,10 +16,11 @@ def copy_departments(apps, schema_editor):
         if employee.department:
             employee.departments.add(employee.department)
 
+
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sp_app', '0008_auto_20151024_0750'),
+        ("sp_app", "0008_auto_20151024_0750"),
     ]
 
     operations = [

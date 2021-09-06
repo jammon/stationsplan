@@ -6,7 +6,7 @@ from django.db import migrations
 
 def save_continued(apps, schema_editor):
     ChangeLogging = apps.get_model("sp_app", "ChangeLogging")
-    for cl in ChangeLogging.objects.all().select_related('ward'):
+    for cl in ChangeLogging.objects.all().select_related("ward"):
         cl.continued = cl.ward.continued
         cl.save()
 
@@ -14,7 +14,7 @@ def save_continued(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sp_app', '0027_auto_20160121_1908'),
+        ("sp_app", "0027_auto_20160121_1908"),
     ]
 
     operations = [

@@ -7,32 +7,55 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sp_app', '0051_auto_20210508_0040'),
+        ("sp_app", "0051_auto_20210508_0040"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='employee',
-            options={'permissions': [('is_editor', 'is editor for a department'), ('is_dep_lead', 'is leader of a department'), ('is_company_admin', 'is admin of the company')], 'verbose_name': 'Bearbeiter', 'verbose_name_plural': 'Bearbeiter'},
+            name="employee",
+            options={
+                "permissions": [
+                    ("is_editor", "is editor for a department"),
+                    ("is_dep_lead", "is leader of a department"),
+                    ("is_company_admin", "is admin of the company"),
+                ],
+                "verbose_name": "Bearbeiter",
+                "verbose_name_plural": "Bearbeiter",
+            },
         ),
         migrations.AlterField(
-            model_name='calculatedholiday',
-            name='day',
-            field=models.IntegerField(help_text='Tag des Monats oder Anzahl der Tage vor/nach Ostern', verbose_name='Day'),
+            model_name="calculatedholiday",
+            name="day",
+            field=models.IntegerField(
+                help_text="Tag des Monats oder Anzahl der Tage vor/nach Ostern",
+                verbose_name="Day",
+            ),
         ),
         migrations.AlterField(
-            model_name='person',
-            name='end_date',
-            field=models.DateField(default=datetime.date(2099, 12, 31), help_text='Dienstende', verbose_name='Dienstende'),
+            model_name="person",
+            name="end_date",
+            field=models.DateField(
+                default=datetime.date(2099, 12, 31),
+                help_text="Dienstende",
+                verbose_name="Dienstende",
+            ),
         ),
         migrations.AlterField(
-            model_name='person',
-            name='start_date',
-            field=models.DateField(default=datetime.date(2015, 1, 1), help_text='Dienstantritt', verbose_name='Dienstantritt'),
+            model_name="person",
+            name="start_date",
+            field=models.DateField(
+                default=datetime.date(2015, 1, 1),
+                help_text="Dienstantritt",
+                verbose_name="Dienstantritt",
+            ),
         ),
         migrations.AlterField(
-            model_name='ward',
-            name='active',
-            field=models.BooleanField(default=True, help_text='Diese Funktion soll derzeit angezeigt werden', verbose_name='Aktiv'),
+            model_name="ward",
+            name="active",
+            field=models.BooleanField(
+                default=True,
+                help_text="Diese Funktion soll derzeit angezeigt werden",
+                verbose_name="Aktiv",
+            ),
         ),
     ]

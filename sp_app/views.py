@@ -11,13 +11,13 @@ from .utils import get_first_of_month
 
 def home(request):
     if request.user.is_authenticated:
-        return redirect('plan')
-    return render(request, "sp_app/index.html", context={'next': '/plan'})
+        return redirect("plan")
+    return render(request, "sp_app/index.html", context={"next": "/plan"})
 
 
 @login_required
-def plan(request, month='', day=''):
-    """ Delivers all the data to built the month-, day- and on-call-view
+def plan(request, month="", day=""):
+    """Delivers all the data to built the month-, day- and on-call-view
     on the client side.
 
     This view is called by 'plan', 'dienste', and 'tag'.
@@ -26,53 +26,61 @@ def plan(request, month='', day=''):
     day is '' or 'YYYYMMDD' or None (for path "/tag")
     """
     return render(
-        request, 'sp_app/plan.html',
+        request,
+        "sp_app/plan.html",
         business_logic.get_plan_data(
-            company_id=request.session.get('company_id'),
-            department_ids=request.session.get('department_ids'),
+            company_id=request.session.get("company_id"),
+            department_ids=request.session.get("department_ids"),
             month=month,
             day=day,
-            is_editor=request.session.get('is_editor', False),
-            is_dep_lead=request.session.get('is_dep_lead', False),
-            is_company_admin=request.session.get('is_company_admin', False)))
+            is_editor=request.session.get("is_editor", False),
+            is_dep_lead=request.session.get("is_dep_lead", False),
+            is_company_admin=request.session.get("is_company_admin", False),
+        ),
+    )
 
 
-@permission_required('sp_app.is_dep_lead')
+@permission_required("sp_app.is_dep_lead")
 def personen_funktionen(request):
-    department_ids = request.session.get('department_ids')
-    personen = Person.objects.filter(
-        departments__id__in=department_ids
-    ).order_by('position', 'name')
-    funktionen = Ward.objects.filter(
-        departments__id__in=department_ids
-    ).order_by('position', 'name').distinct()
-    return render(request, 'sp_app/person_list.html', {
-        'personen': personen,
-        'funktionen': funktionen,
-    })
+    department_ids = request.session.get("department_ids")
+    personen = Person.objects.filter(departments__id__in=department_ids).order_by(
+        "position", "name"
+    )
+    funktionen = (
+        Ward.objects.filter(departments__id__in=department_ids)
+        .order_by("position", "name")
+        .distinct()
+    )
+    return render(
+        request,
+        "sp_app/person_list.html",
+        {
+            "personen": personen,
+            "funktionen": funktionen,
+        },
+    )
 
 
 class DepLeadRequiredMixin(PermissionRequiredMixin):
-    permission_required = 'sp_app.is_dep_lead'
+    permission_required = "sp_app.is_dep_lead"
 
 
 class FunktionenView(DepLeadRequiredMixin, ListView):
     model = Ward
-    ordering = ['position', 'name']
+    ordering = ["position", "name"]
 
 
 class PersonMixin(DepLeadRequiredMixin):
     model = Person
     form_class = forms.PersonForm
-    success_url = '/zuordnung'
+    success_url = "/zuordnung"
 
 
 class PersonCreateView(PersonMixin, CreateView):
-
     def get_initial(self):
         return {
-            'company': self.request.session['company_id'],
-            'start_date': get_first_of_month(),
+            "company": self.request.session["company_id"],
+            "start_date": get_first_of_month(),
         }
 
 
@@ -83,14 +91,13 @@ class PersonUpdateView(PersonMixin, UpdateView):
 class WardMixin(DepLeadRequiredMixin):
     model = Ward
     form_class = forms.WardForm
-    success_url = '/zuordnung'
+    success_url = "/zuordnung"
 
 
 class WardCreateView(WardMixin, CreateView):
-
     def get_initial(self):
         return {
-            'company': self.request.session['company_id'],
+            "company": self.request.session["company_id"],
         }
 
 

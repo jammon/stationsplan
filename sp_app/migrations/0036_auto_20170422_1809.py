@@ -9,30 +9,50 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sp_app', '0035_auto_20170414_1710'),
+        ("sp_app", "0035_auto_20170414_1710"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='wardtype',
-            name='company',
+            model_name="wardtype",
+            name="company",
         ),
         migrations.AlterField(
-            model_name='statusentry',
-            name='company',
-            field=models.ForeignKey(blank=True, help_text='Kann leer bleiben', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='status_entries', to='sp_app.Company'),
+            model_name="statusentry",
+            name="company",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="Kann leer bleiben",
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="status_entries",
+                to="sp_app.Company",
+            ),
         ),
         migrations.AlterField(
-            model_name='statusentry',
-            name='department',
-            field=models.ForeignKey(blank=True, help_text='Kann leer bleiben', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='status_entries', to='sp_app.Department'),
+            model_name="statusentry",
+            name="department",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="Kann leer bleiben",
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="status_entries",
+                to="sp_app.Department",
+            ),
         ),
         migrations.AlterField(
-            model_name='ward',
-            name='ward_type',
-            field=models.CharField(blank=True, default='', help_text='For sorting the CallTallies', max_length=50, verbose_name='Funktionsart'),
+            model_name="ward",
+            name="ward_type",
+            field=models.CharField(
+                blank=True,
+                default="",
+                help_text="For sorting the CallTallies",
+                max_length=50,
+                verbose_name="Funktionsart",
+            ),
         ),
         migrations.DeleteModel(
-            name='WardType',
+            name="WardType",
         ),
     ]

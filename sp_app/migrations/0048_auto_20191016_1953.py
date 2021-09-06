@@ -6,17 +6,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sp_app', '0047_remove_ward_json'),
+        ("sp_app", "0047_remove_ward_json"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='ward',
-            name='nightshift',
+            model_name="ward",
+            name="nightshift",
         ),
         migrations.AlterField(
-            model_name='person',
-            name='position',
-            field=models.IntegerField(default=1, help_text='Ordering in the display. Should not be more than two digits. >80 means "Chefarzt"', verbose_name='Position'),
+            model_name="person",
+            name="position",
+            field=models.IntegerField(
+                default=1,
+                help_text='Ordering in the display. Should not be more than two digits. >80 means "Chefarzt"',
+                verbose_name="Position",
+            ),
         ),
     ]

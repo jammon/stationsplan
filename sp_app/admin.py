@@ -5,51 +5,63 @@ from django.db import models
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from .models import (Person, Ward, ChangeLogging, Planning, Department,
-                     Company, Employee, StatusEntry,
-                     CalculatedHoliday, Region, DifferentDay)
+from .models import (
+    Person,
+    Ward,
+    ChangeLogging,
+    Planning,
+    Department,
+    Company,
+    Employee,
+    StatusEntry,
+    CalculatedHoliday,
+    Region,
+    DifferentDay,
+)
 from .forms import WardAdminForm
 
 
 class ConfigSite(admin.sites.AdminSite):
     """AdminSite for users"""
+
     site_header = "Konfiguration der Stationsplanung"
     site_title = "Konfiguration der Stationsplanung"
-    site_url = '/plan'
+    site_url = "/plan"
     index_title = "Stationsplan Konfiguration"
 
     def has_permission(self, request):
-        return request.session.get('is_dep_lead', False)
+        return request.session.get("is_dep_lead", False)
 
 
-config_site = ConfigSite(name='config')
+config_site = ConfigSite(name="config")
 
 
 class CompanyRestrictedMixin(object):
-    """ Limits access to objects, that have their "company" field set
+    """Limits access to objects, that have their "company" field set
     to the users company.
     """
-    exclude = ('company',)
+
+    exclude = ("company",)
 
     def save_model(self, request, obj, form, change):
-        obj.company_id = request.session.get('company_id')
+        obj.company_id = request.session.get("company_id")
         obj.save()
 
     def get_queryset(self, request):
         qs = super(CompanyRestrictedMixin, self).get_queryset(request)
-        return qs.filter(company_id=request.session.get('company_id'))
+        return qs.filter(company_id=request.session.get("company_id"))
 
 
 FIELDMODELS = {
-    'person': Person,
-    'ward': Ward,
-    'functions': Ward,
-    'departments': Department,
+    "person": Person,
+    "ward": Ward,
+    "functions": Ward,
+    "departments": Department,
 }
 
 
 class RestrictFields(object):
-    """ Limits access of ForeignKeys or ManyToMany-Fields to objects
+    """Limits access of ForeignKeys or ManyToMany-Fields to objects
     belonging to the company stored in the session.
     """
 
@@ -57,61 +69,63 @@ class RestrictFields(object):
         model_class = FIELDMODELS.get(db_field.name)
         if model_class:
             kwargs["queryset"] = model_class.objects.filter(
-                company_id=request.session.get('company_id'))
+                company_id=request.session.get("company_id")
+            )
         return super(RestrictFields, self).formfield_for_foreignkey(
-            db_field, request, **kwargs)
+            db_field, request, **kwargs
+        )
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         model_class = FIELDMODELS.get(db_field.name)
         if model_class:
             kwargs["queryset"] = model_class.objects.filter(
-                company_id=request.session.get('company_id'))
+                company_id=request.session.get("company_id")
+            )
         return super(RestrictFields, self).formfield_for_manytomany(
-            db_field, request, **kwargs)
+            db_field, request, **kwargs
+        )
 
 
 #
 # Filters
 #
 class PersonWardListFilter(admin.SimpleListFilter):
-    """ Return only models of the current Company and filter for
+    """Return only models of the current Company and filter for
     self.parameter_name
     """
+
     def lookups(self, request, model_admin):
         return self.model.objects.filter(
-            company_id=request.session.get('company_id')
-        ).values_list('id', 'name')
+            company_id=request.session.get("company_id")
+        ).values_list("id", "name")
 
     def queryset(self, request, queryset):
         value = self.value()
         if value:
-            return queryset.filter(**{
-                f"{self.parameter_name}_id": int(value)})
+            return queryset.filter(**{f"{self.parameter_name}_id": int(value)})
         return queryset
 
 
 class WardListFilter(PersonWardListFilter):
-    title = _('Ward')
-    parameter_name = 'ward'
+    title = _("Ward")
+    parameter_name = "ward"
     model = Ward
 
 
 class PersonListFilter(PersonWardListFilter):
-    title = _('Person')
-    parameter_name = 'person'
+    title = _("Person")
+    parameter_name = "person"
     model = Person
 
 
 class IsEmployedListFilter(admin.SimpleListFilter):
-    """ Toggle if former employees are displayed
-    """
-    title = _('Employment status')
-    parameter_name = 'current'
+    """Toggle if former employees are displayed"""
+
+    title = _("Employment status")
+    parameter_name = "current"
 
     def lookups(self, request, model_admin):
-        return (
-            ('current', _('current employees')),
-        )
+        return (("current", _("current employees")),)
 
     def queryset(self, request, queryset):
         if self.value() == "current":
@@ -121,24 +135,25 @@ class IsEmployedListFilter(admin.SimpleListFilter):
 
 class CurrentPersonListFilter(PersonListFilter):
     """Doesn't show former employees"""
+
     def lookups(self, request, model_admin):
         return self.model.objects.filter(
-            company_id=request.session.get('company_id'),
-            end_date__gte=datetime.date.today()
-        ).values_list('id', 'name')
+            company_id=request.session.get("company_id"),
+            end_date__gte=datetime.date.today(),
+        ).values_list("id", "name")
 
 
 class DepartmentsListFilter(admin.SimpleListFilter):
-    title = _('Department')
-    parameter_name = 'departments'
+    title = _("Department")
+    parameter_name = "departments"
 
     def lookups(self, request, model_admin):
         return Department.objects.filter(
-            company_id=request.session.get('company_id')
-        ).values_list('id', 'name')
+            company_id=request.session.get("company_id")
+        ).values_list("id", "name")
 
     def queryset(self, request, queryset):
-        qs = queryset.filter(company_id=request.session.get('company_id'))
+        qs = queryset.filter(company_id=request.session.get("company_id"))
         value = self.value()
         if value is not None:
             qs = qs.filter(departments__id=int(value))
@@ -150,32 +165,38 @@ class DepartmentsListFilter(admin.SimpleListFilter):
 #
 @admin.register(Person)
 @admin.register(Person, site=config_site)
-class PersonAdmin(
-        CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
+class PersonAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
     # filter_horizontal = ('departments', 'functions',)
-    list_filter = (IsEmployedListFilter, DepartmentsListFilter, )
-    ordering = ('position', 'name',)
-    list_display = ('name', 'shortname', 'position')
-    list_editable = ('position',)
+    list_filter = (IsEmployedListFilter, DepartmentsListFilter)
+    ordering = ("position", "name")
+    list_display = ("name", "shortname", "position")
+    list_editable = ("position",)
     formfield_overrides = {
-        models.ManyToManyField: {
-            'widget': forms.CheckboxSelectMultiple
-        },
+        models.ManyToManyField: {"widget": forms.CheckboxSelectMultiple},
     }
     fieldsets = (
-        (None, {'fields': (
-            (('name', 'shortname'),
-             ('start_date', 'end_date'),
-             ('departments', 'functions'),
-             ))
-        }),
-        ('Advanced options', {
-            'classes': ('collapse',),
-            'fields': (
-                'position',
-                'anonymous',
-            ),
-        }),
+        (
+            None,
+            {
+                "fields": (
+                    (
+                        ("name", "shortname"),
+                        ("start_date", "end_date"),
+                        ("departments", "functions"),
+                    )
+                )
+            },
+        ),
+        (
+            "Advanced options",
+            {
+                "classes": ("collapse",),
+                "fields": (
+                    "position",
+                    "anonymous",
+                ),
+            },
+        ),
     )
 
 
@@ -184,30 +205,42 @@ class PersonAdmin(
 class WardAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
     form = WardAdminForm
     fieldsets = (
-        (None, {'fields': (
-            (('name', 'shortname', 'position'),
-             ('max', 'min', 'approved'),
-             ('everyday', 'freedays'),
-             ('on_leave', 'callshift'),
-             'active',
-             'departments',
-             'staff',
-             ))
-        }),
-        ('Advanced options', {
-            'classes': ('collapse',),
-            'fields': (
-                'weekdays',
-                ('ward_type', 'weight',),
-                'after_this',
-            ),
-        }),
+        (
+            None,
+            {
+                "fields": (
+                    (
+                        ("name", "shortname", "position"),
+                        ("max", "min", "approved"),
+                        ("everyday", "freedays"),
+                        ("on_leave", "callshift"),
+                        "active",
+                        "departments",
+                        "staff",
+                    )
+                )
+            },
+        ),
+        (
+            "Advanced options",
+            {
+                "classes": ("collapse",),
+                "fields": (
+                    "weekdays",
+                    (
+                        "ward_type",
+                        "weight",
+                    ),
+                    "after_this",
+                ),
+            },
+        ),
     )
-    filter_horizontal = ('departments', 'after_this')
-    list_filter = (DepartmentsListFilter, )
-    ordering = ('position', 'name',)
-    list_display = ('name', 'shortname', 'position')
-    list_editable = ('position',)
+    filter_horizontal = ("departments", "after_this")
+    list_filter = (DepartmentsListFilter,)
+    ordering = ("position", "name")
+    list_display = ("name", "shortname", "position")
+    list_editable = ("position",)
 
     class DifferentDayInline(admin.TabularInline):
         model = DifferentDay
@@ -220,8 +253,8 @@ class WardAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
 
 @admin.register(Department)
 class DepartmentAdmin(CompanyRestrictedMixin, admin.ModelAdmin):
-    ordering = ('shortname',)
-    list_filter = 'company',
+    ordering = ("shortname",)
+    list_filter = ("company",)
 
 
 @admin.register(Company)
@@ -233,7 +266,7 @@ class CompanyAdmin(admin.ModelAdmin):
         model = Employee
 
         def formfield_for_manytomany(self, db_field, request, **kwargs):
-            if db_field.name == 'departments':
+            if db_field.name == "departments":
                 kwargs["queryset"] = request.department_qs
             return super().formfield_for_manytomany(db_field, request, **kwargs)
 
@@ -247,16 +280,16 @@ class CompanyAdmin(admin.ModelAdmin):
 
 
 class PersonDepartmentsListFilter(admin.SimpleListFilter):
-    title = _('Department')
-    parameter_name = 'departments'
+    title = _("Department")
+    parameter_name = "departments"
 
     def lookups(self, request, model_admin):
         return Department.objects.filter(
-            company_id=request.session.get('company_id')
-        ).values_list('id', 'name')
+            company_id=request.session.get("company_id")
+        ).values_list("id", "name")
 
     def queryset(self, request, queryset):
-        qs = queryset.filter(company_id=request.session.get('company_id'))
+        qs = queryset.filter(company_id=request.session.get("company_id"))
         value = self.value()
         if value is not None:
             qs = qs.filter(person__departments__id=int(value))
@@ -265,31 +298,35 @@ class PersonDepartmentsListFilter(admin.SimpleListFilter):
 
 @admin.register(ChangeLogging)
 class ChangeLoggingAdmin(admin.ModelAdmin):
-    date_hierarchy = 'day'
-    list_filter = (PersonDepartmentsListFilter,
-                   CurrentPersonListFilter, WardListFilter,
-                   'user', 'continued')
-    list_display = ('description', 'change_time', )
+    date_hierarchy = "day"
+    list_filter = (
+        PersonDepartmentsListFilter,
+        CurrentPersonListFilter,
+        WardListFilter,
+        "user",
+        "continued",
+    )
+    list_display = ("description", "change_time")
 
 
 @admin.register(Planning)
 class PlanningAdmin(admin.ModelAdmin):
-    date_hierarchy = 'start'
+    date_hierarchy = "start"
     list_filter = (PersonListFilter, WardListFilter)
 
 
 @admin.register(StatusEntry)
 class StatusEntryAdmin(CompanyRestrictedMixin, admin.ModelAdmin):
-    list_display = ('name', 'content', 'department', 'company')
+    list_display = ("name", "content", "department", "company")
 
 
 @admin.register(CalculatedHoliday)
 class CalculatedHolidayAdmin(admin.ModelAdmin):
-    ordering = ('name', )
+    ordering = ("name",)
     radio_fields = {"mode": admin.HORIZONTAL}
-    fields = (('name', 'mode'), ('day', 'month', 'year'))
+    fields = (("name", "mode"), ("day", "month", "year"))
 
 
 @admin.register(Region)
 class RegionAdmin(admin.ModelAdmin):
-    filter_horizontal = ('calc_holidays',)
+    filter_horizontal = ("calc_holidays",)

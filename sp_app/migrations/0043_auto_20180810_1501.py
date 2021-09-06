@@ -6,18 +6,28 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sp_app', '0042_differentday'),
+        ("sp_app", "0042_differentday"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='ward',
-            name='callshift',
-            field=models.BooleanField(default=False, help_text='if True, then this function is treated as call shift', verbose_name='callshift'),
+            model_name="ward",
+            name="callshift",
+            field=models.BooleanField(
+                default=False,
+                help_text="if True, then this function is treated as call shift",
+                verbose_name="callshift",
+            ),
         ),
         migrations.AlterField(
-            model_name='ward',
-            name='weekdays',
-            field=models.CharField(blank=True, default='', help_text='Days of the week when this is to be planned. (String of digits, 0  for sunday.)', max_length=7, verbose_name='weekdays'),
+            model_name="ward",
+            name="weekdays",
+            field=models.CharField(
+                blank=True,
+                default="",
+                help_text="Days of the week when this is to be planned. (String of digits, 0  for sunday.)",
+                max_length=7,
+                verbose_name="weekdays",
+            ),
         ),
     ]

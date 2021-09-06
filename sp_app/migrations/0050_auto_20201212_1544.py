@@ -6,21 +6,25 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sp_app', '0049_calculatedholiday'),
+        ("sp_app", "0049_calculatedholiday"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='company',
-            name='extra_holidays',
+            model_name="company",
+            name="extra_holidays",
         ),
         migrations.RemoveField(
-            model_name='region',
-            name='holidays',
+            model_name="region",
+            name="holidays",
         ),
         migrations.AddField(
-            model_name='region',
-            name='calc_holidays',
-            field=models.ManyToManyField(related_name='regions', to='sp_app.CalculatedHoliday', verbose_name='Feiertage'),
+            model_name="region",
+            name="calc_holidays",
+            field=models.ManyToManyField(
+                related_name="regions",
+                to="sp_app.CalculatedHoliday",
+                verbose_name="Feiertage",
+            ),
         ),
     ]

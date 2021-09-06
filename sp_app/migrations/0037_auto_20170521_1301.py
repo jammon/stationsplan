@@ -9,35 +9,70 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sp_app', '0036_auto_20170422_1809'),
+        ("sp_app", "0036_auto_20170422_1809"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Holiday',
+            name="Holiday",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date', models.DateField(verbose_name='Datum')),
-                ('name', models.CharField(max_length=50, verbose_name='Name')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("date", models.DateField(verbose_name="Datum")),
+                ("name", models.CharField(max_length=50, verbose_name="Name")),
             ],
         ),
         migrations.CreateModel(
-            name='Region',
+            name="Region",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50, verbose_name='Name')),
-                ('shortname', models.CharField(max_length=10, unique=True, verbose_name='Kurzname')),
-                ('holidays', models.ManyToManyField(related_name='regions', to='sp_app.Holiday', verbose_name='Holidays')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=50, verbose_name="Name")),
+                (
+                    "shortname",
+                    models.CharField(
+                        max_length=10, unique=True, verbose_name="Kurzname"
+                    ),
+                ),
+                (
+                    "holidays",
+                    models.ManyToManyField(
+                        related_name="regions",
+                        to="sp_app.Holiday",
+                        verbose_name="Holidays",
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='company',
-            name='extra_holidays',
-            field=models.ManyToManyField(related_name='companies', to='sp_app.Holiday', verbose_name='Holidays'),
+            model_name="company",
+            name="extra_holidays",
+            field=models.ManyToManyField(
+                related_name="companies", to="sp_app.Holiday", verbose_name="Holidays"
+            ),
         ),
         migrations.AddField(
-            model_name='company',
-            name='region',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='sp_app.Region'),
+            model_name="company",
+            name="region",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="sp_app.Region",
+            ),
         ),
     ]

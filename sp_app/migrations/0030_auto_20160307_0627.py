@@ -7,14 +7,14 @@ from sp_app import models
 
 def apply_plannings(apps, schema_editor):
     ChangeLogging = apps.get_model("sp_app", "ChangeLogging")
-    for cl in ChangeLogging.objects.all().select_related('person', 'ward'):
+    for cl in ChangeLogging.objects.all().select_related("person", "ward"):
         models.process_change(cl)
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sp_app', '0029_planning'),
+        ("sp_app", "0029_planning"),
     ]
 
     operations = [

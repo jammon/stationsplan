@@ -1,23 +1,24 @@
 from __future__ import with_statement
 from fabric.api import cd, env, local, run
 
-env.user = 'stplan2'
-env.hosts = ['stplan2.uber.space']
-code_dir = '~/stationsplan'
+env.user = "stplan2"
+env.hosts = ["stplan2.uber.space"]
+code_dir = "~/stationsplan"
 
 
-def test(verbosity='1', case=''):
+def test(verbosity="1", case=""):
     local(f"pytest {case}")
 
 
 def makemigrations():
-    local("python ./manage.py makemigrations sp_app "
-          "--settings=stationsplan.settings.dev")
+    local(
+        "python ./manage.py makemigrations sp_app "
+        "--settings=stationsplan.settings.dev"
+    )
 
 
 def migrate_local():
-    local("python ./manage.py migrate sp_app "
-          "--settings=stationsplan.settings.dev")
+    local("python ./manage.py migrate sp_app " "--settings=stationsplan.settings.dev")
 
 
 def serve():
@@ -44,7 +45,7 @@ def prepare_deploy():
 
 
 # call with: `fab server_pull:my_branch`
-def server_pull(branch='master'):
+def server_pull(branch="master"):
     with cd(code_dir):
         run("git pull origin " + branch)
 
@@ -68,7 +69,7 @@ def restart_server():
 
 
 # call with: `fab deploy:my_branch`
-def deploy(branch='master'):
+def deploy(branch="master"):
     server_pull(branch)
     install_requirements()
     migrate()
@@ -78,5 +79,7 @@ def deploy(branch='master'):
 
 
 def backup():
-    run('mysqldump stplan2 | xz > '
-        '~/backup/stationsplan-`date +"%Y-%m-%d-%H-%M-%S"`.sql.xz')
+    run(
+        "mysqldump stplan2 | xz > "
+        '~/backup/stationsplan-`date +"%Y-%m-%d-%H-%M-%S"`.sql.xz'
+    )

@@ -17,7 +17,7 @@ def get_callshift(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sp_app', '0043_auto_20180810_1501'),
+        ("sp_app", "0043_auto_20180810_1501"),
     ]
 
     operations = [

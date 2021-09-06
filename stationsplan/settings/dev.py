@@ -1,7 +1,7 @@
 from .base import *  # noqa: F403
 import os
 
-SECRET_KEY = '&df40)%pr4_d78+h=r!anx%3s!&8x!xgcnxphpoi(y7qk)3mb4'
+SECRET_KEY = "&df40)%pr4_d78+h=r!anx%3s!&8x!xgcnxphpoi(y7qk)3mb4"
 DEBUG = True
 
 ALLOWED_HOSTS = []
@@ -11,38 +11,34 @@ STATIC_ROOT = os.path.join(BASE_DIR, "dev_static")
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
     }
 }
 
-INSTALLED_APPS += (
-    'debug_toolbar',
-)
-MIDDLEWARE = (
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-) + MIDDLEWARE
-INTERNAL_IPS = ('127.0.0.1', 'localhost')
+INSTALLED_APPS += ("debug_toolbar",)
+MIDDLEWARE = ("debug_toolbar.middleware.DebugToolbarMiddleware",) + MIDDLEWARE
+INTERNAL_IPS = ("127.0.0.1", "localhost")
 
-DJANGO_TEMPLATES['DIRS'] = []
-DJANGO_TEMPLATES['APP_DIRS'] = True
+DJANGO_TEMPLATES["DIRS"] = []
+DJANGO_TEMPLATES["APP_DIRS"] = True
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': '/Users/jammon/workspace/stationsplan/debug.log',
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": "/Users/jammon/workspace/stationsplan/debug.log",
         },
     },
-    'loggers': {
-        'django.request': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': True,
+    "loggers": {
+        "django.request": {
+            "handlers": ["file"],
+            "level": "DEBUG",
+            "propagate": True,
         },
     },
 }

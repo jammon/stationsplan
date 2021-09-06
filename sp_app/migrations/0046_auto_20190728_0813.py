@@ -2,22 +2,24 @@
 
 from django.db import migrations
 
+
 def save_json(apps, schema_editor):
     # We can't import the model directly as it may be a newer
     # version than this migration expects. We use the historical version.
 
     # re-save Plannings and ChangeLoggings to correct the json
-    Planning = apps.get_model('sp_app', 'Planning')
-    for item in Planning.objects.all().select_related('person', 'ward'): 
+    Planning = apps.get_model("sp_app", "Planning")
+    for item in Planning.objects.all().select_related("person", "ward"):
         item.save()
-    ChangeLogging = apps.get_model('sp_app', 'ChangeLogging')
-    for item in ChangeLogging.objects.all().select_related('person', 'ward'): 
+    ChangeLogging = apps.get_model("sp_app", "ChangeLogging")
+    for item in ChangeLogging.objects.all().select_related("person", "ward"):
         item.save()
+
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sp_app', '0045_auto_20190720_0900'),
+        ("sp_app", "0045_auto_20190720_0900"),
     ]
 
     operations = [
