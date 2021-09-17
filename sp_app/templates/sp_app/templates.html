@@ -29,7 +29,7 @@
   <div class="inner">
     <table class="plan"></table>
   </div>
-  {% if is_editor %}
+  {% if request.session.is_editor %}
     <div>
       <button class="show-duties">Aufgaben</button>
     </div>
@@ -40,10 +40,10 @@
 -->
 <script type="text/template" id="on-call-table">
   <div class="row inner">
-    <div class="{% if is_editor %}col-md-7{% else %}col-xs-12{% endif %}">
+    <div class="{% if request.session.is_editor %}col-md-7{% else %}col-xs-12{% endif %}">
       <table class="plan"></table>
     </div>
-    {% if is_editor %}
+    {% if request.session.is_editor %}
     <div class="col-md-5">
       <table class="calltallies"></table>
     </div>
