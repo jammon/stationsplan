@@ -343,10 +343,12 @@ var QuickInputView = Backbone.View.extend({
             let changes = [{
                 id: person.get('id'), 
                 action: 'add' }];
-            if (staffing.length>0)
+            // remove all planned persons
+            staffing.each(function(person) {
                 changes.push({ 
-                    id: staffing.at(0).get('id'), 
+                    id: person.get('id'), 
                     action: 'remove' });
+            });
             models.save_change(staffing.day,
                                staffing.ward,
                                false,
@@ -386,6 +388,7 @@ var QuickPersonView = Backbone.View.extend({
     },
 });
 var QuickDateView = Backbone.View.extend({
+    // Display the Staffing of one day
     tagName: 'tr',
     template: _.template(
         "<td><%= day_name %>, <%= day %>.<%= month %>.</td><td><%= name %></td>"),
@@ -397,20 +400,18 @@ var QuickDateView = Backbone.View.extend({
     },
     render: function() {
         var date = this.collection.day.get('date');
-        var name = '';
-        if (this.collection.length>0)
-            name = this.collection.first().get('name');
         this.$el.html(this.template({
             day_name: utils.day_names[date.getDay()],
             day: date.getDate(),
             month: date.getMonth()+1,
-            name: name,
+            name: this.collection.pluck('name').join(', '),
         }));
         this.$el.toggleClass('active', this.is_current);
         return this;
     },
 });
 var QuickDateViews = Backbone.View.extend({
+    // Show the Staffing of the current day and some days before and after
     el: "#quickdays",
     events: {
     },

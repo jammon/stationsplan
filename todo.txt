@@ -31,4 +31,7 @@
 (C) Admin soll nur für die eigene Abteilung Personen anlegen können
 (C) In Admin kann man derzeit nur die Abteilungen der Klinik bearbeiten, für die man angemeldet ist.
 (A) Drag-n-drop wieder raus nehmen
-pre-commit hook implementieren https://githooks.com/ https://pre-commit.com/
+(C) pre-commit hook implementieren https://githooks.com/ https://pre-commit.com/
+(A) Dienstsummen
+(A) Dienst Schnelleingabe
+Wo wird no_staffing verwendet?
