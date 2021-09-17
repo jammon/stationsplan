@@ -415,7 +415,7 @@ var OnCallView = MonthView.extend({
         models.on_call.each(function(task) {
             var th = $(
                 '<th/>', {text: task.get('name')});
-            if (task.get('max')==1)
+            if (task.get('min')<2)
                 th.addClass('quickinput');
             titlerow.append(th);
         });
