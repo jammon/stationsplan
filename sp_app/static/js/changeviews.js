@@ -337,7 +337,6 @@ var QuickInputView = Backbone.View.extend({
             staffing: this.day.get_staffing(this.ward),
             forward: forward,
         });
-        this.day_views.change_day(forward);
     },
     plan_person: function(person, staffing) {
         if (!staffing.contains(person)) {
