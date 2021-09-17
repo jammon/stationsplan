@@ -28,11 +28,15 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "start_date",
-                    models.DateField(blank=True, help_text="begin of job", null=True),
+                    models.DateField(
+                        blank=True, help_text="begin of job", null=True
+                    ),
                 ),
                 (
                     "end_date",
-                    models.DateField(blank=True, help_text="end of job", null=True),
+                    models.DateField(
+                        blank=True, help_text="end of job", null=True
+                    ),
                 ),
             ],
             options={

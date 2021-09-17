@@ -57,9 +57,15 @@ class TestGetForCompany(TestCase):
     def test_get_for_company(self):
         company_a = Company.objects.create(name="Company A", shortname="C-A")
         company_b = Company.objects.create(name="Company B", shortname="C-B")
-        Person.objects.create(name="Anna Smith", shortname="Smith", company=company_a)
-        Person.objects.create(name="Bob Smythe", shortname="Smythe", company=company_a)
-        Person.objects.create(name="Peter Smith", shortname="Smith", company=company_b)
+        Person.objects.create(
+            name="Anna Smith", shortname="Smith", company=company_a
+        )
+        Person.objects.create(
+            name="Bob Smythe", shortname="Smythe", company=company_a
+        )
+        Person.objects.create(
+            name="Peter Smith", shortname="Smith", company=company_b
+        )
 
         class Request:
             session = {"company_id": company_a.id}
@@ -73,7 +79,9 @@ class TestGetHolidaysForCompany(PopulatedTestCase):
         weihnachten = CalculatedHoliday.objects.create(
             name="Weihnachten", mode="abs", day=25, month=12
         )
-        ostern = CalculatedHoliday.objects.create(name="Ostern", mode="rel", day=0)
+        ostern = CalculatedHoliday.objects.create(
+            name="Ostern", mode="rel", day=0
+        )
         dreikoenig = CalculatedHoliday.objects.create(
             name="Dreikönig", mode="abs", day=6, month=1
         )
@@ -181,7 +189,9 @@ class TestApplyChanges(PopulatedTestCase):
 
 class TestSetApproved(PopulatedTestCase):
     def do_test(self, ward_id, approval):
-        ward = get_for_company(Ward, company_id=self.company.id, shortname=ward_id)
+        ward = get_for_company(
+            Ward, company_id=self.company.id, shortname=ward_id
+        )
         self.assertEqual(ward.approved, approval)
 
     def test_set_approved(self):

@@ -22,15 +22,24 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterModelOptions(
             name="department",
-            options={"verbose_name": "Abteilung", "verbose_name_plural": "Abteilungen"},
+            options={
+                "verbose_name": "Abteilung",
+                "verbose_name_plural": "Abteilungen",
+            },
         ),
         migrations.AlterModelOptions(
             name="person",
-            options={"verbose_name": "Person", "verbose_name_plural": "Personen"},
+            options={
+                "verbose_name": "Person",
+                "verbose_name_plural": "Personen",
+            },
         ),
         migrations.AlterModelOptions(
             name="ward",
-            options={"verbose_name": "Funktion", "verbose_name_plural": "Funktionen"},
+            options={
+                "verbose_name": "Funktion",
+                "verbose_name_plural": "Funktionen",
+            },
         ),
         migrations.AlterField(
             model_name="company",
@@ -84,7 +93,9 @@ class Migration(migrations.Migration):
             model_name="person",
             name="position",
             field=models.IntegerField(
-                default=1, help_text="Position in der Anzeige", verbose_name="Position"
+                default=1,
+                help_text="Position in der Anzeige",
+                verbose_name="Position",
             ),
         ),
         migrations.AlterField(
@@ -123,7 +134,9 @@ class Migration(migrations.Migration):
             model_name="ward",
             name="departments",
             field=models.ManyToManyField(
-                related_name="wards", verbose_name="Abteilungen", to="sp_app.Department"
+                related_name="wards",
+                verbose_name="Abteilungen",
+                to="sp_app.Department",
             ),
         ),
         migrations.AlterField(
@@ -175,7 +188,9 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="ward",
             name="position",
-            field=models.IntegerField(default=1, help_text="Position in der Anzeige"),
+            field=models.IntegerField(
+                default=1, help_text="Position in der Anzeige"
+            ),
         ),
         migrations.AlterField(
             model_name="ward",

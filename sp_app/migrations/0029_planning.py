@@ -32,19 +32,22 @@ class Migration(migrations.Migration):
                 (
                     "company",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="sp_app.Company"
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="sp_app.Company",
                     ),
                 ),
                 (
                     "person",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="sp_app.Person"
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="sp_app.Person",
                     ),
                 ),
                 (
                     "ward",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="sp_app.Ward"
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="sp_app.Ward",
                     ),
                 ),
             ],

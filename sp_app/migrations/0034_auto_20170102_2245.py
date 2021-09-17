@@ -40,7 +40,8 @@ class Migration(migrations.Migration):
             model_name="changelogging",
             name="continued",
             field=models.BooleanField(
-                default=True, help_text="If False the change is valid for one day."
+                default=True,
+                help_text="If False the change is valid for one day.",
             ),
         ),
         migrations.AlterField(

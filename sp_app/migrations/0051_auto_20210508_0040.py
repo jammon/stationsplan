@@ -21,7 +21,8 @@ class Migration(migrations.Migration):
             model_name="ward",
             name="active",
             field=models.BooleanField(
-                default=True, help_text="This function should currently be displayed"
+                default=True,
+                help_text="This function should currently be displayed",
             ),
         ),
         migrations.AlterField(
@@ -44,12 +45,16 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="calculatedholiday",
             name="month",
-            field=models.IntegerField(blank=True, null=True, verbose_name="Monat"),
+            field=models.IntegerField(
+                blank=True, null=True, verbose_name="Monat"
+            ),
         ),
         migrations.AlterField(
             model_name="calculatedholiday",
             name="year",
-            field=models.IntegerField(blank=True, null=True, verbose_name="Jahr"),
+            field=models.IntegerField(
+                blank=True, null=True, verbose_name="Jahr"
+            ),
         ),
         migrations.AlterField(
             model_name="person",

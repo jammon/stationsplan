@@ -26,7 +26,10 @@ class Migration(migrations.Migration):
                 (
                     "mode",
                     models.CharField(
-                        choices=[("abs", "Absolute"), ("rel", "Easter-related")],
+                        choices=[
+                            ("abs", "Absolute"),
+                            ("rel", "Easter-related"),
+                        ],
                         max_length=3,
                         verbose_name="Mode",
                     ),
@@ -40,11 +43,15 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "month",
-                    models.IntegerField(blank=True, null=True, verbose_name="Month"),
+                    models.IntegerField(
+                        blank=True, null=True, verbose_name="Month"
+                    ),
                 ),
                 (
                     "year",
-                    models.IntegerField(blank=True, null=True, verbose_name="Year"),
+                    models.IntegerField(
+                        blank=True, null=True, verbose_name="Year"
+                    ),
                 ),
             ],
             options={

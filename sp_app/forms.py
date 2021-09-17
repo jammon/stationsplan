@@ -21,7 +21,9 @@ class WardAdminForm(ModelForm):
     staff = ModelMultipleChoiceField(
         Person.objects.all(),
         # Add this line to use the double list widget
-        widget=admin.widgets.FilteredSelectMultiple(_("Persons"), is_stacked=False),
+        widget=admin.widgets.FilteredSelectMultiple(
+            _("Persons"), is_stacked=False
+        ),
         label=_("staff"),
         required=False,
     )
@@ -30,7 +32,9 @@ class WardAdminForm(ModelForm):
         super(WardAdminForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
             # if this is not a new object, we load related staff
-            self.initial["staff"] = self.instance.staff.values_list("pk", flat=True)
+            self.initial["staff"] = self.instance.staff.values_list(
+                "pk", flat=True
+            )
             self.fields["staff"].queryset = Person.objects.filter(
                 company_id=self.instance.company_id
             )

@@ -3,7 +3,14 @@ import json
 import pytz
 from datetime import timedelta, datetime
 
-from .models import Person, Ward, DifferentDay, Planning, ChangeLogging, Department
+from .models import (
+    Person,
+    Ward,
+    DifferentDay,
+    Planning,
+    ChangeLogging,
+    Department,
+)
 from .utils import get_first_of_month, get_holidays_for_company
 
 
@@ -41,22 +48,34 @@ def get_plan_data(
         ward__departments__id__in=department_ids, day__gte=start_of_data
     ).select_related("ward")
     plannings = Planning.objects.filter(
-        ward__in=wards, ward__active=True, end__gte=start_of_data, superseded_by=None
+        ward__in=wards,
+        ward__active=True,
+        end__gte=start_of_data,
+        superseded_by=None,
     ).select_related("ward")
 
     if not is_editor:
         plannings = [
-            p for p in plannings if not p.ward.approved or p.start <= p.ward.approved
+            p
+            for p in plannings
+            if not p.ward.approved or p.start <= p.ward.approved
         ]
     holidays = get_holidays_for_company(company_id)
     departments = dict(
-        (d.id, d.name) for d in Department.objects.filter(id__in=department_ids)
+        (d.id, d.name)
+        for d in Department.objects.filter(id__in=department_ids)
     )
     data = {
-        "persons": [p.toJson() for p in persons_qs if p.end_date >= start_of_data],
+        "persons": [
+            p.toJson() for p in persons_qs if p.end_date >= start_of_data
+        ],
         "wards": [w.toJson() for w in wards if w.active],
         "different_days": [
-            (dd.ward.shortname, dd.day.strftime("%Y%m%d"), "+" if dd.added else "-")
+            (
+                dd.ward.shortname,
+                dd.day.strftime("%Y%m%d"),
+                "+" if dd.added else "-",
+            )
             for dd in different_days
         ],
         "plannings": [p.toJson() for p in plannings],
@@ -83,6 +102,8 @@ def get_plan_data(
 
     return {
         "data": json.dumps(data),
-        "former_persons": [p for p in persons_qs if p.end_date < start_of_data],
+        "former_persons": [
+            p for p in persons_qs if p.end_date < start_of_data
+        ],
         "inactive_wards": [w for w in wards if not w.active],
     }

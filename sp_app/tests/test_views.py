@@ -30,7 +30,9 @@ class TestViewsAnonymously(TestCase):
                 for mode, f in (("get", c.get), ("post", c.post)):
                     response = f(reverse(name), follow=True)
                     self.assertRedirects(
-                        response, "/login/?next=" + url, msg_prefix=f"{mode} - {url}"
+                        response,
+                        "/login/?next=" + url,
+                        msg_prefix=f"{mode} - {url}",
                     )
 
     def test_changes(self):
@@ -110,8 +112,12 @@ class TestPlanData(PopulatedTestCase):
 class ViewsTestCase(PopulatedTestCase):
     def setUp(self):
         super(ViewsTestCase, self).setUp()
-        self.user = User.objects.create_user("user", "user@domain.tld", "password")
-        self.employee = Employee.objects.create(user=self.user, company=self.company)
+        self.user = User.objects.create_user(
+            "user", "user@domain.tld", "password"
+        )
+        self.employee = Employee.objects.create(
+            user=self.user, company=self.company
+        )
         self.employee.departments.add(self.department)
         self.client.login(username="user", password="password")
         self.DATA_FOR_CHANGE = {
@@ -159,7 +165,10 @@ class TestChangeForbidden(ViewsTestCase):
         # so not to clutter debug.log
         logging.disable(logging.CRITICAL)
         response = self.client.post(
-            reverse(view), data, "text/json", HTTP_X_REQUESTED_WITH="XMLHttpRequest"
+            reverse(view),
+            data,
+            "text/json",
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
         )
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
         logging.disable(logging.NOTSET)
@@ -176,7 +185,9 @@ class TestChangeForbidden(ViewsTestCase):
 class ViewsWithPermissionTestCase(ViewsTestCase):
     def setUp(self):
         super(ViewsWithPermissionTestCase, self).setUp()
-        self.user.user_permissions.add(Permission.objects.get(codename="is_editor"))
+        self.user.user_permissions.add(
+            Permission.objects.get(codename="is_editor")
+        )
         self.user = User.objects.get(pk=self.user.pk)  # -> permission cache
 
 
@@ -200,7 +211,8 @@ class TestChangeMore(ViewsWithPermissionTestCase):
         self.assertEqual(cl.added, True)
         self.assertEqual(cl.continued, False)
         self.assertEqual(
-            cl.description, "user: Person A ist am 20.01.2016 für Ward A eingeteilt"
+            cl.description,
+            "user: Person A ist am 20.01.2016 für Ward A eingeteilt",
         )
         self.assertContainsDict(
             json.loads(cl.json),
@@ -221,7 +233,8 @@ class TestChangeMore(ViewsWithPermissionTestCase):
         self.assertEqual(cl.continued, False)
         self.assertEqual(
             cl.description,
-            "user: Person B ist am 20.01.2016 nicht mehr für Ward A " "eingeteilt",
+            "user: Person B ist am 20.01.2016 nicht mehr für Ward A "
+            "eingeteilt",
         )
         self.assertContainsDict(
             json.loads(cl.json),
@@ -324,7 +337,9 @@ class TestChangeHistory(ViewsTestCase):
             first_name="Heinz",
             last_name="Müller",
         )
-        employee = Employee.objects.create(user=user_with_name, company=self.company)
+        employee = Employee.objects.create(
+            user=user_with_name, company=self.company
+        )
         employee.departments.add(self.department)
         data = (
             # ongoing assignment
@@ -405,7 +420,16 @@ class TestChangeHistory(ViewsTestCase):
                 datetime(2020, 3, 1, 10, 50),
             ),
         )
-        for (user, person, ward, day, added, continued, until, change_time) in data:
+        for (
+            user,
+            person,
+            ward,
+            day,
+            added,
+            continued,
+            until,
+            change_time,
+        ) in data:
             # Create the objects one at a time, so that the json is constructed
             ChangeLogging.objects.create(
                 company=self.company,
@@ -422,7 +446,9 @@ class TestChangeHistory(ViewsTestCase):
     def test_changehistory_empty(self):
         """Test 'changehistory' with no data"""
         response = self.client.get(
-            reverse("changehistory", kwargs={"date": "20200424", "ward_id": "3"}),
+            reverse(
+                "changehistory", kwargs={"date": "20200424", "ward_id": "3"}
+            ),
             HTTP_X_REQUESTED_WITH="XMLHttpRequest",
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
@@ -443,13 +469,23 @@ class TestChangeHistory(ViewsTestCase):
         got = json.loads(response.content)
         self.assertEqual(len(got), 5)
         for res, exp in zip(got, self.expected):
-            for key in ("user", "person", "ward", "day", "added", "continued", "until"):
+            for key in (
+                "user",
+                "person",
+                "ward",
+                "day",
+                "added",
+                "continued",
+                "until",
+            ):
                 self.assertEqual(res[key], exp[key], msg=str(exp))
 
     def test_updates(self):
         """Test if 'updates' return the right data"""
         self._apply_changes()
-        response = self.client.get("/updates/0", HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+        response = self.client.get(
+            "/updates/0", HTTP_X_REQUESTED_WITH="XMLHttpRequest"
+        )
         self.assertEqual(response.status_code, HTTPStatus.OK)
         res = json.loads(response.content)
         for cl_dict in [
@@ -516,10 +552,15 @@ class TestChangeHistory(ViewsTestCase):
         self.assertEqual(len(res["cls"]), 7)
         self.assertEqual(
             res["last_change"]["pk"],
-            ChangeLogging.objects.filter(company=self.company).order_by("pk").last().pk,
+            ChangeLogging.objects.filter(company=self.company)
+            .order_by("pk")
+            .last()
+            .pk,
         )
 
-        response = self.client.get("/updates/5", HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+        response = self.client.get(
+            "/updates/5", HTTP_X_REQUESTED_WITH="XMLHttpRequest"
+        )
         self.assertEqual(response.status_code, HTTPStatus.OK)
         res = json.loads(response.content)
         for cl_dict in [
@@ -543,7 +584,9 @@ class TestChangeHistory(ViewsTestCase):
             self.assertIn(cl_dict, res["cls"])
         self.assertEqual(len(res["cls"]), 2)
 
-        response = self.client.get("/updates/7", HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+        response = self.client.get(
+            "/updates/7", HTTP_X_REQUESTED_WITH="XMLHttpRequest"
+        )
         self.assertEqual(response.status_code, HTTPStatus.NOT_MODIFIED)
 
 

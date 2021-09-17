@@ -37,7 +37,9 @@ class Migration(migrations.Migration):
             model_name="region",
             name="holidays",
             field=models.ManyToManyField(
-                related_name="regions", to="sp_app.Holiday", verbose_name="Feiertage"
+                related_name="regions",
+                to="sp_app.Holiday",
+                verbose_name="Feiertage",
             ),
         ),
         migrations.AlterField(

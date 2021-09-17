@@ -11,7 +11,9 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
 ]
 STATIC_ROOT = os.path.expanduser("~/html/static/")
-STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+STATICFILES_STORAGE = (
+    "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+)
 
 CONFIG_FILE = os.path.expanduser("~/.statplan.cnf")
 DB_CONFIG_FILE = os.path.expanduser("~/.my.cnf")

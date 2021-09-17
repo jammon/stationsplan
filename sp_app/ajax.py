@@ -75,7 +75,9 @@ def change_approved(request):
     }
     """
     data = json.loads(request.body)
-    res = set_approved(data["wards"], data["date"], request.session["department_ids"])
+    res = set_approved(
+        data["wards"], data["date"], request.session["department_ids"]
+    )
     user_name = request.user.last_name or request.user.get_username()
     wards = ", ".join(res["wards"])
     limit = ("bis " + res["approved"]) if res["approved"] else "unbegrenzt"
@@ -90,7 +92,9 @@ def change_approved(request):
 
 @ajax_login_required
 def updates(request, last_change=0):
-    return get_last_change_response(request.session["company_id"], int(last_change))
+    return get_last_change_response(
+        request.session["company_id"], int(last_change)
+    )
 
 
 @ajax_login_required
@@ -168,13 +172,18 @@ def change_history(request, date, ward_id):
 @ajax_login_required
 def differentday(request, action, ward, day_id):
     # Make sure it's the right company
-    ward = get_object_or_404(Ward, pk=ward, company__id=request.session["company_id"])
+    ward = get_object_or_404(
+        Ward, pk=ward, company__id=request.session["company_id"]
+    )
     day = datetime.strptime(day_id, "%Y%m%d").date()
     try:
         dd = DifferentDay.objects.get(ward=ward, day=day)
         if action.startswith("add"):
             return JsonResponse(
-                {"status": "error", "message": "There is a different planning already"}
+                {
+                    "status": "error",
+                    "message": "There is a different planning already",
+                }
             )
         if (
             dd.added

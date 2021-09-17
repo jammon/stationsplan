@@ -21,11 +21,17 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterModelOptions(
             name="employee",
-            options={"verbose_name": "Bearbeiter", "verbose_name_plural": "Bearbeiter"},
+            options={
+                "verbose_name": "Bearbeiter",
+                "verbose_name_plural": "Bearbeiter",
+            },
         ),
         migrations.AlterModelOptions(
             name="planning",
-            options={"verbose_name": "Planung", "verbose_name_plural": "Planungen"},
+            options={
+                "verbose_name": "Planung",
+                "verbose_name_plural": "Planungen",
+            },
         ),
         migrations.AddField(
             model_name="planning",

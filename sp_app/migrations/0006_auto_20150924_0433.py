@@ -93,7 +93,9 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="ward",
             name="department",
-            field=models.ManyToManyField(related_name="wards", to="sp_app.Department"),
+            field=models.ManyToManyField(
+                related_name="wards", to="sp_app.Department"
+            ),
         ),
         migrations.AddField(
             model_name="employee",

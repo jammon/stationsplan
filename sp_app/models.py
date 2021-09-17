@@ -23,7 +23,9 @@ class Company(models.Model):
         null=True,
         blank=True,
         related_name="companies",
-        help_text=_("Region that determines the legal holidays " "for this company"),
+        help_text=_(
+            "Region that determines the legal holidays " "for this company"
+        ),
         on_delete=models.PROTECT,
     )
 
@@ -94,10 +96,14 @@ class Ward(models.Model):
         related_name="wards",
         help_text=_("Departments whose schedule contains this ward"),
     )
-    company = models.ForeignKey(Company, related_name="wards", on_delete=models.CASCADE)
+    company = models.ForeignKey(
+        Company, related_name="wards", on_delete=models.CASCADE
+    )
     position = models.IntegerField(
         default=1,
-        help_text=_("Ordering in the display. " "Should not be more than two digits."),
+        help_text=_(
+            "Ordering in the display. " "Should not be more than two digits."
+        ),
     )
     ward_type = models.CharField(
         _("Ward type"),
@@ -107,7 +113,9 @@ class Ward(models.Model):
         help_text=_("For sorting the CallTallies"),
     )
     approved = models.DateField(
-        null=True, blank=True, help_text=_("The date until which the plan is approved")
+        null=True,
+        blank=True,
+        help_text=_("The date until which the plan is approved"),
     )
     after_this = models.ManyToManyField(
         "self",
@@ -115,7 +123,8 @@ class Ward(models.Model):
         symmetrical=False,
         blank=True,
         help_text=_(
-            "if not empty, " "only these functions can be planned on the next day"
+            "if not empty, "
+            "only these functions can be planned on the next day"
         ),
     )
     weight = models.IntegerField(
@@ -171,7 +180,11 @@ class Ward(models.Model):
             )
         if "," in self.shortname:
             raise ValidationError(
-                {"shortname": _("Wards cannot have a comma in their shortname.")}
+                {
+                    "shortname": _(
+                        "Wards cannot have a comma in their shortname."
+                    )
+                }
             )
 
 
@@ -283,7 +296,11 @@ class Person(models.Model):
             )
         if created and not self.anonymous:
             self.functions.add(
-                *list(Ward.objects.filter(company_id=self.company_id, on_leave=True))
+                *list(
+                    Ward.objects.filter(
+                        company_id=self.company_id, on_leave=True
+                    )
+                )
             )
 
     def current(self):
@@ -368,7 +385,9 @@ def process_change(cl):
 
     Return the json dict of the effective change to be returned to the client.
     """
-    plannings = Planning.objects.filter(person_id=cl.person_id, ward_id=cl.ward_id)
+    plannings = Planning.objects.filter(
+        person_id=cl.person_id, ward_id=cl.ward_id
+    )
     pl_data = dict(person_id=cl.person_id, ward_id=cl.ward_id)
     if cl.added:
         if cl.continued:
@@ -395,9 +414,9 @@ def process_change(cl):
                     return {}  # change is in an existing planning
             pl = Planning.objects.create(start=cl.day, end=end, **pl_data)
             if cl.until and len(plannings) > 0:
-                Planning.objects.filter(id__in=[_pl.id for _pl in plannings]).update(
-                    superseded_by=pl
-                )
+                Planning.objects.filter(
+                    id__in=[_pl.id for _pl in plannings]
+                ).update(superseded_by=pl)
         else:  # not continued, one day
             plannings = plannings.filter(start__lte=cl.day, end__gte=cl.day)
             if len(plannings) == 0:
@@ -516,7 +535,9 @@ class Employee(models.Model):
     like management etc.
     """
 
-    user = models.OneToOneField(User, related_name="employee", on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        User, related_name="employee", on_delete=models.CASCADE
+    )
     departments = models.ManyToManyField(Department, related_name="employees")
     company = models.ForeignKey(
         Company, related_name="employees", on_delete=models.CASCADE

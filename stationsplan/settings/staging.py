@@ -5,7 +5,9 @@ DEBUG = False
 
 ALLOWED_HOSTS = ["schlafzimmer2"]
 STATIC_ROOT = os.path.join(BASE_DIR, "dev_static")
-STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+STATICFILES_STORAGE = (
+    "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+)
 
 
 SECRETS_DIR = os.path.join(PARENT_OF_BASE_DIR, "secrets")

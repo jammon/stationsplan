@@ -14,12 +14,16 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="person",
             name="position",
-            field=models.IntegerField(default=1, help_text="Ordering in the display"),
+            field=models.IntegerField(
+                default=1, help_text="Ordering in the display"
+            ),
         ),
         migrations.AddField(
             model_name="ward",
             name="position",
-            field=models.IntegerField(default=1, help_text="Ordering in the display"),
+            field=models.IntegerField(
+                default=1, help_text="Ordering in the display"
+            ),
         ),
         migrations.AlterField(
             model_name="person",

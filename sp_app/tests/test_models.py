@@ -45,7 +45,10 @@ class TestPerson(PopulatedTestCase):
             company=self.company,
         )
         Planning.objects.create(
-            person=person, ward=self.ward_a, start=date(2016, 6, 1), end=FAR_FUTURE
+            person=person,
+            ward=self.ward_a,
+            start=date(2016, 6, 1),
+            end=FAR_FUTURE,
         )
         Planning.objects.create(
             person=person,
@@ -77,7 +80,10 @@ class TestPerson(PopulatedTestCase):
             company=self.company,
         )
         planning = Planning.objects.create(
-            person=person, ward=self.ward_a, start=date(2016, 6, 1), end=FAR_FUTURE
+            person=person,
+            ward=self.ward_a,
+            start=date(2016, 6, 1),
+            end=FAR_FUTURE,
         )
         self.assertEqual(planning.end, date(2016, 6, 30))
 
@@ -123,7 +129,10 @@ class TestWard(PopulatedTestCase):
 class TestChanges(PopulatedTestCase):
     def test_change_logging(self):
         c = ChangeLogging(
-            person=self.person_a, ward=self.ward_a, day=date(2015, 10, 2), added=True
+            person=self.person_a,
+            ward=self.ward_a,
+            day=date(2015, 10, 2),
+            added=True,
         )
         expected = {
             "person": self.person_a.shortname,
@@ -207,9 +216,9 @@ class Process_Change_Testcase(PopulatedTestCase):
                     **c
                 )
             )
-        plannings = Planning.objects.filter(superseded_by__isnull=True).order_by(
-            "start"
-        )
+        plannings = Planning.objects.filter(
+            superseded_by__isnull=True
+        ).order_by("start")
         self.assertEqual(len(plannings), len(expected_plannings))
         for planning, expected in zip(plannings, expected_plannings):
             self.assertEqual(planning.start, expected["start"])
@@ -240,10 +249,14 @@ class Test_One_Change(Process_Change_Testcase):
         )
 
     def test_remove_continued(self):
-        self._do_test(({"day": date_10, "added": False, "continued": True},), ())
+        self._do_test(
+            ({"day": date_10, "added": False, "continued": True},), ()
+        )
 
     def test_remove_oneday(self):
-        self._do_test(({"day": date_10, "added": False, "continued": False},), ())
+        self._do_test(
+            ({"day": date_10, "added": False, "continued": False},), ()
+        )
 
 
 class Test_Two_Changes(Process_Change_Testcase):

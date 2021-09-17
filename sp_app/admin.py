@@ -268,7 +268,9 @@ class CompanyAdmin(admin.ModelAdmin):
         def formfield_for_manytomany(self, db_field, request, **kwargs):
             if db_field.name == "departments":
                 kwargs["queryset"] = request.department_qs
-            return super().formfield_for_manytomany(db_field, request, **kwargs)
+            return super().formfield_for_manytomany(
+                db_field, request, **kwargs
+            )
 
     inlines = DepartmentInline, EmployeeInline
 

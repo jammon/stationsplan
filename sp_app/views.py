@@ -43,9 +43,9 @@ def plan(request, month="", day=""):
 @permission_required("sp_app.is_dep_lead")
 def personen_funktionen(request):
     department_ids = request.session.get("department_ids")
-    personen = Person.objects.filter(departments__id__in=department_ids).order_by(
-        "position", "name"
-    )
+    personen = Person.objects.filter(
+        departments__id__in=department_ids
+    ).order_by("position", "name")
     funktionen = (
         Ward.objects.filter(departments__id__in=department_ids)
         .order_by("position", "name")

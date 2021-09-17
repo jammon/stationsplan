@@ -62,7 +62,9 @@ class Migration(migrations.Migration):
             model_name="company",
             name="extra_holidays",
             field=models.ManyToManyField(
-                related_name="companies", to="sp_app.Holiday", verbose_name="Holidays"
+                related_name="companies",
+                to="sp_app.Holiday",
+                verbose_name="Holidays",
             ),
         ),
         migrations.AddField(

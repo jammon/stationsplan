@@ -15,7 +15,8 @@ class Migration(migrations.Migration):
             model_name="ward",
             name="freedays",
             field=models.BooleanField(
-                default=False, help_text="if True, is to be planned only on free days."
+                default=False,
+                help_text="if True, is to be planned only on free days.",
             ),
         ),
         migrations.AlterField(

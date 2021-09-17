@@ -54,7 +54,9 @@ def get_for_company(klass, request=None, company_id="", **kwargs):
     """
     if request is None:
         return get_object_or_404(klass, company__id=company_id, **kwargs)
-    return get_object_or_404(klass, company__id=request.session["company_id"], **kwargs)
+    return get_object_or_404(
+        klass, company__id=request.session["company_id"], **kwargs
+    )
 
 
 def get_holidays_for_company(company_id):
@@ -111,7 +113,9 @@ def set_approved(wards, approved, department_ids):
     to_approve = Ward.objects.filter(
         departments__id__in=department_ids, shortname__in=wards
     )
-    approval = datetime.strptime(approved, "%Y%m%d").date() if approved else None
+    approval = (
+        datetime.strptime(approved, "%Y%m%d").date() if approved else None
+    )
     to_approve_sn = []
     for ward in to_approve:
         ward.approved = approval
@@ -120,7 +124,9 @@ def set_approved(wards, approved, department_ids):
     return {
         "wards": to_approve_sn,
         "approved": approved,
-        "not approved wards": [ward for ward in wards if ward not in to_approve_sn],
+        "not approved wards": [
+            ward for ward in wards if ward not in to_approve_sn
+        ],
     }
 
 
@@ -169,7 +175,9 @@ def get_last_change_response(company_id, last_change_pk):
         set_cached_last_change_pk(last_cl.pk, company_id)
     return JsonResponse(
         {
-            "cls": [json.loads(cl.json) if cl.json else cl.toJson() for cl in cls],
+            "cls": [
+                json.loads(cl.json) if cl.json else cl.toJson() for cl in cls
+            ],
             "last_change": {
                 "pk": last_cl.pk,
                 "time": time_diff.days * 86400 + time_diff.seconds,

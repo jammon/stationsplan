@@ -15,11 +15,17 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name="holiday",
-            options={"verbose_name": "Feiertag", "verbose_name_plural": "Feiertage"},
+            options={
+                "verbose_name": "Feiertag",
+                "verbose_name_plural": "Feiertage",
+            },
         ),
         migrations.AlterModelOptions(
             name="region",
-            options={"verbose_name": "Region", "verbose_name_plural": "Regionen"},
+            options={
+                "verbose_name": "Region",
+                "verbose_name_plural": "Regionen",
+            },
         ),
         migrations.AlterField(
             model_name="company",

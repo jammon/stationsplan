@@ -9,11 +9,17 @@ import sys
 import time
 from random import choice
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+BASE_DIR = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+)
 PARENT_OF_BASE_DIR = os.path.dirname(BASE_DIR)
 
 TESTING = False
-if len(sys.argv) >= 2 and sys.argv[0].endswith("manage.py") and sys.argv[1] == "test":
+if (
+    len(sys.argv) >= 2
+    and sys.argv[0].endswith("manage.py")
+    and sys.argv[1] == "test"
+):
     TESTING = True
 if "pytest" in sys.argv[0].lower():
     TESTING = True
@@ -124,7 +130,10 @@ def read_secret(secret_file_name, content_description, generate_secret=False):
     if generate_secret:
         try:
             secret = "".join(
-                [choice(string.ascii_letters + string.digits) for i in range(50)]
+                [
+                    choice(string.ascii_letters + string.digits)
+                    for i in range(50)
+                ]
             )
             with open(secret_file_name, "w") as f:
                 f.write(secret)
