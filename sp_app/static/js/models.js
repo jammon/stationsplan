@@ -317,11 +317,11 @@ var Duties = Backbone.Collection.extend({
 // It has a 'date' and a reference to the previous day ('yesterday').
 
 // this.ward_staffings:  
-//     an Array with a staffing for each ward.
-//     The staffing can be undefined if this day is free.
+//     an object with a staffing for each ward.
+//     If this day is free, the staffing has no_staffing==true
 //     All changes should be done on the staffings and are reflected in the duties.
 // this.persons_duties:  
-//     an Array with duties for each person
+//     an object with duties for each person
 var Day = Backbone.Model.extend({
 
     initialize: function() {

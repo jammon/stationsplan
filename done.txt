@@ -134,3 +134,5 @@ x 2021-08-14 Bedeutung der Berechtigungen von Benutzern klarer machen
 x 2021-08-14 Bei mehreren Abteilungen diese auswählbar machen
 x 2021-08-14 Heilig-Abend und Sylvester bei den Feiertagen in allen Regionen hinzufügen +Public
 x 2021-08-14 In Admin der Wards nur aktuelle und zukünftige Kollegen auswählbar machen
+x 2021-09-17 Wo wird no_staffing verwendet?
+x 2021-09-17 wann ist collection.no_staffing und wann ist collection===undefined?
