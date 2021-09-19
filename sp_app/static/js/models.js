@@ -127,6 +127,8 @@ var Ward = Backbone.Model.extend({
 
 var WARD_COLLECTION = {
     model: Ward,
+    // Sorting of wards:
+    // At first the normal wards, then the callshifts, then 'on leave'
     comparator: function(ward) {
         return (ward.get('on_leave') ? '1' : '0') +  // on_leave last
             (ward.get('callshift') ? '1' : '0') +  // normal wards first
