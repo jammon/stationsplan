@@ -22,6 +22,11 @@ from sp_app import views as sp_views
 from sp_app import ajax as sp_ajax
 from sp_app.admin import config_site
 
+
+def path2template(url, t_path, name):
+    return path(url, TemplateView.as_view(template_name=t_path), name=name)
+
+
 urlpatterns = [
     path("", sp_views.home, name="home"),
     #
@@ -67,11 +72,9 @@ urlpatterns = [
     ),
     #
     # Other
-    path(
-        "tests",
-        TemplateView.as_view(template_name="sp_app/tests.html"),
-        name="tests",
-    ),
+    path2template("tests", "sp_app/tests.html", "tests"),
+    path2template("datenschutz", "datenschutz.html", "datenschutz"),
+    path2template("impressum", "impressum.html", "impressum"),
     path(
         "password_change",
         auth_views.PasswordChangeView.as_view(

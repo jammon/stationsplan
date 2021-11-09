@@ -83,7 +83,7 @@ class Ward(models.Model):
     callshift = models.BooleanField(
         _("callshift"),
         default=False,
-        help_text=_("if True, " "then this function is treated as call shift"),
+        help_text=_("if True, then this function is displayed as call shift"),
     )
     on_leave = models.BooleanField(
         _("on_leave"),

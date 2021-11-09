@@ -31,5 +31,4 @@
 (C) In Admin kann man derzeit nur die Abteilungen der Klinik bearbeiten, für die man angemeldet ist.
 (A) Drag-n-drop wieder raus nehmen
 (C) pre-commit hook implementieren https://githooks.com/ https://pre-commit.com/
-(A) Dienstsummen
-(A) Dienst Schnelleingabe
+Fehler: GET /updates/undefined?_=1632197709719

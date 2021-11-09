@@ -15,17 +15,18 @@
   </head>
   <body>
     <div class="container">
-    <noscript>
-      <div class="row">
-        <div class="col">
-          <div class="alert alert-danger">Ihr Browser scheint Javascript nicht zu unterstützen. Ohne Javascript funktioniert diese App aber nicht.</div>
+      <noscript>
+        <div class="row">
+          <div class="col">
+            <div class="alert alert-danger">Ihr Browser scheint Javascript nicht zu unterstützen. Ohne Javascript funktioniert diese App aber nicht.</div>
+          </div>
         </div>
+      </noscript>
+      {% block navigation %} {% endblock navigation %}
+      <div role="main" id="main-content">
+        {% block content %} {% endblock content %}
       </div>
-    </noscript>
-    {% block navigation %} {% endblock navigation %}
-  <div role="main" id="main-content">
-    {% block content %} {% endblock content %}
-  </div>
+      {% block footer %} {% endblock footer %}
     </div> <!-- /.container -->
 
     {% block extracontent %}

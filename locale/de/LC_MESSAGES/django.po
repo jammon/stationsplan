@@ -119,7 +119,7 @@ msgstr "Bereitschaftsdienst"
 
 #: sp_app/models.py:70
 msgid "if True, then this function is treated as call shift"
-msgstr "Diese Funktion soll als Bereitschaftsdienst behandelt werden."
+msgstr "Diese Funktion soll als Bereitschaftsdienst dargestellt werden."
 
 #: sp_app/models.py:73
 msgid "on_leave"
