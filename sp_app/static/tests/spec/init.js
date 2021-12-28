@@ -6,7 +6,7 @@ var persons_init = [
     { name: 'Conny', id: '3', shortname: 'C', 
       functions: ['A', 'B'], departments: [1]}, // no nightshifts
     { name: 'Other', id: '4', shortname: 'Other', 
-      functions: ['A', 'B'], departments: [1], anonymous: true},
+      functions: ['A', 'B', 'N'], departments: [1], anonymous: true},
     { name: 'Different Department', id: '5', shortname: 'DiffDept', 
       functions: ['A', 'B'], departments: [2]}
 ];

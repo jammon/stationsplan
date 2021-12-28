@@ -395,15 +395,11 @@ var Day = Backbone.Model.extend({
             let staffing = day.get_staffing(unavailable_ward);
             if (staffing) {
                 staffing.each(function(person) {
-                    unavailable[person.id] = true;
+                    // anonymous is always available
+                    if (!person.get('anonymous'))
+                        unavailable[person.id] = true;
                 });
             }
-        }
-        function get_unavailables (day, wards) {
-            // all persons working on this ward at this day are unavailable
-            wards.each(function(ward) {
-                ward_unavailable(day, ward);
-            });
         }
         // yesterdays nightshift
         if (yesterday) {
@@ -413,7 +409,9 @@ var Day = Backbone.Model.extend({
             });
         }
         // persons on leave
-        get_unavailables(this, on_leave);
+        on_leave.each(function(ward) {
+            ward_unavailable(this, ward);
+        }, this);
 
         available = persons.filter(function(person) {
             return !unavailable[person.id] &&

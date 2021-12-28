@@ -142,6 +142,11 @@ describe("models", function() {
                 yesterday.ward_staffings.N.add(person_a);
                 expect(staffing_a.can_be_planned(person_a)).toBeFalsy();
             });
+            it("who was on call last night, can be planned if they are anonymous", function() {
+                other = models.persons.get('Other');
+                yesterday.ward_staffings.N.add(other);
+                expect(staffing_a.can_be_planned(other)).toBeTruthy();
+            });
             it("who was planned on call last night but became ill, can be planned", function() {
                 yesterday.ward_staffings.N.add(person_a);
                 yesterday.ward_staffings.L.add(person_a);
@@ -182,16 +187,11 @@ describe("models", function() {
             expect(today.ward_staffings.A.length).toBe(0);
         });
         describe("check availability:", function() {
-            function check_availability (
-                    day,
-                    ward_id,
-                    person_id,
-                    ward_to_check,
-                    nr_avail,
-                    first_avail) {
+            function get_availables_after_planning (
+                    day_to_plan, ward_id, person_id,
+                    ward_to_check) {
                 // add a person to a staffing on a day
-                // then check the number of available persons 
-                // and the name of the first available (if given)
+                // return a list of ids of availables for a given ward
                 var yesterday = new models.Day({
                     date: new Date(2015, 7, 6),  // Thursday
                 });
@@ -199,57 +199,71 @@ describe("models", function() {
                     date: new Date(2015, 7, 7),  // Friday
                     yesterday: yesterday,
                 });
-                if (day) {
-                    let _day = day=='today' ? today : yesterday;
+                if (day_to_plan) {
+                    let _day = day_to_plan=='today' ? today : yesterday;
                     _day.ward_staffings[ward_id].add(models.persons.get(person_id));
                 }
                 let available = today.get_available(models.wards.get(ward_to_check));
-                expect(available.length).toEqual(nr_avail);
-                if (first_avail) {
-                    expect(available[0].id).toEqual(first_avail);
-                }
+                return _.map(available, function(p){
+                    return p.get('shortname');
+                });
             }
             it("usually everybody is available", function() {
-                check_availability(
+                let available = get_availables_after_planning(
                     '', '', '', 
-                    'A',
-                    persons_init.length);
+                    'A');
+                expect(available).toContain('A');
+                expect(available).toContain('B');
+                expect(available).toContain('C');
+                expect(available).toContain('Other');
+                expect(available).toContain('DiffDept');
             });
             it("who is on leave isn't available", function() {
-                check_availability(
+                let available = get_availables_after_planning(
                     'today', 'L', 'A',
-                    'A',
-                    persons_init.length-1, 'B');
+                    'A');
+                expect(available).not.toContain('A');
+                expect(available).toContain('B');
             });
             it("who was on nightshift yesterday isn't available", function() {
-                check_availability(
+                let available = get_availables_after_planning(
                     'yesterday', 'N', 'A',
-                    'A',
-                    persons_init.length-1, 'B');
+                    'A');
+                expect(available).not.toContain('A');
+                expect(available).toContain('B');
+            });
+            it("who was on nightshift yesterday is available if they are anonymous", function() {
+                let yesterday = new models.Day({
+                    date: new Date(2015, 7, 6),  // Thursday
+                });
+                let today = new models.Day({
+                    date: new Date(2015, 7, 7),  // Friday
+                    yesterday: yesterday,
+                });
+                let other = models.persons.get('Other');
+                yesterday.ward_staffings.N.add(other);
+                let available = today.get_available(models.wards.get('A'));
+                expect(_.map(available, function(p){ return p.get('shortname'); })).toContain('Other');
             });
             it("who was on nightshift yesterday is available for todays nightshift", function() {
-                check_availability(
+                let available = get_availables_after_planning(
                     'yesterday', 'N', 'A',
-                    'N',
-                    2);
-            });
-            it("who was on nightshift yesterday isn't available", function() {
-                check_availability(
-                    'yesterday', 'N', 'A',
-                    'A',
-                    persons_init.length-1, 'B');
+                    'N');
+                expect(available).toContain('A');
             });
             it("who is on nightshift today is available", function() {
-                check_availability(
+                let available = get_availables_after_planning(
                     'today', 'N', 'A',
-                    'A',
-                    persons_init.length);
+                    'A');
+                expect(available).toContain('A');
+                expect(available).toContain('B');
             });
             it("who is planned for a different ward today is available", function() {
-                check_availability(
+                let available = get_availables_after_planning(
                     'today', 'B', 'A',
-                    'A',
-                    persons_init.length);
+                    'A');
+                expect(available).toContain('A');
+                expect(available).toContain('B');
             });
         });
         describe("need for staffing (implicitly test Staffing.needs_staffing)", function() {
