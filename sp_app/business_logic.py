@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import json
-import pytz
 from datetime import timedelta, datetime
 
 from .models import (
@@ -11,7 +10,7 @@ from .models import (
     ChangeLogging,
     Department,
 )
-from .utils import get_first_of_month, get_holidays_for_company
+from .utils import get_first_of_month, get_holidays_for_company, TZ_BERLIN
 
 
 def get_plan_data(
@@ -94,7 +93,7 @@ def get_plan_data(
         .last()
     )
     if last_change is not None:
-        time_diff = datetime.now(pytz.utc) - last_change["change_time"]
+        time_diff = datetime.now(TZ_BERLIN) - last_change["change_time"]
         data["last_change_pk"] = last_change["pk"]
         data["last_change_time"] = time_diff.days * 86400 + time_diff.seconds
 

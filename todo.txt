@@ -39,3 +39,5 @@
 (C) refactor login_required, permission_required and args from session into one function
 (B) SQL-queries in overview
 (C) Log user errors
+Remove pytz for Django4
+Test zoneinfo database on server

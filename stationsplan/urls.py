@@ -21,6 +21,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.views.generic import TemplateView
 from sp_app import views as sp_views
 from sp_app import ajax as sp_ajax
+from sp_app import ical_views
 from sp_app.admin import config_site
 
 
@@ -73,6 +74,11 @@ urlpatterns = [
         sp_ajax.edit_employee,
         name="edit-employee",
     ),
+    #
+    #
+    # Ajax -------------------------------------------------------------
+    #
+    path("feed/<str:feed_id>", ical_views.DienstFeed()),
     #
     #
     # Administrators -----------------------------------------------------

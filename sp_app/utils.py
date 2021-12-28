@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
 import logging
-import pytz
 
 from datetime import timedelta, datetime, date
 from django.contrib.auth.models import User
@@ -11,6 +10,8 @@ from django.shortcuts import get_object_or_404
 from django.test import TestCase
 from http import HTTPStatus
 from numbers import Number
+from zoneinfo import ZoneInfo
+
 from .models import (
     Ward,
     Person,
@@ -20,6 +21,9 @@ from .models import (
     CalculatedHoliday,
     process_change,
 )
+
+
+TZ_BERLIN = ZoneInfo("Europe/Berlin")
 
 
 def json_array(data):
@@ -169,7 +173,7 @@ def get_last_change_response(company_id, last_change_pk):
             return JsonResponse({}, status=HTTPStatus.NOT_MODIFIED)
         cls = cls[1:]
     last_cl = cls[-1]
-    time_diff = datetime.now(pytz.utc) - last_cl.change_time
+    time_diff = datetime.now(TZ_BERLIN) - last_cl.change_time
     if _lc_pk is None:
         # Set cache
         set_cached_last_change_pk(last_cl.pk, company_id)

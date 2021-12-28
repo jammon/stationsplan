@@ -198,6 +198,7 @@ you can then find the current grid option with:
 - Nur berechtigte Personen können verändern
 - Pläne sind von überall einsehbar
 - Keine unbesetzten Positionen, keine versehentlich doppelte Verplanung
+- Import in die Kalenderfunktion von Smartphones
 
 ## Umstellung auf htmx
 - if they left the company, they cannot be planned
@@ -213,4 +214,12 @@ you can then find the current grid option with:
 ## iCal-Anbindung
 - django_ical für den Feed
 - Event ist Planning 
+- Für jede Person wird eine URL erstellt, unter der die Dienst abonniert wereden können. Diese wird an die Mailadresse geschickt. Es kann auch eine neue URL erstellt werden. Wenn die neue URL benutzt wird, wird die alte ungültig.
+- Neue Planungen müssen für den Feed erst aktiv freigegeben werden
+    + Es soll angezeigt werden, wenn es nicht freigegebene Planungen gibt
+- Für jede Funktion kann festgelegt werden, ob sie im Feed auftaucht
+- Sortierung des ical-Feeds?
 
+### Regeldienst und Sonderaufgaben
+Es sollen Funktionen als regulärer Dienst definiert werden können (z.B. Stationsarbeit) und andere, die einen aus dem Regeldienst raus nehmen (z.B. NEF, Funktionsdienst, OP o.ä.)
+> Dies geschieht mit ward.not_with_this

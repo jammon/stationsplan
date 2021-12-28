@@ -24,7 +24,7 @@ class Company(models.Model):
         blank=True,
         related_name="companies",
         help_text=_(
-            "Region that determines the legal holidays " "for this company"
+            "Region that determines the legal holidays for this company"
         ),
         on_delete=models.PROTECT,
     )
@@ -147,6 +147,11 @@ class Ward(models.Model):
         _("Active"),
         default=True,
         help_text=_("This function should currently be displayed"),
+    )
+    in_ical_feed = models.BooleanField(
+        _("Part of ical feed"),
+        default=False,
+        help_text=_("This function should be part of the ical feed"),
     )
 
     class Meta:
@@ -273,6 +278,7 @@ class Person(models.Model):
             "e.g. a department"
         ),
     )
+    email = models.EmailField(_("Email"), null=True, blank=True)
 
     class Meta:
         verbose_name = _("Person")
@@ -322,6 +328,9 @@ class Person(models.Model):
 
     def current(self):
         return self.end_date >= date.today()
+
+    def inactivate_older_feeds(self, feed):
+        FeedId.objects.filter(person=self, pk__lt=feed.pk).update(active=False)
 
 
 class ChangeLogging(models.Model):
@@ -718,3 +727,20 @@ class Region(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class FeedId(models.Model):
+    """The Id for the URL of an ical feed"""
+
+    uid = models.CharField("ID", max_length=20)
+    person = models.ForeignKey(
+        Person, related_name="feed_ids", on_delete=models.CASCADE
+    )
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = "FeedId"
+        verbose_name_plural = "FeedIds"
+
+    def __str__(self):
+        pass
