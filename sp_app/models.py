@@ -277,6 +277,7 @@ class Person(models.Model):
             "departments": [d.id for d in self.departments.all()],
             "position": "%02d" % self.position,
             "anonymous": self.anonymous,
+            "external": self.position == Person.POSITION_EXTERNE,
         }
 
     def save(self, *args, **kwargs):

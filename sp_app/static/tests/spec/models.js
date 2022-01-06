@@ -481,19 +481,19 @@ describe("models", function() {
             });
             it("should make a person available after the vacation ends", function() {
                 var ward_a = models.wards.get('A');
+                expect(yesterday.get_available(ward_a).length).toBe(6);
+                expect(today.get_available(ward_a).length).toBe(6);
+                expect(tomorrow.get_available(ward_a).length).toBe(6);
+                // on leave since yesterday
+                yesterday.ward_staffings.L.add(person_a, {continued: true});
                 expect(yesterday.get_available(ward_a).length).toBe(5);
                 expect(today.get_available(ward_a).length).toBe(5);
                 expect(tomorrow.get_available(ward_a).length).toBe(5);
-                // on leave since yesterday
-                yesterday.ward_staffings.L.add(person_a, {continued: true});
-                expect(yesterday.get_available(ward_a).length).toBe(4);
-                expect(today.get_available(ward_a).length).toBe(4);
-                expect(tomorrow.get_available(ward_a).length).toBe(4);
                 // back today
                 today.ward_staffings.L.remove(person_a, {continued: true});
-                expect(yesterday.get_available(ward_a).length).toBe(4);
-                expect(today.get_available(ward_a).length).toBe(5);
-                expect(tomorrow.get_available(ward_a).length).toBe(5);
+                expect(yesterday.get_available(ward_a).length).toBe(5);
+                expect(today.get_available(ward_a).length).toBe(6);
+                expect(tomorrow.get_available(ward_a).length).toBe(6);
             });
             it("should continue a persons duties after the vacation ends", function() {
                 var person_b = models.persons.get('B');
@@ -613,14 +613,15 @@ describe("models", function() {
         describe("not_planned", function() {
             it("should have all persons not planned initially except the anonymous ones", function() {
                 var today = new models.Day({ date: new Date(2019, 8, 27) });
-                expect(today.not_planned.length).toBe(3);
+                "ABC".split("").forEach(function(c) {
+                    expect(today.not_planned).toContain(models.persons.get(c));
+                });
             });
             it("should respect todays planning", function() {
                 let today = new models.Day({ date: new Date(2019, 8, 27) });
                 let person_a = models.persons.get('A');
                 let person_b = models.persons.get('B');
                 today.ward_staffings.A.add(person_a);
-                expect(today.not_planned.length).toBe(2);
                 expect(today.not_planned).not.toContain(person_a);
                 expect(today.not_planned).toContain(person_b);
             });
@@ -636,10 +637,14 @@ describe("models", function() {
                 today.ward_staffings.A.add(person_a);
                 yesterday.ward_staffings.N.add(person_b);
 
-                expect(today.not_planned.length).toBe(1);
                 expect(today.not_planned).not.toContain(person_a);
                 expect(today.not_planned).not.toContain(person_b);
                 expect(today.not_planned).toContain(models.persons.get('C'));
+            });
+            it("should not contain external persons", function() {
+                var today = new models.Day({ date: new Date(2019, 8, 27) });
+                let not_planned = _.pluck(today.not_planned, 'id');
+                expect(not_planned).not.toContain('Ext');
             });
         });
     });
@@ -771,8 +776,14 @@ describe("models", function() {
                   departments: [1] },
             ]);
             month_days = models.get_month_days(2016, 3);
-            expect(_.pluck(month_days.current_persons(), 'id')).toEqual(
-                ['A', 'B', 'C', 'DiffDept', 'Other', 'Z']);
+            let current = _.pluck(month_days.current_persons(), 'id');
+            'A B C DiffDept Ext Other Z'.split(' ').forEach(function(id) {
+                expect(current).toContain(id);
+            });
+            ['X', 'Y'].forEach(function(id) {
+                expect(current).not.toContain(id);
+            });
+            
             models.days.reset();
         });
 

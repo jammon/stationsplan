@@ -32,3 +32,4 @@
 (A) Drag-n-drop wieder raus nehmen
 (C) pre-commit hook implementieren https://githooks.com/ https://pre-commit.com/
 Fehler: GET /updates/undefined?_=1632197709719
+(B) Person.position und Person.anonymous bzw. erternal überlappen sich in ihrer Funktion

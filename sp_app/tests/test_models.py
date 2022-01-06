@@ -34,6 +34,7 @@ class TestPerson(PopulatedTestCase):
                 "departments": [self.department.id],
                 "position": "01",
                 "anonymous": False,
+                "external": False,
             },
         )
 

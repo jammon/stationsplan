@@ -138,3 +138,4 @@ x 2021-09-17 Wo wird no_staffing verwendet?
 x 2021-09-17 wann ist collection.no_staffing und wann ist collection===undefined?
 x 2021-09-19 Dienstsummen
 x 2021-09-19 Dienst Schnelleingabe
+x 2022-01-06 Externe sollen nicht als unverplant erscheinen

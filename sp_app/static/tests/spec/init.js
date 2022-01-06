@@ -8,7 +8,9 @@ var persons_init = [
     { name: 'Other', id: '4', shortname: 'Other', 
       functions: ['A', 'B', 'N'], departments: [1], anonymous: true},
     { name: 'Different Department', id: '5', shortname: 'DiffDept', 
-      functions: ['A', 'B'], departments: [2]}
+      functions: ['A', 'B'], departments: [2]},
+    { name: 'External', id: '6', shortname: 'Ext',
+      functions: ['A',], departments: [1], external: true}
 ];
 var wards_init = [
     { name: 'Ward A', id: '1', shortname: 'A', min: 1, max: 2 },

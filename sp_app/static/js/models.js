@@ -498,6 +498,7 @@ var Day = Backbone.Model.extend({
     update_not_planned: function() {
         // not planned ist everybody who 
         // - is not anonymous
+        // - is not external
         // - belongs to the current department
         // - has no duties 
         // - is not yesterdays nightshift
@@ -507,6 +508,7 @@ var Day = Backbone.Model.extend({
         if (this.get('is_free')) return [];
 
         // not anonymous
+        // not external
         // belongs to the current department
         // not Chefarzt
         let available = persons.available(this.get('date'));
@@ -514,9 +516,10 @@ var Day = Backbone.Model.extend({
             available, 
             function(person) { 
                 let not_anonymous = !person.get('anonymous');
+                let not_external = !person.get('external');
                 let current_department = person.get('current_department');
                 let not_chefarzt = (person.get('position') < '80'); 
-                return not_anonymous && current_department && not_chefarzt;
+                return not_anonymous && not_external && current_department && not_chefarzt;
             }
         );
         // no duties
