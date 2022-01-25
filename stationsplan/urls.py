@@ -17,6 +17,7 @@ from django.conf import settings
 from django.urls import include, re_path, path
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.decorators import user_passes_test
 from django.views.generic import TemplateView
 from sp_app import views as sp_views
 from sp_app import ajax as sp_ajax
@@ -72,7 +73,13 @@ urlpatterns = [
     ),
     #
     # Other
-    path2template("tests", "sp_app/tests.html", "tests"),
+    path(
+        "tests",
+        user_passes_test(lambda user: user.is_superuser)(
+            TemplateView.as_view(template_name="sp_app/tests.html")
+        ),
+        name="tests",
+    ),
     path2template("datenschutz", "datenschutz.html", "datenschutz"),
     path2template("impressum", "impressum.html", "impressum"),
     path(

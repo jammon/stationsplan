@@ -2,7 +2,7 @@
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import render, redirect
-from django.views.generic import ListView, CreateView, UpdateView
+from django.views.generic import CreateView, UpdateView
 
 from sp_app import forms, business_logic
 from .models import Person, Ward
@@ -54,20 +54,12 @@ def personen_funktionen(request):
     return render(
         request,
         "sp_app/person_list.html",
-        {
-            "personen": personen,
-            "funktionen": funktionen,
-        },
+        {"personen": personen, "funktionen": funktionen},
     )
 
 
 class DepLeadRequiredMixin(PermissionRequiredMixin):
     permission_required = "sp_app.is_dep_lead"
-
-
-class FunktionenView(DepLeadRequiredMixin, ListView):
-    model = Ward
-    ordering = ["position", "name"]
 
 
 class PersonMixin(DepLeadRequiredMixin):
