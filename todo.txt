@@ -35,3 +35,4 @@ Fehler: GET /updates/undefined?_=1632197709719
 (B) Person.position und Person.anonymous bzw. erternal überlappen sich in ihrer Funktion
 (A) In Dienste die Wochenenden und Feiertage markieren
 (A) Eine Funktion soll eine andere Funktion ausschließen können
+Mailadresse j.ammon@stationsplan.de einrichten
