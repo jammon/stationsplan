@@ -389,7 +389,10 @@ var Day = Backbone.Model.extend({
         var date = this.get('date');
 
         if (ward.get('on_leave')) {  // everybody can be on leave
-            return persons.models;
+            // if they still work here
+            return persons.filter(function(person) {
+                return person.is_available(date);
+            });
         }
         function ward_unavailable(day, unavailable_ward) {
             let staffing = day.get_staffing(unavailable_ward);

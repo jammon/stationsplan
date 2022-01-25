@@ -218,6 +218,35 @@ describe("models", function() {
                 expect(available).toContain('Other');
                 expect(available).toContain('DiffDept');
             });
+            it("everybody is available for leave", function() {
+                let available = get_availables_after_planning(
+                    'today', 'A', 'A', 
+                    'L');
+                expect(available).toContain('A');
+                expect(available).toContain('B');
+                expect(available).toContain('C');
+                expect(available).toContain('Other');
+                expect(available).toContain('DiffDept');
+            });
+            it("not available for leave who doesn't work here any more", function() {
+                models.persons.add({ 
+                    name: 'Soon to come', id: '10', shortname: 'Soon', 
+                    functions: ['A', 'B', 'N', 'O'], departments: [1],
+                    'start_date': [2015, 8, 1]
+                });
+                models.persons.add({ 
+                    name: 'No more', id: '11', shortname: 'Nomore', 
+                    functions: ['A', 'B', 'N', 'O'], departments: [1],
+                    'end_date': [2015, 6, 31]
+                });
+                let available = get_availables_after_planning(
+                    'today', 'A', 'A', 
+                    'L');
+                expect(available).toContain('A');
+                expect(available).toContain('B');
+                expect(available).not.toContain('Soon');
+                expect(available).not.toContain('Nomore');
+            });
             it("who is on leave isn't available", function() {
                 let available = get_availables_after_planning(
                     'today', 'L', 'A',
