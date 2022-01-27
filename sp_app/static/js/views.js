@@ -11,7 +11,6 @@ var StaffingDisplayView = Backbone.View.extend({
         if (options) {
             this.display_long_name = options.display_long_name;
             this.changeable = options.changeable;
-            this.drag_n_droppable = options.drag_n_droppable;
         }
         if (this.collection.ward.get('callshift') && !this.collection.no_staffing)
             this.$el.addClass('on-call');
@@ -54,54 +53,11 @@ var StaffingView = StaffingDisplayView.extend({
                 'class': 'staff',
                 title: staffing.day.persons_duties[person.id].displayed.pluck('name').join(', '),
             });
-            if (models.user.is_editor && this.drag_n_droppable) {
-                name.draggable({
-                    helper: function() {
-                        return $('<div/>', {
-                            text: person.get('name'),
-                            ward: staffing.ward,
-                            day: staffing.day,
-                            person: person,
-                        });
-                    }
-                });
-            }
             el.append(name);
         }, this);
     },
     extra_rendering: function(el, staffing) {
-        if (models.user.is_editor && this.drag_n_droppable) {
-            el.droppable({
-                accept: function(draggable) {
-                    let person = models.persons.where({ name: draggable.text() });
-                    return staffing.can_be_planned(person.length && person[0]);
-                },
-                drop: function(event, ui) {
-                    let person = ui.helper.attr('person');
-                    let old_day = ui.helper.attr('day');
-                    let old_ward = ui.helper.attr('ward');
-                    // Is it dropped back on the same day and ward?
-                    if (staffing.day == old_day &&
-                        staffing.ward == old_ward) return;
-                    if (person) {
-                        models.save_change(
-                            staffing.day, staffing.ward, false,
-                            [{id: person.get('id'), action: 'add'}]);
-                    }
-                    // If a person has been drag-n-dropped to a StaffingView
-                    // it has to be removed from its origin 
-                    // if that is a StaffingView as well
-                    if (old_day)
-                        models.save_change(
-                            old_day, old_ward, false,
-                            [{id: person.get('id'), action: 'remove'}]
-                        );
-                },
-                activeClass: "ui-state-highlight",
-                tolerance: "pointer",
-                cursor: "pointer",
-            });
-        }
+        
     },
     addstaff: function() {
         if (models.user.is_editor && !this.collection.no_staffing)
@@ -396,7 +352,6 @@ var OnCallRowView = Backbone.View.extend({
                 (new StaffingView({ 
                     collection: collection,
                     display_long_name: true,
-                    drag_n_droppable: true,
                 })).render().$el :
                 '<td></td>';
             el.append(view);
@@ -456,9 +411,6 @@ var CallTallyView = Backbone.View.extend({
         var el = this.$el;
         var tally = this.model;
         var name = $("<th\>", { text: tally.get("name") });
-        name.draggable({
-            helper: 'clone',
-        });
         el.empty().append(name);
         _.each(models.on_call_types, function(on_call_type) {
             el.append($("<td\>", { text: tally.get_tally(on_call_type) }));
