@@ -140,3 +140,4 @@ x 2021-09-19 Dienstsummen
 x 2021-09-19 Dienst Schnelleingabe
 x 2022-01-06 Externe sollen nicht als unverplant erscheinen
 x 2022-01-27 Eine Planung nimmt die Person aus anderen Funktionen heraus
+x 2022-01-27 In der Auswahl für after_this und not_with_this nur Wards der eigenen Company

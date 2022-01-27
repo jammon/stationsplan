@@ -58,6 +58,7 @@ FIELDMODELS = {
     "functions": Ward,
     "departments": Department,
     "after_this": Ward,
+    "not_with_this": Ward,
 }
 
 
