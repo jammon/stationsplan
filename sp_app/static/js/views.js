@@ -338,7 +338,7 @@ var OnCallRowView = Backbone.View.extend({
 
         el.toggleClass('today', day.get('is_today'));
         if (day.get('is_free')) el.addClass('free-day');
-        el.append($('<th/>', { 
+        el.append($('<td/>', { 
             text: day_label({
                 name: utils.day_names[date.getDay()],
                 date: date.getDate(),

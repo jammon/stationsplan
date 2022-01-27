@@ -15,6 +15,10 @@
 .on_call_plan th {
   border: 1px solid #CCC;
 }
+.period_plan .free-day td,
+.on_call_plan .free-day td {
+  font-weight: bold;
+}
 
 .period_plan .today {
   border-left: 2px solid #888;

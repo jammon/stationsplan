@@ -141,3 +141,6 @@ x 2021-09-19 Dienst Schnelleingabe
 x 2022-01-06 Externe sollen nicht als unverplant erscheinen
 x 2022-01-27 Eine Planung nimmt die Person aus anderen Funktionen heraus
 x 2022-01-27 In der Auswahl für after_this und not_with_this nur Wards der eigenen Company
+x 2022-01-27 Eine Funktion soll eine andere Funktion ausschließen können
+x 2022-01-27 Drag-n-drop wieder raus nehmen
+x 2022-01-27 In Dienste die Wochenenden und Feiertage markieren

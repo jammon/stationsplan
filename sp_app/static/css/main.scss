@@ -20,10 +20,13 @@
 }
 .period_plan,
 .on_call_plan {
+    font-size: 12px;
     td, th {
         border: 1px solid #CCC;
     }
-    font-size: 12px;
+    .free-day td {
+        font-weight: bold;
+    }
 }
 .period_plan .today {
     border-left: 2px solid #888;
