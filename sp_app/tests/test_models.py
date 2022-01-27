@@ -91,17 +91,33 @@ class TestPerson(PopulatedTestCase):
 
 class TestWard(PopulatedTestCase):
     def test_ward(self):
+        kwargs = {
+            "min": 1,
+            "max": 3,
+            "company": self.company
+        }
         ward = Ward.objects.create(
             name="Station A",
             shortname="A",
-            min=1,
-            max=3,
+            # min=1,
+            # max=3,
             everyday=False,
             freedays=False,
             on_leave=False,
-            company=self.company,
+            # company=self.company,
             position=2,
+            **kwargs
         )
+        ward_b = Ward.objects.create(
+            name="Station B",
+            shortname="B",
+            **kwargs)
+        ward_c = Ward.objects.create(
+            name="Station C",
+            shortname="C",
+            **kwargs)
+        ward.after_this.add(ward_b, ward_c)
+        ward.not_with_this.add(ward_c)
         self.assertEqual(
             ward.toJson(),
             {
@@ -117,7 +133,8 @@ class TestWard(PopulatedTestCase):
                 "on_leave": False,
                 "company_id": self.company.id,
                 "position": "02",
-                "after_this": "",
+                "after_this": "B,C",
+                "not_with_this": "C",
                 "ward_type": "",
                 "weight": 0,
                 "active": True,

@@ -126,6 +126,15 @@ class Ward(models.Model):
             "if not empty, "
             "only these functions can be planned on the next day"
         ),
+        related_name="predecessor"
+    )
+    not_with_this = models.ManyToManyField(
+        "self",
+        verbose_name=_("not with this"),
+        symmetrical=False,
+        blank=True,
+        help_text=_("these functions can not be planned on the same day"),
+        related_name="shadowing"
     )
     weight = models.IntegerField(
         default=0,
@@ -162,13 +171,19 @@ class Ward(models.Model):
             "on_leave": self.on_leave,
             "company_id": self.company_id,
             "position": "%02d" % self.position,
-            "after_this": ""
-            if not self.pk
-            else ",".join((w.shortname for w in self.after_this.all())),
+            "after_this": "",
+            "not_with_this": "",
             "ward_type": self.ward_type,
             "weight": self.weight,
             "active": self.active,
         }
+        if self.pk:
+            res["after_this"] = ",".join(
+                self.after_this.values_list('shortname', flat=True)
+            )
+            res["not_with_this"] = ",".join(
+                self.not_with_this.values_list('shortname', flat=True)
+            )
         if self.approved is not None:
             res["approved"] = date_to_json(self.approved)
         return res

@@ -42,7 +42,7 @@ def get_plan_data(
     wards = (
         Ward.objects.filter(departments__id__in=department_ids)
         .order_by("position", "name")
-        .prefetch_related("after_this")
+        .prefetch_related("after_this", "not_with_this")
     )
     different_days = DifferentDay.objects.filter(
         ward__departments__id__in=department_ids, day__gte=start_of_data

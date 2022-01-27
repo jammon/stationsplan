@@ -131,7 +131,7 @@ class WardForm(ModelForm):
             "position",
             "active",
             "inactive",
-            # 'ward_type', 'approved', 'after_this', 'weight',
+            # 'ward_type', 'approved', 'after_this', 'not_with_this', 'weight',
         ]
         widgets = {
             "departments": RowCheckboxSelectMultiple,

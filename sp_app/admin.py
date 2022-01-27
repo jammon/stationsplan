@@ -233,11 +233,12 @@ class WardAdmin(CompanyRestrictedMixin, RestrictFields, admin.ModelAdmin):
                         "weight",
                     ),
                     "after_this",
+                    "not_with_this",
                 ),
             },
         ),
     )
-    filter_horizontal = ("departments", "after_this")
+    filter_horizontal = ("departments", "after_this", "not_with_this")
     list_filter = (DepartmentsListFilter,)
     ordering = ("position", "name")
     list_display = ("name", "shortname", "position")

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import CreateView, UpdateView
 
 from sp_app import forms, business_logic
@@ -40,6 +40,7 @@ def plan(request, month="", day=""):
     )
 
 
+@login_required
 @permission_required("sp_app.is_dep_lead")
 def personen_funktionen(request):
     department_ids = request.session.get("department_ids")
@@ -58,40 +59,45 @@ def personen_funktionen(request):
     )
 
 
-class DepLeadRequiredMixin(PermissionRequiredMixin):
-    permission_required = "sp_app.is_dep_lead"
+def get_edit_view(
+    model_class, formclass, get_initials, redirect_url, template_name
+):
+    @login_required
+    @permission_required("sp_app.is_dep_lead")
+    def edit_view(request, pk=None):
+        if pk is not None:
+            kwargs = {"instance": get_object_or_404(model_class, pk=pk)}
+        else:
+            kwargs = {"initial": get_initials(request)}
+        form = formclass(request.POST or None, **kwargs)
+        if form.is_valid():
+            form.save()
+            return redirect(redirect_url)
+        return render(request, template_name, {"form": form})
+
+    return edit_view
 
 
-class PersonMixin(DepLeadRequiredMixin):
-    model = Person
-    form_class = forms.PersonForm
-    success_url = "/zuordnung"
+def person_initials(request):
+    return {
+        "company": request.session["company_id"],
+        "start_date": get_first_of_month(),
+    }
 
 
-class PersonCreateView(PersonMixin, CreateView):
-    def get_initial(self):
-        return {
-            "company": self.request.session["company_id"],
-            "start_date": get_first_of_month(),
-        }
+person_edit = get_edit_view(
+    Person,
+    forms.PersonForm,
+    person_initials,
+    "/zuordnung",
+    "sp_app/person_form.html",
+)
 
 
-class PersonUpdateView(PersonMixin, UpdateView):
-    pass
+def ward_initials(request):
+    return {"company": request.session["company_id"]}
 
 
-class WardMixin(DepLeadRequiredMixin):
-    model = Ward
-    form_class = forms.WardForm
-    success_url = "/zuordnung"
-
-
-class WardCreateView(WardMixin, CreateView):
-    def get_initial(self):
-        return {
-            "company": self.request.session["company_id"],
-        }
-
-
-class WardUpdateView(WardMixin, UpdateView):
-    pass
+ward_edit = get_edit_view(
+    Ward, forms.WardForm, ward_initials, "/zuordnung", "sp_app/ward_form.html"
+)

@@ -114,6 +114,28 @@ describe("models", function() {
                 expect(models.on_call_types).toEqual(['Callshifts', 'Visite']);
             });
         });
+        describe("allows_after_this", function() {
+            it("should exclude the correct wards", function() {
+                // no exclusions
+                let ward = new models.Ward();
+                expect(ward.allows_after_this('A')).toBe(true);
+                ward = new models.Ward({after_this: 'A,B'});
+                expect(ward.allows_after_this('A')).toBe(true);
+                expect(ward.allows_after_this('B')).toBe(true);
+                expect(ward.allows_after_this('C')).toBe(false);
+            });
+        });
+        describe("allows_with_this", function() {
+            it("should exclude the correct wards", function() {
+                // no exclusions
+                let ward = new models.Ward();
+                expect(ward.allows_with_this('A')).toBe(true);
+                ward = new models.Ward({not_with_this: 'A,B'});
+                expect(ward.allows_with_this('A')).toBe(false);
+                expect(ward.allows_with_this('B')).toBe(false);
+                expect(ward.allows_with_this('C')).toBe(true);
+            });
+        });
     });
     describe("Staffing", function() {
         describe("calculate who can be planned", function() {

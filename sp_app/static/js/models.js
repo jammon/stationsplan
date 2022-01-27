@@ -96,6 +96,7 @@ var persons = new Persons();
 //     - on_leave = if truthy, then persons planned for this are on leave
 //     - approved = The date until which the plan is approved or false
 //     - after_this = an Array of wards, that can be planned after this one
+//     - not_with_this = an Array of wards, that can not be planned on the same day
 //     - ward_type = none or '' or type of ward (for handling of call shifts)
 //     - active = Boolean; if false, this ward should not be shown
 var Ward = Backbone.Model.extend({
@@ -103,9 +104,11 @@ var Ward = Backbone.Model.extend({
         var approved = this.get('approved');
         if (approved)
             this.set('approved', new Date(approved[0], approved[1], approved[2]));
-        var after_this = this.get('after_this');
-        if (after_this) {
-            this.set('after_this', after_this.split(','));
+        if (this.get('after_this')) {
+            this.set('after_this', this.get('after_this').split(','));
+        }
+        if (this.get('not_with_this')) {
+            this.set('not_with_this', this.get('not_with_this').split(','));
         }
         this.set('weight', this.get('weight') || 0);
         this.different_days = {};
@@ -121,6 +124,14 @@ var Ward = Backbone.Model.extend({
     set_different_day: function(date_id, key) {
         // key is '+' if added else '-'
         this.different_days[date_id] = key;
+    },
+    allows_after_this: function(ward_id) {
+        let after_this = this.get('after_this');
+        return !after_this || _.contains(after_this, ward_id);
+    },
+    allows_with_this: function(ward_id) {
+        let not_with_this = this.get('not_with_this');
+        return !(not_with_this && _.contains(not_with_this, ward_id));
     },
 });
 
@@ -140,6 +151,8 @@ var Wards = Backbone.Collection.extend(WARD_COLLECTION);
 var wards = new Wards();
 // nightshifts - wards with an limited list of "after_this"
 var nightshifts = new Backbone.Collection(null, WARD_COLLECTION);
+// shadowing - wards with an limited list of "not_with_this"
+var shadowing = new Backbone.Collection(null, WARD_COLLECTION);
 var on_leave = new Backbone.Collection(null, WARD_COLLECTION);
 var on_call = new Backbone.Collection(null, WARD_COLLECTION);
 var on_call_types = [];  // List of the ward_types of on-call shifts
@@ -148,6 +161,9 @@ function initialize_wards (wards_init, different_days) {
     wards.reset(wards_init);
     nightshifts.reset(wards.filter(function(ward) { 
         return ward.get('after_this'); 
+    }));
+    shadowing.reset(wards.filter(function(ward) { 
+        return ward.get('not_with_this'); 
     }));
     on_leave.reset(wards.where({'on_leave': true}));
     on_call.reset(wards.filter(function(ward) {
@@ -199,23 +215,25 @@ var Staffing = Backbone.Collection.extend({
             return false;
         // Is this ward in their portfolio?
         if (!person.can_work_on(this.ward)) return false;
-        // does yesterdays planning allow this?
         if (!person.get('anonymous')) {
-            var yesterday = this.day.get('yesterday');
-            var current_ward_id = this.ward.id;
-            if (yesterday) {
-                // if they were on leave yesterday, they can be planned
-                if (yesterday.persons_duties[person.id].where({on_leave: true}).length>0)
-                    return true;
-                // do yesterdays plannings allow this?
-                return yesterday.persons_duties[person.id].every(function(ward) {
-                    var after_this = ward.get('after_this');
-                    if (after_this && !_.contains(after_this, current_ward_id)) {
-                        return false;
-                    }
-                    return true;
-                });
-            }
+            // does yesterdays planning allow this?
+            let yesterday = this.day.get('yesterday');
+            let current_ward_id = this.ward.id;
+            if (yesterday &&
+                // if they were not on leave yesterday ...
+                yesterday.persons_duties[person.id].where({on_leave: true}).length==0 &&
+                // and yesterdays plannings prohibit this
+                yesterday.persons_duties[person.id].any(function(ward) {
+                    return !ward.allows_after_this(current_ward_id);
+                })
+            ) 
+                return false;
+            // does todays planning allow this?
+            if (this.day.persons_duties[person.id].any(function(ward) {
+                return !ward.allows_with_this(current_ward_id);
+                })
+            )
+                return false;
         }
         return true;
     },
@@ -351,10 +369,12 @@ var Day = Backbone.Model.extend({
         this.on('on_leave-changed', this.calc_persons_display, this);
         this.on('person-changed', this.update_not_planned, this);
         if (yesterday) {
-            yesterday.on('special-duty-changed', this.calc_persons_display, this);
-            yesterday.on('special-duty-changed', this.update_not_planned, this);
+            yesterday.on('yesterdays-special-duty-changed', this.calc_persons_display, this);
+            yesterday.on('yesterdays-special-duty-changed', this.update_not_planned, this);
             this.continue_yesterdays_staffings();
         }
+        this.on('todays-special-duty-changed', this.calc_persons_display, this);
+        this.on('todays-special-duty-changed', this.update_not_planned, this);
         this.update_is_today();
         current_date.on('change:date_id', this.update_is_today, this);
     },
@@ -407,10 +427,15 @@ var Day = Backbone.Model.extend({
         // yesterdays nightshift
         if (yesterday) {
             nightshifts.each(function(nightshift) {
-                if (!_.contains(nightshift.get('after_this'), ward.id))
+                if (!nightshift.allows_after_this(ward.id))
                     ward_unavailable(yesterday, nightshift);
             });
         }
+        // todays shadowing wards        
+        shadowing.each(function(shadow_ward) {
+            if (!shadow_ward.allows_with_this(ward.id))
+                ward_unavailable(this, shadow_ward);
+        }, this);
         // persons on leave
         on_leave.each(function(ward) {
             ward_unavailable(this, ward);
@@ -447,7 +472,10 @@ var Day = Backbone.Model.extend({
             this.trigger('on_leave-changed', person, action);
         }
         if (ward.get('after_this') !== void 0) {
-            this.trigger('special-duty-changed', person, ward, action);
+            this.trigger('yesterdays-special-duty-changed', person, ward, action);
+        }
+        if (ward.get('not_with_this') !== void 0) {
+            this.trigger('todays-special-duty-changed', person, ward, action);
         }
         this.persons_duties[person.id].calc_displayed();
     },
