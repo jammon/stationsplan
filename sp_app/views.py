@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import CreateView, UpdateView
 
 from sp_app import forms, business_logic
 from .models import Person, Ward

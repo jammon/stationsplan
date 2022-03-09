@@ -33,3 +33,5 @@
 Fehler: GET /updates/undefined?_=1632197709719
 (B) Person.position und Person.anonymous bzw. erternal überlappen sich in ihrer Funktion
 Mailadresse j.ammon@stationsplan.de einrichten
+Urlaube werden auch von nicht mehr Anwesenden angezeigt
+Unverplant-Anzeige des nächsten Tags wird nicht aktualisiert, wenn ein Dienst gecancelt wird

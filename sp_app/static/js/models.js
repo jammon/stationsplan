@@ -418,7 +418,7 @@ var Day = Backbone.Model.extend({
             let staffing = day.get_staffing(unavailable_ward);
             if (staffing) {
                 staffing.each(function(person) {
-                    // anonymous is always available
+                    // everyone is unavailable except anonymous
                     if (!person.get('anonymous'))
                         unavailable[person.id] = true;
                 });
