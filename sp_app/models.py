@@ -179,10 +179,10 @@ class Ward(models.Model):
         }
         if self.pk:
             res["after_this"] = ",".join(
-                self.after_this.values_list('shortname', flat=True)
+                w.shortname for w in self.after_this.all()
             )
             res["not_with_this"] = ",".join(
-                self.not_with_this.values_list('shortname', flat=True)
+                w.shortname for w in self.not_with_this.all()
             )
         if self.approved is not None:
             res["approved"] = date_to_json(self.approved)

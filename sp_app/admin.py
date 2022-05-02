@@ -319,6 +319,9 @@ class PlanningAdmin(admin.ModelAdmin):
     date_hierarchy = "start"
     list_filter = (PersonListFilter, WardListFilter)
 
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related("person", "ward")
+
 
 @admin.register(StatusEntry)
 class StatusEntryAdmin(CompanyRestrictedMixin, admin.ModelAdmin):
