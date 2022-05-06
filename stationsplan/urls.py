@@ -24,14 +24,19 @@ from sp_app import ajax as sp_ajax
 from sp_app.admin import config_site
 
 
-def path2template(url, t_path, name):
-    return path(url, TemplateView.as_view(template_name=t_path), name=name)
+def path2template(url, t_path, name, **kwargs):
+    return path(
+        url, TemplateView.as_view(template_name=t_path, **kwargs), name=name
+    )
 
 
 urlpatterns = [
     path("", sp_views.home, name="home"),
+    path("overview/", sp_views.overview, name="overview"),
     #
-    # SPA
+    #
+    # SPA  -------------------------------------------------------------
+    #
     re_path("plan/(?P<month>[0-9]+)?/?$", sp_views.plan, name="plan"),
     re_path(
         r"^dienste(/(?P<month>[0-9]+))?/?$", sp_views.plan, name="dienste"
@@ -39,7 +44,9 @@ urlpatterns = [
     re_path(r"^tag(/(?P<day>[0-9]+))?/?$", sp_views.plan, name="tag"),
     path("zuordnung", sp_views.plan, name="functions"),
     #
-    # Ajax
+    #
+    # Ajax -------------------------------------------------------------
+    #
     path("change_function", sp_ajax.change_function, name="change_function"),
     path("changes", sp_ajax.changes, name="changes"),
     re_path(
@@ -49,20 +56,53 @@ urlpatterns = [
     ),
     path("set_approved", sp_ajax.change_approved, name="set_approved"),
     re_path(r"^updates/([0-9]+)/?$", sp_ajax.updates, name="updates"),
-    #
-    # Administrators
-    path("personen", sp_views.personen_funktionen, name="persons"),
-    path("person/add/", sp_views.person_edit, name="person-add"),
-    path("person/<int:pk>/", sp_views.person_edit, name="person-update"),
-    path("funktion/add/", sp_views.ward_edit, name="ward-add"),
-    path("funktion/<int:pk>/", sp_views.ward_edit, name="ward-update"),
     path(
         "different_day/<str:action>/<int:ward>/<str:day_id>",
         sp_ajax.differentday,
         name="different-day",
     ),
+    path("edit/department", sp_ajax.edit_department),
+    path(
+        "edit/department/<int:department_id>",
+        sp_ajax.edit_department,
+        name="edit-department",
+    ),
+    path("edit/employee", sp_ajax.edit_employee),
+    path(
+        "edit/employee/<int:employee_id>",
+        sp_ajax.edit_employee,
+        name="edit-employee",
+    ),
     #
-    # Other
+    #
+    # Administrators -----------------------------------------------------
+    #
+    path("personen", sp_views.personen_funktionen, name="persons"),
+    path("person/add/", sp_views.person_edit, name="person-add"),
+    path("person/<int:pk>/", sp_views.person_edit, name="person-update"),
+    path("funktion/add/", sp_views.ward_edit, name="ward-add"),
+    path("funktion/<int:pk>/", sp_views.ward_edit, name="ward-update"),
+    #
+    #
+    # Auth -------------------------------------------------------------
+    #
+    path(
+        "password_change",
+        auth_views.PasswordChangeView.as_view(
+            template_name="registration/password_change.html",
+            success_url="/plan",
+        ),
+        name="password_change",
+    ),
+    path("login/", auth_views.LoginView.as_view(), name="login"),
+    path(
+        "logout", auth_views.LogoutView.as_view(next_page="/"), name="logout"
+    ),
+    path("/", include("django.contrib.auth.urls")),
+    #
+    #
+    # Other -------------------------------------------------------------
+    #
     path(
         "tests",
         user_passes_test(lambda user: user.is_superuser)(
@@ -72,27 +112,14 @@ urlpatterns = [
     ),
     path2template("datenschutz", "datenschutz.html", "datenschutz"),
     path2template("impressum", "impressum.html", "impressum"),
-    path(
-        "password_change",
-        auth_views.PasswordChangeView.as_view(
-            template_name="registration/password_change.html",
-            success_url="/plan",
-        ),
-        name="password_change",
+    path2template(
+        "robots.txt",
+        "robots.txt",
+        name="robots.txt",
+        content_type="text/plain",
     ),
     path("admin/", admin.site.urls),
     path("config/", config_site.urls),
-    path("login/", auth_views.LoginView.as_view(), name="login"),
-    path(
-        "logout", auth_views.LogoutView.as_view(next_page="/"), name="logout"
-    ),
-    path(
-        "robots.txt",
-        TemplateView.as_view(
-            template_name="robots.txt", content_type="text/plain"
-        ),
-    ),
-    path("/", include("django.contrib.auth.urls")),
 ]
 
 if settings.DEBUG:

@@ -172,3 +172,29 @@ you can then find the current grid option with:
 ## Auswahl der Abteilung
 - Wenn ein Editor mehr als eine Abteilung bearbeiten kann, soll er auf die anderen Abteilungen umschalten können.
 - Bei Krank/Urlaub sollen nur die MA der aktuellen Abteilung angezeigt werden.
+
+## Going public
+- Dokumentation schreiben
+- Personen und Funktionen mit htmx bearbeiten
+- Einstieg für neue Kliniken anbieten
+    - Company Admin anlegen
+    - Klinikname eingeben
+    - Abteilungen anlegen
+    - User anlegen
+        + User ohne Rechte
+        + (weitere Editoren)
+    - Funktionen anlegen
+    - Personen anlegen Übersicht
+- iCal-Anbindung
+- Erste drei Monate frei, erst dann bezahlen
+- Wildcard Certificate installieren
+    + Jede Klinik bekommt eine Domain mit ihrem Kurznamen
+    + Bisherige Kliniken können sich noch an `stationsplan.de` anmelden
+- Design überarbeiten
+    
+### Werbung, Aussagen über Funktion und Leistung
+- Die Planung ist erreichbar unter `kurzname.stationsplan.de`
+- Die Pläne sind nur nach Anmeldung sichtbar
+- Nur berechtigte Personen können verändern
+- Pläne sind von überall einsehbar
+- Keine unbesetzten Positionen, keine versehentlich doppelte Verplanung

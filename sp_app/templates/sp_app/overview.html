@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+<h1>Überblick</h1>
+<div class="row">
+	<div class="col col-md-4">
+		<h2>Klinik</h2>
+		<p> Name: {{ company.name }} ({{ company.shortname }}) </p>
+		<p> Region: {{ company.region.name }} </p>
+	</div>
+	<div class="col col-md-4">
+		<h2>Abteilungen</h2>
+		<div id="departments">
+			{% include "sp_app/partials/departments.html" %}
+		</div>
+	</div>
+	<div class="col col-md-4">
+		<h2>Bearbeiter</h2>
+		<div id="employees">
+			{% include "sp_app/partials/employees.html" %}
+		</div>
+	</div>
+</div>
+</div>
+{% endblock content %}
+
+{% block extracontent %}
+<div class="modal" id="edit-window" tabindex="-1" role="dialog"></div>
+{% endblock extracontent %}
+
+{% block extrascripts %}
+	<script src="{% static 'vendor/htmx.min.js' %}"></script>
+	<script>
+    htmx.on("htmx:afterOnLoad", function(evt) {
+        if (evt.detail.elt.matches(".editable")) {
+            setTimeout(function() {
+                $("#edit-window").modal("show");
+            }, 10)
+        }
+        if (evt.detail.elt.matches(".employee-edit-form")) {
+            setTimeout(function() {
+                $("#edit-window").modal("hide");
+            }, 10)
+        }
+    });
+	</script>
+{% endblock extrascripts %}

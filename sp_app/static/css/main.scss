@@ -97,20 +97,12 @@ td.free-day{
     list-style-type: none;
     padding-left: 0;
 }
-// .glyphicon .spinning {
-//     animation: spin 1s infinite linear;
-//     -moz-animation: spin2 1s infinite linear;
-//     -webkit-animation: spin2 1s infinite linear;
-// }
-// @keyframes spin {
-//     from { transform: scale(1) rotate(0deg); }
-//     to { transform: scale(1) rotate(360deg); }
-// }
-// @-moz-keyframes spin2 {
-//     from { -moz-transform: rotate(0deg); }
-//     to { -moz-transform: rotate(360deg); }
-// }
-// @-webkit-keyframes spin2 {
-//     from { -webkit-transform: rotate(0deg); }
-//     to { -webkit-transform: rotate(360deg); }
-// }
+.control-label {
+    vertical-align: text-top;
+    label {
+        margin-right: 5px;
+    }
+}
+.label-block label {
+    font-weight: 400;
+}

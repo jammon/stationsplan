@@ -99,4 +99,15 @@ td.free-day {
   padding-left: 0;
 }
 
+.control-label {
+  vertical-align: text-top;
+}
+.control-label label {
+  margin-right: 5px;
+}
+
+.label-block label {
+  font-weight: 400;
+}
+
 /*# sourceMappingURL=main.css.map */

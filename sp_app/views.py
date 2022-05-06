@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render, redirect, get_object_or_404
 
 from sp_app import forms, business_logic
-from .models import Person, Ward
+from .models import Person, Ward, Company
 from .utils import get_first_of_month
 
 
@@ -99,3 +99,17 @@ def ward_initials(request):
 ward_edit = get_edit_view(
     Ward, forms.WardForm, ward_initials, "/zuordnung", "sp_app/ward_form.html"
 )
+
+
+@login_required
+def overview(request):
+    """Show settings of the company
+
+    TODO: optimize SQL queries on user/group permissions
+    """
+    company = (
+        Company.objects.select_related("region")
+        .prefetch_related("departments", "employees__user")
+        .get(id=request.session["company_id"])
+    )
+    return render(request, "sp_app/overview.html", {"company": company})

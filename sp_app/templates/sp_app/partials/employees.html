@@ -1,0 +1,7 @@
+{% for employee in company.employees.all %}
+	{% if employee.user.is_active %}
+		<p hx-get={% url "edit-employee" employee.id %}
+		   hx-target="#edit-window" class="employee-detail editable" >
+			{{ employee.name_and_level }}</p>
+	{% endif %}
+{% endfor %}

@@ -1,24 +1,19 @@
-from django.forms import (
-    widgets,
-    ModelForm,
-    ModelMultipleChoiceField,
-    MultipleChoiceField,
-    CheckboxSelectMultiple,
-    BooleanField,
-)
+from django import forms
+from django.forms import widgets
 from django.contrib import admin
+from django.contrib.auth.models import User
 from django.utils.translation import gettext as _
 
-from .models import Person, Ward, Department
+from .models import Person, Ward, Department, Employee, EMPLOYEE_LEVEL
 
 
-class WardAdminForm(ModelForm):
+class WardAdminForm(forms.ModelForm):
     """used in sp_app.admin.WardAdmin
 
     Restricts staffing to Persons of the same Company
     """
 
-    staff = ModelMultipleChoiceField(
+    staff = forms.ModelMultipleChoiceField(
         Person.objects.all(),
         # Add this line to use the double list widget
         widget=admin.widgets.FilteredSelectMultiple(
@@ -56,14 +51,14 @@ class WardAdminForm(ModelForm):
 
 
 class RowRadioboxSelect(widgets.Select):
-    template_name = "sp_app/row_radiobox_select.html"
+    template_name = "sp_app/widgets/row_radiobox_select.html"
 
 
-class RowCheckboxSelectMultiple(CheckboxSelectMultiple):
-    template_name = "sp_app/row_checkbox_select.html"
+class RowCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
+    template_name = "sp_app/widgets/row_checkbox_select.html"
 
 
-class PersonForm(ModelForm):
+class PersonForm(forms.ModelForm):
     class Meta:
         model = Person
         fields = [
@@ -76,8 +71,14 @@ class PersonForm(ModelForm):
             "company",
         ]
         widgets = {
-            "position": RowRadioboxSelect,
-            "departments": RowCheckboxSelectMultiple,
+            "position": forms.RadioSelect,
+            "departments": forms.CheckboxSelectMultiple,
+            "start_date": forms.DateInput(
+                format="%Y-%m-%d", attrs={"type": "date"}
+            ),
+            "end_date": forms.DateInput(
+                format="%Y-%m-%d", attrs={"type": "date"}
+            ),
         }
 
     def __init__(self, *args, **kwargs):
@@ -90,8 +91,8 @@ class PersonForm(ModelForm):
         )
 
 
-class WardForm(ModelForm):
-    wkdys = MultipleChoiceField(
+class WardForm(forms.ModelForm):
+    wkdys = forms.MultipleChoiceField(
         label="Wochentage",
         choices=(
             ("1", "Mo"),
@@ -107,7 +108,7 @@ class WardForm(ModelForm):
         help_text="Wenn kein Wochentag ausgewählt ist, wird die Funktion für "
         "alle üblichen Tage geplant.",
     )
-    inactive = BooleanField(
+    inactive = forms.BooleanField(
         label="Deaktiviert",
         required=False,
         help_text="Nicht mehr für die Planung verwenden.",
@@ -154,3 +155,42 @@ class WardForm(ModelForm):
         cleaned_data = super().clean()
         cleaned_data["weekdays"] = "".join(self.cleaned_data.get("wkdys", []))
         cleaned_data["active"] = not cleaned_data["inactive"]
+
+
+class DepartmentForm(forms.ModelForm):
+    class Meta:
+        model = Department
+        fields = ["name", "shortname"]
+
+
+class UserForm(forms.ModelForm):
+    """Some data have to be stored in the User object."""
+
+    class Meta:
+        model = User
+        fields = ["username", "first_name", "last_name"]
+
+
+class EmployeeForm(forms.ModelForm):
+    """Some data have to be stored in the User object."""
+
+    lvl = forms.ChoiceField(label="Funktion", choices=EMPLOYEE_LEVEL.items())
+
+    class Meta:
+        model = Employee
+        fields = ["lvl", "departments"]
+        widgets = {
+            "departments": forms.CheckboxSelectMultiple,
+        }
+
+    def __init__(self, data=None, initial=None, instance=None):
+        if instance is not None:
+            if initial is None:
+                initial = {}
+            initial["lvl"] = instance.get_level()
+        super().__init__(data=data, initial=initial, instance=instance)
+        self.fields["departments"].queryset = Department.objects.filter(
+            company__id=instance.company.id
+            if instance is not None
+            else initial["company"]
+        )

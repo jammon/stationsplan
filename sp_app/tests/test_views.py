@@ -8,7 +8,15 @@ import json
 import logging
 
 from sp_app.utils import PopulatedTestCase
-from sp_app.models import Ward, Employee, ChangeLogging, Planning, StatusEntry
+from sp_app.models import (
+    Company,
+    Ward,
+    Person,
+    Employee,
+    ChangeLogging,
+    Planning,
+    StatusEntry,
+)
 from sp_app.business_logic import get_plan_data
 
 
@@ -48,7 +56,7 @@ class TestPlanData(PopulatedTestCase):
     """Test business logic for views.plan"""
 
     def test_get_plan_data(self):
-        for start, end in (
+        given = (
             (date(2016, 1, 1), date(2016, 1, 31)),  # older than 1 mon
             (date(2016, 2, 1), date(2016, 3, 1)),  # less than 1 mon
             (date(2016, 1, 1), date(2016, 4, 15)),
@@ -56,7 +64,16 @@ class TestPlanData(PopulatedTestCase):
             (date(2016, 4, 1), date(2016, 4, 30)),
             (date(2016, 4, 1), date(2016, 5, 31)),
             (date(2016, 5, 1), date(2016, 5, 31)),
-        ):
+        )
+        expected_list = (
+            {"start": "20160201", "end": "20160301"},
+            {"start": "20160101", "end": "20160415"},
+            {"start": "20160101", "end": "20160531"},
+            {"start": "20160401", "end": "20160430"},
+            {"start": "20160401", "end": "20160531"},
+            {"start": "20160501", "end": "20160531"},
+        )
+        for start, end in given:
             Planning.objects.create(
                 company=self.company,
                 person=self.person_a,
@@ -70,18 +87,7 @@ class TestPlanData(PopulatedTestCase):
             month="201604",
         )
         data = json.loads(plan_data["data"])
-        plannings = data["plannings"]
-        for value, expected in zip(
-            plannings,
-            (
-                {"start": "20160201", "end": "20160301"},
-                {"start": "20160101", "end": "20160415"},
-                {"start": "20160101", "end": "20160531"},
-                {"start": "20160401", "end": "20160430"},
-                {"start": "20160401", "end": "20160531"},
-                {"start": "20160501", "end": "20160531"},
-            ),
-        ):
+        for value, expected in zip(data["plannings"], expected_list):
             self.assertEqual(value["person"], self.person_a.id)
             self.assertEqual(value["ward"], self.ward_a.id)
             self.assertEqual(value["start"], expected["start"])
@@ -107,6 +113,63 @@ class TestPlanData(PopulatedTestCase):
         plannings = data["plannings"]
         self.assertEqual(len(plannings), 1)
         self.assertEqual(plannings[0]["ward"], self.ward_a.id)
+
+    def test_persons_and_wards(self):
+        """Persons and Wards are included in the data
+        but not from other Companies, former persons or inactive wards
+        """
+        other_comp = Company.objects.create(
+            name="OtherComp",
+            shortname="Oth",
+        )
+        other_person = Person.objects.create(
+            name="OtherComp", shortname="Oth", company=other_comp
+        )
+        former = Person.objects.create(
+            name="Former",
+            shortname="For",
+            company=self.company,
+            end_date=date(2021, 12, 31),
+        )
+        other_ward = Ward.objects.create(
+            name="OtherComp",
+            shortname="Oth",
+            max=0,
+            min=3,
+            company=other_comp,
+        )
+        inactive_ward = Ward.objects.create(
+            name="Inactive",
+            shortname="Ina",
+            max=0,
+            min=3,
+            company=self.company,
+            active=False,
+        )
+        inactive_ward.departments.add(self.department)
+
+        assert self.department.name == "Department 1"
+        assert list(inactive_ward.departments.all()) == [self.department]
+
+        plan_data = get_plan_data(
+            department_ids=[self.department.id],
+            company_id=self.company.id,
+            month="202205",
+        )
+        data = json.loads(plan_data["data"])
+        person_ids = [p["id"] for p in data["persons"]]
+        assert self.person_a.id in person_ids
+        assert self.person_b.id in person_ids
+        assert other_person not in person_ids
+        assert former not in person_ids
+        assert former in plan_data["former_persons"]
+
+        ward_ids = [w["id"] for w in data["wards"]]
+        assert self.ward_a.id in ward_ids
+        assert self.ward_b.id in ward_ids
+        assert other_ward.id not in ward_ids
+        assert inactive_ward.id not in ward_ids
+        assert inactive_ward in plan_data["inactive_wards"]
 
 
 class ViewsTestCase(PopulatedTestCase):

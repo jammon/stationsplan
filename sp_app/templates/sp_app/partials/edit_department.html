@@ -1,0 +1,23 @@
+<div class="modal-dialog" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal">&times;</button>
+      <h4 class="modal-title">Abteilung</h4>
+    </div>
+    <div class="modal-body">
+      <form hx-post="{{ url }}" class="form-horizontal employee-edit-form">
+        {% csrf_token %}
+        {% with form.name as field %}
+            {% include "sp_app/partials/horizontal-edit-field.html" %}
+        {% endwith %}
+        {% with form.shortname as field %}
+            {% include "sp_app/partials/horizontal-edit-field.html" %}
+        {% endwith %}
+        {% if form.errors %}
+          <div>{{ employee_form.errors }}</div>
+        {% endif %}
+      <div><button type="submit">Speichern</button></div>
+      </form>
+    </div>
+  </div>
+</div>

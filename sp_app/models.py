@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 from datetime import date, timedelta
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext as _
@@ -126,7 +126,7 @@ class Ward(models.Model):
             "if not empty, "
             "only these functions can be planned on the next day"
         ),
-        related_name="predecessor"
+        related_name="predecessor",
     )
     not_with_this = models.ManyToManyField(
         "self",
@@ -134,7 +134,7 @@ class Ward(models.Model):
         symmetrical=False,
         blank=True,
         help_text=_("these functions can not be planned on the same day"),
-        related_name="shadowing"
+        related_name="shadowing",
     )
     weight = models.IntegerField(
         default=0,
@@ -310,6 +310,7 @@ class Person(models.Model):
             Planning.objects.filter(person=self, end=FAR_FUTURE).update(
                 end=self.end_date
             )
+        # every person can be on leave
         if created and not self.anonymous:
             self.functions.add(
                 *list(
@@ -545,6 +546,24 @@ class Planning(models.Model):
         )
 
 
+EMPLOYEE_PERMISSIONS = [
+    ("is_company_admin", "is admin of the company"),
+    ("is_dep_lead", "is leader of a department"),
+    ("is_editor", "is editor for a department"),
+]
+EMPLOYEE_LEVEL = {
+    "is_company_admin": "Admin",
+    "is_dep_lead": "Abteilungsleiter/in",
+    "is_editor": "Planen",
+    "None": "Lesen",
+}
+EMPLOYEE_GROUP = {
+    "is_company_admin": "Company Admin",
+    "is_dep_lead": "Department admins",
+    "is_editor": "Editors",
+}
+
+
 class Employee(models.Model):
     """Somebody who uses the plan.
     Can be anyone who works there, but also other involved personnel,
@@ -562,11 +581,7 @@ class Employee(models.Model):
     class Meta:
         verbose_name = _("Employee")
         verbose_name_plural = _("Employees")
-        permissions = [
-            ("is_editor", "is editor for a department"),
-            ("is_dep_lead", "is leader of a department"),
-            ("is_company_admin", "is admin of the company"),
-        ]
+        permissions = EMPLOYEE_PERMISSIONS
 
     def __str__(self):
         return "; ".join(
@@ -576,6 +591,41 @@ class Employee(models.Model):
                 self.company.name,
             )
         )
+
+    def get_name(self):
+        return self.user.get_full_name() or self.user.get_username()
+
+    name = property(fget=get_name)
+
+    def get_level(self):
+        """Return level of authorization"""
+        for permission, docstring in EMPLOYEE_PERMISSIONS:
+            if self.user.has_perm("sp_app." + permission):
+                return permission
+        return None
+
+    def set_level(self, level=None):
+        """Set level of authorization
+
+        If level is None or "None", remove all special permissions
+        """
+        assert level in EMPLOYEE_LEVEL
+        groups = dict((g.name, g) for g in Group.objects.all())
+        self.user.groups.remove(
+            *(groups[name] for name in EMPLOYEE_GROUP.values())
+        )
+        if level not in (None, "None"):
+            self.user.groups.add(groups[EMPLOYEE_GROUP[level]])
+        # account for permission caching
+        self.user = User.objects.get(id=self.user.id)
+
+    level = property(fget=get_level, fset=set_level)
+
+    def name_and_level(self):
+        # level = self.get_level()
+        # if level is None:
+        #     return self.name
+        return f"{self.name} ({EMPLOYEE_LEVEL[self.level or 'None']})"
 
 
 class StatusEntry(models.Model):

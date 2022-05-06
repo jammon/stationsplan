@@ -144,3 +144,4 @@ x 2022-01-27 In der Auswahl für after_this und not_with_this nur Wards der eige
 x 2022-01-27 Eine Funktion soll eine andere Funktion ausschließen können
 x 2022-01-27 Drag-n-drop wieder raus nehmen
 x 2022-01-27 In Dienste die Wochenenden und Feiertage markieren
+x 2022-05-06 DJANGO_SETTINGS_MODULE korrekt setzen

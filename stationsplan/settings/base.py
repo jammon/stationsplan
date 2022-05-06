@@ -8,11 +8,9 @@ import string
 import sys
 import time
 from random import choice
+from pathlib import Path
 
-BASE_DIR = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-)
-PARENT_OF_BASE_DIR = os.path.dirname(BASE_DIR)
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 TESTING = False
 if (
@@ -69,9 +67,11 @@ DJANGO_TEMPLATES = {
         ],
     },
 }
+# DJANGO_TEMPLATES will be changed in specialized settings
 TEMPLATES = [
     DJANGO_TEMPLATES,
 ]
+
 
 WSGI_APPLICATION = "stationsplan.wsgi.application"
 

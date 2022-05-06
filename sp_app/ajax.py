@@ -5,12 +5,23 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render, redirect
+from django.urls import reverse
 
 import json
 
 from .utils import apply_changes, set_approved, get_last_change_response
-from .models import StatusEntry, Person, Ward, DifferentDay, ChangeLogging
+from .models import (
+    ChangeLogging,
+    Company,
+    Department,
+    DifferentDay,
+    Employee,
+    Person,
+    StatusEntry,
+    Ward,
+)
+from sp_app import forms
 
 
 def ajax_login_required(function=None):
@@ -206,3 +217,101 @@ def differentday(request, action, ward, day_id):
             ward=ward, day=day, added=(action == "add_additional")
         )
         return JsonResponse({"status": "ok"})
+
+
+@ajax_login_required
+@permission_required("sp_app.is_company_admin", raise_exception=True)
+def edit_department(request, department_id=None):
+    """Edit the department or create a new one
+
+    Called with GET: return the form
+    Called with POST: return nothing als form and the department list (oob)
+    """
+    company_id = request.session["company_id"]
+    department = Department.objects.get(
+        id=department_id, company_id=company_id
+    )
+    if department is None:
+        kwargs = {"initial": {"company": company_id}}
+    else:
+        kwargs = {"instance": department}
+    form = forms.DepartmentForm(request.POST or None, **kwargs)
+    if form.is_valid():
+        form.save()
+        company = Company.objects.prefetch_related("departments").get(
+            id=request.session["company_id"]
+        )
+        return render(
+            request,
+            "sp_app/partials/edit_object_sucess.html",
+            {
+                "company": company,
+                "target": "departments",
+                "list_template": "sp_app/partials/departments.html",
+            },
+        )
+    return render(
+        request,
+        "sp_app/partials/edit_department.html",
+        {
+            "form": form,
+            "url": reverse("edit-department", args=(department_id,)),
+        },
+    )
+
+
+@ajax_login_required
+@permission_required("sp_app.is_company_admin", raise_exception=True)
+def edit_employee(request, employee_id=None):
+    """Edit the Employee or create a new one
+
+    Called with GET: return the form
+    Called with POST: return nothing als form and the object list (oob)
+    If Employee is new: create user
+    If Employee exists: edit user w/o password, maybe add ChangePasswordForm
+    """
+    company_id = request.session["company_id"]
+    try:
+        employee = Employee.objects.select_related("user").get(
+            id=employee_id, company_id=company_id
+        )
+        emp_kwargs = {"instance": employee}
+        user_kwargs = {"instance": employee.user}
+    except Employee.DoesNotExist:
+        emp_kwargs = {"initial": {"company": company_id}}
+        user_kwargs = {}
+    employee_form = forms.EmployeeForm(request.POST or None, **emp_kwargs)
+    user_form = forms.UserForm(request.POST or None, **user_kwargs)
+    if employee_form.is_valid() and user_form.is_valid():
+        employee = employee_form.save(commit=False)
+        employee.user = user_form.save()
+        employee.save()
+        employee_form.save_m2m()
+        employee.set_level(employee_form.cleaned_data["lvl"] or None)
+
+        company = Company.objects.prefetch_related("employees").get(
+            id=request.session["company_id"]
+        )
+        return render(
+            request,
+            "sp_app/partials/edit_object_sucess.html",
+            {
+                "company": company,
+                "target": "employees",
+                "list_template": "sp_app/partials/employees.html",
+            },
+        )
+    return render(
+        request,
+        "sp_app/partials/edit_employee.html",
+        {
+            "user_form": user_form,
+            "employee_form": employee_form,
+            "visible_fields": tuple(
+                user_form.fields[n]
+                for n in ("username", "first_name", "last_name")
+            )
+            + tuple(employee_form.fields[n] for n in ("lvl", "departments")),
+            "url": reverse("edit-employee", args=(employee_id,)),
+        },
+    )

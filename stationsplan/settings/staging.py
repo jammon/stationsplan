@@ -4,24 +4,24 @@ import os
 DEBUG = False
 
 ALLOWED_HOSTS = ["schlafzimmer2"]
-STATIC_ROOT = os.path.join(BASE_DIR, "dev_static")
+STATIC_ROOT = BASE_DIR / "dev_static"
 STATICFILES_STORAGE = (
     "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 )
 
 
-SECRETS_DIR = os.path.join(PARENT_OF_BASE_DIR, "secrets")
+SECRETS_DIR = BASE_DIR.parent / "secrets"
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
 
 SECRET_KEY = read_secret(
-    os.path.join(SECRETS_DIR, "django-key.txt"),
+    SECRETS_DIR / "django-key.txt",
     "random characters to generate your secret key",
     generate_secret=True,
 )

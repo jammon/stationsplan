@@ -1,13 +1,18 @@
 # -*- coding: utf-8 -*-
 from datetime import date, timedelta
+from django.test import TestCase
+from django.contrib.auth.models import User, Group
 
 from sp_app.models import (
+    Company,
     Person,
     Ward,
     ChangeLogging,
     Planning,
     process_change,
     FAR_FUTURE,
+    Employee,
+    EMPLOYEE_GROUP,
 )
 from sp_app.utils import PopulatedTestCase
 
@@ -91,11 +96,7 @@ class TestPerson(PopulatedTestCase):
 
 class TestWard(PopulatedTestCase):
     def test_ward(self):
-        kwargs = {
-            "min": 1,
-            "max": 3,
-            "company": self.company
-        }
+        kwargs = {"min": 1, "max": 3, "company": self.company}
         ward = Ward.objects.create(
             name="Station A",
             shortname="A",
@@ -106,16 +107,10 @@ class TestWard(PopulatedTestCase):
             on_leave=False,
             # company=self.company,
             position=2,
-            **kwargs
+            **kwargs,
         )
-        ward_b = Ward.objects.create(
-            name="Station B",
-            shortname="B",
-            **kwargs)
-        ward_c = Ward.objects.create(
-            name="Station C",
-            shortname="C",
-            **kwargs)
+        ward_b = Ward.objects.create(name="Station B", shortname="B", **kwargs)
+        ward_c = Ward.objects.create(name="Station C", shortname="C", **kwargs)
         ward.after_this.add(ward_b, ward_c)
         ward.not_with_this.add(ward_c)
         self.assertEqual(
@@ -231,7 +226,7 @@ class Process_Change_Testcase(PopulatedTestCase):
                     person=self.person_a,
                     ward_id=1,
                     company=self.company,
-                    **c
+                    **c,
                 )
             )
         plannings = Planning.objects.filter(
@@ -668,3 +663,60 @@ class Test_Changes_with_End(Process_Change_Testcase):
                 dict(start=date_12 + ONE_DAY, end=date_14),
             ),
         )
+
+
+class TestEmployeeLevel(TestCase):
+    def setUp(self):
+        self.groups = {}
+        for permission, name in EMPLOYEE_GROUP.items():
+            try:
+                g = Group.objects.get(name=name)
+            except Group.DoesNotExist:
+                g = Group.objects.create(name=name)
+                g.permissions.add(permission)
+            self.groups[name] = g
+
+    def test_get_level(self):
+        c = Company.objects.create(name="Krankenhaus", shortname="KH")
+        u = User.objects.create_user("user")
+        e = Employee.objects.create(user=u, company=c)
+        assert e.level is None
+        for permission, name in (
+            ("is_company_admin", "Company Admin"),
+            ("is_dep_lead", "Department admins"),
+            ("is_editor", "Editors"),
+        ):
+            u.groups.add(self.groups[name])
+            # account for permission caching
+            e.user = User.objects.get(id=e.user.id)
+            assert e.level == permission
+            u.groups.remove(self.groups[name])
+
+    def test_set_level(self):
+        e = Employee.objects.create(
+            user=User.objects.create_user("user"),
+            company=Company.objects.create(name="Krankenhaus", shortname="KH"),
+        )
+        assert e.level is None
+
+        for level, not_levels in (
+            (
+                "is_editor",
+                ("is_dep_lead", "is_company_admin"),
+            ),
+            (
+                "is_dep_lead",
+                ("is_company_admin"),
+            ),
+            (
+                "is_company_admin",
+                (),
+            ),
+        ):
+            e.set_level(level)
+            print(f"{e.level=} {level=} ")
+            # assert e.level == level
+            assert e.get_level() == level
+            assert e.user.has_perm("sp_app." + level)
+            for nl in not_levels:
+                assert not e.user.has_perm("sp_app." + nl)

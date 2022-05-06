@@ -35,3 +35,7 @@ Fehler: GET /updates/undefined?_=1632197709719
 Mailadresse j.ammon@stationsplan.de einrichten
 Urlaube werden auch von nicht mehr Anwesenden angezeigt
 Unverplant-Anzeige des nächsten Tags wird nicht aktualisiert, wenn ein Dienst gecancelt wird
+Person.anonymous und Person.position=anonymous differenzieren
+Fehlerbehandlung im Frontend
+refactor login_required, permission_required and args from session into one function
+Berechtigung Lesen wird im Dialog nicht ausgewählt
