@@ -7,12 +7,8 @@
     <div class="modal-body">
       <form hx-post="{{ url }}" class="form-horizontal employee-edit-form">
         {% csrf_token %}
-        {% with form.name as field %}
-            {% include "sp_app/partials/horizontal-edit-field.html" %}
-        {% endwith %}
-        {% with form.shortname as field %}
-            {% include "sp_app/partials/horizontal-edit-field.html" %}
-        {% endwith %}
+        {% include "sp_app/partials/horizontal-edit-field.html" with field=form.name %}
+        {% include "sp_app/partials/horizontal-edit-field.html" with field=form.shortname %}
         {% if form.errors %}
           <div>{{ employee_form.errors }}</div>
         {% endif %}

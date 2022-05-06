@@ -27,12 +27,8 @@
 'ward_type', 
 'weight', 
 {% endcomment %}
-{% with form.name as field %}
-    {% include "sp_app/field_template.html" %}
-{% endwith %}
-{% with form.shortname as field %}
-    {% include "sp_app/field_template.html" %}
-{% endwith %}
+{% include "sp_app/widgets/field_template.html" with field=form.name %}
+{% include "sp_app/widgets/field_template.html" with field=form.shortname %}
    <div class="form-group">
     {% if form.min.errors or form.max.errors %}<div class="col-sm-offset-3 col-sm-9 alert alert-danger">{{ form.min.errors }} {{ form.max.errors }}</div>{% endif %}
     <div class="col-sm-3 control-label">
@@ -40,32 +36,16 @@
     <div class="col-sm-9">
       {{ form.min.label_tag }}{{ form.min }} {{ form.max.label_tag }}{{ form.max }} </div>
   </div>
-{% with form.everyday as field %}
-    {% include "sp_app/checkboxfield_template.html" %}
-{% endwith %}
-{% with form.freedays as field %}
-    {% include "sp_app/checkboxfield_template.html" %}
-{% endwith %}
-{% with form.callshift as field %}
-    {% include "sp_app/checkboxfield_template.html" %}
-{% endwith %}
-{% with form.on_leave as field %}
-    {% include "sp_app/checkboxfield_template.html" %}
-{% endwith %}
-{% with form.departments as field %}
-    {% include "sp_app/field_template.html" %}
-{% endwith %}
+{% include "sp_app/widgets/checkboxfield_template.html" with field=form.everyday %}
+{% include "sp_app/widgets/checkboxfield_template.html" with field=form.freedays %}
+{% include "sp_app/widgets/checkboxfield_template.html" with field=form.callshift %}
+{% include "sp_app/widgets/checkboxfield_template.html" with field=form.on_leave %}
+{% include "sp_app/widgets/field_template.html" with field=form.departments %}
 
-{% with form.wkdys as field %}
-    {% include "sp_app/helptextfield_template.html" %}
-{% endwith %}
-{% with form.position as field %}
-    {% include "sp_app/field_template.html" %}
-{% endwith %}
+{% include "sp_app/widgets/helptextfield_template.html" with field=form.wkdys %}
+{% include "sp_app/widgets/field_template.html" with field=form.position %}
 
-{% with form.inactive as field %}
-    {% include "sp_app/helptextfield_template.html" %}
-{% endwith %}
+{% include "sp_app/widgets/helptextfield_template.html" with field=form.inactive %}
 
   {{ form.weekdays.as_hidden }}
   {{ form.company.as_hidden }}

@@ -7,20 +7,12 @@
     <div class="modal-body">
       <form hx-post="{{ url }}" class="form-horizontal employee-edit-form">
         {% csrf_token %}
-        {% with user_form.username as field %}
-            {% include "sp_app/partials/horizontal-edit-field.html" %}
-        {% endwith %}
-        {% with user_form.first_name as field %}
-            {% include "sp_app/partials/horizontal-edit-field.html" %}
-        {% endwith %}
-        {% with user_form.last_name as field %}
-            {% include "sp_app/partials/horizontal-edit-field.html" %}
-        {% endwith %}
-        {% with employee_form.lvl as field %}
-            {% include "sp_app/partials/horizontal-edit-field.html" %}
-        {% endwith %}
-        {% with employee_form.departments as field %}
-            {% include "sp_app/partials/horizontal-edit-field.html" %}
+        {% with "sp_app/partials/horizontal-edit-field.html" as template %}
+          {% include template with field=user_form.username %}
+          {% include template with field=user_form.first_name %}
+          {% include template with field=user_form.last_name %}
+          {% include template with field=employee_form.lvl %}
+          {% include template with field=employee_form.departments %}
         {% endwith %}
       {% if user_form.errors %}
           <div>{{ user_form.errors }}</div>

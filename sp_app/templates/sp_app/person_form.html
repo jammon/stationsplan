@@ -10,66 +10,56 @@
 <form action="" method="post">{% csrf_token %}
 <div class="row">
 {% if form.errors %}
-    <p class="errornote bg-danger">
-    {% if form.errors.items|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
-    </p>
+  <p class="errornote bg-danger">
+  {% if form.errors.items|length == 1 %}{% trans "Please correct the error below." %}
+  {% else %}{% trans "Please correct the errors below." %}
+  {% endif %}
+  </p>
 {% endif %}
 
 <div class="col col-md-3 col-sm-6 col-xs-12">
 <table>
-    <tr>
-        {% with form.name as field %}
-            {% include "sp_app/field_template.html" %}
-        {% endwith %}
-    </tr>
-    <tr>
-        {% with form.shortname as field %}
-            {% include "sp_app/field_template.html" %}
-        {% endwith %}
-    </tr>
+  <tr>
+    {% include "sp_app/widgets/field_template.html" with field=form.name%}
+  </tr>
+  <tr>
+    {% include "sp_app/widgets/field_template.html" with field=form.shortname%}
+  </tr>
 </table>
 </div>
 
 <div class="col col-md-3 col-sm-6 col-xs-12">
 <table>
-    <tr>
-        {% with form.start_date as field %}
-            {% include "sp_app/field_template.html" %}
-        {% endwith %}
-    </tr>
-    <tr>
-        {% with form.end_date as field %}
-            {% include "sp_app/field_template.html" %}
-        {% endwith %}
-    </tr>
+  <tr>
+    {% include "sp_app/widgets/field_template.html" with field=form.start_date%}
+  </tr>
+  <tr>
+    {% include "sp_app/widgets/field_template.html" with field=form.end_date%}
+  </tr>
 </table>
 </div>
 
 <div class="col col-md-3 col-sm-6 col-xs-12">
 <table>
-    <tr>
-        {% with form.departments as field %}
-            {% include "sp_app/field_template.html" %}
-        {% endwith %}
-    </tr>
+  <tr>
+    {% include "sp_app/widgets/field_template.html" with field=form.departments%}
+  </tr>
 </table>
 </div>
 
 <div class="col col-md-3 col-sm-6 col-xs-12">
 <table>
-    <tr>
-        {% with form.position as field %}
-            {% include "sp_app/field_template.html" %}
-        {% endwith %}
-    </tr>
+  <tr>
+    {% include "sp_app/widgets/field_template.html" with field=form.position%}
+  </tr>
 </table>
 </div>
 
   {{ form.company.as_hidden }}
   <div class="form-group">
-    <div class="col-sm-offset-3 col-sm-9">
-      <button type="submit" class="btn btn-default">Speichern</button>
-    </div>
+  <div class="col-sm-offset-3 col-sm-9">
+    <button type="submit" class="btn btn-default">Speichern</button>
+  </div>
   </div>
 </div>
 
