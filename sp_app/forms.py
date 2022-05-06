@@ -187,7 +187,7 @@ class EmployeeForm(forms.ModelForm):
         if instance is not None:
             if initial is None:
                 initial = {}
-            initial["lvl"] = instance.get_level()
+            initial["lvl"] = instance.get_level() or "None"
         super().__init__(data=data, initial=initial, instance=instance)
         self.fields["departments"].queryset = Department.objects.filter(
             company__id=instance.company.id

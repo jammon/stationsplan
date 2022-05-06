@@ -38,4 +38,3 @@ Unverplant-Anzeige des nächsten Tags wird nicht aktualisiert, wenn ein Dienst g
 Person.anonymous und Person.position=anonymous differenzieren
 Fehlerbehandlung im Frontend
 refactor login_required, permission_required and args from session into one function
-Berechtigung Lesen wird im Dialog nicht ausgewählt
