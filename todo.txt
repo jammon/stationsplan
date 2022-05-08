@@ -39,3 +39,6 @@
 (B) Fehlerbehandlung im Frontend
 (C) refactor login_required, permission_required and args from session into one function
 (A) Overview in Navigation einbauen
+(A) Ward-Form überarbeiten
+(B) SQL-queries in overview
+Log user errors

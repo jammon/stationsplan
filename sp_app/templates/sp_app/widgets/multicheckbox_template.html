@@ -1,5 +1,6 @@
 <div class="col-md-3 col-sm-4">
-  {{ field }} <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+  <label>{{ field.label }}</label>
+  {{ field }}
   <div class="help-block">
     {{ field.help_text }}
   </div>
@@ -7,4 +8,3 @@
   <div class="alert alert-danger">{{ field.errors }}</div>
   {% endif %}
 </div>
-

@@ -1,12 +1,4 @@
-  <td class="control-label">
-      {{ field.label_tag }} 
-  </td>
-  <td class="label-block">
-    {{ field }} 
-    {% if help_text %}
-    	<div class="help-block">{{ help_text }}</div>
-    {% endif %}
-    {% if field.errors %}
-      <div class="col-sm-offset-3 col-sm-9 alert alert-danger">{{ field.errors }}</div>
-    {% endif %}
-  </td>
+<div class="col col-md-3 col-sm-4">
+    {{ field.label_tag }} {{ field }}  
+    <div>{{ field.errors}} </div>
+</div>

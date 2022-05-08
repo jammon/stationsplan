@@ -103,10 +103,10 @@ class WardForm(forms.ModelForm):
             ("6", "Sa"),
             ("0", "So"),
         ),
-        widget=RowCheckboxSelectMultiple,
+        widget=forms.CheckboxSelectMultiple,
         required=False,
         help_text="Wenn kein Wochentag ausgewählt ist, wird die Funktion für "
-        "alle üblichen Tage geplant.",
+        "alle üblichen Arbeitstage geplant.",
     )
     inactive = forms.BooleanField(
         label="Deaktiviert",
@@ -135,7 +135,7 @@ class WardForm(forms.ModelForm):
             # 'ward_type', 'approved', 'after_this', 'not_with_this', 'weight',
         ]
         widgets = {
-            "departments": RowCheckboxSelectMultiple,
+            "departments": forms.CheckboxSelectMultiple,
         }
 
     def __init__(self, *args, **kwargs):

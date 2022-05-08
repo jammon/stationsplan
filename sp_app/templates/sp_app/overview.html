@@ -1,21 +1,24 @@
 {% extends "base.html" %}
 {% load static %}
+
+{% block navigation %}
+{% include "sp_app/navigation.html" %}
+{% endblock navigation %}
+
 {% block content %}
 <div hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
-<h1>Überblick</h1>
+<h1>{{ company.name }}</h1>
 <div class="row">
-	<div class="col col-md-4">
-		<h2>Klinik</h2>
-		<p> Name: {{ company.name }} ({{ company.shortname }}) </p>
-		<p> Region: {{ company.region.name }} </p>
+	<div class="col col-xs-12">
+		Es kommen die Feiertage von <strong>{{ company.region.name }}</strong> zur Anwendung.
 	</div>
-	<div class="col col-md-4">
+	<div class="col col-sm-6">
 		<h2>Abteilungen</h2>
 		<div id="departments">
 			{% include "sp_app/partials/departments.html" %}
 		</div>
 	</div>
-	<div class="col col-md-4">
+	<div class="col col-sm-6">
 		<h2>Bearbeiter</h2>
 		<div id="employees">
 			{% include "sp_app/partials/employees.html" %}

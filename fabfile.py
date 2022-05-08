@@ -18,7 +18,10 @@ def makemigrations():
 
 
 def migrate_local():
-    local("python ./manage.py migrate sp_app " "--settings=stationsplan.settings.dev")
+    local(
+        "python ./manage.py migrate sp_app "
+        "--settings=stationsplan.settings.dev"
+    )
 
 
 def serve():
@@ -30,18 +33,12 @@ def sass():
     local("sass sp_app/static/css/print.{scss,css}")
 
 
-def commit():
-    local("git add -p && git commit")
+def makemessages():
+    local("./manage.py makemessages -l de")
 
 
-def push():
-    local("git push")
-
-
-def prepare_deploy():
-    test()
-    commit()
-    push()
+def compilemessages():
+    local("./manage.py compilemessages")
 
 
 # call with: `fab server_pull:my_branch`

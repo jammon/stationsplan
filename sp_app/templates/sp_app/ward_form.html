@@ -8,44 +8,49 @@
 {% block content %}
 <h1>Funktion bearbeiten</h1>
 <form action="" method="post">{% csrf_token %}
-<div>
+<div class="row">
+    <div class="col">
+        
 {% if form.errors %}
-    <p class="errornote bg-danger">
-    {% if form.errors.items|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}
-    {% endif %}
+    <p class="STYLE-THIS">
+    {% if form.errors.items|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
 	<div>{{ form.errors }} </div>
 	{% for key, value in form.errors.items %}
 		<div>{{ key }}: {{ value }} </div>
 	{% endfor %}
     </p>
 {% endif %}
+    </div>
+</div>
 
-<fieldset class="form-horizontal">
+<fieldset class="form">
 {% comment %}
-'after_this',
-'active'
-'ward_type', 
-'weight', 
+Missing fields:
+'after_this', 'active', 'ward_type', 'weight', 
 {% endcomment %}
-{% include "sp_app/widgets/field_template.html" with field=form.name %}
-{% include "sp_app/widgets/field_template.html" with field=form.shortname %}
-   <div class="form-group">
-    {% if form.min.errors or form.max.errors %}<div class="col-sm-offset-3 col-sm-9 alert alert-danger">{{ form.min.errors }} {{ form.max.errors }}</div>{% endif %}
-    <div class="col-sm-3 control-label">
-        <label>Besetzung</label> </div>
-    <div class="col-sm-9">
-      {{ form.min.label_tag }}{{ form.min }} {{ form.max.label_tag }}{{ form.max }} </div>
-  </div>
+<div class="row">
+    {% include "sp_app/widgets/field_template.html" with field=form.name %}
+    {% include "sp_app/widgets/field_template.html" with field=form.shortname %}
+</div>
+<div class="row margin-top-10">
+    <div class="col col-xs-12"><label>Besetzung</label></div>
+    {% include "sp_app/widgets/field_template.html" with field=form.min %}
+    {% include "sp_app/widgets/field_template.html" with field=form.max %}
+</div>
+<div class="row margin-top-10">
 {% include "sp_app/widgets/checkboxfield_template.html" with field=form.everyday %}
 {% include "sp_app/widgets/checkboxfield_template.html" with field=form.freedays %}
 {% include "sp_app/widgets/checkboxfield_template.html" with field=form.callshift %}
 {% include "sp_app/widgets/checkboxfield_template.html" with field=form.on_leave %}
-{% include "sp_app/widgets/field_template.html" with field=form.departments %}
+</div>
+<div class="row margin-top-10">
+{% include "sp_app/widgets/multicheckbox_template.html" with field=form.departments %}
 
-{% include "sp_app/widgets/helptextfield_template.html" with field=form.wkdys %}
-{% include "sp_app/widgets/field_template.html" with field=form.position %}
+{% include "sp_app/widgets/multicheckbox_template.html" with field=form.wkdys show_help=True %}
+{% include "sp_app/widgets/multicheckbox_template.html" with field=form.position %}
 
-{% include "sp_app/widgets/helptextfield_template.html" with field=form.inactive %}
+{% include "sp_app/widgets/multicheckbox_template.html" with field=form.inactive show_help=True %}
+</div>
 
   {{ form.weekdays.as_hidden }}
   {{ form.company.as_hidden }}
@@ -55,6 +60,5 @@
     </div>
   </div>
 </fieldset>
-</div>
 </form>
 {% endblock content %}
