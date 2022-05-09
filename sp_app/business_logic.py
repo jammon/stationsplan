@@ -39,11 +39,9 @@ def get_plan_data(
         .order_by("position", "name")
         .prefetch_related("functions", "departments")
     )
-    wards = (
-        Ward.objects.filter(departments__id__in=department_ids)
-        .order_by("position", "name")
-        .prefetch_related("after_this", "not_with_this")
-    )
+    wards = Ward.objects.filter(
+        departments__id__in=department_ids
+    ).prefetch_related("after_this", "not_with_this")
     different_days = DifferentDay.objects.filter(
         ward__departments__id__in=department_ids, day__gte=start_of_data
     ).select_related("ward")

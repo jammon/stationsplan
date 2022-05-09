@@ -51,6 +51,10 @@ Missing fields:
 
 {% include "sp_app/widgets/multicheckbox_template.html" with field=form.inactive show_help=True %}
 </div>
+<div class="row margin-top-10">
+{% include "sp_app/widgets/multicheckbox_template.html" with field=form.after_this %}
+{% include "sp_app/widgets/multicheckbox_template.html" with field=form.not_with_this %}
+</div>
 
   {{ form.weekdays.as_hidden }}
   {{ form.company.as_hidden }}

@@ -45,11 +45,9 @@ def personen_funktionen(request):
     personen = Person.objects.filter(
         departments__id__in=department_ids
     ).order_by("position", "name")
-    funktionen = (
-        Ward.objects.filter(departments__id__in=department_ids)
-        .order_by("position", "name")
-        .distinct()
-    )
+    funktionen = Ward.objects.filter(
+        departments__id__in=department_ids
+    ).distinct()
     return render(
         request,
         "sp_app/person_list.html",

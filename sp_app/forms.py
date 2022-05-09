@@ -132,17 +132,27 @@ class WardForm(forms.ModelForm):
             "position",
             "active",
             "inactive",
-            # 'ward_type', 'approved', 'after_this', 'not_with_this', 'weight',
+            "after_this",
+            "not_with_this",
+            # 'ward_type', 'approved', 'weight',
         ]
         widgets = {
             "departments": forms.CheckboxSelectMultiple,
+            "after_this": forms.CheckboxSelectMultiple,
+            "not_with_this": forms.CheckboxSelectMultiple,
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["departments"].queryset = Department.objects.filter(
             company__id=self.initial["company"]
-        )
+        ).order_by("name")
+        for field_name in ("after_this", "not_with_this"):
+            self.fields[field_name].queryset = Ward.objects.filter(
+                company__id=self.initial["company"]
+            )
+        for fn in ("name", "shortname", "max", "min", "position"):
+            self.fields[fn].widget.attrs["class"] = "form-control"
 
     def get_initial_for_field(self, field, field_name):
         if field_name == "wkdys":

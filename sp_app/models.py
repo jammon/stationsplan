@@ -152,7 +152,7 @@ class Ward(models.Model):
     class Meta:
         verbose_name = _("Task")
         verbose_name_plural = _("Tasks")
-        ordering = ["position"]
+        ordering = ["position", "name"]
 
     def __str__(self):
         return self.name
