@@ -207,6 +207,8 @@ var Staffing = Backbone.Collection.extend({
     },
     can_be_planned: function(person) {
         if (!person) return false;
+        // if they left the company, they cannot be planned
+        if (person.get('end_date')<this.day.get('date')) return false;
         // a vacation can be planned for the members of the current department
         if (this.ward.get('on_leave')) 
             return person.get('current_department');
