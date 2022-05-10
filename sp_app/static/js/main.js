@@ -35,10 +35,9 @@ function setupCsrfProtection() {
 
 function initialize_site(data) {
     setupCsrfProtection();
-    models.user.is_editor = data.is_editor;
-    models.user.is_dep_lead = data.is_dep_lead;
-    models.user.is_company_admin = data.is_company_admin;
-    models.user.departments = data.departments;
+    _.extend(
+        models.user, 
+        _.pick(data, "is_editor", "is_dep_lead", "is_company_admin", "departments"));
     // just choose one department
     models.user.current_department = parseInt(_.keys(data.departments)[0]);
     models.initialize_wards(data.wards, data.different_days);
