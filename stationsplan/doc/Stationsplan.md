@@ -198,3 +198,19 @@ you can then find the current grid option with:
 - Nur berechtigte Personen können verändern
 - Pläne sind von überall einsehbar
 - Keine unbesetzten Positionen, keine versehentlich doppelte Verplanung
+
+## Umstellung auf htmx
+- if they left the company, they cannot be planned
+- a vacation can be planned for the members of the current department
+- is she/he on leave?
+- Is this ward in their portfolio?
+- the person is not anonymous
+    - does yesterdays planning allow this?
+        - if they were not on leave yesterday ...
+        - check if yesterdays plannings prohibit this
+    - does todays planning allow this?
+
+## iCal-Anbindung
+- django_ical für den Feed
+- Event ist Planning 
+

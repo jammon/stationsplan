@@ -12,15 +12,15 @@ describe("utils", function() {
                 {name: 'Tag der deutschen Einheit',
                  mode: 'abs',
                  day: 3,
-                 month: 10},
+                 month: 10},  // absolute
                 {name: 'Reformationstag',
                  mode: 'abs',
                  day: 31,
                  month: 10,
-                 year: 2017},
+                 year: 2017},  // absolute, only once
                 {name: 'Himmelfahrt',
                  mode: 'rel',
-                 day: 39},
+                 day: 39},  // relative
                 ]);
             expect(utils.is_free(new Date(2017, 9, 3)))
                 .toEqual('Tag der deutschen Einheit');
