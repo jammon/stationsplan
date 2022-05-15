@@ -41,3 +41,5 @@
 (C) Log user errors
 Remove pytz for Django4
 Test zoneinfo database on server
+Cache feed_ids
+Use Conditional View Processing https://docs.djangoproject.com/en/4.0/topics/conditional-view-processing/

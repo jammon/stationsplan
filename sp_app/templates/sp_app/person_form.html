@@ -20,10 +20,10 @@
 <div class="col col-md-3 col-sm-6 col-xs-12">
 <table>
   <tr>
-    {% include "sp_app/widgets/table_field_template.html" with field=form.name%}
+    {% include "sp_app/widgets/table_field_template.html" with field=form.name %}
   </tr>
   <tr>
-    {% include "sp_app/widgets/table_field_template.html" with field=form.shortname%}
+    {% include "sp_app/widgets/table_field_template.html" with field=form.shortname %}
   </tr>
 </table>
 </div>
@@ -31,10 +31,10 @@
 <div class="col col-md-3 col-sm-6 col-xs-12">
 <table>
   <tr>
-    {% include "sp_app/widgets/table_field_template.html" with field=form.start_date%}
+    {% include "sp_app/widgets/table_field_template.html" with field=form.start_date %}
   </tr>
   <tr>
-    {% include "sp_app/widgets/table_field_template.html" with field=form.end_date%}
+    {% include "sp_app/widgets/table_field_template.html" with field=form.end_date %}
   </tr>
 </table>
 </div>
@@ -42,7 +42,7 @@
 <div class="col col-md-3 col-sm-6 col-xs-12">
 <table>
   <tr>
-    {% include "sp_app/widgets/table_field_template.html" with field=form.departments%}
+    {% include "sp_app/widgets/table_field_template.html" with field=form.departments %}
   </tr>
 </table>
 </div>
@@ -50,9 +50,14 @@
 <div class="col col-md-3 col-sm-6 col-xs-12">
 <table>
   <tr>
-    {% include "sp_app/widgets/table_field_template.html" with field=form.position%}
+    {% include "sp_app/widgets/table_field_template.html" with field=form.position %}
   </tr>
 </table>
+</div>
+
+<div class="col col-md-3 col-sm-6 col-xs-12">
+  {{ form.email.label_tag }} {{ form.email }}
+  <div>{{ form.email.errors}} </div>
 </div>
 
   {{ form.company.as_hidden }}

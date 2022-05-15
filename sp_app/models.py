@@ -330,7 +330,18 @@ class Person(models.Model):
         return self.end_date >= date.today()
 
     def inactivate_older_feeds(self, feed):
-        FeedId.objects.filter(person=self, pk__lt=feed.pk).update(active=False)
+        feedids = list(FeedId.objects.filter(person=self, active=True))
+        if len(feedids) <= 1:
+            return
+        current = None
+        for f in feedids:
+            if f.uid == feed:
+                current = f
+                break
+        assert f is not None
+        for f in feedids:
+            if f.pk < current.pk:
+                f.delete()
 
 
 class ChangeLogging(models.Model):

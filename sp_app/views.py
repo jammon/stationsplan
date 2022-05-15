@@ -95,7 +95,11 @@ def ward_initials(request):
 
 
 ward_edit = get_edit_view(
-    Ward, forms.WardForm, ward_initials, "/zuordnung", "sp_app/ward_form.html"
+    Ward,
+    forms.WardForm,
+    ward_initials,
+    "/zuordnung",
+    "sp_app/ward_form.html",
 )
 
 

@@ -78,7 +78,7 @@ urlpatterns = [
     #
     # Ajax -------------------------------------------------------------
     #
-    path("feed/<str:feed_id>", ical_views.DienstFeed()),
+    path("feed/<str:feed_id>", ical_views.DienstFeed(), name="icalfeed"),
     #
     #
     # Administrators -----------------------------------------------------

@@ -68,6 +68,7 @@ class PersonForm(forms.ModelForm):
             "end_date",
             "departments",
             "position",
+            "email",
             "company",
         ]
         widgets = {

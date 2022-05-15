@@ -1,7 +1,6 @@
 from datetime import date, timedelta
 from django_ical.views import ICalFeed
-from icalendar import Calendar, Event
-from sp_app.models import Person, Planning, FeedId
+from sp_app.models import Person, Planning
 
 CALENDAR_START = date(2021, 11, 1)
 ONE_DAY = timedelta(days=1)
@@ -19,11 +18,12 @@ class DienstFeed(ICalFeed):
     file_name = "dienste.ics"
 
     def get_object(self, request, feed_id):
-        feed = FeedId.objects.get(uid=feed_id, active=True).select_related(
-            "person"
+        # TODO: Use cache
+        person = Person.objects.get(
+            feed_ids__uid=feed_id, feed_ids__active=True
         )
-        feed.person.inactivate_older_feeds(feed)
-        return feed.person
+        person.inactivate_older_feeds(feed_id)
+        return person
 
     def items(self, person):
         return (
@@ -50,20 +50,3 @@ class DienstFeed(ICalFeed):
 
     def item_link(self, planning):
         return "http://localhost:8000/plan"
-
-
-def get_person_plannings(person_id, company_id):
-    MAX_PLANNED_DAYS = 20
-
-    cal = Calendar()
-    cal.add("prodid", CAL_PRODID)
-    cal.add("version", CAL_VERSION)
-
-    plannings = Planning.objects.filter(
-        person_id=person_id, company_id=company_id, start_gte=CALENDAR_START
-    )
-    for planning in plannings:
-        dt_start, nr = planning.start, 0
-        while dt_start <= planning.end and nr < MAX_PLANNED_DAYS:
-            event = Event()
-            event.add("dt_start", dt_start)
