@@ -1,6 +1,7 @@
-from .base import *  # noqa: F403
-import os
 import configparser
+from pathlib import PosixPath
+
+from .base import *  # noqa: F403
 
 DEBUG = False
 
@@ -10,25 +11,12 @@ ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
 ]
-STATIC_ROOT = os.path.expanduser("~/html/static/")
+STATIC_ROOT = PosixPath("~/html/static/").expanduser()
 STATICFILES_STORAGE = (
     "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 )
 
-CONFIG_FILE = os.path.expanduser("~/.statplan.cnf")
-DB_CONFIG_FILE = os.path.expanduser("~/.my.cnf")
-
-config = configparser.ConfigParser()
-config.read(CONFIG_FILE)
-try:
-    SECRET_KEY = config["django"]["key"]
-except KeyError:
-    if not config.has_section("django"):
-        config["django"] = {}
-    SECRET_KEY = config["django"]["key"] = random_string(50)
-    with open(CONFIG_FILE, "w") as configfile:
-        config.write(configfile)
-
+DB_CONFIG_FILE = PosixPath("~/.my.cnf").expanduser()
 
 db_config = configparser.ConfigParser()
 with open(DB_CONFIG_FILE) as db_conf_file:
@@ -59,6 +47,7 @@ DJANGO_TEMPLATES["OPTIONS"]["loaders"] = [
     ),
 ]
 
+LOG_FILE = PosixPath("~/logs/stationsplan.log").expanduser()
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -66,7 +55,7 @@ LOGGING = {
         "file": {
             "level": "DEBUG",
             "class": "logging.FileHandler",
-            "filename": os.path.expanduser("~/logs/stationsplan.log"),
+            "filename": LOG_FILE,
         },
     },
     "loggers": {

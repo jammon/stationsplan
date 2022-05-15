@@ -1,15 +1,20 @@
 """
 Django settings for stationsplan project.
 """
-
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from random import choice
+import configparser
 import os
 import string
 import sys
 import time
-from random import choice
 from pathlib import Path
 
+
+def random_string(length, allowed_chars=string.printable):
+    return "".join([choice(allowed_chars) for i in range(length)])
+
+
+# Build paths inside the project like this: BASE_DIR / "path/file.ext"
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 TESTING = False
@@ -25,8 +30,20 @@ if TESTING:
     PASSWORD_HASHERS = ("django.contrib.auth.hashers.MD5PasswordHasher",)
 
 VERSION = time.strftime(
-    "%Y-%m-%d", time.gmtime(os.path.getmtime(os.path.join(BASE_DIR, ".git")))
+    "%Y-%m-%d", time.gmtime(os.path.getmtime(BASE_DIR / ".git"))
 )
+
+CONFIG_FILE = BASE_DIR / ".statplan.cnf"
+config = configparser.ConfigParser(interpolation=None)
+config.read(CONFIG_FILE)
+try:
+    SECRET_KEY = config["django"]["key"]
+except KeyError:
+    if not config.has_section("django"):
+        config["django"] = {}
+    SECRET_KEY = config["django"]["key"] = random_string(50)
+    with open(CONFIG_FILE, "w") as configfile:
+        config.write(configfile)
 
 # Application definition
 INSTALLED_APPS = (
@@ -82,7 +99,7 @@ WSGI_APPLICATION = "stationsplan.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
 
@@ -98,7 +115,7 @@ TIME_ZONE = "Europe/Berlin"
 USE_I18N = True
 
 USE_TZ = True
-LOCALE_PATHS = (os.path.join(BASE_DIR, "locale"),)
+LOCALE_PATHS = (BASE_DIR / "locale",)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
@@ -113,10 +130,6 @@ STATICFILES_FINDERS = (
 
 LOGIN_URL = "/login"
 LOGIN_REDIRECT_URL = "/plan"
-
-
-def random_string(length=50):
-    return "".join([choice(string.printable) for i in range(50)])
 
 
 def read_secret(secret_file_name, content_description, generate_secret=False):
