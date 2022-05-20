@@ -1,0 +1,17 @@
+<tr id="person_{{ person.id }}">
+  <td>{{ person.name}} </td>
+  <td>
+  {% if person.email %}
+    {{ person.email }}
+  {% else %}
+    (keine Mailadresse)
+  {% endif %}
+  </td>
+  {% if person.email %}
+    <td hx-post="/send_ical_feed/{{ person.id }}" hx-swap="outerHTML">
+      iCal-Feed schicken
+    </td>
+  {% else %}
+    <td></td>
+  {% endif %}
+</tr>

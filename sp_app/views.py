@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -51,7 +52,11 @@ def personen_funktionen(request):
     return render(
         request,
         "sp_app/person_list.html",
-        {"personen": personen, "funktionen": funktionen},
+        {
+            "personen": personen,
+            "funktionen": funktionen,
+            "email_available": settings.EMAIL_AVAILABLE,
+        },
     )
 
 
@@ -115,3 +120,18 @@ def overview(request):
         .get(id=request.session["company_id"])
     )
     return render(request, "sp_app/overview.html", {"company": company})
+
+
+@login_required
+@permission_required("sp_app.is_dep_lead")
+def ical_feeds(request):
+    """List and edit the ical feeds of all persons of these departments"""
+    department_ids = request.session.get("department_ids")
+    personen = Person.objects.filter(
+        departments__id__in=department_ids
+    ).order_by("position", "name")
+    return render(
+        request,
+        "sp_app/ical_feeds.html",
+        {"personen": [p for p in personen if p.current()]},
+    )

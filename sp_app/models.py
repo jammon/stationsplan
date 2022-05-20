@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 import json
+import string
 from datetime import date, timedelta
 from django.contrib.auth.models import User, Group
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db import models, IntegrityError
 from django.utils.translation import gettext as _
 
+from stationsplan.utils import random_string
 
 FAR_FUTURE = date(2099, 12, 31)
 ONE_DAY = timedelta(days=1)
@@ -743,7 +745,7 @@ class Region(models.Model):
 class FeedId(models.Model):
     """The Id for the URL of an ical feed"""
 
-    uid = models.CharField("ID", max_length=20)
+    uid = models.CharField("ID", max_length=20, unique=True)
     person = models.ForeignKey(
         Person, related_name="feed_ids", on_delete=models.CASCADE
     )
@@ -755,3 +757,18 @@ class FeedId(models.Model):
 
     def __str__(self):
         pass
+
+    @classmethod
+    def new(cls, person):
+        """Return a new feed-id for a person.
+
+        The old ones stay active
+        """
+        while True:
+            try:
+                uid = random_string(12, string.ascii_letters + string.digits)
+                feed = FeedId.objects.create(uid=uid, person=person)
+                return feed
+            except IntegrityError:
+                # uid was already taken
+                pass

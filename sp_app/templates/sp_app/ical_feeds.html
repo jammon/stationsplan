@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block navigation %}
+{% include "sp_app/navigation.html" %}
+{% endblock navigation %}
+
+{% block content %}
+<div class="row" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+  <div class="col col-xs-12">
+    <table class="table" style="width: auto;">
+    {% for person in personen %}
+      {% include "sp_app/partials/person_feed.html" %}
+    {% endfor %}
+    </table>
+  </div>
+</div>
+{% endblock %}
+{% block extrascripts %}
+  <script src="{% static 'vendor/htmx.min.js' %}"></script>
+{% endblock extrascripts %}

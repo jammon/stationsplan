@@ -1,7 +1,6 @@
 """
 Django settings for stationsplan project.
 """
-from random import choice
 import configparser
 import os
 import string
@@ -9,9 +8,7 @@ import sys
 import time
 from pathlib import Path
 
-
-def random_string(length, allowed_chars=string.printable):
-    return "".join([choice(allowed_chars) for i in range(length)])
+from stationsplan.utils import random_string
 
 
 # Build paths inside the project like this: BASE_DIR / "path/file.ext"
@@ -44,6 +41,18 @@ except KeyError:
     SECRET_KEY = config["django"]["key"] = random_string(50)
     with open(CONFIG_FILE, "w") as configfile:
         config.write(configfile)
+
+# E-Mail
+try:
+    EMAIL_HOST = config["mail"]["host"]
+    EMAIL_PORT = int(config["mail"]["port"])
+    EMAIL_HOST_USER = config["mail"]["host_user"]
+    EMAIL_HOST_PASSWORD = config["mail"]["host_password"]
+    EMAIL_USE_TLS = config["mail"].getboolean("use_tls")
+    EMAIL_USE_SSL = config["mail"].getboolean("use_ssl")
+    EMAIL_AVAILABLE = True
+except KeyError:
+    EMAIL_AVAILABLE = False
 
 # Application definition
 INSTALLED_APPS = (

@@ -18,7 +18,14 @@
         {% endif %}
         {% endfor %}
     </ul>
-    <a class="btn btn-default" href="/person/add/" role="button">Neue/r Mitarbeiter/in</a>
+    <div>
+        <a class="btn btn-default" href="/person/add/" role="button">Neue/r Mitarbeiter/in</a>
+    </div>
+    {% if email_available %}
+    <div>
+        <a class="btn" href="/ical_feeds" role="button">iCal-Feed erstellen</a>
+    </div>
+    {% endif %}
   </div>
   <div class="col-md-3 col-sm-6">
     <h2>Frühere Mitarbeiter/innen</h2>

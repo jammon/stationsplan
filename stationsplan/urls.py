@@ -76,7 +76,7 @@ urlpatterns = [
     ),
     #
     #
-    # Ajax -------------------------------------------------------------
+    # iCal -------------------------------------------------------------
     #
     path("feed/<str:feed_id>", ical_views.DienstFeed(), name="icalfeed"),
     #
@@ -88,6 +88,12 @@ urlpatterns = [
     path("person/<int:pk>/", sp_views.person_edit, name="person-update"),
     path("funktion/add/", sp_views.ward_edit, name="ward-add"),
     path("funktion/<int:pk>/", sp_views.ward_edit, name="ward-update"),
+    path("ical_feeds", sp_views.ical_feeds, name="ical_feeds"),
+    path(
+        "send_ical_feed/<int:pk>",
+        sp_ajax.send_ical_feed,
+        name="send_ical_feed",
+    ),
     #
     #
     # Auth -------------------------------------------------------------

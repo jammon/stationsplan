@@ -219,6 +219,7 @@ you can then find the current grid option with:
     + Es soll angezeigt werden, wenn es nicht freigegebene Planungen gibt
 - Für jede Funktion kann festgelegt werden, ob sie im Feed auftaucht
 - Sortierung des ical-Feeds?
+- Last-Modified-Header in Feed setzen
 
 ### Regeldienst und Sonderaufgaben
 Es sollen Funktionen als regulärer Dienst definiert werden können (z.B. Stationsarbeit) und andere, die einen aus dem Regeldienst raus nehmen (z.B. NEF, Funktionsdienst, OP o.ä.)

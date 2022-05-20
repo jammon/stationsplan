@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
+from django.conf import settings
 from django.contrib.auth.decorators import permission_required
 from django.core.exceptions import PermissionDenied
+from django.core.mail import send_mail
 from django.db.models import Q
-from django.views.decorators.http import require_POST
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404, HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
+from django.views.decorators.http import require_POST
 
 import json
 
@@ -20,6 +22,7 @@ from .models import (
     Person,
     StatusEntry,
     Ward,
+    FeedId,
 )
 from sp_app import forms
 
@@ -315,3 +318,56 @@ def edit_employee(request, employee_id=None):
             "url": reverse("edit-employee", args=(employee_id,)),
         },
     )
+
+
+ICAL_MAIL_TEXT = """
+Guten Tag!
+
+Für "{}" wurde mit "Stationsplan.de" ein Online-Kalender mit den
+geplanten Diensten erstellt. Die Adresse ist
+
+    https://stationsplan.de{}
+
+Importieren Sie diese Adresse in Ihre Kalender-App Ihres Smartphones oder
+Computers.
+
+Sollte diese Mail nicht für Sie gedacht gewesen sein, können Sie sie
+einfach ignorieren.
+
+Mit freundlichen Grüßen, Stationsplan.de
+"""
+
+
+@ajax_login_required
+@permission_required("sp_app.is_dep_lead")
+def send_ical_feed(request, pk):
+    """Send the url of the personal feed to the perrson's mail address"""
+
+    def response(msg):
+        return HttpResponse(f"<td>{msg}</td>")
+
+    if not settings.EMAIL_AVAILABLE:
+        return response("No Mailservice")
+    department_ids = request.session.get("department_ids")
+    person = get_object_or_404(
+        Person, pk=pk, departments__id__in=department_ids
+    )
+    if not person.email:
+        return response("Mailadresse fehlt")
+    feed_id = person.feed_ids.order_by("pk").last()
+    if feed_id is None:
+        feed_id = FeedId.new(person)
+
+    subject = f"Kalender für {person.name}"
+    url = reverse("icalfeed", kwargs={"feed_id": feed_id.uid})
+    success = send_mail(
+        subject,
+        ICAL_MAIL_TEXT.format(url, person.name),
+        "server@stationsplan.de",
+        [person.email],
+        fail_silently=False,
+    )
+    if success:
+        return response("Mail versandt")
+    else:
+        return response("Error")
