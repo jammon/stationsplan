@@ -149,3 +149,7 @@ x 2022-05-06 Berechtigung Lesen wird im Dialog nicht ausgewählt
 x 2022-05-08 Overview in Navigation einbauen
 x 2022-05-08 Ward-Form überarbeiten
 x 2022-05-10 Urlaube werden auch von nicht mehr Anwesenden angezeigt
+x 2022-05-22 Cache feed_ids
+x 2022-05-22 Remove pytz for Django4
+x 2022-05-22 Wenn man einen Diensthabenden draggt, geht nach dem Droppen das Besetzung ändern-Fenster auf für den Ausgangstag +bug
+x 2022-05-22 Wenn man einen Diensthabenden dragt und auf das gleiche Feld wieder dropt, wird er ausgetragen

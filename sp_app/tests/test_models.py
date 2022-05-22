@@ -13,6 +13,7 @@ from sp_app.models import (
     FAR_FUTURE,
     Employee,
     EMPLOYEE_GROUP,
+    FeedId,
 )
 from sp_app.utils import PopulatedTestCase
 
@@ -92,6 +93,15 @@ class TestPerson(PopulatedTestCase):
             end=FAR_FUTURE,
         )
         self.assertEqual(planning.end, date(2016, 6, 30))
+
+    def test_inactivate_older_feeds(self):
+        feed1 = FeedId.new(self.person_a)
+        feed2 = FeedId.new(self.person_a)
+        feed3 = FeedId.new(self.person_a)
+        self.person_a.inactivate_older_feeds(feed2.uid)
+        for feed, status in ((feed1, False), (feed2, True), (feed3, True)):
+            f = FeedId.objects.get(pk=feed.pk)
+            assert f.active == status
 
 
 class TestWard(PopulatedTestCase):

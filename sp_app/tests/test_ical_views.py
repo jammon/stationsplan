@@ -36,8 +36,7 @@ class TestDienstFeed(PopulatedTestCase):
             )
 
     def test_feed(self):
-        c = Client()
-        response = c.get(reverse("icalfeed", args=["abc"]))
+        response = self.client.get(reverse("icalfeed", args=["abc"]))
         cal = Calendar.from_ical(response.content)
         events = [comp for comp in cal.walk() if comp.name == "VEVENT"]
         assert len(events) == 2
@@ -66,4 +65,4 @@ class TestMailFeed(LoggedInTestCase):
         m = mail.outbox[0]
         assert m.subject == "Kalender für Person A"
         feedid = self.person_a.feed_ids.first()
-        assert m.message.contains(feedid.uid)
+        assert feedid.uid in m.body
