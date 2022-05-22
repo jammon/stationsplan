@@ -282,9 +282,9 @@ class TestAssertContainsDict(PopulatedTestCase):
 
 def test_email_settings():
     assert settings.EMAIL_AVAILABLE
-    assert settings.EMAIL_HOST == "stplan2.uberspace.de"
+    assert settings.EMAIL_HOST.contains(".uberspace.de")
     assert settings.EMAIL_PORT == 587
-    assert settings.EMAIL_HOST_USER == "server@stplan2.uberspace.de"
+    assert settings.EMAIL_HOST_USER.contains("server@")
     assert len(settings.EMAIL_HOST_PASSWORD) > 5
     assert settings.EMAIL_USE_TLS
     assert not settings.EMAIL_USE_SSL

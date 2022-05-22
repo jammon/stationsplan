@@ -1,10 +1,11 @@
 from datetime import date
+from django.core import mail
 from django.test import Client
 from django.urls import reverse
 from icalendar import Calendar
 
 from sp_app.models import Ward, Planning, FeedId
-from sp_app.utils import PopulatedTestCase
+from sp_app.utils import PopulatedTestCase, LoggedInTestCase
 
 
 class TestDienstFeed(PopulatedTestCase):
@@ -45,3 +46,24 @@ class TestDienstFeed(PopulatedTestCase):
         for ev, day in zip(events, ["2022-05-15", "2022-05-13"]):
             assert str(ev.decoded("dtstart")) == day
             assert str(ev.decoded("dtend")) == day
+
+
+class TestMailFeed(LoggedInTestCase):
+    """Test the mailing of the ical feed"""
+
+    employee_level = "is_dep_lead"
+
+    def test_send_ical_feed(self):
+        url = reverse("send_ical_feed", args=[self.person_a.pk])
+        response = self.client.get(url)
+        assert len(mail.outbox) == 0
+        assert response.content == b"<td>Mailadresse fehlt</td>"
+
+        self.person_a.email = "mail@example.com"
+        self.person_a.save()
+        response = self.client.get(url)
+        assert len(mail.outbox) == 1
+        m = mail.outbox[0]
+        assert m.subject == "Kalender für Person A"
+        feedid = self.person_a.feed_ids.first()
+        assert m.message.contains(feedid.uid)

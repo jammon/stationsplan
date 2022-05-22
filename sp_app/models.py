@@ -631,7 +631,7 @@ class Employee(models.Model):
 
         If level is None or "None", remove all special permissions
         """
-        assert level in EMPLOYEE_LEVEL
+        assert level in EMPLOYEE_LEVEL or level in (None, "None")
         groups = dict((g.name, g) for g in Group.objects.all())
         self.user.groups.remove(
             *(groups[name] for name in EMPLOYEE_GROUP.values())

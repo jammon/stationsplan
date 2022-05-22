@@ -7,7 +7,7 @@ from http import HTTPStatus
 import json
 import logging
 
-from sp_app.utils import PopulatedTestCase
+from sp_app.utils import PopulatedTestCase, LoggedInTestCase
 from sp_app.models import (
     Company,
     Ward,
@@ -172,30 +172,16 @@ class TestPlanData(PopulatedTestCase):
         assert inactive_ward in plan_data["inactive_wards"]
 
 
-class ViewsTestCase(PopulatedTestCase):
+class ViewsTestCase(LoggedInTestCase):
     def setUp(self):
-        super(ViewsTestCase, self).setUp()
-        self.user = User.objects.create_user(
-            "user", "user@domain.tld", "password"
-        )
-        self.employee = Employee.objects.create(
-            user=self.user, company=self.company
-        )
-        self.employee.departments.add(self.department)
-        self.client.login(username="user", password="password")
+        super().setUp()
         self.DATA_FOR_CHANGE = {
             "day": "20160120",
             "ward_id": self.ward_a.id,
             "continued": False,
             "persons": [
-                {
-                    "id": self.person_a.id,
-                    "action": "add",
-                },
-                {
-                    "id": self.person_b.id,
-                    "action": "remove",
-                },
+                {"id": self.person_a.id, "action": "add"},
+                {"id": self.person_b.id, "action": "remove"},
             ],
             "last_pk": 0,
         }

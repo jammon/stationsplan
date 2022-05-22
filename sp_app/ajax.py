@@ -5,8 +5,8 @@ from django.contrib.auth.decorators import permission_required
 from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
 from django.db.models import Q
-from django.http import JsonResponse, Http404, HttpResponse
-from django.shortcuts import get_object_or_404, render, redirect
+from django.http import JsonResponse, HttpResponse
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
@@ -362,7 +362,7 @@ def send_ical_feed(request, pk):
     url = reverse("icalfeed", kwargs={"feed_id": feed_id.uid})
     success = send_mail(
         subject,
-        ICAL_MAIL_TEXT.format(url, person.name),
+        ICAL_MAIL_TEXT.format(person.name, url),
         "server@stationsplan.de",
         [person.email],
         fail_silently=False,

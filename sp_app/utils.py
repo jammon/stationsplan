@@ -20,6 +20,7 @@ from .models import (
     ChangeLogging,
     CalculatedHoliday,
     process_change,
+    Employee,
 )
 
 
@@ -238,3 +239,21 @@ class PopulatedTestCase(TestCase):
                 f"{{ {repr(key)}: {repr(given[key])}, ...}} != "
                 f"{{ {repr(key)}: {repr(value)}, ...}}",
             )
+
+
+class LoggedInTestCase(PopulatedTestCase):
+    """PopulatedTestCase with user logged in"""
+
+    employee_level = None
+
+    def setUp(self):
+        super(LoggedInTestCase, self).setUp()
+        self.user = User.objects.create_user(
+            "user", "user@domain.tld", "password"
+        )
+        self.employee = Employee.objects.create(
+            user=self.user, company=self.company
+        )
+        self.employee.set_level(self.employee_level)
+        self.employee.departments.add(self.department)
+        self.client.login(username="user", password="password")
