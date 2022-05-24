@@ -533,6 +533,7 @@ class Planning(models.Model):
         default=None,
         help_text=_("Later planning that supersedes this one"),
     )
+    updateddate = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = _("Planning")

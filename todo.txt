@@ -5,7 +5,6 @@
 (C) Wenn eine Buchung nicht möglich ist, muss die Seite neu dargestellt werden +FIX
 (B) Alle Dienste einer Person des aktuellen Monats sollen angezeigt werden
 (C) Urlaube in der Planungsansicht der Dienste anzeigen
-(C) Die Dienste jeder Person als Kalender zur Verfügung stellen, mit Updates +Public
 (C) Doppelclick auf voriger oder nächster Monat soll nur einmal wirken
 (C) Integrationtests in jasmine einbauen +Public
 (C) Favicon bauen +Public https://codeburst.io/the-front-end-checklist-8b2292fdda44
@@ -17,8 +16,6 @@
 (C) meta description in base.html verbessern
 (C) Anordnung der Diensthabenden in der Stationsansicht so, dass sie immer auf einer Reihe sind
 (C) Set MySQL Strict Mode +deploy https://docs.djangoproject.com/en/2.2/ref/databases/#mysql-sql-mode
-(B) Impressum verfassen +Public
-(B) Datenschutzerklärung verfassen +Public
 (C) Wenn man sich bei /admin einloggt, soll trotzdem die Session korrekt initialisiert werden
 (C) In Views kaputte Eingaben abfangen
 (C) django.views.decorators.http.condition einsetzen https://docs.djangoproject.com/en/3.0/topics/conditional-view-processing/
@@ -30,13 +27,14 @@
 (C) pre-commit hook implementieren https://githooks.com/ https://pre-commit.com/
 (B) Fehler: GET /updates/undefined?_=1632197709719
 (B) Person.position und Person.anonymous bzw. erternal überlappen sich in ihrer Funktion
-(A) Mailadresse j.ammon@stationsplan.de einrichten
-(A) Unverplant-Anzeige des nächsten Tags wird nicht aktualisiert, wenn ein Dienst geplant oder gecancelt wird
+(C) Unverplant-Anzeige des nächsten Tags wird nicht aktualisiert, wenn ein Dienst geplant oder gecancelt wird
 (C) Person.anonymous und Person.position=anonymous differenzieren
 (B) Fehlerbehandlung im Frontend
 (C) refactor login_required, permission_required and args from session into one function
 (C) SQL-queries in overview
 (C) Log user errors
-Test zoneinfo database on server
-Use Conditional View Processing https://docs.djangoproject.com/en/4.0/topics/conditional-view-processing/
-LAST-MODIFIED Property nutzen
+(B) Test zoneinfo database on server
+(B) Use Conditional View Processing https://docs.djangoproject.com/en/4.0/topics/conditional-view-processing/
+(B) LAST-MODIFIED Property nutzen
+(B) Error reporting https://docs.djangoproject.com/en/4.0/howto/error-reporting/
+Beispielplan entwickeln

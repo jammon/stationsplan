@@ -1,7 +1,5 @@
 from datetime import date, timedelta
-from django.http import Http404
 from django_ical.views import ICalFeed
-from django.urls import reverse
 from sp_app.models import Person, Planning
 
 CALENDAR_START = date(2021, 11, 1)
@@ -17,7 +15,12 @@ class DienstFeed(ICalFeed):
 
     product_id = "-//stationsplan.de//TESTING//DE"
     timezone = "UTC"
-    file_name = "dienste.ics"
+
+    def title(self, obj):
+        return f"Dienste für {obj.name}"
+
+    def file_name(self, obj):
+        return f"dienste_{obj.name}.ics"
 
     def get_object(self, request, feed_id):
         person = Person.objects.get(
@@ -52,11 +55,3 @@ class DienstFeed(ICalFeed):
 
     def item_link(self, planning):
         return "http://localhost:8000/plan"
-
-    def title(self, obj):
-        return f"Dienste für {obj.name}"
-
-    def link(self, obj):
-        if hasattr(obj, "current_feedid"):
-            return reverse("icalfeed", args=(obj.current_feedid,))
-        raise Http404
