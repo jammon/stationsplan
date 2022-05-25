@@ -52,4 +52,4 @@ class DienstFeed(ICalFeed):
         return planning.end
 
     def item_link(self, planning):
-        return "http://localhost:8000/plan"
+        return settings.DOMAIN + "/plan"

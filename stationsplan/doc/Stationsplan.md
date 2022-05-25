@@ -175,10 +175,10 @@ you can then find the current grid option with:
 
 ## Going public
 - Dokumentation schreiben
-- Personen und Funktionen mit htmx bearbeiten
+- Personen und Funktionen mit htmx bearbeiten √
 - Einstieg für neue Kliniken anbieten
     - Company Admin anlegen
-    - Klinikname eingeben
+    - Klinikname und Region eingeben
     - Abteilungen anlegen
     - User anlegen
         + User ohne Rechte
@@ -191,6 +191,8 @@ you can then find the current grid option with:
     + Jede Klinik bekommt eine Domain mit ihrem Kurznamen
     + Bisherige Kliniken können sich noch an `stationsplan.de` anmelden
 - Design überarbeiten
+- Beispielklinik anlegen
+    + Namen: Huber, Krüger, Strey, Voigtländer, Beyerlein, Theis, Zaremba, Dornig, Zawadzki, Böhmer, Schneider, Krause, Gutschow, Karout, Avci, Abele.
     
 ### Werbung, Aussagen über Funktion und Leistung
 - Die Planung ist erreichbar unter `kurzname.stationsplan.de`

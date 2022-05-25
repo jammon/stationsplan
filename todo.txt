@@ -11,7 +11,7 @@
 (C) Assets komprimieren
 (C) Flags für Betatester
 (C) Testen mit Firefox headless oder PhantomJS
-(B) Aktion Aktualisieren ins Menu
+(C) Aktion Aktualisieren ins Menu
 (C) Aktualisierung soll auch die Freigabe von Planungen vermitteln
 (C) meta description in base.html verbessern
 (C) Anordnung der Diensthabenden in der Stationsansicht so, dass sie immer auf einer Reihe sind
@@ -25,7 +25,6 @@
 (C) Admin soll nur für die eigene Abteilung Personen anlegen können
 (C) In Admin kann man derzeit nur die Abteilungen der Klinik bearbeiten, für die man angemeldet ist.
 (C) pre-commit hook implementieren https://githooks.com/ https://pre-commit.com/
-(B) Fehler: GET /updates/undefined?_=1632197709719
 (B) Person.position und Person.anonymous bzw. erternal überlappen sich in ihrer Funktion
 (C) Unverplant-Anzeige des nächsten Tags wird nicht aktualisiert, wenn ein Dienst geplant oder gecancelt wird
 (C) Person.anonymous und Person.position=anonymous differenzieren
@@ -35,6 +34,7 @@
 (C) Log user errors
 (B) Test zoneinfo database on server
 (B) Use Conditional View Processing https://docs.djangoproject.com/en/4.0/topics/conditional-view-processing/
-(B) LAST-MODIFIED Property nutzen
 (B) Error reporting https://docs.djangoproject.com/en/4.0/howto/error-reporting/
-Beispielplan entwickeln
+(B) Beispielplan entwickeln
+Logs monitoren +Public
+(A) Im Feed nur freigegebene Planungen

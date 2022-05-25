@@ -54,6 +54,12 @@ try:
 except KeyError:
     EMAIL_AVAILABLE = False
 
+# Domain
+try:
+    DOMAIN = config["server"]["domain"]
+except KeyError:
+    DOMAIN = "https://stationsplan.de"
+
 # Application definition
 INSTALLED_APPS = (
     "django.contrib.admin",
