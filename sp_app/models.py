@@ -115,6 +115,7 @@ class Ward(models.Model):
         help_text=_("For sorting the CallTallies"),
     )
     approved = models.DateField(
+        default=FAR_FUTURE,
         null=True,
         blank=True,
         help_text=_("The date until which the plan is approved"),
@@ -191,7 +192,7 @@ class Ward(models.Model):
             res["not_with_this"] = ",".join(
                 w.shortname for w in self.not_with_this.all()
             )
-        if self.approved is not None:
+        if self.approved < FAR_FUTURE:
             res["approved"] = date_to_json(self.approved)
         return res
 

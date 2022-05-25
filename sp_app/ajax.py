@@ -94,7 +94,7 @@ def change_approved(request):
     )
     user_name = request.user.last_name or request.user.get_username()
     wards = ", ".join(res["wards"])
-    limit = ("bis " + res["approved"]) if res["approved"] else "unbegrenzt"
+    limit = (f"bis {res['approved']}") if data["date"] else "unbegrenzt"
     StatusEntry.objects.create(
         name="Approval",
         content=f"{user_name}: {wards} ist {limit} sichtbar",
@@ -341,7 +341,7 @@ Mit freundlichen Grüßen, Stationsplan.de
 @ajax_login_required
 @permission_required("sp_app.is_dep_lead")
 def send_ical_feed(request, pk):
-    """Send the url of the personal feed to the perrson's mail address"""
+    """Send the url of the personal feed to the person's mail address"""
 
     def response(msg):
         return HttpResponse(f"<td>{msg}</td>")

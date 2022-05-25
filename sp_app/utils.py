@@ -21,6 +21,7 @@ from .models import (
     CalculatedHoliday,
     process_change,
     Employee,
+    FAR_FUTURE,
 )
 
 
@@ -114,18 +115,19 @@ def set_approved(wards, approved, department_ids):
     wards is [<ward.shortname>, ...],
     approved is False|<YYYYMMDD>, (False means unlimited approval)
     company_id is <company.id>
+
+    Only the wards of the given departments are approved
     """
     to_approve = Ward.objects.filter(
         departments__id__in=department_ids, shortname__in=wards
     )
     approval = (
-        datetime.strptime(approved, "%Y%m%d").date() if approved else None
+        datetime.strptime(approved, "%Y%m%d").date()
+        if approved
+        else FAR_FUTURE
     )
-    to_approve_sn = []
-    for ward in to_approve:
-        ward.approved = approval
-        ward.save()
-        to_approve_sn.append(ward.shortname)
+    to_approve.update(approved=approval)
+    to_approve_sn = [w.shortname for w in to_approve]
     return {
         "wards": to_approve_sn,
         "approved": approved,

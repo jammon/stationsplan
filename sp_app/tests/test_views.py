@@ -16,6 +16,7 @@ from sp_app.models import (
     ChangeLogging,
     Planning,
     StatusEntry,
+    FAR_FUTURE,
 )
 from sp_app.business_logic import get_plan_data
 
@@ -322,7 +323,7 @@ class TestChangeApproval(ViewsWithPermissionTestCase):
         stat = StatusEntry.objects.order_by("-pk").first()
         self.assertEqual(stat.content, "user: A ist unbegrenzt sichtbar")
         ward = Ward.objects.get(shortname="A")
-        self.assertEqual(ward.approved, None)
+        self.assertEqual(ward.approved, FAR_FUTURE)
         ward = Ward.objects.get(shortname="B")
         self.assertEqual(ward.approved, date(2017, 4, 14))
 

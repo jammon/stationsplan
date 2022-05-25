@@ -1,11 +1,8 @@
-from datetime import date, timedelta
+from django.conf import settings
 from django_ical.views import ICalFeed
-from sp_app.models import Person, Planning
+from django.db.models import F
 
-CALENDAR_START = date(2021, 11, 1)
-ONE_DAY = timedelta(days=1)
-CAL_PRODID = "Stationsplan.de"
-CAL_VERSION = "0.9"
+from sp_app.models import Person, Planning
 
 
 class DienstFeed(ICalFeed):
@@ -13,7 +10,7 @@ class DienstFeed(ICalFeed):
     A simple event calender
     """
 
-    product_id = "-//stationsplan.de//TESTING//DE"
+    product_id = "-//stationsplan.de//DE"
     timezone = "UTC"
 
     def title(self, obj):
@@ -37,6 +34,7 @@ class DienstFeed(ICalFeed):
                 start__lt=person.end_date,
                 ward__in_ical_feed=True,
             )
+            .filter(start__lt=F("ward__approved"))
             .order_by("-start")
             .select_related("ward")
         )

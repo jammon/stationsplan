@@ -5,7 +5,8 @@ from django.urls import reverse
 from icalendar import Calendar
 
 from sp_app.models import Ward, Planning, FeedId
-from sp_app.utils import PopulatedTestCase, LoggedInTestCase
+from sp_app.utils import PopulatedTestCase, LoggedInTestCase, set_approved
+from sp_app.ical_views import DienstFeed
 
 
 class TestDienstFeed(PopulatedTestCase):
@@ -14,7 +15,7 @@ class TestDienstFeed(PopulatedTestCase):
     def setUp(self):
         super().setUp()
         FeedId.objects.create(uid="abc", person=self.person_a)
-        nightshift = Ward.objects.create(
+        self.nightshift = Ward.objects.create(
             name="Nightshift",
             shortname="N",
             min=0,
@@ -22,20 +23,23 @@ class TestDienstFeed(PopulatedTestCase):
             company=self.company,
             in_ical_feed=True,
         )
+
+    def plan_shift(self, person, day):
+        Planning.objects.create(
+            company=self.company,
+            person=person,
+            ward=self.nightshift,
+            start=day,
+            end=day,
+        )
+
+    def test_feed(self):
         for person, day in (
             (self.person_a, date(2022, 5, 13)),
             (self.person_b, date(2022, 5, 14)),
             (self.person_a, date(2022, 5, 15)),
         ):
-            Planning.objects.create(
-                company=self.company,
-                person=person,
-                ward=nightshift,
-                start=day,
-                end=day,
-            )
-
-    def test_feed(self):
+            self.plan_shift(person, day)
         response = self.client.get(reverse("icalfeed", args=["abc"]))
         cal = Calendar.from_ical(response.content)
         events = [comp for comp in cal.walk() if comp.name == "VEVENT"]
@@ -45,6 +49,18 @@ class TestDienstFeed(PopulatedTestCase):
         for ev, day in zip(events, ["2022-05-15", "2022-05-13"]):
             assert str(ev.decoded("dtstart")) == day
             assert str(ev.decoded("dtend")) == day
+
+    def test_feed_items(self):
+        for person, day in (
+            (self.person_a, date(2022, 5, 13)),
+            (self.person_a, date(2022, 6, 15)),
+        ):
+            self.plan_shift(person, day)
+        self.nightshift.departments.add(self.department)
+        set_approved(["N"], "20220601", [self.department.id])
+        f = DienstFeed()
+        plannings = f.items(self.person_a)
+        assert len(plannings) == 1
 
 
 class TestMailFeed(LoggedInTestCase):

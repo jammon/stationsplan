@@ -27,6 +27,7 @@ from sp_app.models import (
     CalculatedHoliday,
     Region,
     ChangeLogging,
+    FAR_FUTURE,
 )
 
 
@@ -205,7 +206,7 @@ class TestSetApproved(PopulatedTestCase):
         res = set_approved(["A"], False, [self.department.id])
         self.assertEqual(res.get("wards"), ["A"])
         self.assertEqual(res.get("approved"), False)
-        self.do_test("A", None)
+        self.do_test("A", FAR_FUTURE)
         self.do_test("B", date(2017, 4, 1))
 
     def test_wrong_department(self):
@@ -219,7 +220,7 @@ class TestSetApproved(PopulatedTestCase):
         res = set_approved(["Z"], "20170401", [self.department.id])
         self.assertFalse(res.get("wards"))
         self.assertEqual(res.get("not approved wards"), ["Z"])
-        self.do_test("Z", None)
+        self.do_test("Z", FAR_FUTURE)
 
 
 class TestGetLastChanges(PopulatedTestCase):
