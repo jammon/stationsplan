@@ -159,3 +159,4 @@ x 2022-05-24 Impressum verfassen +Public
 x 2022-05-24 Die Dienste jeder Person als Kalender zur Verfügung stellen, mit Updates +Public
 x 2022-05-24 LAST-MODIFIED Property nutzen
 x 2022-05-24 Fehler: GET /updates/undefined?_=1632197709719
+x 2022-05-26 Im Feed nur freigegebene Planungen

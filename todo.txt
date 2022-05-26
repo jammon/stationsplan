@@ -37,4 +37,3 @@
 (B) Error reporting https://docs.djangoproject.com/en/4.0/howto/error-reporting/
 (B) Beispielplan entwickeln
 Logs monitoren +Public
-(A) Im Feed nur freigegebene Planungen

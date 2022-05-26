@@ -61,6 +61,7 @@ class TestDienstFeed(PopulatedTestCase):
         f = DienstFeed()
         plannings = f.items(self.person_a)
         assert len(plannings) == 1
+        assert plannings[0].start == date(2022, 5, 13)
 
 
 class TestMailFeed(LoggedInTestCase):
