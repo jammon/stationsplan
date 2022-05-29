@@ -1,0 +1,12 @@
+Guten Tag!
+
+Für "{{ username }}" wurde auf der Seite "Stationsplan.de" ein Benutzerkonto angelegt. 
+Folgen Sie diesem Link, um es zu aktivieren:
+
+       https://stationsplan.de/activate/{{ uid }}/{{ token }}
+
+Sollten Sie diese Mail nicht veranlasst haben, können Sie sie einfach ignorieren.
+
+Mit freundlichen Grüßen,
+
+Der Webmaster von Stationsplan.de, der Online-Plattform für Dienstplanung

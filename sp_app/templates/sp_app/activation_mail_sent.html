@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+  <div class="col col-xs-12">
+    <h1>Anmeldung erfolgreich</h1>
+    <p>An die Adresse <code>{{ user.email}}</code> wurde eine Bestätigungsmail geschickt. <br>
+    Diese Mail enthält einen Link mit einem Aktivierungscode. <br>
+    Bitte klicken Sie diesen Link, um Ihr Benutzerkonto in Funktion zu setzen.</p>
+    <h2>Keine Mail bekommen?</h2>
+    <p>Manchmal dauert es einige Minuten, bis die Mail ankommt. Bitte kontrollieren Sie auch Ihren Spam-Ordner. Ansonsten können Sie die <a href="/send_activation_mail/{{ user.pk }}">Aktivierungsmail erneut verschicken</a>.</p>
+  </div>
+</div>  
+{% endblock content %}

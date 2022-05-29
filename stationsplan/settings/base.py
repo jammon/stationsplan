@@ -60,6 +60,8 @@ try:
 except KeyError:
     DOMAIN = "https://stationsplan.de"
 
+SERVER_EMAIL = config["server"]["mail"]
+
 # Application definition
 INSTALLED_APPS = (
     "django.contrib.admin",

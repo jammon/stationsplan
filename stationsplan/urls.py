@@ -112,6 +112,13 @@ urlpatterns = [
     ),
     path("/", include("django.contrib.auth.urls")),
     #
+    path("signup", sp_views.signup, name="signup"),
+    path(
+        "send_activation_mail/<int:pk>",
+        sp_views.send_activation_mail,
+        name="send_activation_mail",
+    ),
+    path("activate/<int:uid>/<token>", sp_views.activate, name="activate"),
     #
     # Other -------------------------------------------------------------
     #
@@ -139,4 +146,10 @@ if settings.DEBUG:
 
     urlpatterns += [
         path("__debug__/", include(debug_toolbar.urls)),
+        path(
+            "test/activation_mail_sent/<int:user>",
+            sp_views.send_activation_mail,
+            {"send": False},
+        ),
+        path("test/activation_success", sp_views.test_activation_success),
     ]

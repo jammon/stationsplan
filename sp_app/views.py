@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.models import User
+from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 
-from sp_app import forms, business_logic
-from .models import Person, Ward, Company
-from .utils import get_first_of_month
+from sp_app import forms, business_logic, utils
+from .models import Person, Ward, Company, Department, Employee
 
 
 def home(request):
@@ -51,10 +53,12 @@ def personen_funktionen(request):
     ).distinct()
     return render(
         request,
-        "sp_app/person_list.html",
+        "sp_app/person_ward_list.html",
         {
             "personen": personen,
+            "former_persons": any(not p.current() for p in personen),
             "funktionen": funktionen,
+            "inactive_wards": any(not w.active for w in funktionen),
             "email_available": settings.EMAIL_AVAILABLE,
         },
     )
@@ -82,7 +86,7 @@ def get_edit_view(
 def person_initials(request):
     return {
         "company": request.session["company_id"],
-        "start_date": get_first_of_month(),
+        "start_date": utils.get_first_of_month(),
     }
 
 
@@ -90,7 +94,7 @@ person_edit = get_edit_view(
     Person,
     forms.PersonForm,
     person_initials,
-    "/zuordnung",
+    "/personen",
     "sp_app/person_form.html",
 )
 
@@ -103,7 +107,7 @@ ward_edit = get_edit_view(
     Ward,
     forms.WardForm,
     ward_initials,
-    "/zuordnung",
+    "/personen",
     "sp_app/ward_form.html",
 )
 
@@ -135,3 +139,63 @@ def ical_feeds(request):
         "sp_app/ical_feeds.html",
         {"personen": [p for p in personen if p.current()]},
     )
+
+
+def send_activation_mail(request, user, send=True):
+    # can be called with send=False for testing
+    if isinstance(user, int):
+        user = get_object_or_404(User, pk=user)
+    if send:
+        utils.send_activation_mail(user)
+    return render(request, "sp_app/activation_mail_sent.html", {"user": user})
+
+
+def signup(request):
+    userform = forms.UserSignupForm(request.POST or None)
+    companyform = forms.CompanyForm(request.POST or None)
+    departmentform = forms.DepartmentSignupForm(request.POST or None)
+    if (
+        userform.is_valid()
+        and companyform.is_valid()
+        and departmentform.is_valid()
+    ):
+        user = userform.save(commit=False)
+        user.is_active = False
+        user.save()
+        company = companyform.save()
+        department = Department.objects.create(
+            name=departmentform.cleaned_data["department"], company=company
+        )
+        employee = Employee.objects.create(user=user, company=company)
+        employee.departments.add(department)
+        employee.set_level("is_company_admin")
+        return send_activation_mail(request, user)
+    return render(
+        request,
+        "sp_app/signup.html",
+        {
+            "userform": userform,
+            "companyform": companyform,
+            "departmentform": departmentform,
+        },
+    )
+
+
+def activate(request, uid, token):
+    try:
+        user = User.objects.get(pk=uid)
+    except (ValueError, User.DoesNotExist):
+        user = None
+    if user is not None and default_token_generator.check_token(user, token):
+        user.is_active = True
+        user.save()
+        return render(
+            request,
+            "sp_app/activation_success.html",
+            {"next": reverse("persons")},
+        )
+    return render(request, "sp_app/activation_invalid.html", {})
+
+
+def test_activation_success(request):
+    return render(request, "sp_app/activation_success.html", {"next": "/TODO"})

@@ -1,10 +1,12 @@
 from django import forms
 from django.forms import widgets
 from django.contrib import admin
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 
-from .models import Person, Ward, Department, Employee, EMPLOYEE_LEVEL
+from .models import Company, Person, Ward, Department, Employee, EMPLOYEE_LEVEL
 
 
 class WardAdminForm(forms.ModelForm):
@@ -205,3 +207,49 @@ class EmployeeForm(forms.ModelForm):
             if instance is not None
             else initial["company"]
         )
+
+
+class UserSignupForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = (
+            "first_name",
+            "last_name",
+            "username",
+            "email",
+            "password1",
+            "password2",
+        )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in ("username", "email", "password1", "password2"):
+            self.fields[field].widget.attrs.update({"class": "form-control"})
+        self.fields["username"].help_text = (
+            "Der Name, mit dem Sie sich anmelden. "
+            "Nur Buchstaben, Ziffern und @/./+/-/_"
+        )
+        self.fields["email"].help_text = (
+            "An diese Adresse bekommen Sie eine Mail, "
+            "um das Benutzerkonto zu aktivieren."
+        )
+
+    def clean_email(self):
+        email = self.cleaned_data["email"]
+        if User.objects.filter(email=email).exists():
+            raise ValidationError("Diese Mailadresse ist bereits registriert.")
+        return email
+
+
+class CompanyForm(forms.ModelForm):
+    class Meta:
+        model = Company
+        fields = ["name", "shortname", "region"]
+
+
+class DepartmentSignupForm(forms.Form):
+    department = forms.CharField(
+        label="Abteilung",
+        max_length=50,
+        help_text="Name der ersten Abteilung, die Sie anlegen.",
+    )

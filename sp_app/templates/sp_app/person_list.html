@@ -1,68 +1,36 @@
-{% extends "base.html" %}
+<div class="col-md-3 col-sm-6">
 
-{% block navigation %}
-{% include "sp_app/navigation.html" %}
-{% endblock navigation %}
-
-{% block content %}
-<div class="row">
-  <div class="col-md-3 col-sm-6">
-
-    <h2>Aktuelle Mitarbeiter/innen</h2>
-    <ul>
-        {% for person in personen %}
-        {% if person.current %}
-            <li>
-            	<a href="/person/{{ person.pk }}">{{ person.name }}</a>
-            </li>
-        {% endif %}
-        {% endfor %}
-    </ul>
-    <div>
-        <a class="btn btn-default" href="/person/add/" role="button">Neue/r Mitarbeiter/in</a>
-    </div>
-    {% if email_available %}
-    <div>
-        <a class="btn" href="/ical_feeds" role="button">iCal-Feed erstellen</a>
-    </div>
+  <h2>{% if former_persons %}Aktuelle {% endif %}Mitarbeiter/innen</h2>
+  <ul>
+    {% for person in personen %}
+    {% if person.current %}
+      {% include "sp_app/person_line.html" %}
     {% endif %}
+    {% empty %}
+    Noch keine Mitarbeiter/innen angelegt.
+    {% endfor %}
+  </ul>
+  <div>
+    <a class="btn btn-default" hx-get="/person/add" hx-target="#edit-area"
+       hx-swap="innerHTML show:top" hx-select="#form" role="button">
+    Neue/r Mitarbeiter/in</a>
   </div>
-  <div class="col-md-3 col-sm-6">
-    <h2>Frühere Mitarbeiter/innen</h2>
-    <ul>
-        {% for person in personen %}
-        {% if not person.current %}
-            <li>
-            	<a href="/person/{{ person.pk }}">{{ person.name }}</a>
-            </li>
-        {% endif %}
-        {% endfor %}
-    </ul>
-  </div>
-  <div class="col-md-3 col-sm-6">
-    <h2>Funktionen</h2>
-    <ul>
-        {% for funktion in funktionen %}
-        {% if funktion.active %}
-            <li>
-              <a href="/funktion/{{ funktion.pk }}">{{ funktion.name }}</a>
-            </li>
-        {% endif %}
-        {% endfor %}
-    </ul>
-    <a class="btn btn-default" href="/funktion/add/" role="button">Neue Funktion</a>
-  </div>
-  <div class="col-md-3 col-sm-6">
-    <h2>Inaktive Funktionen</h2>
-    <ul>
-        {% for funktion in funktionen %}
-        {% if not funktion.active %}
-            <li>
-              <a href="/funktion/{{ funktion.pk }}">{{ funktion.name }}</a>
-            </li>
-        {% endif %}
-        {% endfor %}
-    </ul>
-  </div>
+  {% if personen and funktionen %}
+    <div><a href="/zuordnung">Personen und Funktionen zuordnen</a></div>
+  {% endif %}
+  {% if email_available and personen %}
+    <div><a href="/ical_feeds">Persönlichen Kalender erstellen</a></div>
+  {% endif %}
 </div>
-{% endblock %}
+{% if former_persons %}
+<div class="col-md-3 col-sm-6">
+  <h2>Frühere Mitarbeiter/innen</h2>
+  <ul>
+    {% for person in personen %}
+    {% if not person.current %}
+      {% include "sp_app/person_line.html" %}
+    {% endif %}
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}

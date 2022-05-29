@@ -7,7 +7,7 @@
 
 {% block content %}
 <h1>Funktion bearbeiten</h1>
-<form action="" method="post">{% csrf_token %}
+<form action="/funktion/{% if form.instance.pk %}{{ form.instance.pk }}{% else %}add{% endif %}/" method="post" id="form">{% csrf_token %}
 <div class="row">
     <div class="col">
         

@@ -178,6 +178,10 @@ you can then find the current grid option with:
 - Personen und Funktionen mit htmx bearbeiten √
 - Einstieg für neue Kliniken anbieten
     - Company Admin anlegen
+        + Neuer User gibt Name, Email und Passwort ein
+        + User wird als active=False angelegt
+        + Mail an User mit token geht raus, Zeitlimit 24 h
+        + Aufruf der Bestätigungsurl aktiviert den Account
     - Klinikname und Region eingeben
     - Abteilungen anlegen
     - User anlegen

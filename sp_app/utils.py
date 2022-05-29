@@ -3,10 +3,14 @@ import json
 import logging
 
 from datetime import timedelta, datetime, date
+from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.auth.tokens import default_token_generator
 from django.core.cache import cache
+from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
 from django.test import TestCase
 from http import HTTPStatus
 from numbers import Number
@@ -191,6 +195,22 @@ def get_last_change_response(company_id, last_change_pk):
             },
         }
     )
+
+
+def send_activation_mail(user):
+    mail_subject = "Benutzerkonto für Stationsplan.de aktivieren"
+    message = render_to_string(
+        "sp_app/activation_mail.txt",
+        {
+            "username": user.get_full_name() or user.get_username(),
+            "uid": user.pk,
+            "token": default_token_generator.make_token(user),
+        },
+    )
+    send_mail(mail_subject, message, settings.SERVER_EMAIL, [user.email])
+
+
+# Tests ------------------------------------------------------
 
 
 class PopulatedTestCase(TestCase):

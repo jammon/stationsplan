@@ -18,8 +18,16 @@ def date_to_json(date):
 
 
 class Company(models.Model):
-    name = models.CharField(_("Name"), max_length=50)
-    shortname = models.CharField(_("Short Name"), max_length=10)
+    name = models.CharField(
+        _("Name"),
+        max_length=50,
+        help_text='Name der Klinik (z.B. "Waldklinik Neustadt")',
+    )
+    shortname = models.CharField(
+        _("Short Name"),
+        max_length=10,
+        help_text='Abkürzung für die Klinik (z.B. "wkns")',
+    )
     region = models.ForeignKey(
         "Region",
         null=True,
@@ -41,7 +49,9 @@ class Company(models.Model):
 
 class Department(models.Model):
     name = models.CharField(_("Name"), max_length=50)
-    shortname = models.CharField(_("Short Name"), max_length=10)
+    shortname = models.CharField(
+        _("Short Name"), max_length=10, null=True, blank=True
+    )
     company = models.ForeignKey(
         Company,
         related_name="departments",
@@ -54,7 +64,9 @@ class Department(models.Model):
         verbose_name_plural = _("Departments")
 
     def __str__(self):
-        return f"{self.name} ({self.shortname})"
+        if self.shortname:
+            return f"{self.name} ({self.shortname})"
+        return self.name
 
 
 class Ward(models.Model):
@@ -638,7 +650,13 @@ class Employee(models.Model):
             *(groups[name] for name in EMPLOYEE_GROUP.values())
         )
         if level not in (None, "None"):
-            self.user.groups.add(groups[EMPLOYEE_GROUP[level]])
+            # set all permissions up to the given level
+            level_found = False
+            for permission, docstring in EMPLOYEE_PERMISSIONS:
+                if permission == level:
+                    level_found = True
+                if level_found:
+                    self.user.groups.add(groups[EMPLOYEE_GROUP[permission]])
         # account for permission caching
         self.user = User.objects.get(id=self.user.id)
 
@@ -738,6 +756,7 @@ class Region(models.Model):
     class Meta:
         verbose_name = _("Region")
         verbose_name_plural = _("Regions")
+        ordering = ["name"]
 
     def __str__(self):
         return self.name

@@ -7,7 +7,7 @@
 
 {% block content %}
 <h1>Mitarbeiter bearbeiten</h1>
-<form action="" method="post">{% csrf_token %}
+<form action="/person/{% if form.instance.pk %}{{ form.instance.pk }}{% else %}add{% endif %}/" method="post" id="form">{% csrf_token %}
 <div class="row">
 {% if form.errors %}
   <p class="STYLE-THIS">
