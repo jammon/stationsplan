@@ -200,7 +200,7 @@ def get_last_change_response(company_id, last_change_pk):
 def send_activation_mail(user):
     mail_subject = "Benutzerkonto für Stationsplan.de aktivieren"
     message = render_to_string(
-        "sp_app/activation_mail.txt",
+        "sp_app/signup/activation_mail.txt",
         {
             "username": user.get_full_name() or user.get_username(),
             "uid": user.pk,

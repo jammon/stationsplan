@@ -53,7 +53,7 @@ def personen_funktionen(request):
     ).distinct()
     return render(
         request,
-        "sp_app/person_ward_list.html",
+        "sp_app/persons_wards/person_ward_list.html",
         {
             "personen": personen,
             "former_persons": any(not p.current() for p in personen),
@@ -95,7 +95,7 @@ person_edit = get_edit_view(
     forms.PersonForm,
     person_initials,
     "/personen",
-    "sp_app/person_form.html",
+    "sp_app/persons_wards/person_form.html",
 )
 
 
@@ -108,7 +108,7 @@ ward_edit = get_edit_view(
     forms.WardForm,
     ward_initials,
     "/personen",
-    "sp_app/ward_form.html",
+    "sp_app/persons_wards/ward_form.html",
 )
 
 
@@ -147,7 +147,9 @@ def send_activation_mail(request, user, send=True):
         user = get_object_or_404(User, pk=user)
     if send:
         utils.send_activation_mail(user)
-    return render(request, "sp_app/activation_mail_sent.html", {"user": user})
+    return render(
+        request, "sp_app/signup/activation_mail_sent.html", {"user": user}
+    )
 
 
 def signup(request):
@@ -172,7 +174,7 @@ def signup(request):
         return send_activation_mail(request, user)
     return render(
         request,
-        "sp_app/signup.html",
+        "sp_app/signup/signup.html",
         {
             "userform": userform,
             "companyform": companyform,
@@ -191,11 +193,13 @@ def activate(request, uid, token):
         user.save()
         return render(
             request,
-            "sp_app/activation_success.html",
+            "sp_app/signup/activation_success.html",
             {"next": reverse("persons")},
         )
-    return render(request, "sp_app/activation_invalid.html", {})
+    return render(request, "sp_app/signup/activation_invalid.html", {})
 
 
 def test_activation_success(request):
-    return render(request, "sp_app/activation_success.html", {"next": "/TODO"})
+    return render(
+        request, "sp_app/signup/activation_success.html", {"next": "/TODO"}
+    )

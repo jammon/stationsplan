@@ -4,7 +4,7 @@
   <ul>
     {% for person in personen %}
     {% if person.current %}
-      {% include "sp_app/person_line.html" %}
+      {% include "sp_app/persons_wards/person_line.html" %}
     {% endif %}
     {% empty %}
     Noch keine Mitarbeiter/innen angelegt.
@@ -28,7 +28,7 @@
   <ul>
     {% for person in personen %}
     {% if not person.current %}
-      {% include "sp_app/person_line.html" %}
+      {% include "sp_app/persons_wards/person_line.html" %}
     {% endif %}
     {% endfor %}
   </ul>
