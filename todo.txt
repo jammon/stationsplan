@@ -37,8 +37,6 @@
 (B) Error reporting https://docs.djangoproject.com/en/4.0/howto/error-reporting/
 (B) Beispielplan entwickeln
 (B) Logs monitoren +Public
-(A) Einstieg für neue Nutzer bauen +Public
 (C) django-hijack installieren +Public +support
 (C) Integrationstests schreiben, z.B. https://docs.pylonsproject.org/projects/webtest/en/latest/ oder Selenium
 (A) Errors stylen +Public
-(A) Log Company creations

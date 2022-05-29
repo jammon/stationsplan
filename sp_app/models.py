@@ -694,6 +694,7 @@ class StatusEntry(models.Model):
         help_text=_("Can be empty"),
         on_delete=models.SET_NULL,
     )
+    timestamp = models.DateTimeField(null=True, auto_now_add=True)
 
     def __str__(self):
         return f"{self.name}: {self.content}"

@@ -14,22 +14,6 @@ Angemeldete User können verschiedene Stufen von Benutzerrrechten haben.
 Die genannten Permissions werden in der Session gespeichert.
 Alle außer Viewer können ihr Passwort ändern und ihre Sessions laufen mit dem Schließen des Browsers ab.
 
-## Backend
-- Der Monat soll gespeichert werden, wenn er erstellt ist
-- Wenn eine Besetzung geändert wurde, soll das gespeichert werden.
-- Wenn man sich anmeldet, soll der aktuelle Plan geladen werden.
-- Wenn man "nächsten Monat" klickt, soll der erstellt oder geladen werden.
-- Man soll die Personen bearbeiten können
-- Man soll die Stationen/Dienst bearbeiten können
-- Wenn Urlaub oder Krank eingetragen wird, sollen die bisherigen Verpflichtungen nach dem Urlaub weiterlaufen.
-
-- Funktionen (=Stationen) können durchlaufen (Stationsversorgung, Urlaub) oder nicht (Nachtdienst, Tagdienst)
-- Bei Urlaub oder Krank behält die Person ihre Funktionen, sie werden aber für diesen Tag nicht angezeigt.
-- Bei Nachtdienst werden für diesen Tag alle anderen Funktionen nicht angezeigt, für den Folgetag nur die dazu Passenden (wieder Nachtdienst), die anderen nicht.
-- Ablauf:
-    + When on_leave is added: the person is unavailable for all staffings of the day.
-    + When yesterdays ward with reduced availability for the next day is added: the person is unavailable for all non-fitting staffings of the day.
-    + When on_leave or yesterdays ward with reduced availability for the next day is removed: the availability of the person must be calculated newly.
 
 ## Change(Logging) vs. Planning
 Ein *Change* wird vom Nutzer eingegeben, auf dem Server mit den anderen Planungen abgeglichen und dann zurückgegeben und ins UI eingearbeitet.
@@ -45,7 +29,7 @@ Wenn die Seite aufgerufen wird,
 ## Planungen mit Anfang und Ende eingeben
 Wenn man einen Change eingibt, der ein oder mehrere bisherige Planungen überdeckt, sollen diese verlinkt und als inaktiv markiert werden. So ist ein Undo möglich.
 
-Wenn ein neuer Change eine alte Planung teilweise überlappt, wird sie so beschnitten, dass sie direkt anschließt und nicht mehr überlappt. (Nach dem bisherigen UI kann die neue Planung nur mit ihrem Ende den Anfang einer alten Planung überdecken.)
+Wenn ein neuer Change eine alte Planung teilweise überlappt, wird sie so beschnitten, dass sie direkt anschließt und nicht mehr überlappt.
 
 Wenn ein Change mit add=False und angegebenem Ende andere Planungen überdeckt, werden diese gekürzt oder gelöscht.
 

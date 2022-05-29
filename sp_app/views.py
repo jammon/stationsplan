@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 
 from sp_app import forms, business_logic, utils
-from .models import Person, Ward, Company, Department, Employee
+from .models import Person, Ward, Company, Department, Employee, StatusEntry
 
 
 def home(request):
@@ -171,6 +171,12 @@ def signup(request):
         employee = Employee.objects.create(user=user, company=company)
         employee.departments.add(department)
         employee.set_level("is_company_admin")
+        StatusEntry.objects.create(
+            name="New User and Company",
+            content=f"{user.username} hat {company.name} erstellt",
+            department=None,
+            company_id=request.session["company_id"],
+        )
         return send_activation_mail(request, user)
     return render(
         request,
