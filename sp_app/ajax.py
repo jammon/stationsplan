@@ -246,19 +246,109 @@ def edit_department(request, department_id=None):
         )
         return render(
             request,
-            "sp_app/partials/edit_object_sucess.html",
+            "sp_app/structure/edit_object_sucess.html",
             {
                 "company": company,
                 "target": "departments",
-                "list_template": "sp_app/partials/departments.html",
+                "list_template": "sp_app/structure/departments.html",
             },
         )
     return render(
         request,
-        "sp_app/partials/edit_department.html",
+        "sp_app/structure/edit_department.html",
         {
             "form": form,
             "url": reverse("edit-department", args=(department_id,)),
+        },
+    )
+
+
+@ajax_login_required
+@permission_required("sp_app.is_dep_lead", raise_exception=True)
+def edit_person(request, pk=None):
+    """Edit the department or create a new one
+
+    Called with GET: return the form
+    Called with POST: return nothing als form and the department list (oob)
+    """
+    company_id = request.session["company_id"]
+    person = pk and Person.objects.get(pk=pk, company_id=company_id)
+    if person is None:
+        kwargs = {"initial": {"company": company_id}}
+    else:
+        kwargs = {"instance": person}
+    form = forms.PersonForm(request.POST or None, **kwargs)
+    if form.is_valid():
+        form.save()
+        is_company_admin = request.session.get("is_company_admin", False)
+        if is_company_admin:
+            filter = {"company_id": request.session["company_id"]}
+        else:
+            filter = {"departments__id__in": request.session["department_ids"]}
+        persons = Person.objects.filter(**filter).order_by("position", "name")
+        return render(
+            request,
+            "sp_app/structure/edit_object_sucess.html",
+            {
+                "target": "person_list",
+                "list_template": "sp_app/structure/person_list.html",
+                "persons": persons,
+                "former_persons": any(not p.current() for p in persons),
+            },
+        )
+    return render(
+        request,
+        "sp_app/structure/edit_person.html",
+        {
+            "form": form,
+            "url": reverse("person-update", args=(pk,))
+            if pk
+            else reverse("person-add"),
+        },
+    )
+
+
+@ajax_login_required
+@permission_required("sp_app.is_dep_lead", raise_exception=True)
+def edit_ward(request, pk=None):
+    """Edit the department or create a new one
+
+    Called with GET: return the form
+    Called with POST: return nothing als form and the department list (oob)
+    """
+    company_id = request.session["company_id"]
+    ward = pk and Ward.objects.get(pk=pk, company_id=company_id)
+    if ward is None:
+        kwargs = {"initial": {"company": company_id}}
+    else:
+        kwargs = {"instance": ward}
+    form = forms.WardForm(request.POST or None, **kwargs)
+    if form.is_valid():
+        form.save()
+        is_company_admin = request.session.get("is_company_admin", False)
+        if is_company_admin:
+            filter = {"company_id": request.session["company_id"]}
+        else:
+            filter = {"departments__id__in": request.session["department_ids"]}
+        wards = Ward.objects.filter(**filter).order_by("position", "name")
+        return render(
+            request,
+            "sp_app/structure/edit_object_sucess.html",
+            {
+                "target": "ward_list",
+                "list_template": "sp_app/structure/ward_list.html",
+                "wards": wards,
+                "inactive_wards": any(not w.active for w in wards),
+            },
+        )
+    return render(
+        request,
+        "sp_app/structure/edit_ward.html",
+        {
+            "form": form,
+            "url": reverse("ward-update", args=(pk,))
+            if pk
+            else reverse("ward-add"),
         },
     )
 
@@ -297,16 +387,16 @@ def edit_employee(request, employee_id=None):
         )
         return render(
             request,
-            "sp_app/partials/edit_object_sucess.html",
+            "sp_app/structure/edit_object_sucess.html",
             {
                 "company": company,
                 "target": "employees",
-                "list_template": "sp_app/partials/employees.html",
+                "list_template": "sp_app/structure/employees.html",
             },
         )
     return render(
         request,
-        "sp_app/partials/edit_employee.html",
+        "sp_app/structure/edit_employee.html",
         {
             "user_form": user_form,
             "employee_form": employee_form,

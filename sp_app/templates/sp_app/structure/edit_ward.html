@@ -1,12 +1,11 @@
-{% extends "base.html" %}
+{% extends "./modal_dialog.html" %}
 {% load i18n %}
+{% block modaltitle %}Funktion{% endblock modaltitle %}
+{% block modalmodifier %}modal-lg{% endblock modalmodifier %}
 
-{% block navigation %}
-{% include "sp_app/navigation.html" %}
-{% endblock navigation %}
-
-{% block content %}
-<h1>Funktion bearbeiten</h1>
+{% block modalform %}
+<form hx-post="{{ url }}" method="post" id="form" class="edit-form">
+{% csrf_token %}
 <form action="/funktion/{% if form.instance.pk %}{{ form.instance.pk }}{% else %}add{% endif %}/" method="post" id="form">{% csrf_token %}
 <div class="row">
     <div class="col">
@@ -31,9 +30,6 @@ Missing fields:
 <div class="row">
     {% include "sp_app/widgets/field_template.html" with field=form.name %}
     {% include "sp_app/widgets/field_template.html" with field=form.shortname %}
-</div>
-<div class="row margin-top-10">
-    <div class="col col-xs-12"><label>Besetzung</label></div>
     {% include "sp_app/widgets/field_template.html" with field=form.min %}
     {% include "sp_app/widgets/field_template.html" with field=form.max %}
 </div>
@@ -65,4 +61,4 @@ Missing fields:
   </div>
 </fieldset>
 </form>
-{% endblock content %}
+{% endblock modalform %}

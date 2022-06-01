@@ -1,7 +1,7 @@
 {% for employee in company.employees.all %}
 	{% if employee.user.is_active %}
-		<p hx-get={% url "edit-employee" employee.id %}
+		<p><a hx-get={% url "edit-employee" employee.id %}
 		   hx-target="#edit-window" class="employee-detail editable" >
-			{{ employee.name_and_level }}</p>
+			{{ employee.name_and_level }}</a></p>
 	{% endif %}
 {% endfor %}

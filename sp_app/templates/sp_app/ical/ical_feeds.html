@@ -6,11 +6,15 @@
 {% endblock navigation %}
 
 {% block content %}
-<div class="row">
-  <div id="person_list">{% include "sp_app/persons_wards/person_list.html" %}</div>
-  <div id="ward_list">{% include "sp_app/persons_wards/ward_list.html" %}</div>
+<div class="row" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+  <div class="col col-xs-12">
+    <table class="table" style="width: auto;">
+    {% for person in persons %}
+      {% include "sp_app/ical/person_feed.html" %}
+    {% endfor %}
+    </table>
+  </div>
 </div>
-<div id="edit-area"></div>
 {% endblock %}
 {% block extrascripts %}
   <script src="{% static 'vendor/htmx.min.js' %}"></script>

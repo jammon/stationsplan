@@ -155,7 +155,7 @@ msgstr "Folgeschicht"
 #: sp_app/models.py:126
 msgid "if not empty, only these functions can be planned on the next day"
 msgstr ""
-"Wenn etwas ausgewählt ist, kann der Diensthabende am nächsten Tag nur für "
+"Wenn etwas ausgewählt ist, kann die Diensthabende am nächsten Tag nur für "
 "diese Funktionen verplant werden"
 
 #: sp_app/models.py:133

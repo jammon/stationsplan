@@ -1,0 +1,11 @@
+<div class="modal-dialog {% block modalmodifier %}{% endblock modalmodifier %}" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal">&times;</button>
+      <h4 class="modal-title">{% block modaltitle %}Title{% endblock modaltitle %}</h4>
+    </div>
+    <div class="modal-body">
+      {% block modalform %}{% endblock modalform %}
+    </div>
+  </div>
+</div>

@@ -10,6 +10,7 @@ import logging
 from sp_app.utils import PopulatedTestCase, LoggedInTestCase
 from sp_app.models import (
     Company,
+    Department,
     Ward,
     Person,
     Employee,
@@ -664,3 +665,79 @@ class TestRobotsTxt(TestCase):
         response = self.client.post("/robots.txt")
 
         self.assertEqual(HTTPStatus.METHOD_NOT_ALLOWED, response.status_code)
+
+
+PERSON_DATA = {
+    "name": "Müller",
+    "shortname": "Mül",
+    "start_date": "2022-05-01",
+    "end_date": "2099-12-31",
+    "departments": "",
+    "position": str(Person.POSITION_ASSISTENTEN),
+    "email": "m.mueller@example.com",
+    "company": "",
+}
+
+
+class TestPersonEdit_NoPermission(LoggedInTestCase):
+    def get_post_data(self, department_id, company_id):
+        data = PERSON_DATA.copy()
+        data["departments"] = str(department_id)
+        data["company"] = str(company_id)
+        return data
+
+    def test_post_new(self):
+        data = self.get_post_data(self.department.id, self.company.id)
+        response = self.client.post(reverse("person-add"), data)
+        assert response.status_code == 302
+        assert response.url == "/login?next=/person/add/"
+
+
+class TestPersonEdit_Editor(TestPersonEdit_NoPermission):
+    employee_level = "is_editor"
+
+    def test_post_new(self):
+        assert self.employee.level == "is_editor"
+        super().test_post_new()
+
+
+class TestPersonEdit_DepLead(TestPersonEdit_NoPermission):
+    employee_level = "is_dep_lead"
+
+    def test_post_new(self, level="is_dep_lead"):
+        assert self.employee.level == level
+        data = self.get_post_data(self.department.id, self.company.id)
+        response = self.client.post(reverse("person-add"), data)
+        assert response.status_code == 302
+        assert response.url == "/personen"
+        person = Person.objects.get(name="Müller")
+        assert person.shortname == "Mül"
+        assert person.start_date == date(2022, 5, 1)
+        depts = person.departments.all()
+        assert len(depts) == 1
+        assert depts[0] == self.department
+
+    def post_other_dept(self):
+        other_dept = Department.objects.create(
+            name="Other", company=self.company
+        )
+        data = self.get_post_data(other_dept.id, self.company.id)
+        return self.client.post(reverse("person-add"), data)
+
+    def test_other_dept(self):
+        response = self.post_other_dept()
+        # assert response.status_code == 0
+        assert not Person.objects.filter(name="Müller").exists()
+
+
+class TestPersonEdit_CompanyAdmin(TestPersonEdit_DepLead):
+    employee_level = "is_company_admin"
+
+    def test_post_new(self):
+        super().test_post_new("is_company_admin")
+
+    def test_other_dept(self):
+        response = self.post_other_dept()
+        assert response.status_code == 302
+        assert response.url == "/personen"
+        assert Person.objects.filter(name="Müller").exists()

@@ -43,87 +43,59 @@ def plan(request, month="", day=""):
 
 @login_required
 @permission_required("sp_app.is_dep_lead")
-def personen_funktionen(request):
+def persons_wards(request):
     department_ids = request.session.get("department_ids")
-    personen = Person.objects.filter(
+    persons = Person.objects.filter(
         departments__id__in=department_ids
     ).order_by("position", "name")
-    funktionen = Ward.objects.filter(
-        departments__id__in=department_ids
-    ).distinct()
+    wards = Ward.objects.filter(departments__id__in=department_ids).distinct()
     return render(
         request,
-        "sp_app/persons_wards/person_ward_list.html",
+        "sp_app/structure/person_ward_list.html",
         {
-            "personen": personen,
-            "former_persons": any(not p.current() for p in personen),
-            "funktionen": funktionen,
-            "inactive_wards": any(not w.active for w in funktionen),
+            "persons": persons,
+            "former_persons": any(not p.current() for p in persons),
+            "wards": wards,
+            "inactive_wards": any(not w.active for w in wards),
             "email_available": settings.EMAIL_AVAILABLE,
         },
     )
 
 
-def get_edit_view(
-    model_class, formclass, get_initials, redirect_url, template_name
-):
-    @login_required
-    @permission_required("sp_app.is_dep_lead")
-    def edit_view(request, pk=None):
-        if pk is not None:
-            kwargs = {"instance": get_object_or_404(model_class, pk=pk)}
-        else:
-            kwargs = {"initial": get_initials(request)}
-        form = formclass(request.POST or None, **kwargs)
-        if form.is_valid():
-            form.save()
-            return redirect(redirect_url)
-        return render(request, template_name, {"form": form})
-
-    return edit_view
-
-
-def person_initials(request):
-    return {
-        "company": request.session["company_id"],
-        "start_date": utils.get_first_of_month(),
-    }
-
-
-person_edit = get_edit_view(
-    Person,
-    forms.PersonForm,
-    person_initials,
-    "/personen",
-    "sp_app/persons_wards/person_form.html",
-)
-
-
-def ward_initials(request):
-    return {"company": request.session["company_id"]}
-
-
-ward_edit = get_edit_view(
-    Ward,
-    forms.WardForm,
-    ward_initials,
-    "/personen",
-    "sp_app/persons_wards/ward_form.html",
-)
-
-
 @login_required
+@permission_required("sp_app.is_dep_lead")
 def overview(request):
     """Show settings of the company
 
     TODO: optimize SQL queries on user/group permissions
     """
+    is_company_admin = request.session.get("is_company_admin", False)
     company = (
         Company.objects.select_related("region")
         .prefetch_related("departments", "employees__user")
         .get(id=request.session["company_id"])
+        if is_company_admin
+        else None
     )
-    return render(request, "sp_app/overview.html", {"company": company})
+    if is_company_admin:
+        filter = {"company_id": request.session["company_id"]}
+    else:
+        filter = {"departments__id__in": request.session["department_ids"]}
+    persons = Person.objects.filter(**filter).order_by("position", "name")
+    wards = Ward.objects.filter(**filter).distinct()
+    return render(
+        request,
+        "sp_app/overview.html",
+        {
+            "company": company,
+            "is_company_admin": is_company_admin,
+            "persons": persons,
+            "former_persons": any(not p.current() for p in persons),
+            "wards": wards,
+            "inactive_wards": any(not w.active for w in wards),
+            "email_available": settings.EMAIL_AVAILABLE,
+        },
+    )
 
 
 @login_required
@@ -131,13 +103,13 @@ def overview(request):
 def ical_feeds(request):
     """List and edit the ical feeds of all persons of these departments"""
     department_ids = request.session.get("department_ids")
-    personen = Person.objects.filter(
+    persons = Person.objects.filter(
         departments__id__in=department_ids
     ).order_by("position", "name")
     return render(
         request,
-        "sp_app/ical_feeds.html",
-        {"personen": [p for p in personen if p.current()]},
+        "sp_app/ical/ical_feeds.html",
+        {"persons": [p for p in persons if p.current()]},
     )
 
 

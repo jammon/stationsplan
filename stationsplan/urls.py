@@ -83,11 +83,11 @@ urlpatterns = [
     #
     # Administrators -----------------------------------------------------
     #
-    path("personen", sp_views.personen_funktionen, name="persons"),
-    path("person/add/", sp_views.person_edit, name="person-add"),
-    path("person/<int:pk>/", sp_views.person_edit, name="person-update"),
-    path("funktion/add/", sp_views.ward_edit, name="ward-add"),
-    path("funktion/<int:pk>/", sp_views.ward_edit, name="ward-update"),
+    path("personen", sp_views.persons_wards, name="persons"),
+    path("person/add/", sp_ajax.edit_person, name="person-add"),
+    path("person/<int:pk>/", sp_ajax.edit_person, name="person-update"),
+    path("funktion/add/", sp_ajax.edit_ward, name="ward-add"),
+    path("funktion/<int:pk>/", sp_ajax.edit_ward, name="ward-update"),
     path("ical_feeds", sp_views.ical_feeds, name="ical_feeds"),
     path(
         "send_ical_feed/<int:pk>",

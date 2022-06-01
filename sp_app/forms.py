@@ -156,6 +156,8 @@ class WardForm(forms.ModelForm):
             )
         for fn in ("name", "shortname", "max", "min", "position"):
             self.fields[fn].widget.attrs["class"] = "form-control"
+        for fn in ("max", "min"):
+            self.fields[fn].label = f"{fn}. Besetzung"
 
     def get_initial_for_field(self, field, field_name):
         if field_name == "wkdys":

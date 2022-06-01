@@ -1,36 +1,35 @@
 <div class="col-md-3 col-sm-6">
 
   <h2>{% if former_persons %}Aktuelle {% endif %}Mitarbeiter/innen</h2>
-  <ul>
-    {% for person in personen %}
+  {% for person in persons %}
     {% if person.current %}
-      {% include "sp_app/persons_wards/person_line.html" %}
+      {% include "sp_app/structure/person_line.html" %}
     {% endif %}
-    {% empty %}
-    Noch keine Mitarbeiter/innen angelegt.
-    {% endfor %}
-  </ul>
+  {% empty %}
+  <p>Noch keine Mitarbeiter/innen angelegt.</p>
+  {% endfor %}
   <div>
-    <a class="btn btn-default" hx-get="/person/add" hx-target="#edit-area"
-       hx-swap="innerHTML show:top" hx-select="#form" role="button">
+    <a class="btn btn-default editable"
+       hx-get="{% url 'person-add' %}" 
+       hx-target="#edit-window" 
+       role="button">
     Neue/r Mitarbeiter/in</a>
   </div>
-  {% if personen and funktionen %}
+  {% if persons and wards %}
     <div><a href="/zuordnung">Personen und Funktionen zuordnen</a></div>
   {% endif %}
-  {% if email_available and personen %}
+  {% if email_available and persons %}
     <div><a href="/ical_feeds">Persönlichen Kalender erstellen</a></div>
   {% endif %}
 </div>
 {% if former_persons %}
 <div class="col-md-3 col-sm-6">
   <h2>Frühere Mitarbeiter/innen</h2>
-  <ul>
-    {% for person in personen %}
+  {% for person in persons %}
     {% if not person.current %}
-      {% include "sp_app/persons_wards/person_line.html" %}
+      {% include "sp_app/structure/person_line.html" %}
     {% endif %}
-    {% endfor %}
-  </ul>
+  {% endfor %}
 </div>
+<div class="clearfix visible-sm-block"></div>
 {% endif %}

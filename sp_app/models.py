@@ -116,7 +116,7 @@ class Ward(models.Model):
     position = models.IntegerField(
         default=1,
         help_text=_(
-            "Ordering in the display. " "Should not be more than two digits."
+            "Ordering in the display. Should not be more than two digits."
         ),
     )
     ward_type = models.CharField(

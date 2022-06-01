@@ -1,6 +1,0 @@
-{% for department in company.departments.all %}
-	<p hx-get={% url "edit-department" department.id %}
-	   hx-target="#edit-window" class="department-detail editable">
-		{{ department.name }}
-	</p>
-{% endfor %}
