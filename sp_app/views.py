@@ -64,7 +64,7 @@ def persons_wards(request):
 
 @login_required
 @permission_required("sp_app.is_dep_lead")
-def overview(request):
+def setup(request):
     """Show settings of the company
 
     TODO: optimize SQL queries on user/group permissions
@@ -85,7 +85,7 @@ def overview(request):
     wards = Ward.objects.filter(**filter).distinct()
     return render(
         request,
-        "sp_app/overview.html",
+        "sp_app/setup.html",
         {
             "company": company,
             "is_company_admin": is_company_admin,

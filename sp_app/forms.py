@@ -186,6 +186,20 @@ class UserForm(forms.ModelForm):
         fields = ["username", "first_name", "last_name"]
 
 
+class UserFormWithPassword(UserCreationForm):
+    """Some data have to be stored in the User object."""
+
+    class Meta:
+        model = User
+        fields = [
+            "username",
+            "first_name",
+            "last_name",
+            "password1",
+            "password2",
+        ]
+
+
 class EmployeeForm(forms.ModelForm):
     """Some data have to be stored in the User object."""
 

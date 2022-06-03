@@ -258,7 +258,9 @@ def edit_department(request, department_id=None):
         "sp_app/structure/edit_department.html",
         {
             "form": form,
-            "url": reverse("edit-department", args=(department_id,)),
+            "url": reverse("department-update", args=(department_id,))
+            if department_id
+            else reverse("department-add"),
         },
     )
 
@@ -374,9 +376,12 @@ def edit_employee(request, employee_id=None):
         emp_kwargs = {"initial": {"company": company_id}}
         user_kwargs = {}
     employee_form = forms.EmployeeForm(request.POST or None, **emp_kwargs)
-    user_form = forms.UserForm(request.POST or None, **user_kwargs)
+    user_form = (
+        forms.UserFormWithPassword if employee_id is None else forms.UserForm
+    )(request.POST or None, **user_kwargs)
     if employee_form.is_valid() and user_form.is_valid():
         employee = employee_form.save(commit=False)
+        employee.company_id = company_id
         employee.user = user_form.save()
         employee.save()
         employee_form.save_m2m()
@@ -405,7 +410,9 @@ def edit_employee(request, employee_id=None):
                 for n in ("username", "first_name", "last_name")
             )
             + tuple(employee_form.fields[n] for n in ("lvl", "departments")),
-            "url": reverse("edit-employee", args=(employee_id,)),
+            "url": reverse("employee-update", args=(employee_id,))
+            if employee_id
+            else reverse("employee-add"),
         },
     )
 

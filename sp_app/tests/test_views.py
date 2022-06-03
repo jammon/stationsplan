@@ -667,85 +667,106 @@ class TestRobotsTxt(TestCase):
         self.assertEqual(HTTPStatus.METHOD_NOT_ALLOWED, response.status_code)
 
 
-PERSON_DATA = {
-    "name": "Müller",
-    "shortname": "Mül",
-    "start_date": "2022-05-01",
-    "end_date": "2099-12-31",
-    "departments": "",
-    "position": str(Person.POSITION_ASSISTENTEN),
-    "email": "m.mueller@example.com",
-    "company": "",
-}
+class TestPermissions_NoPermission(LoggedInTestCase):
+    """Test if permissions are respected"""
 
+    fixture = {
+        Person: {
+            "data": {
+                "name": "Müller",
+                "shortname": "Mül",
+                "start_date": "2022-05-01",
+                "end_date": "2099-12-31",
+                "departments": "",
+                "position": str(Person.POSITION_ASSISTENTEN),
+                "email": "m.mueller@example.com",
+                "company": "",
+            },
+            "query": {"name": "Müller"},
+            "url": reverse("person-add"),
+        },
+        Ward: {
+            "data": {
+                "name": "Station X",
+                "shortname": "X",
+                "max": 3,
+                "min": 1,
+                "position": 1,
+            },
+            "query": {"name": "Station X"},
+            "url": reverse("ward-add"),
+        },
+    }
+    matrix = {
+        (Person, "department"): "forbidden",
+        (Person, "other_dept"): "forbidden",
+        (Ward, "department"): "forbidden",
+        (Ward, "other_dept"): "forbidden",
+    }
 
-class TestPersonEdit_NoPermission(LoggedInTestCase):
-    def get_post_data(self, department_id, company_id):
-        data = PERSON_DATA.copy()
+    def setUp(self):
+        super().setUp()
+        self.other_comp = Company.objects.create(name="Other", shortname="Oth")
+        self.other_dept = Department.objects.create(
+            name="Other", company=self.company
+        )
+
+    def get_post_data(self, model, department_id, company_id):
+        data = self.fixture[model]["data"].copy()
         data["departments"] = str(department_id)
         data["company"] = str(company_id)
         return data
 
-    def test_post_new(self):
-        data = self.get_post_data(self.department.id, self.company.id)
-        response = self.client.post(reverse("person-add"), data)
-        assert response.status_code == 403
+    def post_successful(self, response, model):
+        try:
+            obj = model.objects.get(**self.fixture[model]["query"])
+            print(model.__name__, obj.name)
+            obj.delete()
+            return response.status_code == 200
+        except model.DoesNotExist:
+            return False
+
+    def post_unsuccessful(self, response, model):
+        return (
+            response.status_code == 200
+            and not model.objects.filter(
+                **self.fixture[model]["query"]
+            ).exists()
+        )
+
+    def post_forbidden(self, response, model):
+        return response.status_code == 403
+
+    def test_post(self):
+        for key, expectation in self.matrix.items():
+            model, dept = key
+            data = self.get_post_data(
+                model, getattr(self, dept).id, self.company.id
+            )
+            response = self.client.post(self.fixture[model]["url"], data)
+            assertion = getattr(self, f"post_{expectation}")
+            assert assertion(response, model), key
 
 
-class TestPersonEdit_Editor(TestPersonEdit_NoPermission):
+class TestPermissions_Editor(TestPermissions_NoPermission):
     employee_level = "is_editor"
 
-    def test_post_new(self):
-        assert self.employee.level == "is_editor"
-        super().test_post_new()
 
-
-class TestPersonEdit_DepLead(TestPersonEdit_NoPermission):
+class TestPermissions_DepLead(TestPermissions_NoPermission):
     employee_level = "is_dep_lead"
-
-    def assert_person_created(self, response, department):
-        assert response.status_code == 200
-        assert any(
-            t.name == "sp_app/structure/edit_object_sucess.html"
-            for t in response.templates
-        )
-        assert (
-            response.context["list_template"]
-            == "sp_app/structure/person_list.html"
-        )
-        assert response.context["target"] == "person_list"
-        person = Person.objects.get(name="Müller")
-        assert person.shortname == "Mül"
-        assert person.start_date == date(2022, 5, 1)
-        depts = person.departments.all()
-        assert len(depts) == 1
-        assert depts[0] == department
-
-    def test_post_new(self, level="is_dep_lead"):
-        data = self.get_post_data(self.department.id, self.company.id)
-        response = self.client.post(reverse("person-add"), data)
-        self.assert_person_created(response, self.department)
-
-    def post_other_dept(self):
-        self.other_dept = Department.objects.create(
-            name="Other", company=self.company
-        )
-        data = self.get_post_data(self.other_dept.id, self.company.id)
-        return self.client.post(reverse("person-add"), data)
-
-    # This in not yet implemented
-    # def test_other_dept(self):
-    #     response = self.post_other_dept()
-    #     assert response.status_code == 200
-    #     assert not Person.objects.filter(name="Müller").exists()
+    matrix = {
+        (Person, "department"): "successful",
+        # (Person, "other_dept"): "unsuccessful",
+        (Ward, "department"): "successful",
+        # (Ward, "other_dept"): "unsuccessful",
+    }
 
 
-class TestPersonEdit_CompanyAdmin(TestPersonEdit_DepLead):
+class TestPermissions_CompanyAdmin(TestPermissions_NoPermission):
     employee_level = "is_company_admin"
-
-    def test_post_new(self):
-        super().test_post_new("is_company_admin")
-
-    def test_other_dept(self):
-        response = self.post_other_dept()
-        self.assert_person_created(response, self.other_dept)
+    matrix = {
+        (Person, "department"): "successful",
+        (Person, "other_dept"): "successful",
+        (Ward, "department"): "successful",
+        (Ward, "other_dept"): "successful",
+    }

@@ -5,6 +5,10 @@
     {% csrf_token %}
     {% with "./horizontal-edit-field.html" as template %}
       {% include template with field=user_form.username %}
+      {% if user_form.password1 %}
+        {% include template with field=user_form.password1 %}
+        {% include template with field=user_form.password2 %}
+      {% endif %}
       {% include template with field=user_form.first_name %}
       {% include template with field=user_form.last_name %}
       {% include template with field=employee_form.lvl %}

@@ -33,7 +33,7 @@ def path2template(url, t_path, name, **kwargs):
 
 urlpatterns = [
     path("", sp_views.home, name="home"),
-    path("overview/", sp_views.overview, name="overview"),
+    path("setup/", sp_views.setup, name="setup"),
     #
     #
     # SPA  -------------------------------------------------------------
@@ -62,17 +62,17 @@ urlpatterns = [
         sp_ajax.differentday,
         name="different-day",
     ),
-    path("edit/department", sp_ajax.edit_department),
+    path("edit/department", sp_ajax.edit_department, name="department-add"),
     path(
         "edit/department/<int:department_id>",
         sp_ajax.edit_department,
-        name="edit-department",
+        name="department-update",
     ),
-    path("edit/employee", sp_ajax.edit_employee),
+    path("edit/employee", sp_ajax.edit_employee, name="employee-add"),
     path(
         "edit/employee/<int:employee_id>",
         sp_ajax.edit_employee,
-        name="edit-employee",
+        name="employee-update",
     ),
     #
     #
