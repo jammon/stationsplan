@@ -7,7 +7,6 @@
 (C) Urlaube in der Planungsansicht der Dienste anzeigen
 (C) Doppelclick auf voriger oder nächster Monat soll nur einmal wirken
 (C) Integrationtests in jasmine einbauen +Public
-(C) Favicon bauen +Public https://codeburst.io/the-front-end-checklist-8b2292fdda44
 (C) Assets komprimieren
 (C) Flags für Betatester
 (C) Testen mit Firefox headless oder PhantomJS

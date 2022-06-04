@@ -166,3 +166,4 @@ x 2022-06-02 Neue Abteilung und Bearbeiter
 x 2022-06-02 Beispielplan entwickeln
 x 2022-06-02 Fehlerbehandlung im Frontend
 x 2022-06-02 Wenn man sich bei /admin einloggt, soll trotzdem die Session korrekt initialisiert werden
+x 2022-06-04 Favicon bauen +Public https://codeburst.io/the-front-end-checklist-8b2292fdda44
