@@ -2,10 +2,10 @@
 {% load static %}
 
 {% block extrahead %}
-    <link rel="stylesheet" href="{% static 'vendor/jquery-ui-1.12.0.custom/jquery-ui.min.css' %}">
-    <link rel="stylesheet" href="{% static 'vendor/jquery-ui-1.12.0.custom/jquery-ui.structure.min.css' %}">
-    <link rel="stylesheet" href="{% static 'vendor/jquery-ui-1.12.0.custom/jquery-ui.theme.min.css' %}">
-    <link rel="stylesheet" href="{% static 'vendor/bootstrap3-datepicker/css/bootstrap-datepicker3.css' %}">
+    <link rel="stylesheet" href="{% static 'vendor/jquery-ui-1.12.0.custom/jquery-ui.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'vendor/jquery-ui-1.12.0.custom/jquery-ui.structure.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'vendor/jquery-ui-1.12.0.custom/jquery-ui.theme.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap3-datepicker/css/bootstrap-datepicker3.css' %}"/>
 {% endblock extrahead %}
 
 {% block navigation %}
@@ -72,7 +72,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <button type="button" class="close" data-dismiss="modal">×</button>
         <h4 class="modal-title">Besetzung ändern</h4>
         <h4><span class="changedate"></span>, <span class="changeward"></span></h4>
       </div>
@@ -100,7 +100,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <button type="button" class="close" data-dismiss="modal">×</button>
         <h4 class="modal-title">Planung freigeben</h4>
       </div>
       <div class="modal-body">
@@ -126,7 +126,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <button type="button" class="close" data-dismiss="modal">×</button>
         <h4 class="modal-title">Dienstplanung eingeben - <span class="ward_name"></span></h4>
       </div>
       <div class="modal-body">
@@ -136,9 +136,9 @@
             <table id="quickdays" class="table"></table>
             <div>
               <button type="button" class="btn btn-primary btn-block prev_day">
-                &uarr;</button>
+                ↑</button>
               <button type="button" class="btn btn-primary btn-block next_day">
-                &darr;</button>
+                ↓</button>
             </div>
           </div>
         </div>
@@ -155,7 +155,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <button type="button" class="close" data-dismiss="modal">×</button>
         <h4 class="modal-title">Planung ändern </h4>
         <h4><span class="changedate"></span>, <span class="changeward"></span></h4>
       </div>
@@ -179,10 +179,10 @@
 </div>
 
 <!-- Check device size -->
-<div class='device-check visible-xs' data-device='xs'></div>
-<div class='device-check visible-sm' data-device='sm'></div>
-<div class='device-check visible-md' data-device='md'></div>
-<div class='device-check visible-lg' data-device='lg'></div>
+<div class="device-check visible-xs" data-device="xs"></div>
+<div class="device-check visible-sm" data-device="sm"></div>
+<div class="device-check visible-md" data-device="md"></div>
+<div class="device-check visible-lg" data-device="lg"></div>
 
 {% endblock extracontent %}
 

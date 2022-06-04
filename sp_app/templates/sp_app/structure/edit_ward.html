@@ -6,7 +6,6 @@
 {% block modalform %}
 <form hx-post="{{ url }}" method="post" id="form" class="edit-form">
 {% csrf_token %}
-<form action="/funktion/{% if form.instance.pk %}{{ form.instance.pk }}{% else %}add{% endif %}/" method="post" id="form">{% csrf_token %}
 <div class="row">
     <div class="col">
         

@@ -8,7 +8,7 @@
 {% block content %}
 <div class="row" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
   <div class="col col-xs-12">
-    <table class="table" style="width: auto;">
+    <table class="table auto-width">
     {% for person in persons %}
       {% include "sp_app/ical/person_feed.html" %}
     {% endfor %}

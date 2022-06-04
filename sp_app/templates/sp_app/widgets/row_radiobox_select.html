@@ -8,7 +8,7 @@
 			     id="id_{{ option.name }}_{{ option.index }}" 
 			     value="{{ option.value|stringformat:'s' }}" name="{{ option.name }}"
 			     {% include "django/forms/widgets/attrs.html" %}
-			     {% if option.selected %} checked="checked"{% endif %}>
+			     {% if option.selected %} checked="checked"{% endif %}/>
 			    {{ option.label }}
 			  </label>
     {% endfor %}
