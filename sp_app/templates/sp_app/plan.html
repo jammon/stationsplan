@@ -22,47 +22,9 @@
           <table></table>
         </div>
       </div>
-      <div class="row">
-        <div class="col">
-          {% if former_persons %}
-            <a class="btn btn-default" id="former_persons">Frühere Mitarbeiter</a>
-          {% endif %}
-          {% if inactive_wards %}
-            <a class="btn btn-default" id="inactive_wards">Deaktivierte Funktionen</a>
-          {% endif %}
-        </div>
-      </div>
-      <div class="row">
-        <div class="col hidden" id="former_persons_list">
-          <h2>Frühere Mitarbeiter</h2>
-          {% for p in former_persons %}
-            <p><a href="/person/{{ p.id }}">{{ p.name }}</a></p>
-          {% endfor %}
-        </div>
-        <div class="col hidden" id="inactive_wards_list">
-          <h2>Deaktivierte Funktionen</h2>
-          {% for w in inactive_wards %}
-            <p><a href="/funktion/{{ w.id }}">{{ w.name }}</a></p>
-          {% endfor %}
-        </div>
-      </div>
     </div>
   </div>
-<!-- Errors  ________________________________________ -->
-{% if user.is_staff %}
-  <div> <table id="errors" class="table hidden">
-    <tr>
-      <th>Status</th>
-      <th>Error</th>
-      <th>Response-Text</th>
-      <th>URL</th>
-      <th>Data</th>
-    </tr>
-  </table> </div>
-{% endif %}
-{% if can_change %}
-  <footer class="pull-right text-muted small">Version: {{ APP_VERSION }}</footer>
-{% endif %}
+
 {% endblock content %}
 
 <!-- Modal dialogs  _________________________________ -->
