@@ -58,7 +58,7 @@ msgstr "Kurzname"
 
 #: sp_app/models.py:27
 msgid "Region that determines the legal holidays for this company"
-msgstr "Region (Bundesland), deren Feiertage für dieses Krankenhaus gelten."
+msgstr "Bundesland, dessen Feiertage für dieses Krankenhaus gelten."
 
 #: sp_app/models.py:33
 msgid "Company"

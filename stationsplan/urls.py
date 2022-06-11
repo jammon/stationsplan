@@ -34,6 +34,7 @@ def path2template(url, t_path, name, **kwargs):
 urlpatterns = [
     path("", sp_views.home, name="home"),
     path("setup/", sp_views.setup, name="setup"),
+    path2template("offer", "sp_app/signup/offer.jinja", "offer"),
     #
     #
     # SPA  -------------------------------------------------------------

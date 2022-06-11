@@ -110,6 +110,14 @@ td.free-day {
   font-weight: 400;
 }
 
+.auto-width {
+  width: auto;
+}
+
+.login-form {
+  margin-bottom: 15px;
+}
+
 .margin-top-10 {
   margin-top: 20px;
 }

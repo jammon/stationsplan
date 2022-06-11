@@ -1,0 +1,29 @@
+{% extends "base.jinja" %}
+{% block content %}
+{% include "sp_app/signup/page-header.jinja" %}
+
+<div class="row">
+	<div class="col-md-8 lead">
+		<h2>Probefahrt</h2>
+		<p>Probieren Sie die Planung mit Stationsplan.de einfach aus.</p>
+		<p>
+		 	Sie können kostenlos einen Account anlegen, Ihre Klinik, Stationen, Funktionen und Dienste konfigurieren und Mitarbeiter anlegen. Sie planen Ihre Dienste und Stationsverteilung und Ihre Mitarbeiter können alle Funktionen dieses Dienstes für drei Monate nutzen. Wenn Sie nicht voll zufrieden sind, brechen Sie den Versuch ab, es kommen keine Kosten auf Sie zu.
+		</p>
+		<h2>Dauerbetrieb</h2>
+		<p>
+		Die dauerhafte Nutzung von Stationsplan.de ist kostenpflichtig. 
+		Die Kosten hängen von Ihrem Bedarf ab. Mit einer Grundgebühr von 20&nbsp;€ pro Monat können Sie für bis zu 20 Mitarbeiter planen. 
+		</p>
+		<h2>Rechtliches</h2>
+		<p>...</p>
+	</div>
+	<div class="col-md-4">
+	  <a role="button" class="btn btn-primary btn-lg" href="{{ url('signup') }}">
+	  	Planung beginnen
+	  </a>
+	</div>
+</div>
+{% endblock content %}
+{% block footer %}
+  {% include "sp_app/footer.jinja" %}
+{% endblock footer %}
