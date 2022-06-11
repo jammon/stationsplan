@@ -6,13 +6,14 @@ import os
 import string
 import sys
 import time
-from pathlib import Path
+from pathlib import Path, PosixPath
+from random import choice
 
 from stationsplan.utils import random_string
 
 
 # Build paths inside the project like this: BASE_DIR / "path/file.ext"
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 TESTING = False
 if (
@@ -33,6 +34,112 @@ VERSION = time.strftime(
 CONFIG_FILE = BASE_DIR / ".statplan.cnf"
 config = configparser.ConfigParser(interpolation=None)
 config.read(CONFIG_FILE)
+
+# Server type: "dev", "staging" or "production"
+SERVER_TYPE = config["server"]["type"]
+
+
+# Server dependant
+if SERVER_TYPE== "dev":
+    DEBUG = True
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
+    STATIC_ROOT = BASE_DIR / "dev_static"
+    LOGGING = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "handlers": {
+            "file": {
+                "level": "DEBUG",
+                "class": "logging.FileHandler",
+                "filename": BASE_DIR / "debug.log",
+            },
+        },
+        "loggers": {
+            "django.request": {
+                "handlers": ["file"],
+                "level": "DEBUG",
+                "propagate": True,
+            },
+        },
+    }
+
+else:
+    DEBUG = False
+    ALLOWED_HOSTS = []
+    USER_HOME = PosixPath("~").expanduser()
+
+    DB_CONFIG_FILE = USER_HOME / ".my.cnf"
+    db_config = configparser.ConfigParser()
+    with open(DB_CONFIG_FILE) as db_conf_file:
+        db_config.read_file(db_conf_file)
+
+    db_username = db_config["client"]["user"]
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": db_username,
+            "USER": db_username,
+            "PASSWORD": db_config["client"]["password"],
+            "TEST": {
+                "NAME": db_username + "_test",
+            },
+            "CONN_MAX_AGE": 5,
+        }
+    }
+
+    STATIC_ROOT = USER_HOME / "html" / "static"
+    STATICFILES_STORAGE = (
+        "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+    )
+
+    LOG_FILE = USER_HOME / "logs" / "stationsplan.log"
+    LOGGING = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "handlers": {
+            "file": {
+                "level": "DEBUG",
+                "class": "logging.FileHandler",
+                "filename": LOG_FILE,
+            },
+        },
+        "loggers": {
+            "django.request": {
+                "handlers": ["file"],
+                "level": "DEBUG",
+                "propagate": True,
+            },
+        },
+    }
+
+    USE_X_FORWARDED_HOST = True
+
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": "unix:///home/stplan2/.redis/sock?db=0",
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            },
+        }
+    }
+    SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+    SESSION_CACHE_ALIAS = "default"
+
+    if SERVER_TYPE=="production":
+        ALLOWED_HOSTS = [
+            ".stationsplan.de",
+            "stplan2.uber.space",
+            "localhost",
+            "127.0.0.1",
+        ]
+
+# Secret Key
 try:
     SECRET_KEY = config["django"]["key"]
 except KeyError:
@@ -70,6 +177,7 @@ INSTALLED_APPS = (
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_jinja",
     "sp_app",
 )
 
@@ -101,24 +209,56 @@ DJANGO_TEMPLATES = {
         ],
     },
 }
+JINJA_TEMPLATES = {
+    "BACKEND": "django_jinja.backend.Jinja2",
+    "DIRS": [],
+    "APP_DIRS": True,
+    "OPTIONS": {},
+}
+
 # DJANGO_TEMPLATES will be changed in specialized settings
 TEMPLATES = [
+    JINJA_TEMPLATES,
     DJANGO_TEMPLATES,
 ]
+
+if SERVER_TYPE == "dev":
+    DJANGO_TEMPLATES["DIRS"] = []
+    DJANGO_TEMPLATES["APP_DIRS"] = True
+    INSTALLED_APPS += ("debug_toolbar",)
+    MIDDLEWARE = ("debug_toolbar.middleware.DebugToolbarMiddleware",) + MIDDLEWARE
+    INTERNAL_IPS = ("127.0.0.1", "localhost")
+
+elif SERVER_TYPE == "production":
+    DJANGO_TEMPLATES["OPTIONS"]["loaders"] = [
+        (
+            "django.template.loaders.cached.Loader",
+            [
+                "django.template.loaders.filesystem.Loader",
+                "django.template.loaders.app_directories.Loader",
+            ],
+        ),
+    ]
+
+from django.contrib.staticfiles.storage import staticfiles_storage
+from django.urls import reverse
+
+from jinja2 import Environment
+
+
+def environment(**options):
+    env = Environment(**options)
+    env.globals.update(
+        {
+            "static": staticfiles_storage.url,
+            "url": reverse,
+        }
+    )
+    return env
 
 
 WSGI_APPLICATION = "stationsplan.wsgi.application"
 
-
-# Database
-# https://docs.djangoproject.com/en/1.8/ref/settings/#databases
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
@@ -173,3 +313,4 @@ def read_secret(secret_file_name, content_description, generate_secret=False):
         content_description,
     )
     raise Exception(error_message)
+

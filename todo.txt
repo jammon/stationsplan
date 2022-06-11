@@ -38,3 +38,6 @@
 (A) Errors stylen +Public
 (A) Verhalten des edit-window bei Fehlern
 (B) Debug-Status in der config festlegen, settings entsprechend importieren
+Footer korrigieren
+(A) Stagingserver einrichten
+(B) Rechtliches für Terminnetz suchen

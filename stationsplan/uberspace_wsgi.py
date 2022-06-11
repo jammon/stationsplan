@@ -12,7 +12,7 @@ import os
 from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault(
-    "DJANGO_SETTINGS_MODULE", "stationsplan.settings.uberspace"
+    "DJANGO_SETTINGS_MODULE", "stationsplan.settings"
 )
 
 application = get_wsgi_application()

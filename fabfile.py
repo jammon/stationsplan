@@ -13,19 +13,19 @@ def test(verbosity="1", case=""):
 def makemigrations():
     local(
         "python ./manage.py makemigrations sp_app "
-        "--settings=stationsplan.settings.dev"
+        "--settings=stationsplan.settings"
     )
 
 
 def migrate_local():
     local(
         "python ./manage.py migrate sp_app "
-        "--settings=stationsplan.settings.dev"
+        "--settings=stationsplan.settings"
     )
 
 
 def serve():
-    local("./manage.py runserver --settings=stationsplan.settings.dev")
+    local("./manage.py runserver --settings=stationsplan.settings")
 
 
 def sass():
