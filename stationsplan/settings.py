@@ -3,6 +3,7 @@ Django settings for stationsplan project.
 """
 import configparser
 import os
+import pdb
 import string
 import sys
 import time
@@ -40,7 +41,7 @@ SERVER_TYPE = config["server"]["type"]
 
 
 # Server dependant
-if SERVER_TYPE== "dev":
+if SERVER_TYPE == "dev":
     DEBUG = True
     DATABASES = {
         "default": {
@@ -131,13 +132,15 @@ else:
     SESSION_ENGINE = "django.contrib.sessions.backends.cache"
     SESSION_CACHE_ALIAS = "default"
 
-    if SERVER_TYPE=="production":
+    if SERVER_TYPE == "production":
         ALLOWED_HOSTS = [
             ".stationsplan.de",
             "stplan2.uber.space",
             "localhost",
             "127.0.0.1",
         ]
+    elif SERVER_TYPE == "staging":
+        ALLOWED_HOSTS = ["stpst.uber.space", "localhost", "127.0.0.1"]
 
 # Secret Key
 try:
@@ -226,10 +229,12 @@ if SERVER_TYPE == "dev":
     DJANGO_TEMPLATES["DIRS"] = []
     DJANGO_TEMPLATES["APP_DIRS"] = True
     INSTALLED_APPS += ("debug_toolbar",)
-    MIDDLEWARE = ("debug_toolbar.middleware.DebugToolbarMiddleware",) + MIDDLEWARE
+    MIDDLEWARE = (
+        "debug_toolbar.middleware.DebugToolbarMiddleware",
+    ) + MIDDLEWARE
     INTERNAL_IPS = ("127.0.0.1", "localhost")
 
-elif SERVER_TYPE == "production":
+elif SERVER_TYPE in ("production", "staging"):
     DJANGO_TEMPLATES["OPTIONS"]["loaders"] = [
         (
             "django.template.loaders.cached.Loader",
@@ -313,4 +318,3 @@ def read_secret(secret_file_name, content_description, generate_secret=False):
         content_description,
     )
     raise Exception(error_message)
-
