@@ -85,7 +85,7 @@ def setup(request):
     wards = Ward.objects.filter(**filter).distinct()
     return render(
         request,
-        "sp_app/setup.html",
+        "sp_app/setup.jinja",
         {
             "company": company,
             "is_company_admin": is_company_admin,

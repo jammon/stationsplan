@@ -1,0 +1,42 @@
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Toggle for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#stationsplan-navbar-collapse" aria-expanded="false">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <p class="navbar-brand current_dept">Stationsplan</p>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <nav class="collapse navbar-collapse" id="stationsplan-navbar-collapse">
+      <ul class="nav navbar-nav navbar-right">
+        <li id="nav-stationen"><a href="/plan">Stationen</a></li>
+        <li id="nav-dienste"><a href="/dienste">Dienste</a></li>
+        <li id="nav-tag"><a href="/tag">Heute</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+            <span class="glyphicon glyphicon-cog"></span>
+            <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="/logout">Abmelden</a></li>
+            {% if request.session.can_change_password %}
+              <li><a href="/password_change">Passwort ändern</a></li>
+            {% endif %}
+            {% if request.session.is_dep_lead %}
+              <div class="dropdown-divider"></div>
+              <li id="nav-setup"><a href="/setup">Einstellungen</a></li>
+              <li id="nav-zuordnung"><a href="/zuordnung">Zuordnung Personen/Funktionen</a></li>
+            {% endif %}
+            {% if request.user.is_staff %}
+              <li id="nav-admin"><a href="/admin">Admin-Seite</a></li>
+            {% endif %}
+          </ul>
+        </li>
+        <p class="navbar-text">{{ request.user.get_full_name() or request.user.get_username() }}</p>
+      </ul>
+    </nav><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>

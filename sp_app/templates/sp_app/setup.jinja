@@ -1,0 +1,57 @@
+{% extends "base.jinja" %}
+
+{% block navigation %}
+{% include "sp_app/navigation.jinja" %}
+{% endblock navigation %}
+
+{% block content %}
+<div hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+  <h1>{{ company.name }}</h1>
+  <div class="row">
+    {% if is_company_admin %}
+
+    <div class="col col-xs-12">
+      Es kommen die Feiertage von <strong>{{ company.region.name }}</strong> zur Anwendung.
+    </div>
+    <div class="col col-md-3 col-sm-6">
+      <h2>Abteilungen</h2>
+      <div id="departments">
+        {% include "sp_app/structure/departments.jinja" %}
+      </div>
+    </div>
+    <div class="col col-md-3 col-sm-6">
+      <h2>Bearbeiter/innen</h2>
+      <div id="employees">
+        {% include "sp_app/structure/employees.jinja" %}
+      </div>
+    </div>
+    {% endif %}
+    <div class="clearfix visible-sm-block"></div>
+    <div id="person_list">{% include "sp_app/structure/person_list.jinja" %}</div>
+    <div id="ward_list">{% include "sp_app/structure/ward_list.jinja" %}</div>
+  </div>
+  <div id="edit-area"></div>
+</div>
+{% endblock content %}
+
+{% block extracontent %}
+<div class="modal" id="edit-window" tabindex="-1" role="dialog"></div>
+{% endblock extracontent %}
+
+{% block extrascripts %}
+<script src="{{ static('vendor/htmx.min.js') }}"></script>
+<script>
+  htmx.on("htmx:afterOnLoad", function (evt) {
+    if (evt.detail.elt.matches(".editable")) {
+      setTimeout(function () {
+        $("#edit-window").modal("show");
+      }, 10)
+    }
+  });
+  htmx.on("htmx:afterSettle", function (evt) {
+    if (!$(".edit-form".length)) {
+      $("#edit-window").modal("hide");
+    }
+  });
+</script>
+{% endblock extrascripts %}

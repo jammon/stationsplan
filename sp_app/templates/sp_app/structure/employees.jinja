@@ -1,0 +1,14 @@
+{% for employee in company.employees.all() %}
+	{% if employee.user.is_active %}
+		<p><a hx-get={{ url("employee-update", employee.id) }}
+		   hx-target="#edit-window" class="employee-detail editable" >
+			{{ employee.name_and_level() }}</a></p>
+	{% endif %}
+{% endfor %}
+  <div>
+    <a class="btn btn-default editable"
+       hx-get="{{ url('employee-add') }}" 
+       hx-target="#edit-window" 
+       role="button">
+    Neue/r Bearbeiter/in</a>
+  </div>
