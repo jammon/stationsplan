@@ -3,7 +3,6 @@ Django settings for stationsplan project.
 """
 import configparser
 import os
-import pdb
 import string
 import sys
 import time
@@ -123,7 +122,7 @@ else:
     CACHES = {
         "default": {
             "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": "unix:///home/stplan2/.redis/sock?db=0",
+            "LOCATION": "unix://" + (Path.home() / ".redis/sock?db=0"),
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
             },
@@ -148,7 +147,9 @@ try:
 except KeyError:
     if not config.has_section("django"):
         config["django"] = {}
-    SECRET_KEY = config["django"]["key"] = random_string(50)
+    SECRET_KEY = config["django"]["key"] = random_string(
+        50, string.digits + string.ascii_letters
+    )
     with open(CONFIG_FILE, "w") as configfile:
         config.write(configfile)
 
