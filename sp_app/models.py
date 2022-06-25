@@ -608,7 +608,9 @@ class Employee(models.Model):
     user = models.OneToOneField(
         User, related_name="employee", on_delete=models.CASCADE
     )
-    departments = models.ManyToManyField(Department, related_name="employees")
+    departments = models.ManyToManyField(
+        Department, related_name="employees", verbose_name=_("Department")
+    )
     company = models.ForeignKey(
         Company, related_name="employees", on_delete=models.CASCADE
     )

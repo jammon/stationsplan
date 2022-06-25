@@ -18,10 +18,7 @@ def makemigrations():
 
 
 def migrate_local():
-    local(
-        "python ./manage.py migrate sp_app "
-        "--settings=stationsplan.settings"
-    )
+    local("python ./manage.py migrate sp_app --settings=stationsplan.settings")
 
 
 def serve():
@@ -48,17 +45,17 @@ def server_pull(branch="master"):
 
 
 def install_requirements():
-    run("pip3.6 install -r stationsplan/requirements.txt --user")
+    run("pip3.9 install -r stationsplan/requirements.txt --user")
 
 
 def staticfiles():
     with cd(code_dir):
-        run("python3.6 manage.py collectstatic --noinput")
+        run("python3.9 manage.py collectstatic --noinput")
 
 
 def migrate():
     with cd(code_dir):
-        run("python3.6 manage.py migrate")
+        run("python3.9 manage.py migrate")
 
 
 def restart_server():
