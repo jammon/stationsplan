@@ -1,0 +1,93 @@
+<!-- Templates for Javascript -->
+<!-- Generic Template for the page with tables of persons and wards
+-->
+<script type="text/template" id="table-template">
+    <h2 class="month-heading"> 
+      <span class="btn-group period-nav" role="group">
+        <a class="btn btn-default prev-view" aria-label="<%= label_prev %>"
+          title="<%= label_prev %>">
+          <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+        </a>
+        <a class="btn btn-default next-view" aria-label="<%= label_next %>"
+          title="<%= label_next %>">
+          <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+        </a>
+      </span>
+      <%= period %> 
+    </h2>
+  <%= content %>
+</script>
+
+<!-- Template for the big table with all the persons and wards
+-->
+<script type="text/template" id="period-template">
+  <%= start %> &mdash; <%= end %>
+</script>
+
+<!-- Template for the big table with all the persons and wards
+-->
+<script type="text/template" id="big-table">
+  <div class="inner">
+    <table class="plan"></table>
+  </div>
+  {% if request.session.is_editor %}
+    <div>
+      <button class="show-duties">Aufgaben</button>
+    </div>
+  {% endif %}
+</script>
+
+<!-- Template for the table of on-call services
+-->
+<script type="text/template" id="on-call-table">
+  <div class="row inner">
+    <div class="{% if request.session.is_editor %}col-md-7{% else %}col-xs-12{% endif %}">
+      <table class="plan"></table>
+    </div>
+    {% if request.session.is_editor %}
+    <div class="col-md-5">
+      <table class="calltallies"></table>
+    </div>
+    {% endif %}
+  </div>
+</script>
+
+<!-- Template for the persons and wards for one day
+-->
+<script type="text/template" id="day-table">
+  <div class="inner">
+    <table class="plan"></table>
+  </div>
+</script>
+
+<!-- Template for the change person line
+  Parameters:
+  action - 'add' or 'remove'
+  type - 'info' or 'primary' for 'add' or 'remove'
+  name - the name of the person
+  shortname - the short name of the person
+  duties - the duties of the person as a string
+-->
+<script type="text/template" id="change_person_template">
+  <td>
+    <button class="btn btn-block changestaff">
+      <%= name %>
+    </button>
+  </td>
+  <td><%= duties %></td>
+</script>
+
+<!-- Template for the approve staffing line
+  Parameters:
+  staffing - the name of the staffing
+  currentapproval - the current approval date of the staffing
+-->
+<script type="text/template" id="approve_staffing_template">
+  <td>
+    <label>
+      <input type="checkbox" value="<%= ward_id %>">
+      <%= ward %>
+    </label>
+  </td>
+  <td><%= currentapproval %></td>
+</script>

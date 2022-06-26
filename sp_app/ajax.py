@@ -250,7 +250,7 @@ def edit_department(request, department_id=None):
             {
                 "company": company,
                 "target": "departments",
-                "list_template": "sp_app/structure/departments.html",
+                "list_template": "sp_app/structure/departments.jinja",
             },
         )
     return render(

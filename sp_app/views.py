@@ -28,7 +28,7 @@ def plan(request, month="", day=""):
     """
     return render(
         request,
-        "sp_app/plan.html",
+        "sp_app/plan.jinja",
         business_logic.get_plan_data(
             company_id=request.session.get("company_id"),
             department_ids=request.session.get("department_ids"),

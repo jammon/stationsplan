@@ -1,0 +1,169 @@
+{% extends "base.jinja" %}
+
+{% block extrahead %}
+    <link rel="stylesheet" href="{{ static('vendor/jquery-ui-1.12.0.custom/jquery-ui.min.css') }}"/>
+    <link rel="stylesheet" href="{{ static('vendor/jquery-ui-1.12.0.custom/jquery-ui.structure.min.css') }}"/>
+    <link rel="stylesheet" href="{{ static('vendor/jquery-ui-1.12.0.custom/jquery-ui.theme.min.css') }}"/>
+    <link rel="stylesheet" href="{{ static('vendor/bootstrap3-datepicker/css/bootstrap-datepicker3.css') }}"/>
+{% endblock extrahead %}
+
+{% block navigation %}
+{% include "sp_app/navigation.jinja" %}
+{% endblock navigation %}
+
+<!-- Content ________________________________________ -->
+{% block content %}
+  <div class="plans">
+    <div id="functions_view" class="contentview functions_view">
+      <div class="row">
+        <div class="col">
+          <h2>Funktionen zuordnen</h2>
+          <table></table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock content %}
+
+<!-- Modal dialogs  _________________________________ -->
+{% block extracontent %}
+<!-- Modal dialog for changing staff -->
+<div class="modal" id="changestaff" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">×</button>
+        <h4 class="modal-title">Besetzung ändern</h4>
+        <h4><span class="changedate"></span>, <span class="changeward"></span></h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-sm-5">
+            <table id="changestafftable"></table>
+          </div>
+          <div class="col-sm-7 submitbuttons">
+            <div id="date-picker"></div>
+            <div><button type="button" class="btn btn-primary btn-block"
+                    id="time_period">Zeitraum</button></div>
+            <div><button type="button" class="btn btn-primary btn-block"
+                    id="continued">ohne Ende</button></div>
+            <div id="changehistory"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal dialog for approving Staffings -->
+<div class="modal" id="approvestaffing" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">×</button>
+        <h4 class="modal-title">Planung freigeben</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-sm-6">
+            <table id="changeapprovaltable"></table>
+          </div>
+          <div class="col-sm-6">
+            <div id="approval-date-picker"></div>
+            <div><button type="button" class="btn btn-primary btn-block" 
+                    id="approve-to-date">Freigeben</button></div>
+            <div><button type="button" class="btn btn-primary btn-block" 
+                    id="approve-all">Unbeschränkt sichtbar</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal dialog for quickly inputing Staffings for Call-Shifts -->
+<div class="modal" id="quickinput" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">×</button>
+        <h4 class="modal-title">Dienstplanung eingeben - <span class="ward_name"></span></h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-sm-6" id="quickpersons"> </div>
+          <div class="col-sm-6">
+            <table id="quickdays" class="table"></table>
+            <div>
+              <button type="button" class="btn btn-primary btn-block prev_day">
+                ↑</button>
+              <button type="button" class="btn btn-primary btn-block next_day">
+                ↓</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Eingabe beenden</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal dialog for different day planning -->
+<div class="modal" id="differentday" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">×</button>
+        <h4 class="modal-title">Planung ändern </h4>
+        <h4><span class="changedate"></span>, <span class="changeward"></span></h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-xs-12">
+            <button type="button" class="btn btn-primary"
+                    id="differentdaybutton">
+              Am <span class="changedate"></span> 
+              <span class="changeward"></span> 
+              <span class="differentaction"></span>
+            </button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 errors"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Check device size -->
+<div class="device-check visible-xs" data-device="xs"></div>
+<div class="device-check visible-sm" data-device="sm"></div>
+<div class="device-check visible-md" data-device="md"></div>
+<div class="device-check visible-lg" data-device="lg"></div>
+
+{% endblock extracontent %}
+
+{% block extrascripts %}
+  {% include 'sp_app/templates.jinja' %}
+    <script src="{{ static('vendor/underscore.js') }}"></script>
+    <script src="{{ static('vendor/backbone.js') }}"></script>
+    <script src="{{ static('vendor/bootstrap3.modalform.js') }}"></script>
+    <script src="{{ static('vendor/jquery-ui-1.12.0.custom/jquery-ui.min.js') }}"></script>
+    <script src="{{ static('vendor/jquery.mobile.custom/jquery.mobile.custom.js') }}"></script>
+    <script src="{{ static('vendor/bootstrap3-datepicker/js/bootstrap-datepicker.js') }}"></script>
+    <script src="{{ static('vendor/bootstrap3-datepicker/locales/bootstrap-datepicker.de.min.js') }}"></script>
+    <script src="{{ static('js/utils.js') }}"></script>
+    <script src="{{ static('js/models.js') }}"></script>
+    <script src="{{ static('js/changeviews.js') }}"></script>
+    <script src="{{ static('js/views.js') }}"></script>
+    <script src="{{ static('js/main.js') }}"></script>
+    <script>
+      $(function(){
+        main.initialize_site({{ data|safe }});
+      });
+    </script>
+{% endblock extrascripts %}
