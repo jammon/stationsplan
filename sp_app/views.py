@@ -43,27 +43,6 @@ def plan(request, month="", day=""):
 
 @login_required
 @permission_required("sp_app.is_dep_lead")
-def persons_wards(request):
-    department_ids = request.session.get("department_ids")
-    persons = Person.objects.filter(
-        departments__id__in=department_ids
-    ).order_by("position", "name")
-    wards = Ward.objects.filter(departments__id__in=department_ids).distinct()
-    return render(
-        request,
-        "sp_app/structure/person_ward_list.html",
-        {
-            "persons": persons,
-            "former_persons": any(not p.current() for p in persons),
-            "wards": wards,
-            "inactive_wards": any(not w.active for w in wards),
-            "email_available": settings.EMAIL_AVAILABLE,
-        },
-    )
-
-
-@login_required
-@permission_required("sp_app.is_dep_lead")
 def setup(request):
     """Show settings of the company
 

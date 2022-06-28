@@ -1,12 +1,14 @@
+<tr {% if field.errors %}class="bg-danger" {% endif %}>
   <td class="control-label">
-      {{ field.label_tag }} 
+    {{ field.label_tag }}
   </td>
   <td class="label-block">
-    {{ field }} 
+    {{ field }}
     {% if show_help %}
-    	<div class="help-block">{{ field.help_text }}</div>
+    <div class="help-block">{{ field.help_text }}</div>
     {% endif %}
     {% if field.errors %}
-      <div class="col-sm-offset-3 col-sm-9 alert alert-danger">{{ field.errors }}</div>
+    <div class="">{{ field.errors }}</div>
     {% endif %}
   </td>
+</tr>

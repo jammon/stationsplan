@@ -1,13 +1,13 @@
 {% extends "./modal_dialog.html" %}
 {% block modaltitle %}Abteilung{% endblock modaltitle %}
 {% block modalform %}
-  <form hx-post="{{ url }}" class="form-horizontal edit-form">
-    {% csrf_token %}
-    {% include "sp_app/structure/horizontal-edit-field.html" with field=form.name %}
-    {% include "sp_app/structure/horizontal-edit-field.html" with field=form.shortname %}
-    {% if form.errors %}
-      <div>{{ employee_form.errors }}</div>
-    {% endif %}
+<form hx-post="{{ url }}" hx-target="#edit-window" class="form-horizontal edit-form">
+  {% csrf_token %}
+  {% include "sp_app/structure/horizontal-edit-field.html" with field=form.name %}
+  {% include "sp_app/structure/horizontal-edit-field.html" with field=form.shortname %}
+  {% if form.errors %}
+  <div>{{ employee_form.errors }}</div>
+  {% endif %}
   <div><button type="submit">Speichern</button></div>
-  </form>
+</form>
 {% endblock modalform %}

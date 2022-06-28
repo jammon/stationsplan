@@ -16,7 +16,6 @@ class TestUrls(TestCase):
             ("/dienste/202104/", sp_views.plan, (), {"month": "202104"}),
             ("/tag/", sp_views.plan, (), {}),
             ("/tag/20210426/", sp_views.plan, (), {"day": "20210426"}),
-            ("/personen", sp_views.persons_wards, (), {}),
             ("/zuordnung", sp_views.plan, (), {}),
             ("/change_function", sp_ajax.change_function, (), {}),
             ("/changes", sp_ajax.changes, (), {}),

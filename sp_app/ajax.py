@@ -246,7 +246,7 @@ def edit_department(request, department_id=None):
         )
         return render(
             request,
-            "sp_app/structure/edit_object_sucess.html",
+            "sp_app/structure/edit_object_success.jinja",
             {
                 "company": company,
                 "target": "departments",
@@ -290,10 +290,10 @@ def edit_person(request, pk=None):
         persons = Person.objects.filter(**filter).order_by("position", "name")
         return render(
             request,
-            "sp_app/structure/edit_object_sucess.html",
+            "sp_app/structure/edit_object_success.jinja",
             {
                 "target": "person_list",
-                "list_template": "sp_app/structure/person_list.html",
+                "list_template": "sp_app/structure/person_list.jinja",
                 "persons": persons,
                 "former_persons": any(not p.current() for p in persons),
             },
@@ -335,10 +335,10 @@ def edit_ward(request, pk=None):
         wards = Ward.objects.filter(**filter).order_by("position", "name")
         return render(
             request,
-            "sp_app/structure/edit_object_sucess.html",
+            "sp_app/structure/edit_object_success.jinja",
             {
                 "target": "ward_list",
-                "list_template": "sp_app/structure/ward_list.html",
+                "list_template": "sp_app/structure/ward_list.jinja",
                 "wards": wards,
                 "inactive_wards": any(not w.active for w in wards),
             },
@@ -392,11 +392,11 @@ def edit_employee(request, employee_id=None):
         )
         return render(
             request,
-            "sp_app/structure/edit_object_sucess.html",
+            "sp_app/structure/edit_object_success.jinja",
             {
                 "company": company,
                 "target": "employees",
-                "list_template": "sp_app/structure/employees.html",
+                "list_template": "sp_app/structure/employees.jinja",
             },
         )
     return render(

@@ -41,17 +41,10 @@
 {% block extrascripts %}
 <script src="{{ static('vendor/htmx.min.js') }}"></script>
 <script>
-  htmx.on("htmx:afterOnLoad", function (evt) {
-    if (evt.detail.elt.matches(".editable")) {
-      setTimeout(function () {
-        $("#edit-window").modal("show");
-      }, 10)
-    }
-  });
   htmx.on("htmx:afterSettle", function (evt) {
-    if (!$(".edit-form".length)) {
-      $("#edit-window").modal("hide");
-    }
+    var editwindow = document.getElementById("edit-window");
+    var action = editwindow.textContent ? "show" : "hide";
+    $("#edit-window").modal(action);
   });
 </script>
 {% endblock extrascripts %}

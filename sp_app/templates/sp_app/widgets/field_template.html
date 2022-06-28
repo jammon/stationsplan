@@ -1,4 +1,4 @@
-<div class="col col-md-3 col-sm-4 form-group">
-    {{ field.label_tag }} {{ field }}  
+<div class="col col-md-3 col-sm-4 form-group{% if field.errors %} bg-danger{% endif %} ">
+    {{ field.label_tag }} {{ field }}
     <div>{{ field.errors}} </div>
 </div>

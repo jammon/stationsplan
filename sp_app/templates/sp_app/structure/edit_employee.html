@@ -1,25 +1,22 @@
 {% extends "./modal_dialog.html" %}
 {% block modaltitle %}Benutzer{% endblock modaltitle %}
 {% block modalform %}
-  <form hx-post="{{ url }}" class="form-horizontal edit-form">
-    {% csrf_token %}
-    {% with "./horizontal-edit-field.html" as template %}
-      {% include template with field=user_form.username %}
-      {% if user_form.password1 %}
-        {% include template with field=user_form.password1 %}
-        {% include template with field=user_form.password2 %}
-      {% endif %}
-      {% include template with field=user_form.first_name %}
-      {% include template with field=user_form.last_name %}
-      {% include template with field=employee_form.lvl %}
-      {% include template with field=employee_form.departments %}
-    {% endwith %}
+<form hx-post="{{ url }}" hx-target="#edit-window" class="form-horizontal edit-form">
+  {% csrf_token %}
+  {% with "./horizontal-edit-field.html" as template %}
+  {% include template with field=user_form.username %}
+  {% if user_form.password1 %}
+  {% include template with field=user_form.password1 %}
+  {% include template with field=user_form.password2 %}
+  {% endif %}
+  {% include template with field=user_form.first_name %}
+  {% include template with field=user_form.last_name %}
+  {% include template with field=employee_form.lvl %}
+  {% include template with field=employee_form.departments %}
+  {% endwith %}
   {% if user_form.errors %}
-      <div>{{ user_form.errors }}</div>
-   {% endif %}
-  {% if employee_form.errors %}
-      <div>{{ employee_form.errors }}</div>
-   {% endif %}
+  <div>{{ user_form.errors }}</div>
+  {% endif %}
   <div><button type="submit">Speichern</button></div>
-  </form>
+</form>
 {% endblock modalform %}

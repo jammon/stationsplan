@@ -84,7 +84,6 @@ urlpatterns = [
     #
     # Administrators -----------------------------------------------------
     #
-    path("personen", sp_views.persons_wards, name="persons"),
     path("person/add/", sp_ajax.edit_person, name="person-add"),
     path("person/<int:pk>/", sp_ajax.edit_person, name="person-update"),
     path("funktion/add/", sp_ajax.edit_ward, name="ward-add"),

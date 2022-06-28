@@ -35,11 +35,8 @@
 (B) Logs monitoren +Public
 (C) django-hijack installieren +Public +support
 (C) Integrationstests schreiben, z.B. https://docs.pylonsproject.org/projects/webtest/en/latest/ oder Selenium
-(A) Errors stylen +Public
-(A) Verhalten des edit-window bei Fehlern
 (B) Debug-Status in der config festlegen, settings entsprechend importieren
 Footer korrigieren
-(A) Stagingserver einrichten
 (B) Rechtliches für Terminnetz suchen
 (A) Was ist, wenn zwei Persone den gleichen Kurznamen haben
 (A) Test mit playwright entwickeln

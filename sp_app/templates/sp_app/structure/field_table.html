@@ -1,12 +1,8 @@
 <div class="col col-sm-6 col-xs-12">
-<table>
-  <tr>
+  <table>
     {% include "sp_app/widgets/table_field_template.html" with field=field1 %}
-  </tr>
-  {% if field2 %}
-  <tr>
+    {% if field2 %}
     {% include "sp_app/widgets/table_field_template.html" with field=field2 %}
-  </tr>
-  {% endif %}
-</table>
+    {% endif %}
+  </table>
 </div>
