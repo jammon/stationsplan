@@ -3,7 +3,7 @@ from django.forms import widgets
 from django.contrib import admin
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, NON_FIELD_ERRORS
 from django.utils.translation import gettext as _
 
 from .models import Company, Person, Ward, Department, Employee, EMPLOYEE_LEVEL

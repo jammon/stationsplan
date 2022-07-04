@@ -38,7 +38,6 @@
 (B) Debug-Status in der config festlegen, settings entsprechend importieren
 Footer korrigieren
 (B) Rechtliches für Terminnetz suchen
-(A) Was ist, wenn zwei Persone den gleichen Kurznamen haben
 (A) Test mit playwright entwickeln
 Neue Abteilung muss den Dialog leeren
 Wenn man einen Employee ohne Abteilung hinzufügt, wird er nicht gespeichert

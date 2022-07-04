@@ -254,6 +254,7 @@ Der aktuelle Datenbestand soll auf den Staging-Server übertragen werden.
 - Für jede Funktion kann festgelegt werden, ob sie im Feed auftaucht
 - Sortierung des ical-Feeds?
 - Last-Modified-Header in Feed setzen
+- für Wards kann festgelegt werden, ob sie in den ical-Feed kommen
 
 ### Regeldienst und Sonderaufgaben
 

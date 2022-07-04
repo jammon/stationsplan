@@ -8,6 +8,7 @@ from django.db import models, IntegrityError
 from django.utils.translation import gettext as _
 
 from stationsplan.utils import random_string
+from sp_app import utils
 
 FAR_FUTURE = date(2099, 12, 31)
 ONE_DAY = timedelta(days=1)
@@ -47,6 +48,15 @@ class Company(models.Model):
         return self.name
 
 
+class UniqueField:
+    def unique_error_message(self, model_class, unique_check):
+        if model_class == type(self) and len(unique_check) == 2:
+            for field, field_name in self.unique_fields:
+                if unique_check == (field, "company"):
+                    return f'Der {field_name} "{getattr(self, field)}" ist bereits vergeben und darf nicht doppelt vorkommen.'
+        return super().unique_error_message(model_class, unique_check)
+
+
 class Department(models.Model):
     name = models.CharField(_("Name"), max_length=50)
     shortname = models.CharField(
@@ -69,7 +79,7 @@ class Department(models.Model):
         return self.name
 
 
-class Ward(models.Model):
+class Ward(UniqueField, models.Model):
     name = models.CharField(_("Name"), max_length=50)
     shortname = models.CharField(_("Short Name"), max_length=10)
     max = models.IntegerField(help_text=_("maximum staffing"))
@@ -168,11 +178,13 @@ class Ward(models.Model):
         default=False,
         help_text=_("This function should be part of the ical feed"),
     )
+    unique_fields = (("name", "Name"), ("shortname", "Kurzname"))
 
     class Meta:
         verbose_name = _("Task")
         verbose_name_plural = _("Tasks")
         ordering = ["position", "name"]
+        unique_together = [["name", "company"], ["shortname", "company"]]
 
     def __str__(self):
         return self.name
@@ -239,7 +251,7 @@ class DifferentDay(models.Model):
         verbose_name_plural = _("Different Days")
 
 
-class Person(models.Model):
+class Person(UniqueField, models.Model):
     """A person (worker) who can be planned for work"""
 
     POSITION_ASSISTENTEN = 1
@@ -258,7 +270,9 @@ class Person(models.Model):
     name = models.CharField(_("Name"), max_length=50)
     shortname = models.CharField(_("Short Name"), max_length=10)
     start_date = models.DateField(
-        _("start date"), default=date(2015, 1, 1), help_text=_("begin of job")
+        _("start date"),
+        default=utils.get_first_of_month,
+        help_text=_("begin of job"),
     )
     end_date = models.DateField(
         _("end date"), default=FAR_FUTURE, help_text=_("end of job")
@@ -294,10 +308,12 @@ class Person(models.Model):
         ),
     )
     email = models.EmailField(_("Email"), null=True, blank=True)
+    unique_fields = (("name", "Name"), ("shortname", "Kurzname"))
 
     class Meta:
         verbose_name = _("Person")
         verbose_name_plural = _("Persons")
+        unique_together = [["name", "company"], ["shortname", "company"]]
 
     def __str__(self):
         return f"{self.name} ({self.shortname})"

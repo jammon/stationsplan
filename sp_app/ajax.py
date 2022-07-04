@@ -12,7 +12,11 @@ from django.views.decorators.http import require_POST
 
 import json
 
-from .utils import apply_changes, set_approved, get_last_change_response
+from .business_logic import (
+    apply_changes,
+    set_approved,
+    get_last_change_response,
+)
 from .models import (
     ChangeLogging,
     Company,

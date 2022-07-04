@@ -13,6 +13,11 @@
       {% endif %}
     </div>
     {% endif %}
+    {% for error in form.non_field_errors %}
+    <div class="col-xs-12 alert-danger">
+      <strong>{{ error|escape }}</strong>
+    </div>
+    {% endfor %}
 
     {% include "sp_app/structure/field_table.html" with field1=form.name field2=form.shortname %}
     {% include "sp_app/structure/field_table.html" with field1=form.start_date field2=form.end_date %}
