@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="{{ static('css/print.css') }}" media="print" />
     {% block extrahead %}{% endblock extrahead %}
   </head>
-  <body>
+  <body class="{{ request.site.name }}" >
     <div class="container">
       <noscript>
         <div class="row">

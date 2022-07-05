@@ -10,66 +10,88 @@
 
 // Dienst- / Stationsplan
 .plan {
-    td, th {
+
+    td,
+    th {
         padding: 0 2px;
         vertical-align: top;
     }
+
     .unapproved {
         color: #999;
     }
 }
+
 .period_plan,
 .on_call_plan {
     font-size: 12px;
-    td, th {
+
+    td,
+    th {
         border: 1px solid #CCC;
     }
+
     .free-day td {
         font-weight: bold;
     }
 }
+
 .period_plan .today {
     border-left: 2px solid #888;
     border-right: 2px solid #888;
 }
+
 .on_call_plan .today {
     border-top: 2px solid #888;
     border-bottom: 2px solid #888;
 }
+
 .day_plan {
     font-size: 14px;
 }
+
 .contentview {
     display: none;
+
     &.current {
         display: block;
     }
 }
+
 .personrow {
     background-color: #DDD;
 }
+
 .on-call {
     background-color: #CCF;
 }
+
 .leaverow {
     background-color: #EEE;
 }
+
 .lacking {
     background-color: #FCC;
 }
+
 .horizontal .free-day {
     border-left-color: #999;
     border-right-color: #999;
 }
+
 .vertical .free-day,
-td.free-day{
+td.free-day {
     font-weight: bold;
 }
+
 .calltallies {
-    th, td {
+
+    th,
+    td {
         padding: 0 1ex;
     }
 }
+
 .functions_view {
     .titleline th {
         width: 40px;
@@ -79,30 +101,38 @@ td.free-day{
 // Bearbeitungsdialoge
 #changestafftable {
     margin-bottom: 2ex;
+
     td {
         vertical-align: middle;
         padding: 1px 4px;
     }
+
     .changed {
         box-shadow: 0 0 5px 2px #ff4406;
     }
 }
-.submitbuttons > div {
+
+.submitbuttons>div {
     padding: 1px 4px;
 }
+
 #date-picker td.disabled {
     color: #cccccc;
 }
+
 .errorlist {
     list-style-type: none;
     padding-left: 0;
 }
+
 .control-label {
     vertical-align: text-top;
+
     label {
         margin-right: 5px;
     }
 }
+
 .label-block label {
     font-weight: 400;
 }
@@ -110,10 +140,21 @@ td.free-day{
 .auto-width {
     width: auto;
 }
+
 // Admin
 .login-form {
     margin-bottom: 15px;
 }
+
 .margin-top-10 {
     margin-top: 20px;
+}
+
+// Mark dev and staging
+.dev .navbar {
+    background-color: #B3D4F4;
+}
+
+.staging .navbar {
+    background-color: #d2ecf9;
 }

@@ -1,4 +1,5 @@
-.plan td, .plan th {
+.plan td,
+.plan th {
   padding: 0 2px;
   vertical-align: top;
 }
@@ -10,7 +11,8 @@
 .on_call_plan {
   font-size: 12px;
 }
-.period_plan td, .period_plan th,
+.period_plan td,
+.period_plan th,
 .on_call_plan td,
 .on_call_plan th {
   border: 1px solid #CCC;
@@ -67,7 +69,8 @@ td.free-day {
   font-weight: bold;
 }
 
-.calltallies th, .calltallies td {
+.calltallies th,
+.calltallies td {
   padding: 0 1ex;
 }
 
@@ -120,6 +123,14 @@ td.free-day {
 
 .margin-top-10 {
   margin-top: 20px;
+}
+
+.dev .navbar {
+  background-color: #B3D4F4;
+}
+
+.staging .navbar {
+  background-color: #d2ecf9;
 }
 
 /*# sourceMappingURL=main.css.map */

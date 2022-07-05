@@ -67,10 +67,10 @@ if SERVER_TYPE == "dev":
             },
         },
     }
+    SITE_ID = 1
 
 else:
     DEBUG = False
-    ALLOWED_HOSTS = []
     USER_HOME = PosixPath("~").expanduser()
 
     DB_CONFIG_FILE = USER_HOME / ".my.cnf"
@@ -138,8 +138,10 @@ else:
             "localhost",
             "127.0.0.1",
         ]
+        SITE_ID = 2
     elif SERVER_TYPE == "staging":
         ALLOWED_HOSTS = ["stpst.uber.space", "localhost", "127.0.0.1"]
+        SITE_ID = 3
 
 # Secret Key
 try:
@@ -181,6 +183,7 @@ INSTALLED_APPS = (
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
     "django_jinja",
     "sp_app",
 )
@@ -189,6 +192,7 @@ MIDDLEWARE = (
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.sites.middleware.CurrentSiteMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
