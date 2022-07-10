@@ -175,13 +175,37 @@ class TestPersonEditViews(LoggedInTestCase):
 
     def test_add_person(self):
         data = FORM_DATA[Person].copy()
-        data["departments"] = self.department.id
-        data["company"] = self.company.id
+        data.update(
+            {"departments": self.department.id, "company": self.company.id}
+        )
         self.client.post(reverse("person-add"), data)
         try:
             person = Person.objects.get(name="Müller")
         except Person.DoesNotExist:
             assert False, "Person was not created"
+        for attribute in ("name", "shortname", "email"):
+            assert getattr(person, attribute) == data[attribute]
+        assert person.start_date == date(2022, 5, 1)
+        assert person.end_date == date(2099, 12, 31)
+        assert person.company == self.company
+        depts = list(person.departments.all())
+        assert len(depts) == 1
+        assert depts[0] == self.department
+
+        # edit this person
+        data = FORM_DATA[Person].copy()
+        data.update(
+            {
+                "departments": self.department.id,
+                "company": self.company.id,
+                "name": "Müller2",
+            }
+        )
+        self.client.post(reverse("person-update", args=[person.id]), data)
+        try:
+            person = Person.objects.get(name="Müller2")
+        except Person.DoesNotExist:
+            assert False, "Person was not changed"
         for attribute in ("name", "shortname", "email"):
             assert getattr(person, attribute) == data[attribute]
         assert person.start_date == date(2022, 5, 1)
@@ -211,11 +235,33 @@ class TestWardEditViews(LoggedInTestCase):
 
     def test_add_ward(self):
         data = FORM_DATA[Ward].copy()
-        data["departments"] = self.department.id
-        data["company"] = self.company.id
+        data.update(
+            {"departments": self.department.id, "company": self.company.id}
+        )
         self.client.post(reverse("ward-add"), data)
         try:
             ward = Ward.objects.get(name="Station X")
+        except Ward.DoesNotExist:
+            assert False, "Ward was not created"
+        for attribute in ("name", "shortname", "max", "min", "position"):
+            assert getattr(ward, attribute) == data[attribute]
+        assert ward.company == self.company
+        depts = list(ward.departments.all())
+        assert len(depts) == 1
+        assert depts[0] == self.department
+
+        # edit this ward
+        data = FORM_DATA[Ward].copy()
+        data.update(
+            {
+                "departments": self.department.id,
+                "company": self.company.id,
+                "name": "Station Y",
+            }
+        )
+        self.client.post(reverse("ward-update", args=[ward.id]), data)
+        try:
+            ward = Ward.objects.get(name="Station Y")
         except Ward.DoesNotExist:
             assert False, "Ward was not created"
         for attribute in ("name", "shortname", "max", "min", "position"):
@@ -275,3 +321,58 @@ class TestDepartmentEditViews(LoggedInTestCase):
         except Department.DoesNotExist:
             assert False, "Department was not created"
         assert department.company == self.company
+
+
+class TestChangeFunction(LoggedInTestCase):
+    employee_level = "is_dep_lead"
+
+    def testChangeFunction(self):
+        def functions():
+            return set(f.shortname for f in self.person_a.functions.all())
+
+        assert functions() == set(("A", "B"))
+        data = {
+            "person": self.person_a.id,
+            "ward": self.ward_a.id,
+            "add": False,
+        }
+        url = reverse("change_function")
+        response = self.client.post(
+            url, json.dumps(data), content_type="application/json"
+        )
+        assert functions() == set("B")
+        assert json.loads(response.content) == {
+            "status": "ok",
+            "person": "A",
+            "functions": ["B"],
+        }
+        data["add"] = True
+        response = self.client.post(
+            url, json.dumps(data), content_type="application/json"
+        )
+        assert functions() == set(("A", "B"))
+        assert json.loads(response.content) == {
+            "status": "ok",
+            "person": "A",
+            "functions": ["A", "B"],
+        }
+
+        wrong = data.copy()
+        wrong["person"] = 777
+        response = self.client.post(
+            url, json.dumps(wrong), content_type="application/json"
+        )
+        assert json.loads(response.content) == {
+            "status": "error",
+            "reason": "Person 777 not found",
+        }
+
+        wrong = data.copy()
+        wrong["ward"] = 777
+        response = self.client.post(
+            url, json.dumps(wrong), content_type="application/json"
+        )
+        assert json.loads(response.content) == {
+            "status": "error",
+            "reason": "Ward 777 not found",
+        }
