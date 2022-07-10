@@ -1,0 +1,66 @@
+{% extends "./modal_dialog.html" %}
+{% block modaltitle %}Mitarbeiter{% endblock modaltitle %}
+{% block modalmodifier %}{% endblock modalmodifier %}
+{% block modalform %}
+<form hx-post="{{ url }}" hx-target="#edit-window" method="post" id="form" class="edit-form">
+  {% csrf_token %}
+  <div class="row">
+    {% if form.errors %}
+    <div class="col-xs-12 bg-danger">
+      {% if form.errors.items()|length == 1 %}
+      {% trans %}Please correct the error below. {% endtrans %}
+      {% else %}
+      {% trans %}Please correct the errors below. {% endtrans %}
+      {% endif %}
+    </div>
+    {% endif %}
+    {% for error in form.non_field_errors %}
+    <div class="col-xs-12 alert-danger">
+      <strong>{{ error|escape }}</strong>
+    </div>
+    {% endfor %}
+
+{% macro table_field(field) %}
+<tr {% if field.errors %}class="bg-danger" {% endif %}>
+  <td class="control-label">
+    {{ field.label_tag() }}
+  </td>
+  <td class="label-block">
+    {{ field }}
+    {% if show_help %}
+    <div class="help-block">{{ field.help_text }}</div>
+    {% endif %}
+    {% if field.errors %}
+    <div class="">{{ field.errors }}</div>
+    {% endif %}
+  </td>
+</tr>
+{% endmacro%}
+{% macro fieldtable(field1, field2=None) %}
+<div class="col col-sm-6 col-xs-12">
+  <table>
+    {{ table_field(field1) }}
+    {% if field2 %}{{ table_field(field2) }}{% endif %}
+  </table>
+</div>
+{% endmacro%}
+
+    {{ field_table(form.name, form.shortname) }}
+    {{ field_table(form.start_date, form.end_date) }}
+    {{ field_table(form.departments, None) }}
+    {{ field_table(form.position, None) }}
+
+    <div class="col col-xs-12">
+      {{ form.email.label_tag }} {{ form.email }}
+      <div>{{ form.email.errors}} </div>
+    </div>
+
+    {{ form.company.as_hidden }}
+    <div class="form-group">
+      <div class="col-sm-offset-3 col-sm-9">
+        <button type="submit" class="btn btn-default">Speichern</button>
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock modalform %}

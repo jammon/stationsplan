@@ -40,8 +40,6 @@ Footer korrigieren
 (B) Rechtliches für Terminnetz suchen
 (A) Test mit playwright entwickeln
 Neue Abteilung muss den Dialog leeren
-Wenn man einen Employee ohne Abteilung hinzufügt, wird er nicht gespeichert
 (A) not_with_this besser definieren - shadowing
-In Signup-Formular die errors stylen
 Von Signup-Bestätigungsseite muss es weiter gehen
 after_this, active, ward_type, weight in edit_ward

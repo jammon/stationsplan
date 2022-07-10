@@ -303,7 +303,7 @@ def edit_person(request, pk=None):
         )
     return render(
         request,
-        "sp_app/structure/edit_person.html",
+        "sp_app/structure/edit_person.jinja",
         {
             "form": form,
             "url": reverse("person-update", args=(pk,))

@@ -14,9 +14,6 @@
   {% include template with field=employee_form.lvl %}
   {% include template with field=employee_form.departments %}
   {% endwith %}
-  {% if user_form.errors %}
-  <div>{{ user_form.errors }}</div>
-  {% endif %}
   <div><button type="submit">Speichern</button></div>
 </form>
 {% endblock modalform %}

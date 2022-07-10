@@ -171,3 +171,5 @@ x 2022-06-28 Errors stylen +Public
 x 2022-06-28 Verhalten des edit-window bei Fehlern
 x 2022-06-28 Stagingserver einrichten
 x 2022-07-04 Was ist, wenn zwei Persone den gleichen Kurznamen haben
+x 2022-07-10 In Signup-Formular die errors stylen
+x 2022-07-10 Wenn man einen Employee ohne Abteilung hinzufügt, wird er nicht gespeichert
