@@ -1,11 +1,11 @@
 from datetime import date
 from django.core import mail
-from django.test import Client
 from django.urls import reverse
 from icalendar import Calendar
 
 from sp_app.models import Ward, Planning, FeedId
-from sp_app.utils import PopulatedTestCase, LoggedInTestCase, set_approved
+from sp_app.tests.utils_for_tests import PopulatedTestCase, LoggedInTestCase
+from sp_app.logic import set_approved
 from sp_app.ical_views import DienstFeed
 
 

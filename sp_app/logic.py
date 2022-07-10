@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
+"""The business logic"""
 import json
 import logging
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from django.core.cache import cache
 from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
-from django.test import TestCase
 from http import HTTPStatus
 from numbers import Number
 from datetime import timedelta, datetime
@@ -110,9 +109,9 @@ def get_plan_data(
         .last()
     )
     if last_change is not None:
-        time_diff = datetime.now(TZ_BERLIN) - last_change["change_time"]
         data["last_change_pk"] = last_change["pk"]
-        data["last_change_time"] = time_diff.days * 86400 + time_diff.seconds
+        time_diff = datetime.now(TZ_BERLIN) - last_change["change_time"]
+        data["last_change_time"] = int(time_diff.total_seconds())
 
     return {
         "data": json.dumps(data),
@@ -277,71 +276,3 @@ def send_activation_mail(user):
 
 
 # Tests ------------------------------------------------------
-
-
-class PopulatedTestCase(TestCase):
-    """TestCase with some prepared objects."""
-
-    def setUp(self):
-        self.company = Company.objects.create(name="Company", shortname="Comp")
-        self.department = Department.objects.create(
-            name="Department 1", shortname="Dep1", company=self.company
-        )
-        self.ward_a = Ward.objects.create(
-            name="Ward A",
-            shortname="A",
-            max=3,
-            min=2,
-            everyday=False,
-            on_leave=False,
-            company=self.company,
-        )
-        self.ward_a.departments.add(self.department)
-        self.ward_b = Ward.objects.create(
-            name="Ward B",
-            shortname="B",
-            max=2,
-            min=1,
-            everyday=False,
-            on_leave=False,
-            company=self.company,
-        )
-        self.ward_b.departments.add(self.department)
-        self.person_a = Person.objects.create(
-            name="Person A", shortname="A", company=self.company
-        )
-        self.person_b = Person.objects.create(
-            name="Person B", shortname="B", company=self.company
-        )
-        self.person_a.departments.add(self.department)
-        self.person_b.departments.add(self.department)
-        self.person_a.functions.add(self.ward_a, self.ward_b)
-        self.person_b.functions.add(self.ward_a, self.ward_b)
-        self.user = User.objects.create(username="Mr. User", password="123456")
-
-    def assertContainsDict(self, given, expected):
-        for key, value in expected.items():
-            self.assertEqual(
-                given[key],
-                value,
-                f"{{ {repr(key)}: {repr(given[key])}, ...}} != "
-                f"{{ {repr(key)}: {repr(value)}, ...}}",
-            )
-
-
-class LoggedInTestCase(PopulatedTestCase):
-    """PopulatedTestCase with user logged in"""
-
-    employee_level = None
-
-    def setUp(self):
-        super(LoggedInTestCase, self).setUp()
-        self.user = User.objects.create_user(
-            "user", "user@domain.tld", "password"
-        )
-        self.employee = Employee.objects.create(
-            user=self.user, company=self.company
-        )
-        self.employee.set_level(self.employee_level)
-        self.employee.departments.add(self.department)
-        self.client.login(username="user", password="password")

@@ -38,8 +38,19 @@ config.read(CONFIG_FILE)
 # Server type: "dev", "staging" or "production"
 SERVER_TYPE = config["server"]["type"]
 
-
 # Server dependant
+SITE_ID = {"dev": 1, "production": 2, "staging": 3}[SERVER_TYPE]
+ALLOWED_HOSTS = {
+    "dev": [],
+    "production": [
+        ".stationsplan.de",
+        "stplan2.uber.space",
+        "localhost",
+        "127.0.0.1",
+    ],
+    "staging": ["stpst.uber.space", "localhost", "127.0.0.1"],
+}[SERVER_TYPE]
+
 if SERVER_TYPE == "dev":
     DEBUG = True
     DATABASES = {
@@ -67,8 +78,6 @@ if SERVER_TYPE == "dev":
             },
         },
     }
-    SITE_ID = 1
-
 else:
     DEBUG = False
     USER_HOME = PosixPath("~").expanduser()
@@ -131,17 +140,6 @@ else:
     SESSION_ENGINE = "django.contrib.sessions.backends.cache"
     SESSION_CACHE_ALIAS = "default"
 
-    if SERVER_TYPE == "production":
-        ALLOWED_HOSTS = [
-            ".stationsplan.de",
-            "stplan2.uber.space",
-            "localhost",
-            "127.0.0.1",
-        ]
-        SITE_ID = 2
-    elif SERVER_TYPE == "staging":
-        ALLOWED_HOSTS = ["stpst.uber.space", "localhost", "127.0.0.1"]
-        SITE_ID = 3
 
 # Secret Key
 try:

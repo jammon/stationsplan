@@ -15,7 +15,7 @@ from sp_app.models import (
     EMPLOYEE_GROUP,
     FeedId,
 )
-from sp_app.utils import PopulatedTestCase
+from sp_app.tests.utils_for_tests import PopulatedTestCase
 
 
 class TestPerson(PopulatedTestCase):

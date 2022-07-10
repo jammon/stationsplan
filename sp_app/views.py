@@ -6,7 +6,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 
-from sp_app import forms, business_logic, utils
+from sp_app import forms, logic, utils
 from .models import Person, Ward, Company, Department, Employee, StatusEntry
 
 
@@ -29,7 +29,7 @@ def plan(request, month="", day=""):
     return render(
         request,
         "sp_app/plan.jinja",
-        business_logic.get_plan_data(
+        logic.get_plan_data(
             company_id=request.session.get("company_id"),
             department_ids=request.session.get("department_ids"),
             month=month,
@@ -97,7 +97,7 @@ def send_activation_mail(request, user, send=True):
     if isinstance(user, int):
         user = get_object_or_404(User, pk=user)
     if send:
-        utils.send_activation_mail(user)
+        logic.send_activation_mail(user)
     return render(
         request, "sp_app/signup/activation_mail_sent.html", {"user": user}
     )
@@ -125,8 +125,8 @@ def signup(request):
         StatusEntry.objects.create(
             name="New User and Company",
             content=f"{user.username} hat {company.name} erstellt",
-            department=None,
-            company_id=request.session["company_id"],
+            department=department,
+            company=company,
         )
         return send_activation_mail(request, user)
     return render(

@@ -2,12 +2,11 @@
 from datetime import date, datetime
 from django.test import TestCase, Client
 from django.urls import reverse
-from django.contrib.auth.models import User, Permission
+from django.contrib.auth.models import User
 from http import HTTPStatus
 import json
 import logging
 
-from sp_app.utils import PopulatedTestCase, LoggedInTestCase
 from sp_app.models import (
     Company,
     Department,
@@ -16,10 +15,14 @@ from sp_app.models import (
     Employee,
     ChangeLogging,
     Planning,
-    StatusEntry,
-    FAR_FUTURE,
 )
-from sp_app.business_logic import get_plan_data
+from sp_app.logic import get_plan_data
+from sp_app.tests.utils_for_tests import (
+    PopulatedTestCase,
+    LoggedInTestCase,
+    ViewsTestCase,
+    ViewsWithPermissionTestCase,
+)
 
 
 class TestViewsAnonymously(TestCase):
@@ -174,21 +177,6 @@ class TestPlanData(PopulatedTestCase):
         assert inactive_ward in plan_data["inactive_wards"]
 
 
-class ViewsTestCase(LoggedInTestCase):
-    def setUp(self):
-        super().setUp()
-        self.DATA_FOR_CHANGE = {
-            "day": "20160120",
-            "ward_id": self.ward_a.id,
-            "continued": False,
-            "persons": [
-                {"id": self.person_a.id, "action": "add"},
-                {"id": self.person_b.id, "action": "remove"},
-            ],
-            "last_pk": 0,
-        }
-
-
 class TestPlan(ViewsTestCase):
     """Test views.plan"""
 
@@ -231,15 +219,6 @@ class TestChangeForbidden(ViewsTestCase):
     def test_approval(self):
         """Test if 'set_approved' return status HTTPStatus.FORBIDDEN if not logged in"""
         self.do_test("set_approved", "data")
-
-
-class ViewsWithPermissionTestCase(ViewsTestCase):
-    def setUp(self):
-        super(ViewsWithPermissionTestCase, self).setUp()
-        self.user.user_permissions.add(
-            Permission.objects.get(codename="is_editor")
-        )
-        self.user = User.objects.get(pk=self.user.pk)  # -> permission cache
 
 
 class TestChangeMore(ViewsWithPermissionTestCase):
@@ -298,35 +277,6 @@ class TestChangeMore(ViewsWithPermissionTestCase):
             },
         )
         self.assertEqual(cl.version, 1)
-
-
-class TestChangeApproval(ViewsWithPermissionTestCase):
-    def test_change_approved(self):
-        """Test if post 'set_approved' sets approvals"""
-        self.client.post(
-            reverse("set_approved"),
-            json.dumps({"wards": ["A", "B"], "date": "20170414"}),
-            "text/json",
-            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
-        )
-        stat = StatusEntry.objects.order_by("-pk").first()
-        self.assertEqual(stat.content, "user: A, B ist bis 20170414 sichtbar")
-        for ward_id in "AB":
-            ward = Ward.objects.get(shortname=ward_id)
-            self.assertEqual(ward.approved, date(2017, 4, 14))
-
-        self.client.post(
-            reverse("set_approved"),
-            json.dumps({"wards": ["A"], "date": False}),
-            "text/json",
-            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
-        )
-        stat = StatusEntry.objects.order_by("-pk").first()
-        self.assertEqual(stat.content, "user: A ist unbegrenzt sichtbar")
-        ward = Ward.objects.get(shortname="A")
-        self.assertEqual(ward.approved, FAR_FUTURE)
-        ward = Ward.objects.get(shortname="B")
-        self.assertEqual(ward.approved, date(2017, 4, 14))
 
 
 class TestChangeHistory(ViewsTestCase):
@@ -665,108 +615,3 @@ class TestRobotsTxt(TestCase):
         response = self.client.post("/robots.txt")
 
         self.assertEqual(HTTPStatus.METHOD_NOT_ALLOWED, response.status_code)
-
-
-class TestPermissions_NoPermission(LoggedInTestCase):
-    """Test if permissions are respected"""
-
-    fixture = {
-        Person: {
-            "data": {
-                "name": "Müller",
-                "shortname": "Mül",
-                "start_date": "2022-05-01",
-                "end_date": "2099-12-31",
-                "departments": "",
-                "position": str(Person.POSITION_ASSISTENTEN),
-                "email": "m.mueller@example.com",
-                "company": "",
-            },
-            "query": {"name": "Müller"},
-            "url": reverse("person-add"),
-        },
-        Ward: {
-            "data": {
-                "name": "Station X",
-                "shortname": "X",
-                "max": 3,
-                "min": 1,
-                "position": 1,
-            },
-            "query": {"name": "Station X"},
-            "url": reverse("ward-add"),
-        },
-    }
-    matrix = {
-        (Person, "department"): "forbidden",
-        (Person, "other_dept"): "forbidden",
-        (Ward, "department"): "forbidden",
-        (Ward, "other_dept"): "forbidden",
-    }
-
-    def setUp(self):
-        super().setUp()
-        self.other_comp = Company.objects.create(name="Other", shortname="Oth")
-        self.other_dept = Department.objects.create(
-            name="Other", company=self.company
-        )
-
-    def get_post_data(self, model, department_id, company_id):
-        data = self.fixture[model]["data"].copy()
-        data["departments"] = str(department_id)
-        data["company"] = str(company_id)
-        return data
-
-    def post_successful(self, response, model):
-        try:
-            obj = model.objects.get(**self.fixture[model]["query"])
-            print(model.__name__, obj.name)
-            obj.delete()
-            return response.status_code == 200
-        except model.DoesNotExist:
-            return False
-
-    def post_unsuccessful(self, response, model):
-        return (
-            response.status_code == 200
-            and not model.objects.filter(
-                **self.fixture[model]["query"]
-            ).exists()
-        )
-
-    def post_forbidden(self, response, model):
-        return response.status_code == 403
-
-    def test_post(self):
-        for key, expectation in self.matrix.items():
-            model, dept = key
-            data = self.get_post_data(
-                model, getattr(self, dept).id, self.company.id
-            )
-            response = self.client.post(self.fixture[model]["url"], data)
-            assertion = getattr(self, f"post_{expectation}")
-            assert assertion(response, model), key
-
-
-class TestPermissions_Editor(TestPermissions_NoPermission):
-    employee_level = "is_editor"
-
-
-class TestPermissions_DepLead(TestPermissions_NoPermission):
-    employee_level = "is_dep_lead"
-    matrix = {
-        (Person, "department"): "successful",
-        # (Person, "other_dept"): "unsuccessful",
-        (Ward, "department"): "successful",
-        # (Ward, "other_dept"): "unsuccessful",
-    }
-
-
-class TestPermissions_CompanyAdmin(TestPermissions_NoPermission):
-    employee_level = "is_company_admin"
-    matrix = {
-        (Person, "department"): "successful",
-        (Person, "other_dept"): "successful",
-        (Ward, "department"): "successful",
-        (Ward, "other_dept"): "successful",
-    }

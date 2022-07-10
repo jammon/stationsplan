@@ -12,11 +12,7 @@ from django.views.decorators.http import require_POST
 
 import json
 
-from .business_logic import (
-    apply_changes,
-    set_approved,
-    get_last_change_response,
-)
+from .logic import apply_changes, set_approved, get_last_change_response
 from .models import (
     ChangeLogging,
     Company,
@@ -283,7 +279,12 @@ def edit_person(request, pk=None):
         kwargs = {"initial": {"company": company_id}}
     else:
         kwargs = {"instance": person}
-    form = forms.PersonForm(request.POST or None, **kwargs)
+    if request.method == "POST":
+        post = request.POST.copy()
+        post["company"] = company_id
+    else:
+        post = None
+    form = forms.PersonForm(post, **kwargs)
     if form.is_valid():
         form.save()
         is_company_admin = request.session.get("is_company_admin", False)
@@ -328,7 +329,12 @@ def edit_ward(request, pk=None):
         kwargs = {"initial": {"company": company_id}}
     else:
         kwargs = {"instance": ward}
-    form = forms.WardForm(request.POST or None, **kwargs)
+    if request.method == "POST":
+        post = request.POST.copy()
+        post["company"] = company_id
+    else:
+        post = None
+    form = forms.WardForm(post, **kwargs)
     if form.is_valid():
         form.save()
         is_company_admin = request.session.get("is_company_admin", False)
