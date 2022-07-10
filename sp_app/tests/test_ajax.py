@@ -178,8 +178,10 @@ class TestPersonEditViews(LoggedInTestCase):
         data["departments"] = self.department.id
         data["company"] = self.company.id
         self.client.post(reverse("person-add"), data)
-        person = Person.objects.get(name="Müller")
-        assert person is not None
+        try:
+            person = Person.objects.get(name="Müller")
+        except Person.DoesNotExist:
+            assert False, "Person was not created"
         for attribute in ("name", "shortname", "email"):
             assert getattr(person, attribute) == data[attribute]
         assert person.start_date == date(2022, 5, 1)
@@ -197,8 +199,10 @@ class TestPersonEditViews(LoggedInTestCase):
             name="Other", shortname="Oth"
         ).id
         self.client.post(reverse("person-add"), data)
-        person = Person.objects.get(name="Müller")
-        assert person is not None
+        try:
+            person = Person.objects.get(name="Müller")
+        except Person.DoesNotExist:
+            assert False, "Person was not created"
         assert person.company == self.company
 
 
@@ -210,8 +214,10 @@ class TestWardEditViews(LoggedInTestCase):
         data["departments"] = self.department.id
         data["company"] = self.company.id
         self.client.post(reverse("ward-add"), data)
-        ward = Ward.objects.get(name="Station X")
-        assert ward is not None
+        try:
+            ward = Ward.objects.get(name="Station X")
+        except Ward.DoesNotExist:
+            assert False, "Ward was not created"
         for attribute in ("name", "shortname", "max", "min", "position"):
             assert getattr(ward, attribute) == data[attribute]
         assert ward.company == self.company
@@ -227,6 +233,45 @@ class TestWardEditViews(LoggedInTestCase):
             name="Other", shortname="Oth"
         ).id
         self.client.post(reverse("ward-add"), data)
-        ward = Ward.objects.get(name="Station X")
-        assert ward is not None
+        try:
+            ward = Ward.objects.get(name="Station X")
+        except Ward.DoesNotExist:
+            assert False, "Ward was not created"
         assert ward.company == self.company
+
+
+class TestDepartmentEditViews(LoggedInTestCase):
+    employee_level = "is_company_admin"
+
+    def test_add_department(self):
+        data = {
+            "name": "New department",
+            "shortname": "New",
+            "company": self.company.id,
+        }
+        response = self.client.post(reverse("department-add"), data)
+        try:
+            department = Department.objects.get(name="New department")
+        except Department.DoesNotExist:
+            assert False, "Department was not created"
+        for attribute in ("name", "shortname"):
+            assert getattr(department, attribute) == data[attribute]
+        assert department.company == self.company
+
+        assert "New department" in str(response.content)
+
+    def test_wrong_company(self):
+        """Protect from users forging data for other companies"""
+        data = {
+            "name": "New department",
+            "shortname": "New",
+        }
+        data["company"] = Company.objects.create(
+            name="Other", shortname="Oth"
+        ).id
+        self.client.post(reverse("department-add"), data)
+        try:
+            department = Department.objects.get(name="New department")
+        except Department.DoesNotExist:
+            assert False, "Department was not created"
+        assert department.company == self.company

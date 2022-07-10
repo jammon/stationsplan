@@ -24,6 +24,7 @@ from .models import (
     Ward,
     FeedId,
 )
+from .utils import post_with_company
 from sp_app import forms
 
 
@@ -228,17 +229,19 @@ def edit_department(request, department_id=None):
     """Edit the department or create a new one
 
     Called with GET: return the form
-    Called with POST: return nothing als form and the department list (oob)
+    Called with POST: return nothing as form and the department list (oob)
     """
     company_id = request.session["company_id"]
-    department = Department.objects.get(
-        id=department_id, company_id=company_id
-    )
-    if department is None:
-        kwargs = {"initial": {"company": company_id}}
-    else:
-        kwargs = {"instance": department}
-    form = forms.DepartmentForm(request.POST or None, **kwargs)
+    kwargs = {"initial": {"company": company_id}}
+    if department_id is not None:
+        try:
+            department = Department.objects.get(
+                id=department_id, company_id=company_id
+            )
+            kwargs = {"instance": department}
+        except Department.DoesNotExist:
+            pass
+    form = forms.DepartmentForm(post_with_company(request), **kwargs)
     if form.is_valid():
         form.save()
         company = Company.objects.prefetch_related("departments").get(
@@ -279,12 +282,7 @@ def edit_person(request, pk=None):
         kwargs = {"initial": {"company": company_id}}
     else:
         kwargs = {"instance": person}
-    if request.method == "POST":
-        post = request.POST.copy()
-        post["company"] = company_id
-    else:
-        post = None
-    form = forms.PersonForm(post, **kwargs)
+    form = forms.PersonForm(post_with_company(request), **kwargs)
     if form.is_valid():
         form.save()
         is_company_admin = request.session.get("is_company_admin", False)
@@ -329,12 +327,7 @@ def edit_ward(request, pk=None):
         kwargs = {"initial": {"company": company_id}}
     else:
         kwargs = {"instance": ward}
-    if request.method == "POST":
-        post = request.POST.copy()
-        post["company"] = company_id
-    else:
-        post = None
-    form = forms.WardForm(post, **kwargs)
+    form = forms.WardForm(post_with_company(request), **kwargs)
     if form.is_valid():
         form.save()
         is_company_admin = request.session.get("is_company_admin", False)

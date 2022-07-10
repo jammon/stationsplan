@@ -29,3 +29,11 @@ def last_day_of_month(date):
         if date.month == 12
         else date.replace(month=date.month + 1, day=1) - timedelta(days=1)
     )
+
+
+def post_with_company(request):
+    if request.method == "POST":
+        post = request.POST.copy()
+        post["company"] = request.session["company_id"]
+        return post
+    return None

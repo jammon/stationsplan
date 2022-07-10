@@ -3,7 +3,7 @@ from django.forms import widgets
 from django.contrib import admin
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError, NON_FIELD_ERRORS
+from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 
 from .models import Company, Person, Ward, Department, Employee, EMPLOYEE_LEVEL
@@ -175,7 +175,7 @@ class WardForm(forms.ModelForm):
 class DepartmentForm(forms.ModelForm):
     class Meta:
         model = Department
-        fields = ["name", "shortname"]
+        fields = ["name", "shortname", "company"]
 
 
 class UserForm(forms.ModelForm):
