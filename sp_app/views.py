@@ -131,7 +131,7 @@ def signup(request):
         return send_activation_mail(request, user)
     return render(
         request,
-        "sp_app/signup/signup.html",
+        "sp_app/signup/signup.jinja",
         {
             "userform": userform,
             "companyform": companyform,

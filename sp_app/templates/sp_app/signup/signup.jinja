@@ -1,0 +1,55 @@
+{% extends "base.jinja" %}
+{% block content %}
+<div class="row">
+  <div class="col-xs-12">
+    <h1>Stationsplanung erstellen</h1>
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs-12 lead">
+    Hier beginnen Sie die Stationsplanung für Ihre Klinik.<br />
+    Geben Sie Name und Ort Ihrer Klinik ein, eine erste Abteilung sowie die notwendigen Angaben über Sie selbst.
+  </div>
+</div>
+
+{% macro field_template(field) -%}
+<div class="col-sm-3 control-label">
+  {{ field.label_tag() }}
+</div>
+<div class="col-sm-9{% if field.errors %} bg-danger{% endif %}">
+  {{ field }}
+  <div class="help-block">{{ field.help_text }}</div>
+  {% if field.errors %}
+  <div>{{ field.errors }} </div>
+  {% endif %}
+</div>
+{%- endmacro %}
+
+<form method="post">
+  <div class="row">
+    {% csrf_token %}
+    <div class="col-md-6">
+      <h2>Klinik</h2>
+      {{ field_template(companyform.name) }}
+      {{ field_template(companyform.shortname) }}
+      {{ field_template(companyform.region) }}
+      {{ field_template(departmentform.department) }}
+    </div>
+    <div class="col-md-6">
+      <h2>Administrator</h2>
+      {{ field_template(userform.first_name) }}
+      {{ field_template(userform.last_name) }}
+      {{ field_template(userform.username) }}
+      {{ field_template(userform.email) }}
+      {{ field_template(userform.password1) }}
+      {{ field_template(userform.password2) }}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12 lead">
+      <p>Melden Sie sich an, um Stationsplan.de für Ihre Klinik zu nutzen.</p>
+      <button type="submit">Anmelden</button>
+    </div>
+  </div>
+</form>
+{% endblock content %}

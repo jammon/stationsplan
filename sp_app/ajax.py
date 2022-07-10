@@ -348,7 +348,7 @@ def edit_ward(request, pk=None):
         )
     return render(
         request,
-        "sp_app/structure/edit_ward.html",
+        "sp_app/structure/edit_ward.jinja",
         {
             "form": form,
             "url": reverse("ward-update", args=(pk,))

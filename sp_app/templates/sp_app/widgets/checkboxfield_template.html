@@ -1,9 +1,0 @@
-<div class="col-md-3 col-sm-4{% if field.errors %} bg-danger{% endif %}">
-  {{ field }} <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-  <div class="help-block">
-    {{ field.help_text }}
-  </div>
-  {% if field.errors %}
-  <div>{{ field.errors }}</div>
-  {% endif %}
-</div>

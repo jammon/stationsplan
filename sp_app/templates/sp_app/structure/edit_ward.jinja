@@ -1,0 +1,89 @@
+{% extends "sp_app/structure/modal_dialog.jinja" %}
+{% block modaltitle %}Funktion{% endblock modaltitle %}
+{% block modalmodifier %}modal-lg{% endblock modalmodifier %}
+
+{% block modalform %}
+<form hx-post="{{ url }}" hx-target="#edit-window" method="post" id="form" class="edit-form">
+  {% csrf_token %}
+  {% if form.errors %}
+  <div class="row">
+    <div class="col-xs-12 bg-danger">
+      {% if form.errors.items()|length == 1 %}
+      {% trans %}Please correct the error below.{% endtrans %}
+      {% else %}
+      {% trans %}Please correct the errors below.{% endtrans %}
+      {% endif %}
+    </div>
+    {% for error in form.non_field_errors() %}
+    <div class="col-xs-12 alert-danger">
+      <strong>{{ error|escape }}</strong>
+    </div>
+    {% endfor %}
+
+  </div>
+  {% endif %}
+
+  <fieldset class="form">
+{% macro field_template(field) -%}
+<div class="col col-md-3 col-sm-4 form-group{% if field.errors %} bg-danger{% endif %} ">
+{{ field.label_tag() }} {{ field }}
+<div>{{ field.errors}} </div>
+</div>
+{%- endmacro %}
+    <div class="row">
+      {{ field_template(field=form.name) }}
+      {{ field_template(field=form.shortname) }}
+      {{ field_template(field=form.min) }}
+      {{ field_template(field=form.max) }}
+    </div>
+
+    {% macro checkboxfield(field) -%}
+    <div class="col-md-3 col-sm-4{% if field.errors %} bg-danger{% endif %}">
+      {{ field }} <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+      <div class="help-block">
+        {{ field.help_text }}
+      </div>
+      {% if field.errors %}
+      <div>{{ field.errors }}</div>
+      {% endif %}
+    </div>
+    {%- endmacro %}
+    <div class="row margin-top-10">
+      {{ checkboxfield(form.everyday) }}
+      {{ checkboxfield(form.freedays) }}
+      {{ checkboxfield(form.callshift) }}
+      {{ checkboxfield(form.on_leave) }}
+    </div>
+
+    {% macro multicheckbox(field) -%}
+    <div class="col-md-3 col-sm-4{% if field.errors %} bg-danger{% endif %}">
+      {{ field }} <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+      <div class="help-block">
+        {{ field.help_text }}
+      </div>
+      {% if field.errors %}
+      <div>{{ field.errors }}</div>
+      {% endif %}
+    </div>
+    {%- endmacro %}
+    <div class="row margin-top-10">
+      {{ multicheckbox(form.departments) }}
+      {{ multicheckbox(form.wkdys) }}
+      {{ multicheckbox(form.position) }}
+      {{ multicheckbox(form.inactive) }}
+    </div>
+    <div class="row margin-top-10">
+      {{ multicheckbox(form.after_this) }}
+      {{ multicheckbox(form.not_with_this) }}
+    </div>
+
+    {{ form.weekdays.as_hidden() }}
+    {{ form.company.as_hidden() }}
+    <div class="form-group">
+      <div class="col-sm-offset-3 col-sm-9">
+        <button type="submit" class="btn btn-default">Speichern</button>
+      </div>
+    </div>
+  </fieldset>
+</form>
+{% endblock modalform %}
