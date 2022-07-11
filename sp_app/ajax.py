@@ -185,6 +185,8 @@ def change_history(request, date, ward_id):
 
 
 @ajax_login_required
+@require_POST
+@permission_required("sp_app.is_dep_lead", raise_exception=True)
 def differentday(request, action, ward, day_id):
     # Make sure it's the right company
     ward = get_object_or_404(
@@ -200,11 +202,8 @@ def differentday(request, action, ward, day_id):
                     "message": "There is a different planning already",
                 }
             )
-        if (
-            dd.added
-            and action == "remove_cancelation"
-            or not dd.added
-            and action == "remove_additional"
+        if (dd.added and action == "remove_cancelation") or (
+            not dd.added and action == "remove_additional"
         ):
             return JsonResponse({"status": "error", "message": "Wrong action"})
         DifferentDay.objects.filter(id=dd.id).delete()

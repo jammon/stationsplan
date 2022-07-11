@@ -3,10 +3,13 @@ import json
 import pytest
 from datetime import date
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.core.cache import cache
 from http import HTTPStatus
-from unittest import TestCase
+from unittest import TestCase, mock
+from unittest.mock import Mock
 
+from sp_app import logic
 from sp_app.logic import (
     get_for_company,
     get_holidays_for_company,
@@ -15,6 +18,7 @@ from sp_app.logic import (
     get_last_change_response,
     get_cached_last_change_pk,
     set_cached_last_change_pk,
+    send_activation_mail,
 )
 from sp_app.models import (
     Company,
@@ -254,3 +258,22 @@ class TestAssertContainsDict(PopulatedTestCase):
         self.assertContainsDict({"a": 1, "b": 2}, {"a": 1})
         with self.assertRaises(AssertionError):
             self.assertContainsDict({"a": 2}, {"a": 1})
+
+
+class TestSendActivationMail(PopulatedTestCase):
+    def test_send_activation_mail(self):
+        logic.send_mail = Mock()
+        user = User.objects.create(
+            username="mailuser",
+            first_name="Mr.",
+            last_name="Mailuser",
+            email="mailuser@example.com",
+            password="secret",
+        )
+        send_activation_mail(user)
+        logic.send_mail.assert_called_once()
+        subject, message, server, recipients = logic.send_mail.call_args.args
+        assert subject == "Benutzerkonto für Stationsplan.de aktivieren"
+        assert "Mr. Mailuser" in message
+        assert f"https://stationsplan.de/activate/{user.id}" in message
+        assert recipients == [user.email]

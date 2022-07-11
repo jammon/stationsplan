@@ -4,8 +4,11 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth.models import User
 from http import HTTPStatus
+from unittest.mock import Mock
 import json
 import logging
+
+from requests import request
 
 from sp_app.models import (
     Company,
@@ -16,6 +19,7 @@ from sp_app.models import (
     ChangeLogging,
     Planning,
 )
+from sp_app import logic
 from sp_app.logic import get_plan_data
 from sp_app.tests.utils_for_tests import (
     PopulatedTestCase,
@@ -615,3 +619,14 @@ class TestRobotsTxt(TestCase):
         response = self.client.post("/robots.txt")
 
         self.assertEqual(HTTPStatus.METHOD_NOT_ALLOWED, response.status_code)
+
+
+class TestSendActivationMail(PopulatedTestCase):
+    def test_send_activation_mail(self):
+        logic.send_activation_mail = Mock()
+        response = self.client.get(
+            reverse("send_activation_mail", args=(self.user.pk,))
+        )
+        logic.send_activation_mail.assert_called_once()
+        (user,) = logic.send_activation_mail.call_args.args
+        assert user == self.user

@@ -1,3 +1,4 @@
+from genericpath import exists
 import json
 from datetime import date
 from django.urls import reverse
@@ -6,15 +7,12 @@ from sp_app.models import (
     Department,
     Ward,
     Person,
-    Employee,
-    ChangeLogging,
-    Planning,
+    DifferentDay,
     StatusEntry,
     FAR_FUTURE,
 )
 from sp_app.tests.utils_for_tests import (
     ViewsWithPermissionTestCase,
-    PopulatedTestCase,
     LoggedInTestCase,
 )
 
@@ -375,4 +373,38 @@ class TestChangeFunction(LoggedInTestCase):
         assert json.loads(response.content) == {
             "status": "error",
             "reason": "Ward 777 not found",
+        }
+
+
+class TestDifferentday(LoggedInTestCase):
+    employee_level = "is_dep_lead"
+
+    def test_differentday(self):
+        # set different day
+        data = {
+            "action": "add_additional",
+            "ward": self.ward_a.id,
+            "day_id": "20220710",
+        }
+        response = self.client.post(reverse("different-day", kwargs=data))
+        assert json.loads(response.content) == {"status": "ok"}
+        dd = DifferentDay.objects.get(day=date(2022, 7, 10))
+        assert dd.added
+        assert dd.ward == self.ward_a
+        # once again
+        response = self.client.post(reverse("different-day", kwargs=data))
+        assert json.loads(response.content) == {
+            "status": "error",
+            "message": "There is a different planning already",
+        }
+        # remove it
+        data["action"] = "remove_additional"
+        response = self.client.post(reverse("different-day", kwargs=data))
+        assert json.loads(response.content) == {"status": "ok"}
+        assert not DifferentDay.objects.filter(day=date(2022, 7, 10)).exists()
+        # once again
+        response = self.client.post(reverse("different-day", kwargs=data))
+        assert json.loads(response.content) == {
+            "status": "error",
+            "message": "There is no different planning for this day",
         }

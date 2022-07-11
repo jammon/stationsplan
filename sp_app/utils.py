@@ -6,10 +6,6 @@ from zoneinfo import ZoneInfo
 TZ_BERLIN = ZoneInfo("Europe/Berlin")
 
 
-def json_array(data):
-    return f"[{', '.join(d.json for d in data)}]"
-
-
 def get_first_of_month(month=""):
     """Returns a date.
     'month' should be a string in the form of 'YYYYMM' or 'YYYYMMDD'.
@@ -32,8 +28,6 @@ def last_day_of_month(date):
 
 
 def post_with_company(request):
-    if request.method == "POST":
-        post = request.POST.copy()
-        post["company"] = request.session["company_id"]
-        return post
-    return None
+    post = request.POST.copy()
+    post["company"] = request.session["company_id"]
+    return post

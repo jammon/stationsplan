@@ -92,12 +92,10 @@ def ical_feeds(request):
     )
 
 
-def send_activation_mail(request, user, send=True):
-    # can be called with send=False for testing
+def send_activation_mail(request, user):
     if isinstance(user, int):
         user = get_object_or_404(User, pk=user)
-    if send:
-        logic.send_activation_mail(user)
+    logic.send_activation_mail(user)
     return render(
         request, "sp_app/signup/activation_mail_sent.html", {"user": user}
     )

@@ -114,7 +114,7 @@ urlpatterns = [
     #
     path("signup", sp_views.signup, name="signup"),
     path(
-        "send_activation_mail/<int:pk>",
+        "send_activation_mail/<int:user>",
         sp_views.send_activation_mail,
         name="send_activation_mail",
     ),

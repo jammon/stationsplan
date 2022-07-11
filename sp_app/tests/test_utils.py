@@ -1,23 +1,8 @@
 # -*- coding: utf-8 -*-
-import json
-import pytest
 from datetime import date
 from django.conf import settings
-from django.core.cache import cache
-from http import HTTPStatus
-from unittest import TestCase
 
 from sp_app.utils import get_first_of_month, last_day_of_month
-from sp_app.models import (
-    Company,
-    Department,
-    Person,
-    Ward,
-    CalculatedHoliday,
-    Region,
-    ChangeLogging,
-    FAR_FUTURE,
-)
 
 
 def test_get_first_of_month():
