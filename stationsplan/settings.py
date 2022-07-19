@@ -37,6 +37,7 @@ config.read(CONFIG_FILE)
 
 # Server type: "dev", "staging" or "production"
 SERVER_TYPE = config["server"]["type"]
+assert SERVER_TYPE in ("dev", "production", "staging")
 
 # Server dependant
 SITE_ID = {"dev": 1, "production": 2, "staging": 3}[SERVER_TYPE]

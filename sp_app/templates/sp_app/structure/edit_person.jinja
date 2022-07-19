@@ -1,4 +1,4 @@
-{% extends "./modal_dialog.html" %}
+{% extends "sp_app/structure/modal_dialog.jinja" %}
 {% block modaltitle %}Mitarbeiter{% endblock modaltitle %}
 {% block modalmodifier %}{% endblock modalmodifier %}
 {% block modalform %}
@@ -36,7 +36,7 @@
   </td>
 </tr>
 {% endmacro%}
-{% macro fieldtable(field1, field2=None) %}
+{% macro field_table(field1, field2=None) %}
 <div class="col col-sm-6 col-xs-12">
   <table>
     {{ table_field(field1) }}
@@ -51,11 +51,11 @@
     {{ field_table(form.position, None) }}
 
     <div class="col col-xs-12">
-      {{ form.email.label_tag }} {{ form.email }}
-      <div>{{ form.email.errors}} </div>
+      {{ form.email.label_tag() }} {{ form.email }}
+      <div>{{ form.email.errors }} </div>
     </div>
 
-    {{ form.company.as_hidden }}
+    {{ form.company.as_hidden() }}
     <div class="form-group">
       <div class="col-sm-offset-3 col-sm-9">
         <button type="submit" class="btn btn-default">Speichern</button>

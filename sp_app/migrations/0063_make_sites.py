@@ -7,15 +7,15 @@ from django.db import migrations
 def make_sites(apps, schema_editor):
 
     Site = apps.get_model("sites", "Site")
-    try:
-        dev = Site.objects.get(id=1)
-        dev.domain = "localhost:8000"
-        dev.name = "dev"
-        dev.save()
-    except Site.DoesNotExist:
-        Site.objects.create(id=1, domain="localhost:8000", name="dev")
-    Site.objects.create(id=2, domain="stationsplan.de", name="Stationsplan.de")
-    Site.objects.create(id=3, domain="stpst.uber.space", name="staging")
+    Site.objects.update_or_create(
+        id=1, defaults={"domain": "localhost:8000", "name": "dev"}
+    )
+    Site.objects.update_or_create(
+        id=2, defaults={"domain": "stationsplan.de", "name": "Stationsplan.de"}
+    )
+    Site.objects.update_or_create(
+        id=3, defaults={"domain": "stpst.uber.space", "name": "staging"}
+    )
 
 
 class Migration(migrations.Migration):
