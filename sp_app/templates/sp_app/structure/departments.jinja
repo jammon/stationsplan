@@ -6,7 +6,7 @@
 {% endfor %}
   <div>
     <a class="btn btn-default editable"
-       hx-get="{ url('department-add') }}" 
+       hx-get="{{ url('department-add') }}" 
        hx-target="#edit-window" 
        role="button">
     Neue Abteilung</a>
