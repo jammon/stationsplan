@@ -143,6 +143,7 @@ urlpatterns = [
         ),
         name="tests",
     ),
+    path("delete_playwright_tests", sp_views.delete_playwright_tests),
     path2template("datenschutz", "datenschutz.html", "datenschutz"),
     path2template("impressum", "impressum.html", "impressum"),
     path2template(

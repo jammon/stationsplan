@@ -6,16 +6,13 @@
 (B) Alle Dienste einer Person des aktuellen Monats sollen angezeigt werden
 (C) Urlaube in der Planungsansicht der Dienste anzeigen
 (C) Doppelclick auf voriger oder nächster Monat soll nur einmal wirken
-(C) Integrationtests in jasmine einbauen +Public
 (C) Assets komprimieren
 (C) Flags für Betatester
-(C) Testen mit Firefox headless oder PhantomJS
 (C) Aktion Aktualisieren ins Menu
 (C) Aktualisierung soll auch die Freigabe von Planungen vermitteln
 (C) meta description in base.html verbessern
 (C) Anordnung der Diensthabenden in der Stationsansicht so, dass sie immer auf einer Reihe sind
 (C) Set MySQL Strict Mode +deploy https://docs.djangoproject.com/en/2.2/ref/databases/#mysql-sql-mode
-(C) In Views kaputte Eingaben abfangen
 (C) django.views.decorators.http.condition einsetzen https://docs.djangoproject.com/en/3.0/topics/conditional-view-processing/
 (C) Write test if redis is running in production (redis.ping)
 (C) Write test for caching in production
@@ -34,12 +31,9 @@
 (B) Error reporting https://docs.djangoproject.com/en/4.0/howto/error-reporting/
 (B) Logs monitoren +Public
 (C) django-hijack installieren +Public +support
-(C) Integrationstests schreiben, z.B. https://docs.pylonsproject.org/projects/webtest/en/latest/ oder Selenium
 (B) Debug-Status in der config festlegen, settings entsprechend importieren
-Footer korrigieren
+(A) Footer korrigieren
 (B) Rechtliches für Terminnetz suchen
-(A) Test mit playwright entwickeln
-Neue Abteilung muss den Dialog leeren
 (A) not_with_this besser definieren - shadowing
-Von Signup-Bestätigungsseite muss es weiter gehen
-after_this, active, ward_type, weight in edit_ward
+(B) after_this, active, ward_type, weight in edit_ward
+(A) Sollte Company.as_hidden in den Forms sein?

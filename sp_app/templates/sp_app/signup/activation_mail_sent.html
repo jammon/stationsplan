@@ -3,7 +3,8 @@
 <div class="row">
   <div class="col col-xs-12">
     <h1>Anmeldung erfolgreich</h1>
-    <p>An die Adresse <code>{{ request.session.mail_sent_to }}</code> wurde eine Bestätigungsmail geschickt. <br />
+    <p>An die Adresse <code id="mail_sent_to">{{ request.session.mail_sent_to }}</code> wurde eine Bestätigungsmail
+      geschickt. <br />
       Diese Mail enthält einen Link mit einem Aktivierungscode. <br />
       Bitte klicken Sie diesen Link, um Ihr Benutzerkonto in Funktion zu setzen.</p>
     <h2>Keine Mail bekommen?</h2>

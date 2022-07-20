@@ -265,6 +265,9 @@ def get_last_change_response(company_id, last_change_pk):
 
 
 def send_activation_mail(user):
+    # don't send mails out of playwright tests
+    if user.email.startswith("_pwt_"):
+        return
     mail_subject = "Benutzerkonto für Stationsplan.de aktivieren"
     message = render_to_string(
         "sp_app/signup/activation_mail.txt",

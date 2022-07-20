@@ -115,7 +115,9 @@ def signup(request):
         and departmentform.is_valid()
     ):
         user = userform.save(commit=False)
-        user.is_active = False
+        # Users have to be activated, except for playwright tests
+        if user.username != "_pwt_user":
+            user.is_active = False
         user.save()
         company = companyform.save()
         department = Department.objects.create(

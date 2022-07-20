@@ -173,3 +173,10 @@ x 2022-06-28 Stagingserver einrichten
 x 2022-07-04 Was ist, wenn zwei Persone den gleichen Kurznamen haben
 x 2022-07-10 In Signup-Formular die errors stylen
 x 2022-07-10 Wenn man einen Employee ohne Abteilung hinzufügt, wird er nicht gespeichert
+x 2022-07-19 Testen mit Firefox headless oder PhantomJS
+x 2022-07-19 Integrationstests schreiben, z.B. https://docs.pylonsproject.org/projects/webtest/en/latest/ oder Selenium
+x 2022-07-19 Integrationtests in jasmine einbauen +Public
+x 2022-07-19 Von Signup-Bestätigungsseite muss es weiter gehen
+x 2022-07-20 Neue Abteilung muss den Dialog leeren
+x 2022-07-20 Test mit playwright entwickeln
+x 2022-07-20 In Views kaputte Eingaben abfangen
