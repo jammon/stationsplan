@@ -28,6 +28,8 @@ def last_day_of_month(date):
 
 
 def post_with_company(request):
-    post = request.POST.copy()
-    post["company"] = request.session["company_id"]
-    return post
+    if request.POST:
+        post = request.POST.copy()
+        post["company"] = request.session["company_id"]
+        return post
+    return None

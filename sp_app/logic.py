@@ -57,6 +57,8 @@ def get_plan_data(
     wards = Ward.objects.filter(
         departments__id__in=department_ids
     ).prefetch_related("after_this", "not_with_this")
+    if len(persons_qs) == 0 or len(wards) == 0:
+        return None
     different_days = DifferentDay.objects.filter(
         ward__departments__id__in=department_ids, day__gte=start_of_data
     ).select_related("ward")
