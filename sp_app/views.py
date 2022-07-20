@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 
@@ -27,13 +28,13 @@ def plan(request, month="", day=""):
     day is '' or 'YYYYMMDD' or None (for path "/tag")
     """
     data = logic.get_plan_data(
-            company_id=request.session.get("company_id"),
-            department_ids=request.session.get("department_ids"),
-            month=month,
-            day=day,
-            is_editor=request.session.get("is_editor", False),
-            is_dep_lead=request.session.get("is_dep_lead", False),
-            is_company_admin=request.session.get("is_company_admin", False),
+        company_id=request.session.get("company_id"),
+        department_ids=request.session.get("department_ids"),
+        month=month,
+        day=day,
+        is_editor=request.session.get("is_editor", False),
+        is_dep_lead=request.session.get("is_dep_lead", False),
+        is_company_admin=request.session.get("is_company_admin", False),
     )
     if data is None:
         return redirect("setup")
@@ -99,9 +100,9 @@ def send_activation_mail(request, user):
     if isinstance(user, int):
         user = get_object_or_404(User, pk=user)
     logic.send_activation_mail(user)
-    return render(
-        request, "sp_app/signup/activation_mail_sent.html", {"user": user}
-    )
+    request.session["mail_sent_to"] = user.email
+    request.session["mail_sent_to_pk"] = user.pk
+    return redirect("signup-success")
 
 
 def signup(request):
@@ -149,15 +150,21 @@ def activate(request, uid, token):
     if user is not None and default_token_generator.check_token(user, token):
         user.is_active = True
         user.save()
-        return render(
-            request,
-            "sp_app/signup/activation_success.html",
-            {"next": reverse("persons")},
-        )
+        return redirect("activate-success")
     return render(request, "sp_app/signup/activation_invalid.html", {})
 
 
 def test_activation_success(request):
     return render(
         request, "sp_app/signup/activation_success.html", {"next": "/TODO"}
+    )
+
+
+def delete_playwright_tests(request):
+    if settings.SERVER_TYPE == "production":
+        return HttpResponse("Not allowed on production server.")
+    n_del, _ = Company.objects.filter(name="_pw_test_company").delete()
+    User.objects.filter(username="_pwt_user").delete()
+    return render(
+        request, "sp_app/delete_playwright_tests.jinja", {"no_deleted": n_del}
     )

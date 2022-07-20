@@ -34,7 +34,6 @@ def path2template(url, t_path, name, **kwargs):
 urlpatterns = [
     path("", sp_views.home, name="home"),
     path("setup/", sp_views.setup, name="setup"),
-    path2template("offer", "sp_app/signup/offer.jinja", "offer"),
     #
     #
     # SPA  -------------------------------------------------------------
@@ -112,13 +111,28 @@ urlpatterns = [
     ),
     path("/", include("django.contrib.auth.urls")),
     #
+    path2template("offer", "sp_app/signup/offer.jinja", "offer"),
     path("signup", sp_views.signup, name="signup"),
+    path(
+        "signup/success",
+        TemplateView.as_view(
+            template_name="sp_app/signup/activation_mail_sent.html"
+        ),
+        name="signup-success",
+    ),
     path(
         "send_activation_mail/<int:user>",
         sp_views.send_activation_mail,
         name="send_activation_mail",
     ),
     path("activate/<int:uid>/<token>", sp_views.activate, name="activate"),
+    path(
+        "activate/success",
+        TemplateView.as_view(
+            template_name="sp_app/signup/activation_success.html"
+        ),
+        name="activate-success",
+    ),
     #
     # Other -------------------------------------------------------------
     #
