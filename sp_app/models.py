@@ -630,6 +630,7 @@ class Employee(models.Model):
     company = models.ForeignKey(
         Company, related_name="employees", on_delete=models.CASCADE
     )
+    _level = models.CharField("level", max_length=20, null=True)
 
     class Meta:
         verbose_name = _("Employee")
@@ -652,10 +653,7 @@ class Employee(models.Model):
 
     def get_level(self):
         """Return level of authorization"""
-        for permission, docstring in EMPLOYEE_PERMISSIONS:
-            if self.user.has_perm("sp_app." + permission):
-                return permission
-        return None
+        return self._level
 
     def set_level(self, level=None):
         """Set level of authorization
@@ -677,6 +675,8 @@ class Employee(models.Model):
                     self.user.groups.add(groups[EMPLOYEE_GROUP[permission]])
         # account for permission caching
         self.user = User.objects.get(id=self.user.id)
+        self._level = None if level == "None" else level
+        self.save()
 
     level = property(fget=get_level, fset=set_level)
 

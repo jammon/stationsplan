@@ -131,7 +131,7 @@ urlpatterns = [
         TemplateView.as_view(
             template_name="sp_app/signup/activation_success.html"
         ),
-        name="activate-success",
+        name="activation_success",
     ),
     #
     # Other -------------------------------------------------------------
@@ -166,5 +166,4 @@ if settings.DEBUG:
             sp_views.send_activation_mail,
             {"send": False},
         ),
-        path("test/activation_success", sp_views.test_activation_success),
     ]

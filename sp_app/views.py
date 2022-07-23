@@ -152,14 +152,8 @@ def activate(request, uid, token):
     if user is not None and default_token_generator.check_token(user, token):
         user.is_active = True
         user.save()
-        return redirect("activate-success")
+        return redirect("activation_success")
     return render(request, "sp_app/signup/activation_invalid.html", {})
-
-
-def test_activation_success(request):
-    return render(
-        request, "sp_app/signup/activation_success.html", {"next": "/TODO"}
-    )
 
 
 def delete_playwright_tests(request):
