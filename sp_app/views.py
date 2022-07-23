@@ -166,7 +166,7 @@ def delete_playwright_tests(request):
     if settings.SERVER_TYPE == "production":
         return HttpResponse("Not allowed on production server.")
     n_del, _ = Company.objects.filter(name="_pw_test_company").delete()
-    User.objects.filter(username="_pwt_user").delete()
+    User.objects.filter(username__startswith="_pwt_").delete()
     return render(
         request, "sp_app/delete_playwright_tests.jinja", {"no_deleted": n_del}
     )

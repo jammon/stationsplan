@@ -22,14 +22,6 @@ Alle außer Viewer können ihr Passwort ändern und ihre Sessions laufen mit dem
 Ein *Change* wird vom Nutzer eingegeben, auf dem Server mit den anderen Planungen abgeglichen und dann zurückgegeben und ins UI eingearbeitet.
 Ein *Planning* ist das Ergebnis der konsolidierten Changes, das initial beim Aufruf der Seite übergeben wird.
 
-Wenn die Seite aufgerufen wird,
-
-- `main.initialize_site`: initialisiert alle Variablen, dann
-  - `models.start_day_chain`: initialisiert nur den ersten Tag
-  - ruft über Backbone.history.start die View auf
-- die View ruft über Umwege `models.get_period_days` auf
-- hier werden die Tage über `days.get_day` initialisiert.
-
 ## Planungen mit Anfang und Ende eingeben
 
 Wenn man einen Change eingibt, der ein oder mehrere bisherige Planungen überdeckt, sollen diese verlinkt und als inaktiv markiert werden. So ist ein Undo möglich.
