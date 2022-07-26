@@ -1,0 +1,15 @@
+<ul class="nav nav-tabs" id="setup-nav" hx-swap-oob="true"
+  role="presentation">
+{% macro tab(url, title) -%}
+  <li {% if url==current_url %}class="active"{% endif %}>
+    <a hx-get="{{ url }}" hx-target="#setup-tab">
+      {{ title }}
+    </a>
+  </li>
+{%- endmacro %}
+  {{ tab("/setup/departments", "Abteilungen") }}
+  {{ tab("/setup/employees", "Bearbeiter/innen") }}
+  {{ tab("/setup/persons", "Mitarbeiter/innen") }}
+  {{ tab("/setup/wards", "Funktionen") }}
+  {{ tab("/setup/zuordnung", "Zuordnung") }}
+</ul>

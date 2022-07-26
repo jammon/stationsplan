@@ -9,6 +9,7 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
+from django.views.generic import TemplateView
 
 import json
 
@@ -222,6 +223,92 @@ def differentday(request, action, ward, day_id):
         return JsonResponse({"status": "ok"})
 
 
+# Setup ---------------------------------------------------------------
+
+
+def setup_tab(request, data, tab):
+    data["current_url"] = f"/setup/{tab}"
+    data["template"] = f"sp_app/setup/lists/{tab}.jinja"
+    return render(request, f"sp_app/setup/setup-tab.jinja", data)
+
+
+def setup_filter(request):
+    if request.session.get("is_company_admin", False):
+        return {"company_id": request.session["company_id"]}
+    else:
+        return {"departments__id__in": request.session["department_ids"]}
+
+
+def persons_for_request(request):
+    return Person.objects.filter(**setup_filter(request)).order_by(
+        "position", "name"
+    )
+
+
+def wards_for_request(request):
+    return (
+        Ward.objects.filter(**setup_filter(request))
+        .order_by("position", "name")
+        .distinct()
+    )
+
+
+@ajax_login_required
+def setup_departments(request):
+    company = (
+        Company.objects.select_related("region")
+        .prefetch_related("departments")
+        .get(id=request.session["company_id"])
+    )
+    return setup_tab(request, {"company": company}, "departments")
+
+
+@ajax_login_required
+def setup_employees(request):
+    company = (
+        Company.objects.select_related("region")
+        .prefetch_related("employees__user")
+        .get(id=request.session["company_id"])
+    )
+    return setup_tab(request, {"company": company}, "employees")
+
+
+@ajax_login_required
+def setup_persons(request):
+    persons = persons_for_request(request)
+    data = {
+        "persons": persons,
+        "former_persons": any(not p.current() for p in persons),
+        "email_available": settings.EMAIL_AVAILABLE,
+    }
+    return setup_tab(request, data, "persons")
+
+
+@ajax_login_required
+def setup_wards(request):
+    wards = wards_for_request(request)
+    data = {
+        "wards": wards,
+        "inactive_wards": any(not w.active for w in wards),
+    }
+    return setup_tab(request, data, "wards")
+
+
+@ajax_login_required
+def setup_zuordnung(request):
+    persons = persons_for_request(request).prefetch_related("functions")
+    wards = wards_for_request(request).filter(active=True)
+    return setup_tab(
+        request,
+        {
+            "persons": persons,
+            "wards": list(wards),
+            "no_mapping": len(persons) == 0 or len(wards) == 0,
+        },
+        "zuordnung",
+    )
+
+
 @ajax_login_required
 @permission_required("sp_app.is_company_admin", raise_exception=True)
 def edit_department(request, department_id=None):
@@ -231,15 +318,13 @@ def edit_department(request, department_id=None):
     Called with POST: return nothing as form and the department list (oob)
     """
     company_id = request.session["company_id"]
-    kwargs = {"initial": {"company": company_id}}
-    if department_id is not None:
-        try:
-            department = Department.objects.get(
-                id=department_id, company_id=company_id
-            )
-            kwargs = {"instance": department}
-        except Department.DoesNotExist:
-            pass
+    try:
+        department = Department.objects.get(
+            id=department_id, company_id=company_id
+        )
+        kwargs = {"instance": department}
+    except Department.DoesNotExist:
+        kwargs = {"initial": {"company": company_id}}
     form = forms.DepartmentForm(post_with_company(request), **kwargs)
     if form.is_valid():
         form.save()
@@ -248,111 +333,21 @@ def edit_department(request, department_id=None):
         )
         return render(
             request,
-            "sp_app/structure/edit_object_success.jinja",
+            "sp_app/setup/setup-tab.jinja",
             {
                 "company": company,
-                "target": "departments",
-                "list_template": "sp_app/structure/departments.jinja",
+                "template": "sp_app/setup/lists/departments.jinja",
+                "current_url": "/setup/departments",
             },
         )
     return render(
         request,
-        "sp_app/structure/edit_department.html",
+        "sp_app/setup/edit_department.html",
         {
             "form": form,
             "url": reverse("department-update", args=(department_id,))
             if department_id
             else reverse("department-add"),
-        },
-    )
-
-
-@ajax_login_required
-@permission_required("sp_app.is_dep_lead", raise_exception=True)
-def edit_person(request, pk=None):
-    """Edit the department or create a new one
-
-    Called with GET: return the form
-    Called with POST: return nothing als form and the department list (oob)
-    """
-    company_id = request.session["company_id"]
-    person = pk and Person.objects.get(pk=pk, company_id=company_id)
-    if person is None:
-        kwargs = {"initial": {"company": company_id}}
-    else:
-        kwargs = {"instance": person}
-    form = forms.PersonForm(post_with_company(request), **kwargs)
-    if form.is_valid():
-        form.save()
-        is_company_admin = request.session.get("is_company_admin", False)
-        if is_company_admin:
-            filter = {"company_id": request.session["company_id"]}
-        else:
-            filter = {"departments__id__in": request.session["department_ids"]}
-        persons = Person.objects.filter(**filter).order_by("position", "name")
-        return render(
-            request,
-            "sp_app/structure/edit_object_success.jinja",
-            {
-                "target": "person_list",
-                "list_template": "sp_app/structure/person_list.jinja",
-                "persons": persons,
-                "former_persons": any(not p.current() for p in persons),
-            },
-        )
-    return render(
-        request,
-        "sp_app/structure/edit_person.jinja",
-        {
-            "form": form,
-            "url": reverse("person-update", args=(pk,))
-            if pk
-            else reverse("person-add"),
-        },
-    )
-
-
-@ajax_login_required
-@permission_required("sp_app.is_dep_lead", raise_exception=True)
-def edit_ward(request, pk=None):
-    """Edit the department or create a new one
-
-    Called with GET: return the form
-    Called with POST: return nothing als form and the department list (oob)
-    """
-    company_id = request.session["company_id"]
-    ward = pk and Ward.objects.get(pk=pk, company_id=company_id)
-    if ward is None:
-        kwargs = {"initial": {"company": company_id}}
-    else:
-        kwargs = {"instance": ward}
-    form = forms.WardForm(post_with_company(request), **kwargs)
-    if form.is_valid():
-        form.save()
-        is_company_admin = request.session.get("is_company_admin", False)
-        if is_company_admin:
-            filter = {"company_id": request.session["company_id"]}
-        else:
-            filter = {"departments__id__in": request.session["department_ids"]}
-        wards = Ward.objects.filter(**filter).order_by("position", "name")
-        return render(
-            request,
-            "sp_app/structure/edit_object_success.jinja",
-            {
-                "target": "ward_list",
-                "list_template": "sp_app/structure/ward_list.jinja",
-                "wards": wards,
-                "inactive_wards": any(not w.active for w in wards),
-            },
-        )
-    return render(
-        request,
-        "sp_app/structure/edit_ward.jinja",
-        {
-            "form": form,
-            "url": reverse("ward-update", args=(pk,))
-            if pk
-            else reverse("ward-add"),
         },
     )
 
@@ -394,16 +389,16 @@ def edit_employee(request, employee_id=None):
         )
         return render(
             request,
-            "sp_app/structure/edit_object_success.jinja",
+            "sp_app/setup/setup-tab.jinja",
             {
                 "company": company,
-                "target": "employees",
-                "list_template": "sp_app/structure/employees.jinja",
+                "template": "sp_app/setup/lists/employees.jinja",
+                "current_url": "/setup/employees",
             },
         )
     return render(
         request,
-        "sp_app/structure/edit_employee.html",
+        "sp_app/setup/edit_employee.html",
         {
             "user_form": user_form,
             "employee_form": employee_form,
@@ -417,6 +412,122 @@ def edit_employee(request, employee_id=None):
             else reverse("employee-add"),
         },
     )
+
+
+@ajax_login_required
+@permission_required("sp_app.is_dep_lead", raise_exception=True)
+def edit_person(request, pk=None):
+    """Edit the department or create a new one
+
+    Called with GET: return the form
+    Called with POST: return nothing als form and the department list (oob)
+    """
+    company_id = request.session["company_id"]
+    person = pk and Person.objects.get(pk=pk, company_id=company_id)
+    if person is None:
+        kwargs = {"initial": {"company": company_id}}
+    else:
+        kwargs = {"instance": person}
+    form = forms.PersonForm(post_with_company(request), **kwargs)
+    if form.is_valid():
+        form.save()
+        is_company_admin = request.session.get("is_company_admin", False)
+        if is_company_admin:
+            filter = {"company_id": request.session["company_id"]}
+        else:
+            filter = {"departments__id__in": request.session["department_ids"]}
+        persons = Person.objects.filter(**filter).order_by("position", "name")
+        return render(
+            request,
+            "sp_app/setup/setup-tab.jinja",
+            {
+                "persons": persons,
+                "former_persons": any(not p.current() for p in persons),
+                "template": "sp_app/setup/lists/persons.jinja",
+                "current_url": "/setup/persons",
+            },
+        )
+    return render(
+        request,
+        "sp_app/setup/edit_person.jinja",
+        {
+            "form": form,
+            "url": reverse("person-update", args=(pk,))
+            if pk
+            else reverse("person-add"),
+        },
+    )
+
+
+@ajax_login_required
+@permission_required("sp_app.is_dep_lead", raise_exception=True)
+def edit_ward(request, pk=None):
+    """Edit the department or create a new one
+
+    Called with GET: return the form
+    Called with POST: return nothing als form and the department list (oob)
+    """
+    company_id = request.session["company_id"]
+    ward = pk and Ward.objects.get(pk=pk, company_id=company_id)
+    if ward is None:
+        kwargs = {"initial": {"company": company_id}}
+    else:
+        kwargs = {"instance": ward}
+    form = forms.WardForm(post_with_company(request), **kwargs)
+    if form.is_valid():
+        form.save()
+        is_company_admin = request.session.get("is_company_admin", False)
+        if is_company_admin:
+            filter = {"company_id": request.session["company_id"]}
+        else:
+            filter = {"departments__id__in": request.session["department_ids"]}
+        wards = Ward.objects.filter(**filter).order_by("position", "name")
+        return render(
+            request,
+            "sp_app/setup/setup-tab.jinja",
+            {
+                "wards": wards,
+                "inactive_wards": any(not w.active for w in wards),
+                "template": "sp_app/setup/lists/wards.jinja",
+                "current_url": "/setup/wards",
+            },
+        )
+    return render(
+        request,
+        "sp_app/setup/edit_ward.jinja",
+        {
+            "form": form,
+            "url": reverse("ward-update", args=(pk,))
+            if pk
+            else reverse("ward-add"),
+        },
+    )
+
+
+@ajax_login_required
+@require_POST
+@permission_required("sp_app.is_dep_lead", raise_exception=True)
+def edit_mapping(request, person_id, ward_id, possible):
+    """Change the ability of a person to perform a function."""
+    company_id = request.session["company_id"]
+    try:
+        person = Person.objects.get(id=person_id, company_id=company_id)
+        ward = Ward.objects.get(id=ward_id, company_id=company_id)
+        if possible:
+            person.functions.add(ward)
+        else:
+            person.functions.remove(ward)
+        return render(
+            request,
+            "sp_app/setup/lists/zuordnung-detail.jinja",
+            {"person": person, "ward": ward, "possible": possible},
+        )
+    except Person.DoesNotExist:
+        reason = f"Person {person_id} not found"
+    except Ward.DoesNotExist:
+        reason = f"Ward {ward_id} not found"
+    # TODO: add logging
+    assert False
 
 
 ICAL_MAIL_TEXT = """

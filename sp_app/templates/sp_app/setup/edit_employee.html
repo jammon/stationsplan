@@ -1,7 +1,4 @@
-{% extends "./modal_dialog.html" %}
-{% block modaltitle %}Benutzer{% endblock modaltitle %}
-{% block modalform %}
-<form hx-post="{{ url }}" hx-target="#edit-window" class="form-horizontal edit-form">
+<form hx-post="{{ url }}" hx-target="#setup-tab" class="form-horizontal edit-form">
   {% csrf_token %}
   {% with "./horizontal-edit-field.html" as template %}
   {% include template with field=user_form.username %}
@@ -16,4 +13,3 @@
   {% endwith %}
   <div><button type="submit">Speichern</button></div>
 </form>
-{% endblock modalform %}

@@ -1,0 +1,18 @@
+<div class="row">
+  <div class="col-md-3 col-sm-6">
+  {% for department in company.departments.all() %}
+      <p><a hx-get="{{ url('department-update', department.id) }}"
+         hx-target="#edit-area" class="editable">
+         {{ department.name }}
+      </a></p>
+  {% endfor %}
+    <div>
+      <a class="btn btn-default editable"
+          hx-get="{{ url('department-add') }}" 
+          hx-target="#edit-window" 
+          role="button">
+      Neue Abteilung</a>
+    </div>
+  </div>
+  <div id="edit-area" class="col-md-9 col-sm-6"></div>
+</div>

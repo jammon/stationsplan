@@ -1,0 +1,9 @@
+<form hx-post="{{ url }}" hx-target="#setup-tab" class="form-horizontal edit-form">
+  {% csrf_token %}
+  {% include "sp_app/setup/horizontal-edit-field.html" with field=form.name %}
+  {% include "sp_app/setup/horizontal-edit-field.html" with field=form.shortname %}
+  {% if form.errors %}
+  <div>{{ employee_form.errors }}</div>
+  {% endif %}
+  <div><button type="submit">Speichern</button></div>
+</form>

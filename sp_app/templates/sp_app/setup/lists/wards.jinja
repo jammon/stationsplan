@@ -1,0 +1,32 @@
+{% macro ward_line(ward) %}
+  <p>
+    <a hx-get="{{ url('ward-update', ward.pk) }}" 
+        hx-target="#edit-area" class="editable">
+      {{ ward.name }}
+    </a>
+  </p>
+{% endmacro %}
+<div class="row">
+  <div class="col-md-2 col-sm-6">
+    <h3>Funktionen</h3>
+    {% for ward in wards if ward.active %}
+      {{ ward_line(ward) }}
+    {% else %}
+      <p>Noch keine Funktionen angelegt.</p>
+    {% endfor %}
+    <a class="btn btn-default editable"
+      hx-get="{{ url('ward-add') }}"
+      hx-target="#edit-area"
+      role="button">
+      Neue Funktion</a>
+  </div>
+  {% if inactive_wards %}
+  <div class="col-md-2 col-sm-6">
+    <h3>Inaktive Funktionen</h3>
+    {% for ward in wards if not ward.active %}
+      {{ ward_line(ward) }}
+    {% endfor %}
+  </div>
+  {% endif %}
+  <div id="edit-area" class="col-md-8 col-sm-6"></div>
+</div>

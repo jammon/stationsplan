@@ -1,17 +1,4 @@
 """stationsplan URL Configuration
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/1.8/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  url(r'^$', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  url(r'^$', Home.as_view(), name='home')
-Including another URLconf
-    1. Add an import:  from blog import urls as blog_urls
-    2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
 from django.conf import settings
 from django.urls import include, re_path, path
@@ -62,6 +49,16 @@ urlpatterns = [
         sp_ajax.differentday,
         name="different-day",
     ),
+    # Setup
+    path(
+        "setup/departments",
+        sp_ajax.setup_departments,
+        name="setup_departments",
+    ),
+    path("setup/employees", sp_ajax.setup_employees, name="setup_employees"),
+    path("setup/persons", sp_ajax.setup_persons, name="setup_persons"),
+    path("setup/wards", sp_ajax.setup_wards, name="setup_wards"),
+    path("setup/zuordnung", sp_ajax.setup_zuordnung, name="setup_zuordnung"),
     path("edit/department", sp_ajax.edit_department, name="department-add"),
     path(
         "edit/department/<int:department_id>",
@@ -73,6 +70,11 @@ urlpatterns = [
         "edit/employee/<int:employee_id>",
         sp_ajax.edit_employee,
         name="employee-update",
+    ),
+    path(
+        "edit/mapping/<int:person_id>/<int:ward_id>/<int:possible>",
+        sp_ajax.edit_mapping,
+        name="mapping-update",
     ),
     #
     #
@@ -139,7 +141,7 @@ urlpatterns = [
     path(
         "tests",
         user_passes_test(lambda user: user.is_superuser)(
-            TemplateView.as_view(template_name="sp_app/tests.html")
+            TemplateView.as_view(template_name="sp_app/tests.jinja")
         ),
         name="tests",
     ),

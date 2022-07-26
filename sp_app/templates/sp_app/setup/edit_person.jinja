@@ -1,8 +1,4 @@
-{% extends "sp_app/structure/modal_dialog.jinja" %}
-{% block modaltitle %}Mitarbeiter{% endblock modaltitle %}
-{% block modalmodifier %}{% endblock modalmodifier %}
-{% block modalform %}
-<form hx-post="{{ url }}" hx-target="#edit-window" method="post" id="form" class="edit-form">
+<form hx-post="{{ url }}" hx-target="#setup-tab" method="post" id="form" class="edit-form">
   {% csrf_token %}
   <div class="row">
     {% if form.errors %}
@@ -63,4 +59,3 @@
     </div>
   </div>
 </form>
-{% endblock modalform %}

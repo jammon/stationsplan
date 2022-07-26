@@ -1,0 +1,6 @@
+
+<td hx-swap="outerHTML"
+  hx-post="/edit/mapping/{{ person.id }}/{{ ward.id }}/{{ 0 if possible else 1 }}" >
+{% if possible %} ✅ {% else %} ❌ {% endif %}
+</td>
+

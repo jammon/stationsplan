@@ -798,23 +798,6 @@ var models = (function ($, _, Backbone) {
         do_ajax_call(url, json_data, success);
     }
 
-    function save_function(person, ward, added) {
-        var json_data = {
-            person: person.get('id'),
-            ward: ward.get('id'),
-            add: added,
-        };
-        var url = '/change_function';
-        function success(data, textStatus, jqXHR) {
-            if (data.status == 'ok') {
-                persons.get(data.person).set('functions', data.functions);
-            } else {
-                error(jqXHR, textStatus, data.reason);
-            }
-        }
-        do_ajax_call(url, json_data, success);
-    }
-
     function redirect_to_login() {
         window.location.reload();
     }
@@ -936,7 +919,6 @@ var models = (function ($, _, Backbone) {
         save_change: save_change,
         process_changes: process_changes,
         save_approval: save_approval,
-        save_function: save_function,
         set_plannings: set_plannings,
         apply_change: apply_change,
         redirect_to_login: redirect_to_login,

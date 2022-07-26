@@ -465,79 +465,6 @@ var views = (function ($, _, Backbone) {
         return options.start_id;
     };
 
-    var PersonFunctionView = Backbone.View.extend({
-        events: {
-            "click": "save_function",
-        },
-        tagName: 'td',
-        initialize: function (options) {
-            this.person = options.person;
-            this.ward = options.ward;
-            this.listenTo(this.person, "change:functions", this.render);
-        },
-        render: function () {
-            var attr = {
-                type: 'checkbox',
-                title: this.person.get('name') + ' - ' + this.ward.get('name'),
-            };
-            if (this.person.can_work_on(this.ward))
-                attr.checked = 'checked';
-            var input = $('<input>').attr(attr);
-            this.$el.empty().append(input);
-            this.input = input[0];
-            return this;
-        },
-        save_function: function (event) {
-            if (this.person.can_work_on(this.ward) === this.input.checked)
-                return;
-            models.save_function(this.person, this.ward, this.input.checked);
-            this.$('input').attr('disabled', 'disabled');
-        },
-    });
-    var FunctionsView = Backbone.View.extend({
-        // Edit the functions of every person 
-        // Include persons currently available or available within 2 months
-        el: "#functions_view",
-        render: function () {
-            var table = this.$('table');
-            var titleline = $('<tr />', { 'class': 'titleline' });
-            titleline.append($('<td />'));
-            models.wards.each(function (ward) {
-                titleline.append($('<th />', {
-                    text: ward.get('shortname'),
-                }));
-            });
-            table.append(titleline);
-            models.persons.each(function (person) {
-                let today = new Date();
-                let in2months = new Date(
-                    today.getFullYear(), today.getMonth() + 2, today.getDate());
-                if (person.get('start_date') > in2months || person.get('end_date') < today)
-                    return;
-                var p_line = $('<tr />').append($('<th />', {
-                    text: person.get('name'),
-                }));
-                models.wards.each(function (ward) {
-                    var view = new PersonFunctionView({
-                        person: person,
-                        ward: ward,
-                    });
-                    view.render();
-                    var el = view.$el;
-                    p_line.append(el);
-                });
-                table.append(p_line);
-            });
-            return this;
-        },
-        make_current: function () {
-            this.$el.addClass('current');
-            $(".current_dept").text("Stationsplan");
-            return this;
-        },
-    });
-    var functionsview;
-
     // Former Persons and Inactive Wards
     ["#former_persons", "#inactive_wards"].forEach(function (id) {
         $(id).click(function () {
@@ -593,7 +520,6 @@ var views = (function ($, _, Backbone) {
             "plan(/:period_id)(/)": "plan",    // #plan
             "dienste(/:period_id)(/)": "dienste",    // #dienste
             "tag(/:day_id)(/)": "tag",    // #Aufgaben an einem Tag
-            "zuordnung(/)": "zuordnung"
         },
         plan: function (period_id) {
             this.call_view(month_views, "#nav-stationen", period_id, 'plan');
@@ -603,15 +529,6 @@ var views = (function ($, _, Backbone) {
         },
         tag: function (period_id) {
             this.call_view(day_views, "#nav-tag", period_id, 'tag');
-        },
-        zuordnung: function () {
-            if (!models.user.is_editor) {
-                this.navigate("plan/", { trigger: true });
-                return;
-            }
-            if (!functionsview)
-                functionsview = (new FunctionsView()).render();
-            this.make_current(functionsview, "#nav-funktionen");
         },
         call_view: function (views_coll, nav_id, period_id, slug) {
             if (period_id && period_id < models.days.first().id) {
@@ -647,7 +564,6 @@ var views = (function ($, _, Backbone) {
             "click #nav-tag": "tag",
             "click #nav-funktionen": "funktionen",
             "click #nav-personen": "personen",
-            "click #nav-zuordnung": "zuordnung",
             "click #nav-admin": "admin",
         },
         stationen: function (event) {
@@ -658,9 +574,6 @@ var views = (function ($, _, Backbone) {
         },
         tag: function (event) {
             this.navigate_to("tag/" + utils.get_day_id(new Date()), event);
-        },
-        zuordnung: function (event) {
-            this.navigate_to("zuordnung/", event);
         },
         personen: function (event) {
             window.location = "/personen";

@@ -1,0 +1,41 @@
+{% macro person_line(person) %}
+<p>
+  <a hx-get="{{ url('person-update', person.pk) }}" 
+     hx-target="#edit-area" class="editable">
+    {{ person.name }}
+  </a>
+</p>
+{% endmacro %}
+<div class="row">
+  <div class="col-md-2 col-sm-6">
+    <h3>{% if former_persons %}Aktuelle {% endif %}Mitarbeiter/innen</h3>
+    {% for person in persons %}
+      {% if person.current() %} {{ person_line(person) }} {% endif %}
+    {% else %}
+    <p>Noch keine Mitarbeiter/innen angelegt.</p>
+    {% endfor %}
+    <div>
+      <a class="btn btn-default editable" role="button"
+        hx-get="{{ url('person-add') }}" 
+        hx-target="#edit-area">
+      Neue/r Mitarbeiter/in</a>
+    </div>
+    {% if persons and wards %}
+      <div><a href="/zuordnung">Personen und Funktionen zuordnen</a></div>
+    {% endif %}
+    {% if email_available and persons %}
+      <div><a href="{{ url ('ical_feeds') }}">Persönlichen Kalender erstellen</a></div>
+    {% endif %}
+  </div>
+
+  {% if former_persons %}
+  <div class="col-md-2 col-sm-6">
+    <h3>Frühere Mitarbeiter/innen</h3>
+    {% for person in persons %}
+      {% if not person.current() %} {{ person_line(person) }} {% endif %}
+    {% endfor %}
+  </div>
+  {% endif %}
+  <div id="edit-area" class="col-md-8 col-sm-6"></div>
+
+</div>
