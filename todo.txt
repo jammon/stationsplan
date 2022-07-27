@@ -37,4 +37,3 @@
 (A) not_with_this besser definieren - shadowing
 (B) after_this, active, ward_type, weight in edit_ward
 (A) Sollte Company.as_hidden in den Forms sein?
-Wenn Personen und Wards eingegeben sind, muss Link auf Zuordnung erscheinen

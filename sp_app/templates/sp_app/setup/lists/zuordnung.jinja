@@ -1,24 +1,28 @@
 <div class="row">
 <div class="col">
   <h2>Funktionen zuordnen</h2>
-  <table class="functions_view">
-  <tr class="titleline">
-    <th></th>
-  {% for ward in wards %}
-    <th>{{ ward.shortname }}</th>
-  {% endfor %}
-  </tr>
-  {% for person in persons if person.current() %}
-  <tr>
-    <th>{{ person.name }}</th>
+  {% if no_mapping %}
+    <p class="lead">Es müssen erst Mitarbeiter/innen und Funktionen angelegt werden. <br>Dann können diese einander zugeordnet werden.</p>
+  {% else %}
+    <table class="functions_view">
+    <tr class="titleline">
+      <th></th>
     {% for ward in wards %}
-      {% with possible=ward in person.functions.all() %}
-        {% include "sp_app/setup/lists/zuordnung-detail.jinja" %}
-      {% endwith %}
+      <th>{{ ward.shortname }}</th>
     {% endfor %}
-  </tr>
-  {% endfor %}
-  </table>
+    </tr>
+    {% for person in persons if person.current() %}
+    <tr>
+      <th>{{ person.name }}</th>
+      {% for ward in wards %}
+        {% with possible=ward in person.functions.all() %}
+          {% include "sp_app/setup/lists/zuordnung-detail.jinja" %}
+        {% endwith %}
+      {% endfor %}
+    </tr>
+    {% endfor %}
+    </table>
+  {% endif %}
 </div>
 </div>
 

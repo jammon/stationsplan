@@ -180,3 +180,4 @@ x 2022-07-19 Von Signup-Bestätigungsseite muss es weiter gehen
 x 2022-07-20 Neue Abteilung muss den Dialog leeren
 x 2022-07-20 Test mit playwright entwickeln
 x 2022-07-20 In Views kaputte Eingaben abfangen
+x 2022-07-27 Wenn Personen und Wards eingegeben sind, muss Link auf Zuordnung erscheinen
