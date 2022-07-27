@@ -36,4 +36,3 @@
 (B) Rechtliches für Terminnetz suchen
 (A) not_with_this besser definieren - shadowing
 (B) after_this, active, ward_type, weight in edit_ward
-(A) Sollte Company.as_hidden in den Forms sein?
