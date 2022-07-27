@@ -1,6 +1,6 @@
 <form hx-post="{{ url }}" hx-target="#setup-tab" method="post" id="form" class="edit-form">
   {% csrf_token %}
-  <div class="row">
+  <div class="row" id="form-table">
     {% if form.errors %}
     <div class="col-xs-12 bg-danger">
       {% if form.errors.items()|length == 1 %}

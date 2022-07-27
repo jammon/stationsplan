@@ -7,7 +7,7 @@
 </p>
 {% endmacro %}
 <div class="row">
-  <div class="col-md-2 col-sm-6">
+  <div class="col-md-2 col-sm-6" id="person_list">
     <h3>{% if former_persons %}Aktuelle {% endif %}Mitarbeiter/innen</h3>
     {% for person in persons %}
       {% if person.current() %} {{ person_line(person) }} {% endif %}

@@ -7,7 +7,7 @@
   </p>
 {% endmacro %}
 <div class="row">
-  <div class="col-md-2 col-sm-6">
+  <div class="col-md-2 col-sm-6" id="ward_list">
     <h3>Funktionen</h3>
     {% for ward in wards if ward.active %}
       {{ ward_line(ward) }}

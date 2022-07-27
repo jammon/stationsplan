@@ -108,26 +108,17 @@ class TestWard(PopulatedTestCase):
     def test_ward(self):
         kwargs = {"min": 1, "max": 3, "company": self.company}
         ward = Ward.objects.create(
-            name="Station A",
-            shortname="A",
-            # min=1,
-            # max=3,
-            everyday=False,
-            freedays=False,
-            on_leave=False,
-            # company=self.company,
-            position=2,
-            **kwargs,
+            name="Station X", shortname="X", position=2, **kwargs
         )
-        ward_b = Ward.objects.create(name="Station B", shortname="B", **kwargs)
-        ward_c = Ward.objects.create(name="Station C", shortname="C", **kwargs)
-        ward.after_this.add(ward_b, ward_c)
-        ward.not_with_this.add(ward_c)
+        ward_y = Ward.objects.create(name="Station Y", shortname="Y", **kwargs)
+        ward_z = Ward.objects.create(name="Station Z", shortname="Z", **kwargs)
+        ward.after_this.add(ward_y, ward_z)
+        ward.not_with_this.add(ward_z)
         self.assertEqual(
             ward.toJson(),
             {
-                "name": "Station A",
-                "shortname": "A",
+                "name": "Station X",
+                "shortname": "X",
                 "id": ward.id,
                 "min": 1,
                 "max": 3,
@@ -138,8 +129,8 @@ class TestWard(PopulatedTestCase):
                 "on_leave": False,
                 "company_id": self.company.id,
                 "position": "02",
-                "after_this": "B,C",
-                "not_with_this": "C",
+                "after_this": "Y,Z",
+                "not_with_this": "Z",
                 "ward_type": "",
                 "weight": 0,
                 "active": True,
@@ -686,22 +677,6 @@ class TestEmployeeLevel(TestCase):
                 g.permissions.add(permission)
             self.groups[name] = g
 
-    def test_get_level(self):
-        c = Company.objects.create(name="Krankenhaus", shortname="KH")
-        u = User.objects.create_user("user")
-        e = Employee.objects.create(user=u, company=c)
-        assert e.level is None
-        for permission, name in (
-            ("is_company_admin", "Company Admin"),
-            ("is_dep_lead", "Department admins"),
-            ("is_editor", "Editors"),
-        ):
-            u.groups.add(self.groups[name])
-            # account for permission caching
-            e.user = User.objects.get(id=e.user.id)
-            assert e.level == permission
-            u.groups.remove(self.groups[name])
-
     def test_set_level(self):
         e = Employee.objects.create(
             user=User.objects.create_user("user"),
@@ -725,7 +700,7 @@ class TestEmployeeLevel(TestCase):
         ):
             e.set_level(level)
             print(f"{e.level=} {level=} ")
-            # assert e.level == level
+            assert e.level == level
             assert e.get_level() == level
             assert e.user.has_perm("sp_app." + level)
             for nl in not_levels:
