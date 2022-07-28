@@ -20,7 +20,7 @@
 (C) Admin soll nur für die eigene Abteilung Personen anlegen können
 (C) In Admin kann man derzeit nur die Abteilungen der Klinik bearbeiten, für die man angemeldet ist.
 (C) pre-commit hook implementieren https://githooks.com/ https://pre-commit.com/
-(B) Person.position und Person.anonymous bzw. erternal überlappen sich in ihrer Funktion
+(B) Person.position und Person.anonymous bzw. external überlappen sich in ihrer Funktion
 (C) Unverplant-Anzeige des nächsten Tags wird nicht aktualisiert, wenn ein Dienst geplant oder gecancelt wird
 (C) Person.anonymous und Person.position=anonymous differenzieren
 (C) refactor login_required, permission_required and args from session into one function
@@ -31,8 +31,6 @@
 (B) Error reporting https://docs.djangoproject.com/en/4.0/howto/error-reporting/
 (B) Logs monitoren +Public
 (C) django-hijack installieren +Public +support
-(B) Debug-Status in der config festlegen, settings entsprechend importieren
-(A) Footer korrigieren
 (B) Rechtliches für Terminnetz suchen
 (A) not_with_this besser definieren - shadowing
-(B) after_this, active, ward_type, weight in edit_ward
+(B) ward_type, weight in edit_ward

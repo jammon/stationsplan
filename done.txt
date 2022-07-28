@@ -182,3 +182,5 @@ x 2022-07-20 Test mit playwright entwickeln
 x 2022-07-20 In Views kaputte Eingaben abfangen
 x 2022-07-27 Wenn Personen und Wards eingegeben sind, muss Link auf Zuordnung erscheinen
 x 2022-07-27 Sollte Company.as_hidden in den Forms sein?
+x 2022-07-27 Debug-Status in der config festlegen, settings entsprechend importieren
+x 2022-07-28 Footer korrigieren
