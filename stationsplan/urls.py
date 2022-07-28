@@ -146,8 +146,8 @@ urlpatterns = [
         name="tests",
     ),
     path("delete_playwright_tests", sp_views.delete_playwright_tests),
-    path2template("datenschutz", "datenschutz.html", "datenschutz"),
-    path2template("impressum", "impressum.html", "impressum"),
+    path2template("datenschutz", "datenschutz.jinja", "datenschutz"),
+    path2template("impressum", "impressum.jinja", "impressum"),
     path2template(
         "robots.txt",
         "robots.txt",
@@ -156,6 +156,7 @@ urlpatterns = [
     ),
     path("admin/", admin.site.urls),
     path("config/", config_site.urls),
+    path("_error_for_testing", sp_views.error_for_testing),
 ]
 
 if settings.DEBUG:

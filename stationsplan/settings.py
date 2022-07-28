@@ -173,6 +173,7 @@ except KeyError:
     DOMAIN = "https://stationsplan.de"
 
 SERVER_EMAIL = config["server"]["mail"]
+ADMINS = [("Admin Stationsplan", SERVER_EMAIL)]
 
 # Application definition
 INSTALLED_APPS = (

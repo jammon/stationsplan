@@ -1,9 +1,5 @@
 {% extends "base.jinja" %}
 
-{% block navigation %}
-{% include "sp_app/navigation.jinja" %}
-{% endblock navigation %}
-
 {% block content %}
 <h1>Impressum</h1>
 <h2>Diensteanbieter</h2>
@@ -22,3 +18,4 @@
 <p>Insbesondere tragen die Nutzer die Verantwortung für die eingetragenen Planungen und auch für die Kommunikation mit
     den betroffenen Personen.</p>
 {% endblock content %}
+{% block footer %} {% include "sp_app/footer.jinja" %} {% endblock footer %}

@@ -7,6 +7,7 @@
       {% include "sp_app/login-form.jinja" %}
     </div>
 
+{% if going_public %}
     <div class="col-md-8 ">
 {% macro pitch(heading, texts) -%}
         <div class="row">
@@ -46,11 +47,10 @@
     </div>
     <div class="col-md-4">
       <h2>Noch keinen Plan?</h2>
-      <p class="lead">Sie können Stationsplan.de für Ihre Klinik 3 Monate lang kostenlos ausprobieren. Wenn das für Sie funktioniert - wunderbar. Wenn nicht, dann entstehen für Sie keine Verpflichtungen. </p>
+      <p class="lead">Sie können Stationsplan.de für Ihre Klinik 3 Monate lang kostenlos ausprobieren. Wenn das für Sie gut funktioniert - wunderbar. Wenn nicht, dann entstehen für Sie keine Verpflichtungen. </p>
       <p><a role="button" class="btn btn-primary btn-lg" href="/offer" id="offer-button">Ausprobieren</a></p>
     </div>
+{% endif %}
   </div>
 {% endblock content %}
-{% block footer %}
-  {% include "sp_app/footer.jinja" %}
-{% endblock footer %}
+{% block footer %} {% include "sp_app/footer.jinja" %} {% endblock footer %}

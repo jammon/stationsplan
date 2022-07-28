@@ -164,3 +164,7 @@ def delete_playwright_tests(request):
     return render(
         request, "sp_app/delete_playwright_tests.jinja", {"no_deleted": n_del}
     )
+
+
+def error_for_testing(request):
+    assert False

@@ -34,3 +34,4 @@
 (B) Rechtliches für Terminnetz suchen
 (A) not_with_this besser definieren - shadowing
 (B) ward_type, weight in edit_ward
+(A) Navigation für nicht angemeldete Benutzer

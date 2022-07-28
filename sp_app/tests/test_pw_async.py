@@ -155,9 +155,6 @@ async def run(playwright: Playwright) -> None:
 
 
 @pytest.mark.asyncio
-async def test_async() -> None:
+async def xtest_async() -> None:
     async with async_playwright() as playwright:
         await run(playwright)
-
-
-# asyncio.run(main())

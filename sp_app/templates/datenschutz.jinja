@@ -1,8 +1,4 @@
-{% extends "base.html" %}
-
-{% block navigation %}
-{% include "sp_app/navigation.jinja" %}
-{% endblock navigation %}
+{% extends "base.jinja" %}
 
 {% block content %}
 <h1>Datenschutzerklärung</h1>
@@ -300,3 +296,4 @@
         rel="noopener noreferrer nofollow">Erstellt mit kostenlosem Datenschutz-Generator.de von Dr. Thomas Schwenke</a>
 </p>
 {% endblock content %}
+{% block footer %} {% include "sp_app/footer.jinja" %} {% endblock footer %}
