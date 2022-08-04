@@ -1,5 +1,4 @@
-{% extends "base.html" %}
-{% load static %}
+{% extends "base.jinja" %}
 
 {% block navigation %}
 {% include "sp_app/navigation.jinja" %}
@@ -10,12 +9,12 @@
   <div class="col col-xs-12">
     <table class="table auto-width">
       {% for person in persons %}
-      {% include "sp_app/ical/person_feed.html" %}
+      {% include "sp_app/ical/person_feed.jinja" %}
       {% endfor %}
     </table>
   </div>
 </div>
 {% endblock %}
 {% block extrascripts %}
-<script src="{% static 'vendor/htmx.min.js' %}"></script>
+<script src="{{ static('vendor/htmx.min.js') }}"></script>
 {% endblock extrascripts %}

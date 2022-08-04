@@ -12,9 +12,11 @@ from sp_app.models import (
     FAR_FUTURE,
 )
 from sp_app.tests.utils_for_tests import (
+    PopulatedTestCase,
     ViewsWithPermissionTestCase,
     LoggedInTestCase,
 )
+from sp_app import ajax
 
 
 class TestChangeApproval(ViewsWithPermissionTestCase):
@@ -408,3 +410,83 @@ class TestDifferentday(LoggedInTestCase):
             "status": "error",
             "message": "There is no different planning for this day",
         }
+
+
+class TestDepartment2(PopulatedTestCase):
+    class Request:
+        def __init__(self, session):
+            self.session = session
+
+    def setUp(self):
+        super().setUp()
+        self.dep2 = Department.objects.create(
+            name="Department 2", shortname="Dep2", company=self.company
+        )
+
+
+class TestPersonsForRequest_Admin(TestDepartment2):
+    def setUp(self):
+        super().setUp()
+        self.person_2a = Person.objects.create(
+            name="Person 2A", shortname="2A", company=self.company
+        )
+        self.person_2a.departments.add(self.dep2)
+
+    def test_admin(self):
+        request = self.Request(
+            {
+                "company_id": self.company.id,
+                "department_ids": [self.department.id],
+                "is_company_admin": True,
+            }
+        )
+        persons = list(ajax.persons_for_request(request))
+        for p in (self.person_a, self.person_b, self.person_2a):
+            assert p in persons
+
+    def test_not_admin(self):
+        request = self.Request(
+            {
+                "company_id": self.company.id,
+                "department_ids": [self.department.id],
+                "is_company_admin": False,
+            }
+        )
+        persons = list(ajax.persons_for_request(request))
+        for p in (self.person_a, self.person_b):
+            assert p in persons
+        assert self.person_2a not in persons
+
+
+class TestWardsForRequest(TestDepartment2):
+    def setUp(self):
+        super().setUp()
+        self.ward_2a = Ward.objects.create(
+            name="Ward 2A", shortname="2A", max=3, min=2, company=self.company
+        )
+        self.ward_2a.departments.add(self.dep2)
+
+    def test_admin(self):
+        request = self.Request(
+            {
+                "company_id": self.company.id,
+                "department_ids": [self.department.id],
+                "is_company_admin": True,
+            }
+        )
+        wards = list(ajax.wards_for_request(request))
+        for w in (self.ward_a, self.ward_b, self.ward_2a):
+            assert w in wards
+
+    def test_not_admin(self):
+        request = self.Request(
+            {
+                "company_id": self.company.id,
+                "department_ids": [self.department.id],
+                "is_company_admin": False,
+            }
+        )
+        wards = list(ajax.wards_for_request(request))
+        for w in (self.ward_a, self.ward_b):
+            assert w in wards
+        assert self.ward_2a not in wards

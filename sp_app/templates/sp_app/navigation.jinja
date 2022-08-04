@@ -25,9 +25,7 @@
               <li><a href="/password_change">Passwort ändern</a></li>
             {% endif %}
             {% if request.session.is_dep_lead %}
-              <div class="dropdown-divider"></div>
               <li id="nav-setup"><a href="/setup">Einstellungen</a></li>
-              <li id="nav-zuordnung"><a href="/zuordnung">Zuordnung Personen/Funktionen</a></li>
             {% endif %}
             {% if request.user.is_staff %}
               <li id="nav-admin"><a href="/admin">Admin-Seite</a></li>

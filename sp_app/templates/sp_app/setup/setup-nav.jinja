@@ -8,7 +8,9 @@
   </li>
 {%- endwith %}
 {%- endmacro %}
+{% if request.session.is_company_admin %}
   {{ tab("departments", "Abteilungen") }}
+{% endif %}
   {{ tab("employees", "Bearbeiter/innen") }}
   {{ tab("persons", "Mitarbeiter/innen") }}
   {{ tab("wards", "Funktionen") }}

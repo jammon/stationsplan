@@ -8,7 +8,15 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 
 from sp_app import forms, logic, utils
-from .models import Person, Ward, Company, Department, Employee, StatusEntry
+from .models import (
+    Person,
+    Ward,
+    Company,
+    Department,
+    Employee,
+    StatusEntry,
+    EMPLOYEE_LEVEL,
+)
 
 
 def home(request):
@@ -57,8 +65,6 @@ def setup(request):
         Company.objects.select_related("region")
         .prefetch_related("departments", "employees__user")
         .get(id=request.session["company_id"])
-        if is_company_admin
-        else None
     )
     if is_company_admin:
         filter = {"company_id": request.session["company_id"]}
@@ -91,7 +97,7 @@ def ical_feeds(request):
     ).order_by("position", "name")
     return render(
         request,
-        "sp_app/ical/ical_feeds.html",
+        "sp_app/ical/ical_feeds.jinja",
         {"persons": [p for p in persons if p.current()]},
     )
 
@@ -168,3 +174,45 @@ def delete_playwright_tests(request):
 
 def error_for_testing(request):
     assert False
+
+
+def make_test_data(request):
+    if settings.SERVER_TYPE == "production":
+        return HttpResponse("No Testdata in production")
+    if Company.objects.filter(name="_pw_test_company2").exists():
+        return HttpResponse("Testdata already exist")
+    company = Company.objects.create(
+        name="_pw_test_company2", shortname="_pwt_2", region_id=1
+    )
+    innere = Department.objects.create(
+        name="Innere", shortname="Inn", company=company
+    )
+    chirurgie = Department.objects.create(
+        name="Chirurgie", shortname="Chi", company=company
+    )
+    wards = {}
+
+    for sn in ("A", "B"):
+        wards[sn] = Ward.objects.create(
+            name=f"Ward {sn}", shortname=sn, max=3, min=2, company=company
+        )
+        wards[sn].departments.add(innere)
+    for sn in ("A", "B"):
+        person = Person.objects.create(
+            name=f"Person {sn}", shortname=sn, company=company
+        )
+        person.departments.add(innere)
+        person.functions.add(*wards.values())
+    chirurg = Person.objects.create(
+        name=f"Chirurg", shortname="Chir", company=company
+    )
+    chirurg.departments.add(chirurgie)
+
+    for level in EMPLOYEE_LEVEL.keys():
+        user = User.objects.create(username=f"_pwt2_{level}")
+        user.set_password("123456")
+        user.save()
+        employee = Employee.objects.create(user=user, company=company)
+        employee.set_level(level)
+        employee.departments.add(innere)
+    return HttpResponse("Testdata created")

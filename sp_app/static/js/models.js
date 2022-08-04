@@ -872,7 +872,7 @@ var models = (function ($, _, Backbone) {
     function get_updates() {
         $.ajax({
             type: "GET",
-            url: '/updates/' + _last_change_pk,
+            url: '/updates/' + (_last_change_pk || 0),
             cache: false,
             dataType: "json",
             contentType: "application/json; charset=utf-8",
