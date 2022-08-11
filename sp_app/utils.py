@@ -33,3 +33,8 @@ def post_with_company(request):
         post["company"] = request.session["company_id"]
         return post
     return None
+
+
+def time_since(dt):
+    """Return the timedelta between now and dt"""
+    return datetime.now(TZ_BERLIN) - dt

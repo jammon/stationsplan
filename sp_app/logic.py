@@ -26,7 +26,7 @@ from .models import (
     Department,
     process_change,
 )
-from .utils import get_first_of_month, TZ_BERLIN
+from .utils import get_first_of_month, time_since
 
 
 def get_plan_data(
@@ -112,8 +112,9 @@ def get_plan_data(
     )
     if last_change is not None:
         data["last_change_pk"] = last_change["pk"]
-        time_diff = datetime.now(TZ_BERLIN) - last_change["change_time"]
-        data["last_change_time"] = int(time_diff.total_seconds())
+        data["last_change_time"] = int(
+            time_since(last_change["change_time"]).total_seconds()
+        )
 
     return {
         "data": json.dumps(data),
@@ -247,7 +248,7 @@ def get_last_change_response(company_id, last_change_pk):
             return JsonResponse({}, status=HTTPStatus.NOT_MODIFIED)
         cls = cls[1:]
     last_cl = cls[-1]
-    time_diff = datetime.now(TZ_BERLIN) - last_cl.change_time
+    time_diff = time_since(last_cl.change_time)
     if _lc_pk is None:
         # Set cache
         set_cached_last_change_pk(last_cl.pk, company_id)
