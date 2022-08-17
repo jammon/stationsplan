@@ -1,13 +1,10 @@
-(C) Admins sollen nur User für das eigene Department anlegen können +Public
 (C) Auch Ärzte von Fremdabteilungen sollen angezeigt werden, wenn sie in den angezeigten Funktionen Dienst tun. Sollen dann nicht bearbeitbar sein. +Public
 (D) Kommentare oder Nachrichten unabhängig von Änderungen, die beim nächsten Aufruf angezeigt werden
 (D) Dienstwünsche eingeben, für jede Person müsste ein User erstellt werden (z.B. 'amm-bot')
 (C) Wenn eine Buchung nicht möglich ist, muss die Seite neu dargestellt werden +FIX
-(B) Alle Dienste einer Person des aktuellen Monats sollen angezeigt werden
 (C) Urlaube in der Planungsansicht der Dienste anzeigen
 (C) Doppelclick auf voriger oder nächster Monat soll nur einmal wirken
-(C) Assets komprimieren
-(C) Flags für Betatester
+(D) Assets komprimieren
 (C) Aktion Aktualisieren ins Menu
 (C) Aktualisierung soll auch die Freigabe von Planungen vermitteln
 (C) meta description in base.html verbessern
@@ -18,7 +15,6 @@
 (C) Write test for caching in production
 (C) Write test for http.condition in production
 (C) Admin soll nur für die eigene Abteilung Personen anlegen können
-(C) In Admin kann man derzeit nur die Abteilungen der Klinik bearbeiten, für die man angemeldet ist.
 (C) pre-commit hook implementieren https://githooks.com/ https://pre-commit.com/
 (B) Person.position und Person.anonymous bzw. external überlappen sich in ihrer Funktion
 (C) Unverplant-Anzeige des nächsten Tags wird nicht aktualisiert, wenn ein Dienst geplant oder gecancelt wird
@@ -26,12 +22,14 @@
 (C) refactor login_required, permission_required and args from session into one function
 (C) SQL-queries in setup
 (C) Log user errors
-(B) Test zoneinfo database on server
 (B) Use Conditional View Processing https://docs.djangoproject.com/en/4.0/topics/conditional-view-processing/
 (B) Error reporting https://docs.djangoproject.com/en/4.0/howto/error-reporting/
 (B) Logs monitoren +Public
 (C) django-hijack installieren +Public +support
 (B) Rechtliches für Terminnetz suchen
-(A) not_with_this besser definieren - shadowing
+(B) not_with_this besser definieren - shadowing
 (B) ward_type, weight in edit_ward
-(A) Navigation für nicht angemeldete Benutzer
+(B) Navigation für nicht angemeldete Benutzer
+(A) Wer nur für eine Abteilung zuständig ist, soll auch nur für die Personen oder Wards anlegen können
+(A) Löschen von Bearbeitern ermöglichen, nicht für den angemeldeten Bearbeiter
+var durch let ersetzen

@@ -40,6 +40,44 @@ var views = (function ($, _, Backbone) {
             this.$el.toggleClass('today', this.collection.day.get('is_today'));
         },
     });
+    // PersonView is used in StaffingView
+    let marked_person;
+    var PersonView = Backbone.View.extend({
+
+        events: {
+            "click": "mark",
+        },
+        initialize: function (options) {
+            this.person_id = options.person.get("id");
+            this.text = options.person.get(
+                options.display_long_name ? "name" : "shortname");
+            this.title = options.title;
+        },
+        mark: function (e) {
+            // for editor/dep_lead a simple click means "edit"
+            if (!e.shiftKey &&
+                (models.user.is_editor || models.user.is_dep_lead)) {
+                return;
+            }
+            // Prevent unwanted selection of text
+            if (e.shiftKey) {
+                document.getSelection().setBaseAndExtent(
+                    this.el, 0, this.el, 0);
+            }
+            let is_marked = this.$el.hasClass("marked");
+            $(".staff.marked").removeClass("marked");
+            if (!is_marked)
+                $(".staff.person-" + this.person_id).addClass("marked");
+            marked_person = this.person_id;
+        },
+        render: function () {
+            this.$el.text(this.text);
+            if (marked_person == this.person_id) {
+                this.$el.addClass("marked");
+            }
+            return this;
+        },
+    });
     // StaffingView is used in PeriodView and OnCallView
     var StaffingView = StaffingDisplayView.extend({
         events: {
@@ -48,18 +86,22 @@ var views = (function ($, _, Backbone) {
         },
         render_staffing: function (el, staffing) {
             staffing.displayed.each(function (person) {
-                var name = $('<div/>', {
-                    text: person.get(this.display_long_name ? 'name' : 'shortname'),
-                    'class': 'staff',
+                var view = new PersonView({
+                    person: person,
+                    display_long_name: this.display_long_name,
                     title: staffing.day.persons_duties[person.id].displayed.pluck('name').join(', '),
-                });
-                el.append(name);
+                    className: "staff person-" + person.get("id"),
+                }
+                );
+                el.append(view.render().el);
             }, this);
         },
         extra_rendering: function (el, staffing) {
 
         },
-        addstaff: function () {
+        addstaff: function (e) {
+            // Shift-click means "mark person"
+            if (e.shiftKey) return;
             if (models.user.is_editor && !this.collection.no_staffing)
                 changeviews.staff.show(this.collection);
         },

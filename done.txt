@@ -185,3 +185,5 @@ x 2022-07-27 Sollte Company.as_hidden in den Forms sein?
 x 2022-07-27 Debug-Status in der config festlegen, settings entsprechend importieren
 x 2022-07-28 Footer korrigieren
 x 2022-08-04 Wenn noch keine Personen oder Funktionen einegegeben wurden passende Fehlermeldung für unterprivilegierte User
+x 2022-08-10 In Admin kann man derzeit nur die Abteilungen der Klinik bearbeiten, für die man angemeldet ist.
+x 2022-08-12 Alle Dienste einer Person des aktuellen Monats sollen angezeigt werden

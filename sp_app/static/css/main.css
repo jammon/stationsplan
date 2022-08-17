@@ -78,6 +78,10 @@ td.free-day {
   width: 40px;
 }
 
+.marked {
+  font-weight: bold;
+}
+
 #changestafftable {
   margin-bottom: 2ex;
 }
