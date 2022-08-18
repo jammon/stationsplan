@@ -1,24 +1,21 @@
-var main = (function ($, _, Backbone) {
+let main = (function ($, _, Backbone) {
     "use strict";
 
     function setupCsrfProtection() {
         // Implement the js part of csrf protection
         function getCookie(name) {
-            var cookieValue = null;
             if (document.cookie && document.cookie !== '') {
-                var cookies = document.cookie.split(';');
-                for (var i = 0; i < cookies.length; i++) {
-                    var cookie = jQuery.trim(cookies[i]);
+                for (const raw_cookie of document.cookie.split(';')) {
+                    const cookie = raw_cookie.trim();
                     // Does this cookie string begin with the name we want?
-                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
+                    if (cookie.startsWith(name + '=')) {
+                        return decodeURIComponent(cookie.substring(name.length + 1));
                     }
                 }
             }
-            return cookieValue;
+            return null;
         }
-        var csrftoken = getCookie('csrftoken');
+        const csrftoken = getCookie('csrftoken');
         function csrfSafeMethod(method) {
             // these HTTP methods do not require CSRF protection
             return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));

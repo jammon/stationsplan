@@ -1,11 +1,11 @@
 // jshint esversion: 6
-var utils = (function ($, _, Backbone) {
+let utils = (function ($, _, Backbone) {
     "use strict";
 
-    var _holidays = [];
-    var _free_dates = {};
-    var _calculated_years = {};
-    var _easters = {
+    let _holidays = [];
+    let _free_dates = {};
+    let _calculated_years = {};
+    const _easters = {
         2014: new Date(2014, 3, 20),
         2015: new Date(2015, 3, 5),
         2016: new Date(2016, 2, 27),
@@ -27,7 +27,7 @@ var utils = (function ($, _, Backbone) {
     function is_free(date) {
         // date is a Javascript Date
         // returns a boolean or the name of the holiday
-        var weekday = date.getDay();
+        const weekday = date.getDay();
         if (weekday === 6 || weekday === 0) {
             return true;
         }
@@ -59,15 +59,15 @@ var utils = (function ($, _, Backbone) {
         _free_dates = {};
         _calculated_years = {};
     }
-    var month_names = ["Januar", "Februar", "März", "April", "Mai", "Juni",
+    const month_names = ["Januar", "Februar", "März", "April", "Mai", "Juni",
         "Juli", "August", "September", "Oktober", "November", "Dezember"];
-    var day_names = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
-    var day_long_names = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch',
+    const day_names = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+    const day_long_names = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch',
         'Donnerstag', 'Freitag', 'Samstag'];
 
 
     function get_day_id(date_or_year, month, day) {
-        var date = (month === void 0) ?
+        const date = (month === void 0) ?
             date_or_year :
             new Date(date_or_year, month, day);
         return "" + (date.getFullYear() * 10000 +
@@ -81,14 +81,14 @@ var utils = (function ($, _, Backbone) {
             parseInt(day_id.slice(6, 8)));
     }
     function get_previous_day_id(day_id) {
-        var date = new Date(
+        const date = new Date(
             parseInt(day_id.slice(0, 4)),
             parseInt(day_id.slice(4, 6)) - 1,
             parseInt(day_id.slice(6, 8)) - 1);
         return get_day_id(date);
     }
     function get_next_day_id(day_id) {
-        var date = new Date(
+        const date = new Date(
             parseInt(day_id.slice(0, 4)),
             parseInt(day_id.slice(4, 6)) - 1,
             parseInt(day_id.slice(6, 8)) + 1);
@@ -114,7 +114,7 @@ var utils = (function ($, _, Backbone) {
             { month: 11, year: year - 1 };
     }
     function get_previous_month_id(month_id) {
-        var m = get_year_month(month_id);
+        let m = get_year_month(month_id);
         m = get_previous_month(m.year, m.month);
         return get_month_id(m.year, m.month);
     }
@@ -125,7 +125,7 @@ var utils = (function ($, _, Backbone) {
             { month: 0, year: year + 1 };
     }
     function get_next_month_id(month_id) {
-        var m = get_year_month(month_id);
+        let m = get_year_month(month_id);
         m = get_next_month(m.year, m.month);
         return get_month_id(m.year, m.month);
     }
@@ -146,9 +146,9 @@ var utils = (function ($, _, Backbone) {
     }
 
     function get_month_length(year, month) {
-        var lengths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-        var result = lengths[month % 12];
-        var real_year = year + Math.floor(month / 12);
+        const lengths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        const result = lengths[month % 12];
+        const real_year = year + Math.floor(month / 12);
         if (result == 28 && real_year % 4 === 0) return 29;
         else return result;
     }

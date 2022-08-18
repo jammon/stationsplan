@@ -1,4 +1,4 @@
-var persons_init = [
+const persons_init = [
   {
     name: 'Anton', id: '1', shortname: 'A',
     functions: ['A', 'B', 'N', 'O'], departments: [1]
@@ -24,7 +24,7 @@ var persons_init = [
     functions: ['A',], departments: [1], external: true
   }
 ];
-var wards_init = [
+const wards_init = [
   { name: 'Ward A', id: '1', shortname: 'A', min: 1, max: 2 },
   { name: 'Ward B', id: '2', shortname: 'B', min: 2, max: 2 },
   {
@@ -46,7 +46,7 @@ var wards_init = [
     after_this: 'S,A'
   },
 ];
-var different_days = [
+const different_days = [
   ['V', '20150808', '-'],
   ['V', '20150809', '+'],
 ];

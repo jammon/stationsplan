@@ -1,5 +1,5 @@
 // jshint esversion: 6
-var models = (function ($, _, Backbone) {
+let models = (function ($, _, Backbone) {
     "use strict";
 
     // This module contains
@@ -8,26 +8,26 @@ var models = (function ($, _, Backbone) {
     // - some data determining the working status 
     //   (like `user`, `errors` etc.)
 
-    var default_start_for_person = [2015, 0, 1];
-    var default_end_for_person = [2099, 11, 31];
-    var user = {
+    const default_start_for_person = [2015, 0, 1];
+    const default_end_for_person = [2099, 11, 31];
+    let user = {
         is_editor: false,
         is_dep_lead: false,
     };
 
-    var Current_Date = Backbone.Model.extend({
+    let Current_Date = Backbone.Model.extend({
         initialize: function () {
             this.set({ date_id: utils.get_day_id(new Date()) });
         },
         update: function () {
-            var today_id = utils.get_day_id(new Date());
+            const today_id = utils.get_day_id(new Date());
             this.set({ date_id: today_id });
         },
         is_today: function (date_id) {
             return date_id == this.get('date_id');
         },
     });
-    var current_date = new Current_Date();
+    let current_date = new Current_Date();
 
     // A person has a
     //     - name
@@ -39,7 +39,7 @@ var models = (function ($, _, Backbone) {
     //     - departments = Array of Department-Ids the person belongs to
     //     - position = position in the listing
     //     - anonymous = true if it represents a different department
-    var Person = Backbone.Model.extend({
+    let Person = Backbone.Model.extend({
         idAttribute: "shortname",
         defaults: {
             'start_date': [2015, 0, 1],
@@ -48,9 +48,9 @@ var models = (function ($, _, Backbone) {
             'anonymous': false,
         },
         initialize: function () {
-            var start = this.get('start_date');
+            const start = this.get('start_date');
             this.set('start_date', new Date(start[0], start[1], start[2]));
-            var end = this.get('end_date');
+            const end = this.get('end_date');
             this.set('end_date', new Date(end[0], end[1], end[2]));
             this.set(
                 'current_department',
@@ -58,17 +58,17 @@ var models = (function ($, _, Backbone) {
             );
         },
         is_available: function (date) {
-            var begin = this.get('start_date');
-            var end = this.get('end_date');
+            const begin = this.get('start_date');
+            const end = this.get('end_date');
             return ((!begin || begin <= date) && (!end || end >= date));
         },
         can_work_on: function (ward) {
-            var functions = this.get('functions');
+            const functions = this.get('functions');
             return _.indexOf(functions, ward.id) > -1;
         }
     });
 
-    var Persons = Backbone.Collection.extend({
+    let Persons = Backbone.Collection.extend({
         model: Person,
         comparator: function (person) {
             return person.get('position') + person.get('name');
@@ -80,7 +80,7 @@ var models = (function ($, _, Backbone) {
             });
         },
     });
-    var persons = new Persons();
+    let persons = new Persons();
 
     // A ward can be a usual ward, a task or a shift.
     // It has a 
@@ -99,9 +99,9 @@ var models = (function ($, _, Backbone) {
     //     - not_with_this = an Array of wards, that can not be planned on the same day
     //     - ward_type = none or '' or type of ward (for handling of call shifts)
     //     - active = Boolean; if false, this ward should not be shown
-    var Ward = Backbone.Model.extend({
+    let Ward = Backbone.Model.extend({
         initialize: function () {
-            var approved = this.get('approved');
+            const approved = this.get('approved');
             if (approved)
                 this.set('approved', new Date(approved[0], approved[1], approved[2]));
             if (this.get('after_this')) {
@@ -118,7 +118,7 @@ var models = (function ($, _, Backbone) {
             return this.get('ward_type') || this.get('name');
         },
         is_approved: function (date) {
-            var approved = this.get('approved');
+            const approved = this.get('approved');
             return !approved || (date <= approved);
         },
         set_different_day: function (date_id, key) {
@@ -136,7 +136,7 @@ var models = (function ($, _, Backbone) {
     });
 
 
-    var WARD_COLLECTION = {
+    let WARD_COLLECTION = {
         model: Ward,
         // Sorting of wards:
         // At first the normal wards, then the callshifts, then 'on leave'
@@ -147,15 +147,15 @@ var models = (function ($, _, Backbone) {
                 ward.get('name');
         },
     };
-    var Wards = Backbone.Collection.extend(WARD_COLLECTION);
-    var wards = new Wards();
+    let Wards = Backbone.Collection.extend(WARD_COLLECTION);
+    let wards = new Wards();
     // nightshifts - wards with an limited list of "after_this"
-    var nightshifts = new Backbone.Collection(null, WARD_COLLECTION);
+    let nightshifts = new Backbone.Collection(null, WARD_COLLECTION);
     // shadowing - wards with an limited list of "not_with_this"
-    var shadowing = new Backbone.Collection(null, WARD_COLLECTION);
-    var on_leave = new Backbone.Collection(null, WARD_COLLECTION);
-    var on_call = new Backbone.Collection(null, WARD_COLLECTION);
-    var on_call_types = [];  // List of the ward_types of on-call shifts
+    let shadowing = new Backbone.Collection(null, WARD_COLLECTION);
+    let on_leave = new Backbone.Collection(null, WARD_COLLECTION);
+    let on_call = new Backbone.Collection(null, WARD_COLLECTION);
+    let on_call_types = [];  // List of the ward_types of on-call shifts
 
     function initialize_wards(wards_init, different_days) {
         wards.reset(wards_init);
@@ -170,7 +170,7 @@ var models = (function ($, _, Backbone) {
             return ward.get('callshift');
         }));
         on_call.each(function (ward) {
-            var ward_type = ward.get_ward_type();
+            const ward_type = ward.get_ward_type();
             if (!_.contains(on_call_types, ward_type))
                 on_call_types.push(ward_type);
         });
@@ -184,7 +184,7 @@ var models = (function ($, _, Backbone) {
     // It has
     //     - ward
     //     - day
-    var Staffing = Backbone.Collection.extend({
+    let Staffing = Backbone.Collection.extend({
         model: Person,
         comparator: 'name',
         initialize: function (models, options) {
@@ -288,14 +288,14 @@ var models = (function ($, _, Backbone) {
             return this.displayed.length < this.ward.get('max');
         },
         apply_change: function (change) {
-            var person = persons.get(change.person);
+            let person = persons.get(change.person);
             if (person) {
                 this[change.action](person, _.pick(change, 'continued', 'until'));
                 if (change.action === "add") {
                     this.added_today.push(person.id);
                 } else {
                     // remove person.id from this.added_today
-                    var i = this.added_today.indexOf(person.id);
+                    let i = this.added_today.indexOf(person.id);
                     if (i != -1) {
                         this.added_today.splice(i, 1);
                     }
@@ -308,18 +308,18 @@ var models = (function ($, _, Backbone) {
         if (ward.get('everyday') || ward.get('on_leave')) {
             return true;
         }
-        var different_day = ward.different_days[day.id];
+        let different_day = ward.different_days[day.id];
         if (different_day) return (different_day == '+');
-        var weekdays = ward.get('weekdays');
+        let weekdays = ward.get('weekdays');
         if (weekdays)
             return weekdays.indexOf(day.get('date').getDay()) > -1;
-        var day_is_free = !!day.get('is_free'); // must be boolean
-        var for_free_days = (ward.get('freedays') || false);
+        let day_is_free = !!day.get('is_free'); // must be boolean
+        let for_free_days = (ward.get('freedays') || false);
         return day_is_free == for_free_days;
     }
 
     // Duties are the duties of one person on one day
-    var Duties = Backbone.Collection.extend({
+    let Duties = Backbone.Collection.extend({
         model: Ward,
         initialize: function (models, options) {
             this.person = options.person;
@@ -346,10 +346,10 @@ var models = (function ($, _, Backbone) {
     //     All changes should be done on the staffings and are reflected in the duties.
     // this.persons_duties:  
     //     an object with duties for each person
-    var Day = Backbone.Model.extend({
+    let Day = Backbone.Model.extend({
 
         initialize: function () {
-            var yesterday = this.get('yesterday');
+            let yesterday = this.get('yesterday');
             this.id = utils.get_day_id(this.get('date'));
             this.set({ 'id': this.id });
             let _is_free = utils.is_free(this.get('date'));
@@ -386,10 +386,10 @@ var models = (function ($, _, Backbone) {
             this.set({ is_today: current_date.is_today(this.id) });
         },
         continue_yesterdays_staffings: function () {
-            var date = this.get('date');
+            let date = this.get('date');
             wards.each(function (ward) {
-                var staffing = this.get_staffing(ward);
-                var yesterdays_staffing = this.yesterdays_staffing(ward);
+                let staffing = this.get_staffing(ward);
+                let yesterdays_staffing = this.yesterdays_staffing(ward);
                 if (yesterdays_staffing) {
                     yesterdays_staffing.on({
                         'add': staffing.added_yesterday,
@@ -407,10 +407,10 @@ var models = (function ($, _, Backbone) {
         get_available: function (ward) {
             // Get all the persons, that can be planned for this ward
             // and are not planned already
-            var unavailable = {};
-            var available;
-            var yesterday = this.get('yesterday');
-            var date = this.get('date');
+            let unavailable = {};
+            let available;
+            const yesterday = this.get('yesterday');
+            const date = this.get('date');
 
             if (ward.get('on_leave')) {  // everybody can be on leave
                 // if they still work here
@@ -457,7 +457,7 @@ var models = (function ($, _, Backbone) {
             return this.ward_staffings[ward.id];
         },
         yesterdays_staffing: function (ward) {
-            var yesterday = this.get('yesterday');
+            const yesterday = this.get('yesterday');
             return yesterday && yesterday.get_staffing(ward);
         },
 
@@ -469,7 +469,7 @@ var models = (function ($, _, Backbone) {
             this.person_changed('remove', person, staffing, options);
         },
         person_changed: function (action, person, staffing, options) {
-            var ward = staffing.ward;
+            let ward = staffing.ward;
             this.persons_duties[person.id][action](ward);
             this.trigger('person-changed', action, person, staffing);
             if (ward.get('on_leave')) {
@@ -502,8 +502,8 @@ var models = (function ($, _, Backbone) {
             }
         },
         make_next_day: function () {
-            var date = this.get('date');
-            var next_day = days.add({
+            const date = this.get('date');
+            let next_day = days.add({
                 date: new Date(date.getFullYear(), date.getMonth(),
                     date.getDate() + 1),
                 yesterday: this
@@ -582,10 +582,10 @@ var models = (function ($, _, Backbone) {
         },
     });
 
-    var plannings;  // Array of plannings to be applied
-    var current_plannings = [];
+    let plannings;  // Array of plannings to be applied
+    let current_plannings = [];
 
-    var Days = Backbone.Collection.extend({
+    let Days = Backbone.Collection.extend({
         model: Day,
         get_day: function (date, offset) {
             // Days.get_day(date) - get the day on this date
@@ -624,34 +624,34 @@ var models = (function ($, _, Backbone) {
         },
     });
 
-    var days = new Days();
+    let days = new Days();
 
     function start_day_chain(year, month) {
         days.get_day(new Date(year, month, 1));
     }
 
     // the 'Day's of one period.
-    var PeriodDays = Backbone.Collection.extend({
+    let PeriodDays = Backbone.Collection.extend({
         initialize: function (models, options) {
             this.first_day = options.first_day;
             this.nr_days = options.nr_days;
-            var year = this.first_day.getFullYear();
-            var month = this.first_day.getMonth();
-            var day = this.first_day.getDate();
-            for (var i = 0; i < this.nr_days; i++) {
+            const year = this.first_day.getFullYear();
+            const month = this.first_day.getMonth();
+            const day = this.first_day.getDate();
+            for (let i = 0; i < this.nr_days; i++) {
                 this.add(days.get_day(new Date(year, month, day + i)));
             }
             if (user.is_editor && options.needs_calltallies)
                 this.build_calltallies();
         },
         build_calltallies: function () {
-            var calltallies = this.calltallies = new CallTallies();
+            let calltallies = this.calltallies = new CallTallies();
             _.each(this.current_persons(), function (person) {
                 calltallies.add({ id: person.id, name: person.get('name') });
             });
             this.each(function (day) {
                 on_call.each(function (ward) {
-                    var displayed = day.get_staffing(ward).displayed;
+                    let displayed = day.get_staffing(ward).displayed;
                     displayed.each(function (person) {
                         calltallies.on_call_added(person, displayed);
                     });
@@ -664,8 +664,8 @@ var models = (function ($, _, Backbone) {
         },
         current_persons: function () {
             if (!this._current_persons) {
-                var last = this.last().get('date');
-                var that = this;
+                const last = this.last().get('date');
+                const that = this;
                 this._current_persons = persons.filter(function (person) {
                     return (person.get('end_date') >= that.first_day &&
                         person.get('start_date') <= last);
@@ -677,10 +677,10 @@ var models = (function ($, _, Backbone) {
 
     // the 'Day's of one month.
     // is used as event dispatcher for the CallTallies
-    var MonthDays = PeriodDays.extend({
+    let MonthDays = PeriodDays.extend({
         initialize: function (models, options) {
             // month is 0..11 like in javascript
-            var year = options.year, month = options.month;
+            const year = options.year, month = options.month;
             PeriodDays.prototype.initialize.call(this, [], {
                 first_day: new Date(year, month, 1),
                 nr_days: utils.get_month_length(year, month),
@@ -689,8 +689,8 @@ var models = (function ($, _, Backbone) {
         },
         current_persons: function () {
             if (!this._current_persons) {
-                var first = this.first().get('date');
-                var last = this.last().get('date');
+                const first = this.first().get('date');
+                const last = this.last().get('date');
                 this._current_persons = persons.filter(function (person) {
                     return (person.get('end_date') >= first &&
                         person.get('start_date') <= last);
@@ -720,14 +720,14 @@ var models = (function ($, _, Backbone) {
 
     // CallTally counts the number of call-shifts for one person
     // per month
-    var CallTally = Backbone.Model.extend({
+    let CallTally = Backbone.Model.extend({
         add_shift: function (ward) {
-            var ward_type = '_' + ward.get_ward_type();
+            const ward_type = '_' + ward.get_ward_type();
             this.set(ward_type, (this.get(ward_type) || 0) + 1);
             this.set('weights', (this.get('weights') || 0) + ward.get('weight'));
         },
         subtract_shift: function (ward) {
-            var ward_type = '_' + ward.get_ward_type();
+            const ward_type = '_' + ward.get_ward_type();
             this.set(ward_type, this.get(ward_type) - 1);
             this.set('weights', this.get('weights') - ward.get('weight'));
         },
@@ -737,14 +737,14 @@ var models = (function ($, _, Backbone) {
     });
 
     // One CallTally per person
-    var CallTallies = Backbone.Collection.extend({
+    let CallTallies = Backbone.Collection.extend({
         model: CallTally,
         on_call_added: function (person, staffing, options) {
-            var ct = this.get(person.id);
+            let ct = this.get(person.id);
             if (ct) ct.add_shift(staffing.ward);
         },
         on_call_removed: function (person, staffing, options) {
-            var ct = this.get(person.id);
+            let ct = this.get(person.id);
             if (ct) ct.subtract_shift(staffing.ward);
         },
     });
@@ -759,7 +759,7 @@ var models = (function ($, _, Backbone) {
         //       id: a persons id,
         //       action: 'add' or 'remove'
         //   }
-        var json_data = {
+        const json_data = {
             day: day.id,
             ward_id: ward.get('id'),
             continued: _.isDate(continued) ?
@@ -768,7 +768,7 @@ var models = (function ($, _, Backbone) {
             persons: persons,
             last_pk: _last_change_pk,
         };
-        var url = '/changes';
+        const url = '/changes';
         do_ajax_call(url, json_data, process_changes);
     }
     function process_changes(data, textStatus, jqXHR) {
@@ -784,13 +784,13 @@ var models = (function ($, _, Backbone) {
         // data should have these attributes: 
         //   date: a Date or false
         //   ward_ids: an Array of <ward_ids>
-        var json_data = {
+        const json_data = {
             date: date ? utils.get_day_id(date) : false,
             wards: ward_ids,
         };
-        var url = '/set_approved';
+        const url = '/set_approved';
         function success(data, textStatus, jqXHR) {
-            var approved = data.approved ? utils.get_date(data.approved) : false;
+            const approved = data.approved ? utils.get_date(data.approved) : false;
             _.each(data.wards, function (ward_id) {
                 wards.get(ward_id).set('approved', approved);
             });
@@ -837,7 +837,7 @@ var models = (function ($, _, Backbone) {
 
     function apply_change(change) {
         // 'change' ist der Output von sp_app.models.ChangeLogging.to_Json
-        var changed_day = days.get(change.day);
+        let changed_day = days.get(change.day);
         // provide enough days, so that the change can be fully applied
         if (change.until) {
             if (change.until >= days.last().id)
@@ -849,12 +849,12 @@ var models = (function ($, _, Backbone) {
             changed_day.apply_change(change);
     }
 
-    var _min_update_intervall = 10;  // 10 sec
-    var _max_update_intervall = 120;  // 2 min
-    var _next_check_id;
-    var _last_change_pk;
+    const _min_update_intervall = 10;  // 10 sec
+    const _max_update_intervall = 120;  // 2 min
+    let _next_check_id;
+    let _last_change_pk;
     function schedule_next_update(last_change) {
-        var next_update_check;
+        let next_update_check;
         if (last_change) {
             next_update_check = Math.min(
                 Math.max(last_change.time, _min_update_intervall),
@@ -882,7 +882,7 @@ var models = (function ($, _, Backbone) {
         current_date.update();
     }
 
-    var errors = new Backbone.Collection();
+    let errors = new Backbone.Collection();
 
     function reset_data() {
         // for testing

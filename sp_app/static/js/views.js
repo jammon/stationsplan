@@ -1,9 +1,9 @@
 // jshint esversion: 6
-var views = (function ($, _, Backbone) {
+let views = (function ($, _, Backbone) {
     "use strict";
 
     // StaffingDisplayView is used in DayView
-    var StaffingDisplayView = Backbone.View.extend({
+    let StaffingDisplayView = Backbone.View.extend({
         tagName: 'td',
         initialize: function (options) {
             this.listenTo(this.collection.displayed, "update", this.render);
@@ -21,9 +21,9 @@ var views = (function ($, _, Backbone) {
         },
         extra_rendering: function (el, staffing) { },
         render: function () {
-            var el = this.$el;
-            var staffing = this.collection;
-            var approved = staffing.ward.is_approved(staffing.day.get('date'));
+            let el = this.$el;
+            const staffing = this.collection;
+            const approved = staffing.ward.is_approved(staffing.day.get('date'));
             el.empty();
             // do we have to render it
             if (staffing.no_staffing) return this;
@@ -42,7 +42,7 @@ var views = (function ($, _, Backbone) {
     });
     // PersonView is used in StaffingView
     let marked_person;
-    var PersonView = Backbone.View.extend({
+    let PersonView = Backbone.View.extend({
 
         events: {
             "click": "mark",
@@ -79,14 +79,14 @@ var views = (function ($, _, Backbone) {
         },
     });
     // StaffingView is used in PeriodView and OnCallView
-    var StaffingView = StaffingDisplayView.extend({
+    let StaffingView = StaffingDisplayView.extend({
         events: {
             "click": "addstaff",
             "contextmenu": "differentday",
         },
         render_staffing: function (el, staffing) {
             staffing.displayed.each(function (person) {
-                var view = new PersonView({
+                let view = new PersonView({
                     person: person,
                     display_long_name: this.display_long_name,
                     title: staffing.day.persons_duties[person.id].displayed.pluck('name').join(', '),
@@ -112,7 +112,7 @@ var views = (function ($, _, Backbone) {
             }
         },
     });
-    var NotPlannedView = Backbone.View.extend({
+    let NotPlannedView = Backbone.View.extend({
         tagName: 'td',
         initialize: function (options) {
             this.day = options.day;
@@ -126,7 +126,7 @@ var views = (function ($, _, Backbone) {
             return this;
         },
     });
-    var DutiesView = Backbone.View.extend({
+    let DutiesView = Backbone.View.extend({
         tagName: 'td',
         initialize: function () {
             this.listenTo(this.collection.displayed, "update", this.render);
@@ -138,14 +138,14 @@ var views = (function ($, _, Backbone) {
         },
     });
 
-    var _table_template = _.template($('#table-template').html());
+    const _table_template = _.template($('#table-template').html());
     function get_table_from_template(options) {
         return _table_template(options);
     }
-    var _period_template = _.template($('#period-template').html());
+    const _period_template = _.template($('#period-template').html());
     function get_period_from_template(options) {
-        var start_year = options.start.getFullYear();
-        var end_year = options.end.getFullYear();
+        const start_year = options.start.getFullYear();
+        const end_year = options.end.getFullYear();
         if (start_year == end_year)
             start_year = '';
         return _period_template({
@@ -156,15 +156,15 @@ var views = (function ($, _, Backbone) {
         });
     }
 
-    var title_template = _.template("<%= day_name %>.<br> <%= day %>.");
-    var date_template = _.template("<%= day %>. <%= month %> <%= year %>");
-    var holiday_template = _.template("<%= day %>. <%= month %> <%= year %>"
+    const title_template = _.template("<%= day_name %>.<br> <%= day %>.");
+    const date_template = _.template("<%= day %>. <%= month %> <%= year %>");
+    const holiday_template = _.template("<%= day %>. <%= month %> <%= year %>"
         + "<% if (holiday) print(' - '); %><%= holiday %>");
-    var DayTitleView = Backbone.View.extend({
+    let DayTitleView = Backbone.View.extend({
         tagName: "th",
         render: function () {
-            var date = this.model.get('date');
-            var el = this.$el;
+            const date = this.model.get('date');
+            let el = this.$el;
             el.html(title_template({
                 day_name: utils.day_names[date.getDay()],
                 day: date.getDate(),
@@ -184,7 +184,7 @@ var views = (function ($, _, Backbone) {
             return this;
         },
     });
-    var PeriodView = Backbone.View.extend({
+    let PeriodView = Backbone.View.extend({
         // This view displays some period of days, 
         // usually a month, but maybe less according to the available screenspace
         events: {
@@ -208,7 +208,7 @@ var views = (function ($, _, Backbone) {
             // options.start_id is 'YYYYMMDD' (or 'YYYYMM')
             // options.size can be 'xxs', 'xs', 'sm' or 'md'.
             //7, 14, 21, 28 or 'month'
-            var lengths = { xxs: 7, xs: 14, sm: 21, md: 28 };
+            const lengths = { xxs: 7, xs: 14, sm: 21, md: 28 };
             _.extend(this, _.pick(options, 'start_id', 'size'));
             this.length = lengths[this.size];
             this.start = this.get_start_date(this.start_id);
@@ -225,11 +225,11 @@ var views = (function ($, _, Backbone) {
                 this.start.getDate() + this.length - 1);
         },
         construct_row: function (model, row_class, collection_array, View) {
-            var row = $('<tr/>', { 'class': row_class });
+            let row = $('<tr/>', { 'class': row_class });
             row.append($('<th/>', { text: model.get('name') }));
             this.period_days.each(function (day) {
-                var collection = day[collection_array][model.id];
-                var view;
+                const collection = day[collection_array][model.id];
+                let view;
                 if (collection) {
                     view = new View({
                         collection: collection,
@@ -243,7 +243,7 @@ var views = (function ($, _, Backbone) {
             return row;
         },
         construct_not_planned: function () {
-            var row = $('<tr/>', { 'class': 'not_planned' });
+            let row = $('<tr/>', { 'class': 'not_planned' });
             row.append($('<th/>', { text: 'unverplant' }));
             this.period_days.each(function (day) {
                 let view = new NotPlannedView({ day: day });
@@ -253,9 +253,9 @@ var views = (function ($, _, Backbone) {
         },
         build_table: function () {
             this.table = this.$(".plan");
-            var titlerow = $('<tr/>', { 'class': 'titlerow' }).append($('<th/>'));
+            let titlerow = $('<tr/>', { 'class': 'titlerow' }).append($('<th/>'));
             this.period_days.each(function (day) {
-                var view = new DayTitleView({ model: day });
+                const view = new DayTitleView({ model: day });
                 titlerow.append(view.render().$el);
             });
             this.table.append(titlerow);
@@ -263,7 +263,7 @@ var views = (function ($, _, Backbone) {
             // Construct rows for wards and persons
             // first the wards
             models.wards.each(function (ward) {
-                var row_class = 'wardrow';
+                let row_class = 'wardrow';
                 if (ward.get('callshift'))
                     row_class = 'callshiftrow';
                 else if (ward.get('on_leave'))
@@ -318,7 +318,7 @@ var views = (function ($, _, Backbone) {
             router.navigate(this.slug + '/' + current_day_id, { trigger: true });
         },
         next_day_id: function (forward) {
-            var next_start = new Date(
+            const next_start = new Date(
                 this.start.getFullYear(),
                 this.start.getMonth(),
                 this.start.getDate() + (forward ? this.length : - this.length));
@@ -326,14 +326,14 @@ var views = (function ($, _, Backbone) {
         },
         approve: function (e) {
             if (!models.user.is_editor) return;
-            var ward = models.wards.where({ name: e.currentTarget.textContent });
+            const ward = models.wards.where({ name: e.currentTarget.textContent });
             if (ward.length)
                 changeviews.approve.show(ward[0]);
             else
                 changeviews.approve.show();
         },
         show_day: function (e) {
-            var day_id = $(e.currentTarget).attr('day_id');
+            const day_id = $(e.currentTarget).attr('day_id');
             router.navigate('tag/' + day_id, { trigger: true });
         },
     });
@@ -342,7 +342,7 @@ var views = (function ($, _, Backbone) {
     };
 
 
-    var MonthView = PeriodView.extend({
+    let MonthView = PeriodView.extend({
         get_start_date: function (start_id) {
             return utils.get_date(start_id.length == 6 ? start_id + '01' : start_id);
         },
@@ -360,7 +360,7 @@ var views = (function ($, _, Backbone) {
             };
         },
         next_day_id: function (forward) {
-            var next_month_id = forward ? 'get_next_month_id' : 'get_previous_month_id';
+            const next_month_id = forward ? 'get_next_month_id' : 'get_previous_month_id';
             return utils[next_month_id](this.start_id.slice(0, 6)) + '01';
         },
     });
@@ -368,14 +368,14 @@ var views = (function ($, _, Backbone) {
         return options.start_id.slice(0, 6);
     };
 
-    var OnCallRowView = Backbone.View.extend({
+    let OnCallRowView = Backbone.View.extend({
         tagName: "tr",
         render: function () {
-            var day = this.model;
-            var date = day.get('date');
-            var day_label = _.template(
+            const day = this.model;
+            const date = day.get('date');
+            const day_label = _.template(
                 "<%= name %>. <%= date %>.<%= month %>.");
-            var el = this.$el;
+            let el = this.$el;
             el.empty();
 
             el.toggleClass('today', day.get('is_today'));
@@ -389,28 +389,29 @@ var views = (function ($, _, Backbone) {
             }));
 
             models.on_call.each(function (task) {
-                var collection = day.get_staffing(task);
-                var view = (collection && !collection.no_staffing) ?
-                    (new StaffingView({
+                const collection = day.get_staffing(task);
+                if (collection && !collection.no_staffing) {
+                    el.append((new StaffingView({
                         collection: collection,
                         display_long_name: true,
-                    })).render().$el :
-                    '<td></td>';
-                el.append(view);
+                    })).render().$el);
+                } else {
+                    el.append('<td></td>');
+                }
             });
             return this;
         }
     });
-    var OnCallView = MonthView.extend({
+    let OnCallView = MonthView.extend({
         base_class: 'on_call_plan',
         slug: 'dienste',
         template: _.template($('#on-call-table').html()),
         build_table: function () {
-            var table = this.$(".plan");
-            var titlerow = $('<tr/>', { 'class': 'titlerow' })
+            let table = this.$(".plan");
+            let titlerow = $('<tr/>', { 'class': 'titlerow' })
                 .append($('<th/>'));
             models.on_call.each(function (task) {
-                var th = $(
+                let th = $(
                     '<th/>', { text: task.get('name') });
                 if (task.get('min') < 2)
                     th.addClass('quickinput');
@@ -420,7 +421,7 @@ var views = (function ($, _, Backbone) {
 
             // Construct rows for every day
             this.period_days.each(function (day) {
-                var row = new OnCallRowView({ model: day });
+                let row = new OnCallRowView({ model: day });
                 table.append(row.render().$el);
             });
 
@@ -434,26 +435,25 @@ var views = (function ($, _, Backbone) {
                 titlerow.append($('<th/>', { text: 'Last' }));
                 table.append(titlerow);
                 this.period_days.calltallies.each(function (calltally) {
-                    var view = new CallTallyView({ model: calltally });
+                    let view = new CallTallyView({ model: calltally });
                     table.append(view.render().$el);
                 });
             }
         },
         quickinput: function (event) {
-            var ward = models.wards.where({ name: event.currentTarget.textContent })[0];
+            const ward = models.wards.where({ name: event.currentTarget.textContent })[0];
             changeviews.quickinput.show(ward, this.period_days.first_day);
         },
     });
-    var CallTallyView = Backbone.View.extend({
+    let CallTallyView = Backbone.View.extend({
         tagName: 'tr',
         initialize: function () {
             this.listenTo(this.model, "change", this.render);
         },
         render: function () {
-            var el = this.$el;
-            var tally = this.model;
-            var name = $("<th\>", { text: tally.get("name") });
-            el.empty().append(name);
+            let el = this.$el;
+            const tally = this.model;
+            el.empty().append($("<th\>", { text: tally.get("name") }));
             _.each(models.on_call_types, function (on_call_type) {
                 el.append($("<td\>", { text: tally.get_tally(on_call_type) }));
             });
@@ -463,7 +463,7 @@ var views = (function ($, _, Backbone) {
 
     });
 
-    var DayView = PeriodView.extend({
+    let DayView = PeriodView.extend({
         base_class: 'day_plan',
         slug: 'tag',
         template: _.template($('#day-table').html()),
@@ -474,7 +474,7 @@ var views = (function ($, _, Backbone) {
             this.day_obj = models.days.get_day(new Date(this.year, this.month, this.day));
         },
         get_template_options: function () {
-            var date = this.day_obj.get('date');
+            const date = this.day_obj.get('date');
             return {
                 period: utils.day_long_names[date.getDay()] + ', ' + this.day + '. ' +
                     utils.month_names[this.month] + ' ' + this.year,
@@ -484,12 +484,12 @@ var views = (function ($, _, Backbone) {
             };
         },
         build_table: function () {
-            var table = this.$(".plan");
-            var day = this.day_obj;
+            let table = this.$(".plan");
+            const day = this.day_obj;
             models.wards.each(function (ward) {
                 if (!day.get_staffing(ward).no_staffing) {
-                    var row = $('<tr/>').append($('<th/>').text(ward.get("name")));
-                    var view = new StaffingDisplayView({
+                    let row = $('<tr/>').append($('<th/>').text(ward.get("name")));
+                    let view = new StaffingDisplayView({
                         collection: day.get_staffing(ward),
                         className: day.get('is_free') ? 'free-day' : '',
                     });
@@ -515,15 +515,15 @@ var views = (function ($, _, Backbone) {
         });
     });
 
-    var current_day_id;   // the currently displayed day
+    let current_day_id;   // the currently displayed day
     function update_current_day(day_id) {
         current_day_id = day_id || utils.get_day_id(new Date());
     }
     update_current_day();
 
-    var current_size;   // the currently displayed size
+    let current_size;   // the currently displayed size
     function update_current_size() {
-        var old_size = current_size;
+        const old_size = current_size;
         current_size = $('.device-check:visible').attr('data-device');
         if (current_size == 'xs' && window.screen.availWidth <= 550)
             current_size = 'xxs';
@@ -536,10 +536,10 @@ var views = (function ($, _, Backbone) {
     function PeriodViews(klass) {
         this.klass = klass;
         this.get_view = function (options) {
-            var cur_klass = this.klass;
+            let cur_klass = this.klass;
             if (cur_klass == PeriodView && options.size == 'lg')
                 cur_klass = MonthView;
-            var period_id = options.period_id = cur_klass.get_period_id(options);
+            const period_id = options.period_id = cur_klass.get_period_id(options);
             if (!_.has(this, period_id)) {
                 this[period_id] = (new cur_klass(options)).render();
             }
@@ -547,17 +547,17 @@ var views = (function ($, _, Backbone) {
             return this[period_id];
         };
     }
-    var month_views = new PeriodViews(PeriodView);
-    var on_call_views = new PeriodViews(OnCallView);
-    var day_views = new PeriodViews(DayView);
+    let month_views = new PeriodViews(PeriodView);
+    let on_call_views = new PeriodViews(OnCallView);
+    let day_views = new PeriodViews(DayView);
 
 
-    var is_top_level_nav = {
+    const is_top_level_nav = {
         "#nav-stationen": true,
         "#nav-dienste": true,
         "#nav-tag": true,
     };
-    var Router = Backbone.Router.extend({
+    let Router = Backbone.Router.extend({
         routes: {
             "plan(/:period_id)(/)": "plan",    // #plan
             "dienste(/:period_id)(/)": "dienste",    // #dienste
@@ -597,9 +597,9 @@ var views = (function ($, _, Backbone) {
             Backbone.history.loadUrl(Backbone.history.fragment);
         },
     });
-    var router = new Router();
+    let router = new Router();
 
-    var NavView = Backbone.View.extend({
+    let NavView = Backbone.View.extend({
         events: {
             "click #nav-stationen": "stationen",
             "click #nav-dienste": "dienste",
@@ -630,9 +630,9 @@ var views = (function ($, _, Backbone) {
         },
     });
 
-    var nav_view = new NavView({ el: $(".nav") });
+    let nav_view = new NavView({ el: $(".nav") });
 
-    var ErrorView = Backbone.View.extend({
+    let ErrorView = Backbone.View.extend({
         template: _.template(
             "<tr>" +
             "<td><%= status %></td>" +
@@ -646,7 +646,7 @@ var views = (function ($, _, Backbone) {
             this.$el.append();
         },
         addError: function (error) {
-            var msg = this.template({
+            const msg = this.template({
                 status: error.get('textStatus'),
                 error: error.get('errorThrown'),
                 response: error.get('responseText'),
@@ -656,7 +656,7 @@ var views = (function ($, _, Backbone) {
             this.$el.removeClass("hidden").append(msg);
         },
     });
-    var error_view;
+    let error_view;
     if (models.user.is_editor)
         error_view = new ErrorView({ el: $("#errors") });
 

@@ -5,13 +5,13 @@ describe("models", function () {
         it("should have the persons and wards set", function () {
             expect(models.persons.length).toBe(persons_init.length);
             expect(models.wards.length).toBe(wards_init.length);
-            var person_a = models.persons.get('A');
+            const person_a = models.persons.get('A');
             expect(person_a.get('name')).toBe('Anton');
             expect(person_a.get('current_department')).toBeTruthy();
-            var person_d = models.persons.get('DiffDept');
+            const person_d = models.persons.get('DiffDept');
             expect(person_d.get('name')).toBe('Different Department');
             expect(person_d.get('current_department')).toBeFalsy();
-            var ward_a = models.wards.get('A');
+            const ward_a = models.wards.get('A');
             expect(ward_a.get('name')).toBe('Ward A');
             expect(ward_a.get('min')).toBe(1);
             expect(ward_a.get('max')).toBe(2);
@@ -19,13 +19,13 @@ describe("models", function () {
     });
     describe("Current_Date", function () {
         it("should initialize to todays id", function () {
-            var current_date = new models.Current_Date();
+            const current_date = new models.Current_Date();
             expect(current_date.get('date_id'))
                 .toBe(utils.get_day_id(new Date()));
         });
         it("should send change event only when the date has changed", function () {
-            var current_date = new models.Current_Date();
-            var changed = false;
+            let current_date = new models.Current_Date();
+            let changed = false;
             current_date.on('change:date_id', function () { changed = true; });
             current_date.update();
             expect(changed).toBeFalsy();
@@ -36,7 +36,7 @@ describe("models", function () {
             expect(changed).toBeTruthy();
         });
         it("should tell, if a date_id refers to today", function () {
-            var current_date = new models.Current_Date();
+            const current_date = new models.Current_Date();
             expect(current_date.is_today(utils.get_day_id(new Date())))
                 .toBeTruthy();
             expect(current_date.is_today('20170101')).toBeFalsy();
@@ -44,13 +44,13 @@ describe("models", function () {
     });
     describe("Person", function () {
         describe("calculating availability", function () {
-            var before = new Date(2016, 1, 29);
-            var firstday = new Date(2016, 2, 1);
-            var lastday = new Date(2016, 2, 31);
-            var after = new Date(2016, 3, 1);
-            var start_date = [2016, 2, 1];
-            var end_date = [2016, 2, 31];
-            var person;
+            const before = new Date(2016, 1, 29);
+            const firstday = new Date(2016, 2, 1);
+            const lastday = new Date(2016, 2, 31);
+            const after = new Date(2016, 3, 1);
+            const start_date = [2016, 2, 1];
+            const end_date = [2016, 2, 31];
+            let person;
             it("should calculate availability for a person with start_date and end_date", function () {
                 person = new models.Person(
                     {
@@ -93,7 +93,7 @@ describe("models", function () {
     describe("Ward", function () {
         it("can be approved for a date", function () {
             // Approval date not set
-            var ward = new models.Ward({ shortname: 'A' });
+            let ward = new models.Ward({ shortname: 'A' });
             expect(ward.is_approved(new Date(2017, 3, 1))).toBe(true);
             // Approval date set to false
             ward = new models.Ward({ shortname: 'A', approved: false });
@@ -143,7 +143,7 @@ describe("models", function () {
     });
     describe("Staffing", function () {
         describe("calculate who can be planned", function () {
-            var today, yesterday, staffing_a, person_a;
+            let today, yesterday, staffing_a, person_a;
             beforeEach(function () {
                 yesterday = new models.Day({
                     date: new Date(2016, 8, 19)
@@ -184,7 +184,7 @@ describe("models", function () {
                     models.persons.get('C'))).toBeFalsy();
             });
             it("for 'on leave', the members of the current department can be planned", function () {
-                var staffing_l = today.ward_staffings.L;
+                const staffing_l = today.ward_staffings.L;
                 expect(staffing_l.can_be_planned(person_a)).toBeTruthy();
                 // nightshift yesterday
                 yesterday.ward_staffings.N.add(person_a);
@@ -193,11 +193,11 @@ describe("models", function () {
                 today.ward_staffings.L.add(person_a);
                 expect(staffing_l.can_be_planned(person_a)).toBeTruthy();
                 // Different department
-                var person_d = models.persons.get('DiffDept');
+                const person_d = models.persons.get('DiffDept');
                 expect(staffing_l.can_be_planned(person_d)).toBeFalsy();
             });
             it("'anonymous' persons can be planned after a call shift", function () {
-                var anon = models.persons.get('Other');
+                const anon = models.persons.get('Other');
                 expect(staffing_a.can_be_planned(anon)).toBeTruthy();
                 yesterday.ward_staffings.N.add(anon);
                 expect(staffing_a.can_be_planned(anon)).toBeTruthy();
@@ -206,7 +206,7 @@ describe("models", function () {
     });
     describe("Day", function () {
         it("should be initialized properly", function () {
-            var today = new models.Day({ date: new Date(2015, 7, 7) });
+            const today = new models.Day({ date: new Date(2015, 7, 7) });
             expect(today.id).toEqual('20150807');
             expect(today.persons_duties).toBeDefined();
             expect(today.persons_duties.A.length).toBe(0);
@@ -219,10 +219,10 @@ describe("models", function () {
                 ward_to_check) {
                 // add a person to a staffing on a day
                 // return a list of ids of availables for a given ward
-                var yesterday = new models.Day({
+                const yesterday = new models.Day({
                     date: new Date(2015, 7, 6),  // Thursday
                 });
-                var today = new models.Day({
+                const today = new models.Day({
                     date: new Date(2015, 7, 7),  // Friday
                     yesterday: yesterday,
                 });
@@ -324,36 +324,36 @@ describe("models", function () {
         });
         describe("need for staffing (implicitly test Staffing.needs_staffing)", function () {
             it("should respect free days", function () {
-                var sunday = new models.Day({ date: new Date(2015, 7, 2) });
-                var monday = new models.Day({ date: new Date(2015, 7, 3) });
+                const sunday = new models.Day({ date: new Date(2015, 7, 2) });
+                const monday = new models.Day({ date: new Date(2015, 7, 3) });
                 expect(sunday.ward_staffings.A.no_staffing).toBeTruthy();
                 expect(sunday.ward_staffings.F.no_staffing).toBeFalsy();
                 expect(monday.ward_staffings.A.no_staffing).toBeFalsy();
                 expect(monday.ward_staffings.F.no_staffing).toBeTruthy();
             });
             it("should plan wards for certain weekdays", function () {
-                var saturday = new models.Day({ date: new Date(2015, 7, 1) });
-                var sunday = new models.Day({ date: new Date(2015, 7, 2) });
-                var monday = new models.Day({ date: new Date(2015, 7, 3) });
+                const saturday = new models.Day({ date: new Date(2015, 7, 1) });
+                const sunday = new models.Day({ date: new Date(2015, 7, 2) });
+                const monday = new models.Day({ date: new Date(2015, 7, 3) });
                 expect(saturday.ward_staffings.V.no_staffing).toBeFalsy();
                 expect(sunday.ward_staffings.V.no_staffing).toBeTruthy();
                 expect(monday.ward_staffings.V.no_staffing).toBeTruthy();
             });
             it("should account for different days", function () {
-                var no = new models.Day({ date: new Date(2015, 7, 8) });
-                var yes = new models.Day({ date: new Date(2015, 7, 9) });
+                const no = new models.Day({ date: new Date(2015, 7, 8) });
+                const yes = new models.Day({ date: new Date(2015, 7, 9) });
                 expect(no.ward_staffings.V.no_staffing).toBeTruthy();
                 expect(yes.ward_staffings.V.no_staffing).toBeFalsy();
             });
         });
         describe("needs_staffing (explicitly test models.needs_staffing)", function () {
             it("should respect free days", function () {
-                var sunday = new models.Day({ date: new Date(2015, 7, 2) });
-                var monday = new models.Day({ date: new Date(2015, 7, 3) });
-                var A = new models.Ward({
+                const sunday = new models.Day({ date: new Date(2015, 7, 2) });
+                const monday = new models.Day({ date: new Date(2015, 7, 3) });
+                const A = new models.Ward({
                     name: 'Ward A', shortname: 'A', min: 1, max: 2
                 });
-                var F = new models.Ward({
+                const F = new models.Ward({
                     name: 'Free days', shortname: 'F', min: 0, max: 10,
                     freedays: true
                 });
@@ -363,26 +363,26 @@ describe("models", function () {
                 expect(models.needs_staffing(F, monday)).toBeFalsy();
             });
             it("should plan wards for certain weekdays", function () {
-                var V = new models.Ward({
+                const V = new models.Ward({
                     name: 'Visite', shortname: 'V', min: 0, max: 10,
                     weekdays: '16'
                 });
-                var saturday = new models.Day({ date: new Date(2015, 7, 1) });
-                var sunday = new models.Day({ date: new Date(2015, 7, 2) });
-                var monday = new models.Day({ date: new Date(2015, 7, 3) });
-                var tuesday = new models.Day({ date: new Date(2015, 7, 4) });
+                const saturday = new models.Day({ date: new Date(2015, 7, 1) });
+                const sunday = new models.Day({ date: new Date(2015, 7, 2) });
+                const monday = new models.Day({ date: new Date(2015, 7, 3) });
+                const tuesday = new models.Day({ date: new Date(2015, 7, 4) });
                 expect(models.needs_staffing(V, saturday)).toBeTruthy();
                 expect(models.needs_staffing(V, sunday)).toBeFalsy();
                 expect(models.needs_staffing(V, monday)).toBeTruthy();
                 expect(models.needs_staffing(V, tuesday)).toBeFalsy();
             });
             it("should account for different days", function () {
-                var V = new models.Ward({
+                let V = new models.Ward({
                     name: 'Visite', shortname: 'V', min: 0, max: 10,
                     weekdays: '1'
                 });
-                var saturday = new models.Day({ date: new Date(2015, 7, 1) });
-                var sunday = new models.Day({ date: new Date(2015, 7, 2) });
+                const saturday = new models.Day({ date: new Date(2015, 7, 1) });
+                const sunday = new models.Day({ date: new Date(2015, 7, 2) });
                 V.set_different_day('20150801', '-');
                 V.set_different_day('20150802', '+');
                 expect(models.needs_staffing(V, saturday)).toBeFalsy();
@@ -390,7 +390,7 @@ describe("models", function () {
             });
         });
         describe("interaction with previous planning", function () {
-            var yesterday, today, tomorrow, person_a;
+            let yesterday, today, tomorrow, person_a;
             beforeEach(function () {
                 yesterday = new models.Day({
                     date: new Date(2015, 7, 3),
@@ -406,7 +406,7 @@ describe("models", function () {
                 person_a = models.persons.get('A');
             });
             function test_staffing(day, staffing, total, displayed) {
-                var st = day.ward_staffings[staffing];
+                const st = day.ward_staffings[staffing];
                 expect(st.length).toBe(total);
                 expect(st.displayed.length).toBe(displayed);
             }
@@ -431,7 +431,7 @@ describe("models", function () {
                 });
             it("should strike off persons for wards, " +
                 "that are not possible after their yesterdays duties", function () {
-                    var person_b = models.persons.get('B');
+                    const person_b = models.persons.get('B');
                     yesterday.ward_staffings.A.add(person_a, { continued: true });
                     yesterday.ward_staffings.S.add(person_a);
                     yesterday.ward_staffings.B.add(person_b, { continued: true });
@@ -453,7 +453,7 @@ describe("models", function () {
                 expect(tomorrow.ward_staffings.A.length).toBe(0);
             });
             describe("combination of previous changes", function () {
-                var template = _.template(
+                const template = _.template(
                     "'<%= action1 %> <%= cont1 %>' <%= relation %> " +
                     "'<%= action2 %> <%= cont2 %>' <%= change %> '<%= result %>' " +
                     "(<%= sensible %>sensible change)");
@@ -474,7 +474,7 @@ describe("models", function () {
                             (relation == 'then' ? yesterday : today).
                                 ward_staffings.A[action1 == 'add' ? 'add' : 'remove'](
                                     person_a, { continued: cont1 == 'cont' });
-                            var previous = tomorrow.ward_staffings.A.length;
+                            const previous = tomorrow.ward_staffings.A.length;
                             (relation == 'then' ? today : yesterday).
                                 ward_staffings.A[action2 == 'add' ? 'add' : 'remove'](
                                     person_a, { continued: cont2 == 'cont' });
@@ -540,7 +540,7 @@ describe("models", function () {
                 expect(today.persons_duties.A.length).toBe(0);
             });
             it("should make a person available after the vacation ends", function () {
-                var ward_a = models.wards.get('A');
+                const ward_a = models.wards.get('A');
                 expect(yesterday.get_available(ward_a).length).toBe(6);
                 expect(today.get_available(ward_a).length).toBe(6);
                 expect(tomorrow.get_available(ward_a).length).toBe(6);
@@ -556,7 +556,7 @@ describe("models", function () {
                 expect(tomorrow.get_available(ward_a).length).toBe(6);
             });
             it("should continue a persons duties after the vacation ends", function () {
-                var person_b = models.persons.get('B');
+                const person_b = models.persons.get('B');
                 // A is on ward A
                 yesterday.ward_staffings.A.add(person_a, { continued: true });
                 yesterday.ward_staffings.A.add(person_b, { continued: true });
@@ -574,10 +574,9 @@ describe("models", function () {
                 expect(tomorrow.persons_duties.A.length).toBe(1);
             });
             it("should continue the staffings if a day is added", function () {
-                var tdat;
                 today.ward_staffings.A.add(models.persons.get('A'),
                     { continued: true });
-                tdat = new models.Day({
+                const tdat = new models.Day({
                     date: new Date(2015, 7, 6),
                     yesterday: tomorrow,
                 });
@@ -586,10 +585,9 @@ describe("models", function () {
                 expect(tdat.ward_staffings.B.length).toBe(0);
             });
             it("should calculate a persons duties if a day is added", function () {
-                var tdat;
                 today.ward_staffings.A.add(models.persons.get('A'),
                     { continued: true });
-                tdat = new models.Day({
+                const tdat = new models.Day({
                     date: new Date(2015, 7, 6),
                     yesterday: tomorrow,
                 });
@@ -601,15 +599,15 @@ describe("models", function () {
         describe("get_day and Day.make_next_day", function () {
             it("should start the day chain", function () {
                 expect(models.days.length).toBe(0);
-                var day = models.days.get_day(new Date(2016, 2, 24));
+                const day = models.days.get_day(new Date(2016, 2, 24));
                 expect(day).toBeDefined();
                 expect(models.days.get('20160324')).toEqual(day);
 
                 expect(models.days.get_day(new Date(2016, 2, 21), 3)).toEqual(day);
 
-                var next_day = day.make_next_day();
+                const next_day = day.make_next_day();
                 expect(models.days.get('20160325')).toEqual(next_day);
-                var future_day = models.days.get_day(new Date(2016, 2, 27));
+                const future_day = models.days.get_day(new Date(2016, 2, 27));
                 models.days.get('20160326').get('yesterday').marker = 'testmarker';
                 expect(next_day.marker).toEqual('testmarker');
                 // Why does this fail?
@@ -649,7 +647,7 @@ describe("models", function () {
                 expect(day.ward_staffings.B.pluck('shortname')).toEqual(['A', 'B']);
             });
             it("should not apply plannings for other days", function () {
-                var day = new models.Day({
+                let day = new models.Day({
                     date: new Date(2016, 2, 10),
                 });
                 let person_a = models.persons.get('A');
@@ -670,7 +668,7 @@ describe("models", function () {
         });
         describe("get_month_id", function () {
             it("should return the right month_id", function () {
-                var day = new models.Day({
+                const day = new models.Day({
                     date: new Date(2016, 2, 10),
                 });
                 expect(day.get_month_id()).toBe('201603');
@@ -678,8 +676,8 @@ describe("models", function () {
         });
         describe("not_planned", function () {
             it("should have all persons not planned initially except the anonymous ones", function () {
-                var today = new models.Day({ date: new Date(2019, 8, 27) });
-                "ABC".split("").forEach(function (c) {
+                const today = new models.Day({ date: new Date(2019, 8, 27) });
+                ["A", "B", "C"].forEach(function (c) {
                     expect(today.not_planned).toContain(models.persons.get(c));
                 });
             });
@@ -709,14 +707,14 @@ describe("models", function () {
                 expect(today.not_planned).toContain(models.persons.get('C'));
             });
             it("should not contain external persons", function () {
-                var today = new models.Day({ date: new Date(2019, 8, 27) });
+                const today = new models.Day({ date: new Date(2019, 8, 27) });
                 let not_planned = _.pluck(today.not_planned, 'id');
                 expect(not_planned).not.toContain('Ext');
             });
         });
     });
     describe("get_month_days and MonthDays", function () {
-        var month_days;
+        let month_days;
         beforeEach(function () {
             models.days.reset();
             month_days = models.get_month_days(2016, 3);
@@ -733,7 +731,7 @@ describe("models", function () {
     describe("get_period_days", function () {
         it("should return the right days", function () {
             models.days.reset();
-            var period_days = models.get_period_days(new Date(2017, 5, 5), 14);
+            const period_days = models.get_period_days(new Date(2017, 5, 5), 14);
             expect(period_days.length).toBe(14);
             expect(period_days.at(0).id).toEqual('20170605');
             expect(period_days.at(13).id).toEqual('20170618');
@@ -781,7 +779,7 @@ describe("models", function () {
         });
     });
     describe("get_month_days and CallTallies", function () {
-        var month_days;
+        let month_days;
         beforeEach(function () {
             models.days.reset();
         });
@@ -804,17 +802,17 @@ describe("models", function () {
         it("should update the CallTallies", function () {
             models.user.is_editor = true;
             month_days = models.get_month_days(2016, 3);
-            var person_a = models.persons.get('A');
-            var person_b = models.persons.get('B');
-            var day1 = month_days.get('20160401');
-            var day2 = month_days.get('20160402');
-            var day3 = month_days.get('20160403');
+            const person_a = models.persons.get('A');
+            const person_b = models.persons.get('B');
+            const day1 = month_days.get('20160401');
+            const day2 = month_days.get('20160402');
+            const day3 = month_days.get('20160403');
             day1.ward_staffings.O.add(person_a);
             day2.ward_staffings.O.add(person_b);
             day3.ward_staffings.O.add(person_a);
-            var ward_o = models.wards.get('O').get_ward_type();
-            var ward_v = models.wards.get('V').get_ward_type();
-            var tally = month_days.calltallies.get('A');
+            const ward_o = models.wards.get('O').get_ward_type();
+            const ward_v = models.wards.get('V').get_ward_type();
+            let tally = month_days.calltallies.get('A');
             expect(tally.get_tally(ward_o)).toBe(2);
             expect(tally.get_tally(ward_v)).toBe(0);
             expect(tally.get('weights')).toBe(6);
@@ -831,7 +829,6 @@ describe("models", function () {
     });
     describe("MonthDays.current_persons", function () {
         it("should exclude persons according to their employment status", function () {
-            var month_days;
             models.days.reset();
             models.persons.add([
                 {
@@ -848,7 +845,7 @@ describe("models", function () {
                     departments: [1]
                 },
             ]);
-            month_days = models.get_month_days(2016, 3);
+            const month_days = models.get_month_days(2016, 3);
             let current = _.pluck(month_days.current_persons(), 'id');
             'A B C DiffDept Ext Other Z'.split(' ').forEach(function (id) {
                 expect(current).toContain(id);
@@ -903,9 +900,9 @@ describe("models", function () {
             });
         }
         it("should apply changes", function () {
-            var yesterday = models.days.get('20150803');
-            var today = models.days.get('20150804');
-            var tomorrow = models.days.get('20150805');
+            const yesterday = models.days.get('20150803');
+            const today = models.days.get('20150804');
+            const tomorrow = models.days.get('20150805');
             make_change({
                 day: '20150804', action: 'add',
                 continued: true,
@@ -919,7 +916,7 @@ describe("models", function () {
         });
         it("should preserve a later planning, " +
             "if a previous duty is started", function () {
-                var tomorrow = models.days.get('20150805');
+                const tomorrow = models.days.get('20150805');
                 make_change({  // add from today
                     day: '20150804', action: 'add', continued: true,
                 });
@@ -934,7 +931,7 @@ describe("models", function () {
             });
         it("should preserve a later planning, " +
             "if a previous duty ends", function () {
-                var tomorrow = models.days.get('20150805');
+                const tomorrow = models.days.get('20150805');
                 make_change({  // add from tomorrow
                     day: '20150805', action: 'add', continued: true,
                 });
@@ -990,7 +987,7 @@ describe("models", function () {
             test_staffing('20150806', ['A']);
         });
         describe("process_changes", function () {
-            var data = {
+            const data = {
                 cls: [
                     {
                         person: 'A', ward: 'A', action: 'add', pk: 14,

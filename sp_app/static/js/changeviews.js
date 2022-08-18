@@ -1,10 +1,10 @@
 // jshint esversion: 6
-var changeviews = (function ($, _, Backbone) {
+let changeviews = (function ($, _, Backbone) {
     "use strict";
 
-    var MS_PER_DAY = 24 * 60 * 60 * 1000;
+    const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
-    var ChangeStaffView = Backbone.View.extend({
+    let ChangeStaffView = Backbone.View.extend({
         // Change the Staffing of one Ward on one Day
         events: {
             "click #continued": "continued",
@@ -38,21 +38,21 @@ var changeviews = (function ($, _, Backbone) {
                 []);
         },
         render: function () {
-            var staffing = this.staffing;
-            var day = this.staffing.day;
-            var min_staffing = staffing.ward.get('min');
+            let staffing = this.staffing;
+            let day = this.staffing.day;
+            let min_staffing = staffing.ward.get('min');
             this.no_dblclick = (min_staffing && min_staffing > 1);
             this.current_date = day.get('date');
-            var datestr = utils.day_long_names[this.current_date.getDay()] +
+            let datestr = utils.day_long_names[this.current_date.getDay()] +
                 ', ' + utils.datestr(this.current_date);
-            var changestafftable = this.$("#changestafftable").empty();
-            var that = this;
+            let changestafftable = this.$("#changestafftable").empty();
+            let that = this;
             this.$(".changedate").text(datestr);
             this.$(".changeward").text(staffing.ward.get('name'));
             this.change_person_views = _.map(
                 day.get_available(staffing.ward),
                 function (person) {
-                    var view = new ChangePersonView({
+                    let view = new ChangePersonView({
                         person: person,
                         staffing: staffing,
                         day: day,
@@ -76,7 +76,7 @@ var changeviews = (function ($, _, Backbone) {
             return this;
         },
         date_changed: function (event) {
-            var days = Math.round((event.date - this.current_date) / MS_PER_DAY) + 1;
+            let days = Math.round((event.date - this.current_date) / MS_PER_DAY) + 1;
             $('#time_period').text(
                 "bis " +
                 this.date_widget.datepicker('getFormattedDate') +
@@ -109,7 +109,8 @@ var changeviews = (function ($, _, Backbone) {
                     let person = models.persons.get(cl.person);
                     if (!person) return;  // only show current persons
                     // Don't show changes older than 3 months
-                    if (new Date() - new Date(cl.change_time) > 90 * 24 * 60 * 60 * 1000)
+                    const ninety_days = 90 * 24 * 60 * 60 * 1000;
+                    if (new Date() - new Date(cl.change_time) > ninety_days)
                         return;
                     let day = date2str(cl.day);
                     let time;
@@ -152,11 +153,11 @@ var changeviews = (function ($, _, Backbone) {
             this.save(false);
         },
     });
-    var changestaffview = new ChangeStaffView({
+    let changestaffview = new ChangeStaffView({
         el: $("#changestaff"),
     });
 
-    var ChangePersonView = Backbone.View.extend({
+    let ChangePersonView = Backbone.View.extend({
         // Subview for ChangeStaffView for changing the planning of one Person
         tagName: 'tr',
         events: {
@@ -195,7 +196,7 @@ var changeviews = (function ($, _, Backbone) {
         },
     });
 
-    var ApproveStaffingsView = Backbone.View.extend({
+    let ApproveStaffingsView = Backbone.View.extend({
         // Approve the plannings of one or more Wards until a given day
         events: {
             "click #approve-to-date": "approve",
@@ -205,10 +206,10 @@ var changeviews = (function ($, _, Backbone) {
         render: function () {
             this.$("#changeapprovaltable").append(
                 models.wards.map(function (ward) {
-                    var view = new SelectStaffingView({ ward: ward });
+                    let view = new SelectStaffingView({ ward: ward });
                     return view.render().$el;
                 }));
-            var today = new Date();
+            let today = new Date();
             this.date_widget = this.$("#approval-date-picker");
             this.date_widget.datepicker({
                 format: "dd.mm.yyyy",
@@ -229,7 +230,7 @@ var changeviews = (function ($, _, Backbone) {
             this.$el.modal('show');
         },
         approval_date_changed: function () {
-            var date = this.date_widget.datepicker('getFormattedDate');
+            let date = this.date_widget.datepicker('getFormattedDate');
             $('#approve-to-date').text("Bis " + date + " freigeben");
         },
         get_checked_wards: function () {
@@ -248,11 +249,11 @@ var changeviews = (function ($, _, Backbone) {
         },
         approve_all: function () { this.save(false); },
     });
-    var approvestaffingview = new ApproveStaffingsView({
+    let approvestaffingview = new ApproveStaffingsView({
         el: $("#approvestaffing"),
     });
 
-    var SelectStaffingView = Backbone.View.extend({
+    let SelectStaffingView = Backbone.View.extend({
         // Subview for ApproveStaffingsView for selecting a Ward
         tagName: 'tr',
         initialize: function (options) {
@@ -261,8 +262,8 @@ var changeviews = (function ($, _, Backbone) {
         },
         template: _.template($('#approve_staffing_template').html()),
         render: function () {
-            var approved = this.ward.get('approved');
-            var currentapproval =
+            let approved = this.ward.get('approved');
+            let currentapproval =
                 approved ? utils.datestr(approved) : "offen";
             this.$el.empty().append(this.template({
                 ward: this.ward.get('name'),
@@ -275,7 +276,7 @@ var changeviews = (function ($, _, Backbone) {
 
 
     // ----------------------------------------------------------------
-    var QuickInputView = Backbone.View.extend({
+    let QuickInputView = Backbone.View.extend({
         // Quickly key in the the Staffing of On-Call-Shifts
         // - Shows possible Persons
         // - Greys out unavailable Persons
@@ -306,7 +307,7 @@ var changeviews = (function ($, _, Backbone) {
                 let persons_div = this.$("#quickpersons").empty();
                 this.person_views = models.persons.map(
                     function (person) {
-                        var pv = new QuickPersonView({
+                        let pv = new QuickPersonView({
                             model: person,
                             staffing: staffing,
                         });
@@ -359,10 +360,10 @@ var changeviews = (function ($, _, Backbone) {
             this.next_day();
         },
     });
-    var quickinputview = new QuickInputView({
+    let quickinputview = new QuickInputView({
         el: $("#quickinput"),
     });
-    var QuickPersonView = Backbone.View.extend({
+    let QuickPersonView = Backbone.View.extend({
         tagName: 'button',
         className: 'quickperson btn btn-default btn-block',
         events: {
@@ -389,7 +390,7 @@ var changeviews = (function ($, _, Backbone) {
             this.trigger('plan_person', this.model, this.staffing);
         },
     });
-    var QuickDateView = Backbone.View.extend({
+    let QuickDateView = Backbone.View.extend({
         // Display the Staffing of one day
         tagName: 'tr',
         template: _.template(
@@ -401,7 +402,7 @@ var changeviews = (function ($, _, Backbone) {
             this.is_current = is_current;
         },
         render: function () {
-            var date = this.collection.day.get('date');
+            let date = this.collection.day.get('date');
             this.$el.html(this.template({
                 day_name: utils.day_names[date.getDay()],
                 day: date.getDate(),
@@ -412,7 +413,7 @@ var changeviews = (function ($, _, Backbone) {
             return this;
         },
     });
-    var QuickDateViews = Backbone.View.extend({
+    let QuickDateViews = Backbone.View.extend({
         // Show the Staffing of the current day and some days before and after
         el: "#quickdays",
         events: {
@@ -432,7 +433,7 @@ var changeviews = (function ($, _, Backbone) {
         },
         get_view: function (offset) {
             // offset is from this.date
-            var day = models.days.get_day(this.date, offset);
+            let day = models.days.get_day(this.date, offset);
             if (this.views[day.id])
                 return this.views[day.id];
             this.views[day.id] = new QuickDateView({
@@ -442,7 +443,7 @@ var changeviews = (function ($, _, Backbone) {
         },
         render: function () {
             this.$el.empty();
-            var dv, i;
+            let dv, i;
             for (i = -this.NR_DAYS_BEFORE;
                 i <= this.NR_DAYS_AFTER; i++) {
                 dv = this.get_view(i);
@@ -462,7 +463,7 @@ var changeviews = (function ($, _, Backbone) {
     });
 
     // ---------------------------------------------------------------------
-    var DifferentDayView = Backbone.View.extend({
+    let DifferentDayView = Backbone.View.extend({
         // Do the planning of one Ward on one Day different to the normal schedule
         events: {
             "click #differentdaybutton": "save",
@@ -518,7 +519,7 @@ var changeviews = (function ($, _, Backbone) {
             this.render().$el.modal('show');
         },
     });
-    var differentdayview = new DifferentDayView({
+    let differentdayview = new DifferentDayView({
         el: $("#differentday"),
     });
 
