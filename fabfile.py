@@ -31,7 +31,7 @@ def sass():
 
 
 def makemessages():
-    local("./manage.py makemessages -l de")
+    local("./manage.py makemessages -l de -i venv")
 
 
 def compilemessages():

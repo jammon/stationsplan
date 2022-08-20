@@ -779,7 +779,6 @@ describe("models", function () {
         });
     });
     describe("get_month_days and CallTallies", function () {
-        let month_days;
         beforeEach(function () {
             models.days.reset();
         });
@@ -789,19 +788,19 @@ describe("models", function () {
         it("should initialize a CallTally for every person if the user can change",
             function () {
                 models.user.is_editor = true;
-                month_days = models.get_month_days(2016, 3);
+                const month_days = models.get_month_days(2016, 3);
                 expect(month_days.calltallies).toBeDefined();
                 expect(month_days.calltallies.length).toBe(persons_init.length);
                 models.user.is_editor = false;
             });
         it("should not initialize a CallTally if the user cannot change",
             function () {
-                month_days = models.get_month_days(2016, 3);
+                const month_days = models.get_month_days(2016, 3);
                 expect(month_days.calltallies).not.toBeDefined();
             });
         it("should update the CallTallies", function () {
             models.user.is_editor = true;
-            month_days = models.get_month_days(2016, 3);
+            const month_days = models.get_month_days(2016, 3);
             const person_a = models.persons.get('A');
             const person_b = models.persons.get('B');
             const day1 = month_days.get('20160401');

@@ -106,7 +106,7 @@ let views = (function ($, _, Backbone) {
                 changeviews.staff.show(this.collection);
         },
         differentday: function (e) {
-            if (models.user.is_editor) {
+            if (models.user.is_editor && this.collection.ward.get("on_different_days")) {
                 e.preventDefault();
                 changeviews.differentday.show(this.collection);
             }

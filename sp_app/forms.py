@@ -128,6 +128,7 @@ class WardForm(forms.ModelForm):
             "freedays",
             "wkdys",
             "weekdays",
+            "on_different_days",
             "callshift",
             "on_leave",
             "departments",

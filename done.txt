@@ -187,3 +187,5 @@ x 2022-07-28 Footer korrigieren
 x 2022-08-04 Wenn noch keine Personen oder Funktionen einegegeben wurden passende Fehlermeldung für unterprivilegierte User
 x 2022-08-10 In Admin kann man derzeit nur die Abteilungen der Klinik bearbeiten, für die man angemeldet ist.
 x 2022-08-12 Alle Dienste einer Person des aktuellen Monats sollen angezeigt werden
+x 2022-08-20 var durch let ersetzen
+x 2022-08-20 Differentday spezifisch für ein Ward freischalten

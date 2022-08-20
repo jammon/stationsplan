@@ -104,6 +104,11 @@ class Ward(UniqueField, models.Model):
             "(String of digits, 0  for sunday.)"
         ),
     )
+    on_different_days = models.BooleanField(
+        _("on_different_days"),
+        default=False,
+        help_text=_("This function can be planned on different days"),
+    )
     callshift = models.BooleanField(
         _("callshift"),
         default=False,
@@ -199,6 +204,7 @@ class Ward(UniqueField, models.Model):
             "everyday": self.everyday,
             "freedays": self.freedays,
             "weekdays": self.weekdays,
+            "on_different_days": self.on_different_days,
             "callshift": self.callshift,
             "on_leave": self.on_leave,
             "company_id": self.company_id,

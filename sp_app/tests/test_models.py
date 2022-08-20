@@ -125,6 +125,7 @@ class TestWard(PopulatedTestCase):
                 "everyday": False,
                 "freedays": False,
                 "weekdays": "",
+                "on_different_days": False,
                 "callshift": False,
                 "on_leave": False,
                 "company_id": self.company.id,

@@ -129,11 +129,8 @@ class WardAdmin(admin.ModelAdmin):
             {
                 "classes": ("collapse",),
                 "fields": (
-                    "weekdays",
-                    (
-                        "ward_type",
-                        "weight",
-                    ),
+                    ("weekdays", "on_different_days"),
+                    ("ward_type", "weight"),
                     "after_this",
                     "not_with_this",
                 ),

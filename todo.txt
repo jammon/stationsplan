@@ -32,4 +32,3 @@
 (B) Navigation für nicht angemeldete Benutzer
 (A) Wer nur für eine Abteilung zuständig ist, soll auch nur für die Personen oder Wards anlegen können
 (A) Löschen von Bearbeitern ermöglichen, nicht für den angemeldeten Bearbeiter
-var durch let ersetzen
