@@ -370,6 +370,7 @@ def edit_employee(request, employee_id=None):
         emp_kwargs = {"instance": employee}
         user_kwargs = {"instance": employee.user}
     except Employee.DoesNotExist:
+        employee = None
         emp_kwargs = {"initial": {"company": company_id}}
         user_kwargs = {}
     employee_form = forms.EmployeeForm(request.POST or None, **emp_kwargs)
@@ -396,21 +397,46 @@ def edit_employee(request, employee_id=None):
                 "current_url": "/setup/employees",
             },
         )
+    employee_user = user_kwargs.get("instance", None)
+    can_delete = employee is not None and employee.user != request.user
     return render(
         request,
         "sp_app/setup/edit_employee.html",
         {
             "user_form": user_form,
             "employee_form": employee_form,
-            "visible_fields": tuple(
-                user_form.fields[n]
-                for n in ("username", "first_name", "last_name")
-            )
-            + tuple(employee_form.fields[n] for n in ("lvl", "departments")),
             "url": reverse("employee-update", args=(employee_id,))
             if employee_id
             else reverse("employee-add"),
+            "delete_url": reverse("employee-delete", args=(employee_id,))
+            if can_delete
+            else "",
+            "employee": employee,
         },
+    )
+
+
+@ajax_login_required
+@permission_required("sp_app.is_company_admin", raise_exception=True)
+def delete_employee(request, employee_id):
+    error, message = "", ""
+    try:
+        employee = Employee.objects.select_related("user").get(
+            id=employee_id, company_id=request.session["company_id"]
+        )
+        if employee.user == request.user:
+            error = "Aktive/r Bearbeiter/in kann nicht deaktiviert werden"
+    except Employee.DoesNotExist:
+        error = "Bearbeiter/in nicht gefunden"
+    if not error:
+        employee.user.is_active = False
+        employee.user.save()
+        message = f"{employee.get_name()} kann sich nicht mehr als Bearbeiter/in anmelden"
+
+    return render(
+        request,
+        "sp_app/setup/message_or_error.jinja",
+        {"message": message, "error": error},
     )
 
 

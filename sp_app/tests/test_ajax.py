@@ -2,11 +2,13 @@ from genericpath import exists
 import json
 from datetime import date
 from django.urls import reverse
+from django.contrib.auth.models import User
 from sp_app.models import (
     Company,
     Department,
     Ward,
     Person,
+    Employee,
     DifferentDay,
     StatusEntry,
     FAR_FUTURE,
@@ -321,6 +323,37 @@ class TestDepartmentEditViews(LoggedInTestCase):
         except Department.DoesNotExist:
             assert False, "Department was not created"
         assert department.company == self.company
+
+
+class TestEmployeeEditViews(LoggedInTestCase):
+    employee_level = "is_company_admin"
+
+    def test_delete_employee(self):
+        user = User.objects.create_user(
+            "employee", "employee@domain.tld", "password"
+        )
+        employee = Employee.objects.create(user=user, company=self.company)
+        response = self.client.get(
+            reverse("employee-delete", args=(employee.id,))
+        )
+        msg = "employee kann sich nicht mehr als Bearbeiter/in anmelden"
+        assert msg in str(response.content)
+        user = User.objects.get(id=user.id)
+        assert not user.is_active
+
+    def test_delete_current(self):
+        response = self.client.get(
+            reverse("employee-delete", args=(self.employee.id,))
+        )
+        msg = "Aktive/r Bearbeiter/in kann nicht deaktiviert werden"
+        assert msg in str(response.content)
+        user = User.objects.get(id=self.user.id)
+        assert user.is_active
+
+    def test_delete_not_existing(self):
+        response = self.client.get(reverse("employee-delete", args=(999999,)))
+        msg = "Bearbeiter/in nicht gefunden"
+        assert msg in str(response.content)
 
 
 class TestChangeFunction(LoggedInTestCase):

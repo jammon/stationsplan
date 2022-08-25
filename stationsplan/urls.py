@@ -72,6 +72,11 @@ urlpatterns = [
         name="employee-update",
     ),
     path(
+        "delete/employee/<int:employee_id>",
+        sp_ajax.delete_employee,
+        name="employee-delete",
+    ),
+    path(
         "edit/mapping/<int:person_id>/<int:ward_id>/<int:possible>",
         sp_ajax.edit_mapping,
         name="mapping-update",

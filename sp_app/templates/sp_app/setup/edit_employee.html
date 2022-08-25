@@ -11,5 +11,12 @@
   {% include template with field=employee_form.lvl %}
   {% include template with field=employee_form.departments %}
   {% endwith %}
-  <div><button type="submit">Speichern</button></div>
+  <div>
+    <button class="btn btn-primary" type="submit">Speichern</button>
+    {% if delete_url %}
+    <a hx-get="{{ delete_url }}" hx-target="#edit-area"
+      hx-confirm="Wollen Sie {{ employee.get_name }} als Bearbeiter/in deaktivieren?"
+      class="btn btn-default">Bearbeiter/in deaktivieren</a>
+    {% endif %}
+  </div>
 </form>

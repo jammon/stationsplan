@@ -191,3 +191,4 @@ x 2022-08-20 var durch let ersetzen
 x 2022-08-20 Differentday spezifisch für ein Ward freischalten
 x 2022-08-25 update jquery
 x 2022-08-25 update Bootstrap
+x 2022-08-25 Löschen von Bearbeitern ermöglichen, nicht für den angemeldeten Bearbeiter
