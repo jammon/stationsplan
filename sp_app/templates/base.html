@@ -1,48 +1,51 @@
 <!DOCTYPE html>
 {% load static %}
 <html lang="de" dir="ltr" class="no-js">
-  <head>
-    <meta charset="utf-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon/apple-touch-icon.png' %}"/>
-    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon/favicon-32x32.png' %}"/>
-    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon/favicon-16x16.png' %}"/>
-    <link rel="manifest" href="{% static 'favicon/site.webmanifest' %}"/>
-    <link rel="mask-icon" href="{% static 'favicon/safari-pinned-tab.svg' %}" color="#5bbad5"/>
-    <meta name="msapplication-TileColor" content="#ffc40d"/>
-    <meta name="theme-color" content="#eeeeff"/>
-    <title>{% block title %} Stationsplan {% endblock title %}</title>
-    <meta name="description" content="Planung von Stationsbesetzung und Funktionen für Krankenhäuser"/>
 
-    <link rel="stylesheet" href="{% static 'vendor/bootstrap3/bootstrap.min.css' %}"/>
-    <link rel="stylesheet" href="{% static 'css/main.css' %}"/>
-    <link rel="stylesheet" href="{% static 'css/print.css' %}" media="print" />
-    {% block extrahead %}{% endblock extrahead %}
-  </head>
-  <body>
-    <div class="container">
-      <noscript>
-        <div class="row">
-          <div class="col">
-            <div class="alert alert-danger">Ihr Browser scheint Javascript nicht zu unterstützen. Ohne Javascript funktioniert diese App aber nicht.</div>
-          </div>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon/apple-touch-icon.png' %}" />
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon/favicon-32x32.png' %}" />
+  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon/favicon-16x16.png' %}" />
+  <link rel="manifest" href="{% static 'favicon/site.webmanifest' %}" />
+  <link rel="mask-icon" href="{% static 'favicon/safari-pinned-tab.svg' %}" color="#5bbad5" />
+  <meta name="msapplication-TileColor" content="#ffc40d" />
+  <meta name="theme-color" content="#eeeeff" />
+  <title>{% block title %} Stationsplan {% endblock title %}</title>
+  <meta name="description" content="Planung von Stationsbesetzung und Funktionen für Krankenhäuser" />
+
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap3/bootstrap.min.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/main.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/print.css' %}" media="print" />
+  {% block extrahead %}{% endblock extrahead %}
+</head>
+
+<body>
+  <div class="container">
+    <noscript>
+      <div class="row">
+        <div class="col">
+          <div class="alert alert-danger">Ihr Browser scheint Javascript nicht zu unterstützen. Ohne Javascript
+            funktioniert diese App aber nicht.</div>
         </div>
-      </noscript>
-      {% block navigation %} {% endblock navigation %}
-      <div role="main" id="main-content">
-        {% block content %} {% endblock content %}
       </div>
-      {% block footer %} {% endblock footer %}
-    </div> <!-- /.container -->
+    </noscript>
+    {% block navigation %} {% endblock navigation %}
+    <div role="main" id="main-content">
+      {% block content %} {% endblock content %}
+    </div>
+    {% block footer %} {% endblock footer %}
+  </div> <!-- /.container -->
 
-    {% block extracontent %}
-    {% endblock extracontent %}
+  {% block extracontent %}
+  {% endblock extracontent %}
 
-    <script src="{% static 'vendor/jquery-2.1.0.min.js' %}"></script>
-    <script src="{% static 'vendor/jquery.validate.js' %}"></script>
-    <script src="{% static 'vendor/bootstrap3/bootstrap.js' %}"></script>
-    {% block extrascripts %}
-    {% endblock extrascripts %}
-  </body>
+  <script src="{% static 'vendor/jquery-3.6.0.min.js' %}"></script>
+  <script src="{% static 'vendor/bootstrap3/bootstrap.js' %}"></script>
+  {% block extrascripts %}
+  {% endblock extrascripts %}
+</body>
+
 </html>

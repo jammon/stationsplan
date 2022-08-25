@@ -173,20 +173,20 @@ you can then find the current grid option with:
 
 - Dokumentation schreiben
 - Personen und Funktionen mit htmx bearbeiten √
-- Einstieg für neue Kliniken anbieten
-  - Company Admin anlegen
+- Einstieg für neue Kliniken anbieten √
+  - Company Admin anlegen √
     - Neuer User gibt Name, Email und Passwort ein
     - User wird als active=False angelegt
     - Mail an User mit token geht raus, Zeitlimit 24 h
     - Aufruf der Bestätigungsurl aktiviert den Account
-  - Klinikname und Region eingeben
-  - Abteilungen anlegen
-  - User anlegen
+  - Klinikname und Region eingeben √
+  - Abteilungen anlegen √
+  - User anlegen √
     - User ohne Rechte
     - (weitere Editoren)
-  - Funktionen anlegen
-  - Personen anlegen Übersicht
-- iCal-Anbindung
+  - Funktionen anlegen √
+  - Personen anlegen √
+- iCal-Anbindung √
 - Erste drei Monate frei, erst dann bezahlen
 - Wildcard Certificate installieren
   - Jede Klinik bekommt eine Domain mit ihrem Kurznamen
@@ -198,9 +198,9 @@ you can then find the current grid option with:
 ### Werbung, Aussagen über Funktion und Leistung
 
 - Die Planung ist erreichbar unter `kurzname.stationsplan.de`
+- Pläne sind von überall einsehbar
 - Die Pläne sind nur nach Anmeldung sichtbar
 - Nur berechtigte Personen können verändern
-- Pläne sind von überall einsehbar
 - Keine unbesetzten Positionen, keine versehentlich doppelte Verplanung
 - Import in die Kalenderfunktion von Smartphones
 

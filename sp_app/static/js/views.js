@@ -146,10 +146,9 @@ let views = (function ($, _, Backbone) {
     function get_period_from_template(options) {
         const start_year = options.start.getFullYear();
         const end_year = options.end.getFullYear();
-        if (start_year == end_year)
-            start_year = '';
         return _period_template({
-            start: [options.start.getDate(), options.start.getMonth() + 1, start_year]
+            start: [options.start.getDate(), options.start.getMonth() + 1,
+            start_year == end_year ? '' : start_year]
                 .join('.'),
             end: [options.end.getDate(), options.end.getMonth() + 1, end_year]
                 .join('.'),
