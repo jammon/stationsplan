@@ -61,24 +61,7 @@ if SERVER_TYPE == "dev":
         }
     }
     STATIC_ROOT = BASE_DIR / "dev_static"
-    LOGGING = {
-        "version": 1,
-        "disable_existing_loggers": False,
-        "handlers": {
-            "file": {
-                "level": "DEBUG",
-                "class": "logging.FileHandler",
-                "filename": BASE_DIR / "debug.log",
-            },
-        },
-        "loggers": {
-            "django.request": {
-                "handlers": ["file"],
-                "level": "DEBUG",
-                "propagate": True,
-            },
-        },
-    }
+    LOG_FILE = BASE_DIR / "debug.log"
 else:
     DEBUG = False
     USER_HOME = PosixPath("~").expanduser()
@@ -108,24 +91,6 @@ else:
     )
 
     LOG_FILE = USER_HOME / "logs" / "stationsplan.log"
-    LOGGING = {
-        "version": 1,
-        "disable_existing_loggers": False,
-        "handlers": {
-            "file": {
-                "level": "DEBUG",
-                "class": "logging.FileHandler",
-                "filename": LOG_FILE,
-            },
-        },
-        "loggers": {
-            "django.request": {
-                "handlers": ["file"],
-                "level": "DEBUG",
-                "propagate": True,
-            },
-        },
-    }
 
     USE_X_FORWARDED_HOST = True
 
@@ -141,6 +106,31 @@ else:
     SESSION_ENGINE = "django.contrib.sessions.backends.cache"
     SESSION_CACHE_ALIAS = "default"
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "simple": {
+            "format": "{levelname} - {asctime} - {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": LOG_FILE,
+            "formatter": "simple",
+        },
+    },
+    "loggers": {
+        "django.request": {
+            "handlers": ["file"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+    },
+}
 
 # Secret Key
 try:

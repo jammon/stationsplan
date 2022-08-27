@@ -193,3 +193,5 @@ x 2022-08-25 update jquery
 x 2022-08-25 update Bootstrap
 x 2022-08-25 Löschen von Bearbeitern ermöglichen, nicht für den angemeldeten Bearbeiter
 x 2022-08-27 pytest fixtures lesen und verstehen https://docs.pytest.org/en/6.2.x/fixture.html
+x 2022-08-27 Error reporting https://docs.djangoproject.com/en/4.0/howto/error-reporting/
+x 2022-08-27 Logs monitoren +Public

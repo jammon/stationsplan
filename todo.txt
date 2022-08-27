@@ -23,8 +23,6 @@
 (C) SQL-queries in setup
 (C) Log user errors
 (B) Use Conditional View Processing https://docs.djangoproject.com/en/4.0/topics/conditional-view-processing/
-(B) Error reporting https://docs.djangoproject.com/en/4.0/howto/error-reporting/
-(B) Logs monitoren +Public
 (C) django-hijack installieren +Public +support
 (B) Rechtliches für Terminnetz suchen
 (B) not_with_this besser definieren - shadowing
@@ -35,3 +33,4 @@
 (B) Use Lighthouse https://developer.chrome.com/docs/lighthouse/overview/ or https://www.webpagetest.org
 (A) Auf Staging ausprobiereen
 (C) Progressive Web App bauen https://web.dev/new-pwa-training/
+(C) Wenn Changes empfangen werden, häufiger nach Updates fragen
