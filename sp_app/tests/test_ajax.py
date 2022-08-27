@@ -1,8 +1,9 @@
-from genericpath import exists
 import json
 from datetime import date
+from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
+import pytest
 from sp_app.models import (
     Company,
     Department,
@@ -325,33 +326,77 @@ class TestDepartmentEditViews(LoggedInTestCase):
         assert department.company == self.company
 
 
-class TestEmployeeEditViews(LoggedInTestCase):
-    employee_level = "is_company_admin"
+@pytest.fixture
+def company():
+    return Company.objects.create(name="Company", shortname="Comp")
 
-    def test_delete_employee(self):
-        user = User.objects.create_user(
-            "employee", "employee@domain.tld", "password"
+
+@pytest.fixture
+def department(company, db):
+    return Department.objects.create(
+        name="Department 1", shortname="Dep1", company=company
+    )
+
+
+@pytest.fixture
+def user():
+    return User.objects.create_user(
+        "employee", "employee@domain.tld", "password"
+    )
+
+
+@pytest.fixture
+def employee(user, company, department, employee_level):
+    employee = Employee(user=user, company=company)
+    employee.set_level(employee_level)
+    employee.departments.add(department)
+    return employee
+
+
+@pytest.fixture
+def other_user():
+    return User.objects.create_user(
+        "other_employee", "other_employee@domain.tld", "password"
+    )
+
+
+@pytest.fixture
+def other_employee(other_user, company):
+    return Employee.objects.create(user=other_user, company=company)
+
+
+@pytest.fixture
+def logged_in(user, employee, client):
+    client.force_login(user)
+
+
+class TestEmployeeEditViews:
+    @pytest.fixture
+    def employee_level(self):
+        return "is_company_admin"
+
+    @pytest.fixture(autouse=True)
+    def enable_db_access_for_all_tests(self, db):
+        pass
+
+    def test_delete_employee(self, logged_in, other_employee, client):
+        response = client.get(
+            reverse("employee-delete", args=(other_employee.id,))
         )
-        employee = Employee.objects.create(user=user, company=self.company)
-        response = self.client.get(
-            reverse("employee-delete", args=(employee.id,))
-        )
-        msg = "employee kann sich nicht mehr als Bearbeiter/in anmelden"
+        msg = "other_employee kann sich nicht mehr als Bearbeiter/in anmelden"
         assert msg in str(response.content)
-        user = User.objects.get(id=user.id)
+        user = User.objects.get(id=other_employee.user.id)
         assert not user.is_active
 
-    def test_delete_current(self):
-        response = self.client.get(
-            reverse("employee-delete", args=(self.employee.id,))
-        )
+    def test_delete_current(self, logged_in, client, employee):
+        response = client.get(reverse("employee-delete", args=(employee.id,)))
         msg = "Aktive/r Bearbeiter/in kann nicht deaktiviert werden"
         assert msg in str(response.content)
-        user = User.objects.get(id=self.user.id)
+        user = User.objects.get(id=employee.user.id)
         assert user.is_active
 
-    def test_delete_not_existing(self):
-        response = self.client.get(reverse("employee-delete", args=(999999,)))
+    def test_delete_not_existing(self, logged_in, client):
+        response = client.get(reverse("employee-delete", args=(999999,)))
         msg = "Bearbeiter/in nicht gefunden"
         assert msg in str(response.content)
 
