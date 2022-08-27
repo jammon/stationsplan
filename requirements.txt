@@ -1,4 +1,4 @@
-Django==4.0.6
+Django==4.1
 django-ical==1.8.3
 django-redis
 mysqlclient

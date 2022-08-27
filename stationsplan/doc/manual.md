@@ -1,5 +1,31 @@
 # Stationsplan.de - Dienst- und Stationsplanung auf einfache Art
 
+## Konzept
+
+### Themen
+
+- Ansichten vorstellen: Ganzer Plan, Dienste, Heute
+- Alle Dienste/Verplanungen einer Person hervorheben
+- Planungsansichten:
+  - Dienste/Einsätze planen
+    - ein Tag, mehrere Tage, auf Dauer
+    - Planungen zurück nehmen
+  - Schnelleingabe der Dienste
+  - Auflistung der Dienstbelastung
+- Einrichtungsansichten
+  - Abteilungen
+  - Bearbeiter
+  - Mitarbeiter
+  - Funktionen
+    - Einzelne Felder erklären
+  - Zuordnung
+
+### Darstellung
+
+- Kurzvorstellung: Webseite mit Text und Bildern/GIFs
+- Ausführliche Anleitung: Webseite mit Text und Bildern/GIFs
+- Video, Screencast
+
 ## Für Planer
 
 ### Die Stationenansicht

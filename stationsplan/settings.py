@@ -97,7 +97,7 @@ else:
     CACHES = {
         "default": {
             "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": "unix://" + (Path.home() / ".redis/sock?db=0"),
+            "LOCATION": "unix://" + str(Path.home() / ".redis/sock?db=0"),
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
             },
