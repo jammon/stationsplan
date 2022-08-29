@@ -493,13 +493,15 @@ class TestChangeHistory(ViewsTestCase):
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
         res = json.loads(response.content)
+        cls = res["cls"]
+        for cl in cls:
+            del cl["pk"]
         for cl_dict in [
             {
                 "action": "add",
                 "continued": True,
                 "day": "20200401",
                 "person": "A",
-                "pk": 1,
                 "ward": "A",
             },
             {
@@ -507,7 +509,6 @@ class TestChangeHistory(ViewsTestCase):
                 "continued": True,
                 "day": "20200410",
                 "person": "A",
-                "pk": 2,
                 "ward": "A",
             },
             {
@@ -515,7 +516,6 @@ class TestChangeHistory(ViewsTestCase):
                 "continued": True,
                 "day": "20200420",
                 "person": "A",
-                "pk": 3,
                 "until": "20200424",
                 "ward": "A",
             },
@@ -524,7 +524,6 @@ class TestChangeHistory(ViewsTestCase):
                 "continued": True,
                 "day": "20200424",
                 "person": "B",
-                "pk": 4,
                 "until": "20200430",
                 "ward": "A",
             },
@@ -533,7 +532,6 @@ class TestChangeHistory(ViewsTestCase):
                 "continued": False,
                 "day": "20200424",
                 "person": "B",
-                "pk": 5,
                 "ward": "A",
             },
             {
@@ -541,7 +539,6 @@ class TestChangeHistory(ViewsTestCase):
                 "continued": False,
                 "day": "20200425",
                 "person": "B",
-                "pk": 6,
                 "ward": "A",
             },
             {
@@ -549,12 +546,11 @@ class TestChangeHistory(ViewsTestCase):
                 "continued": False,
                 "day": "20200424",
                 "person": "B",
-                "pk": 7,
                 "ward": "B",
             },
         ]:
-            self.assertIn(cl_dict, res["cls"])
-        self.assertEqual(len(res["cls"]), 7)
+            self.assertIn(cl_dict, cls)
+        self.assertEqual(len(cls), 7)
         self.assertEqual(
             res["last_change"]["pk"],
             ChangeLogging.objects.filter(company=self.company)
