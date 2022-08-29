@@ -218,7 +218,7 @@ class TestGetLastChanges(PopulatedTestCase):
     def test_get_last_change_response(self):
         c_dict = dict(
             company=self.company,
-            user_id=1,
+            user_id=self.user.id,
             person=self.person_a,
             ward=self.ward_a,
             added=True,

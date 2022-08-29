@@ -224,9 +224,9 @@ class Process_Change_Testcase(PopulatedTestCase):
         for c in changes:
             process_change(
                 ChangeLogging.objects.create(
-                    user_id=1,
+                    user_id=self.user.id,
                     person=self.person_a,
-                    ward_id=1,
+                    ward_id=self.ward_a.id,
                     company=self.company,
                     **c,
                 )

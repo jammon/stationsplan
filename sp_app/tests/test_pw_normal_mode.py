@@ -1,3 +1,9 @@
+import pytest
+from django.conf import settings
+
+if not settings.SERVER_TYPE == "dev":
+    pytest.skip("skipping windows-only tests", allow_module_level=True)
+
 from time import sleep
 from playwright.sync_api import Playwright, sync_playwright, expect
 
