@@ -224,6 +224,11 @@ Der aktuelle Datenbestand soll auf den Staging-Server übertragen werden.
   - Daten hochladen: scp
   - Daten laden: `python3.9 manage.py loaddata <date>.json`
 
+Migrations-Issues 8/22
+
+- venv mit Python3.10 anlegen
+- in der Datenbank gleiche Namen und Shortnames eliminieren (Ünacan, Nas (Nasif, Alnasrallah), Aßmann)
+
 ## Umstellung auf htmx
 
 - if they left the company, they cannot be planned

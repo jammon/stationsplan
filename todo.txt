@@ -36,3 +36,4 @@
 (B) Fehlerzustände loggen
 (A) Anleitung konzipieren, schreiben
 Beispielklinik anlegen
+In Mobilbrowsern angemeldet bleiben
