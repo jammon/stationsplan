@@ -22,8 +22,19 @@
 
 ### Darstellung
 
-- Kurzvorstellung: Webseite mit Text und Bildern/GIFs
-- Ausführliche Anleitung: Webseite mit Text und Bildern/GIFs
+#### Kurzvorstellung
+
+Webseite mit Text und Bildern/GIFs
+
+Inhalte:
+
+- Verschiedene Ansichten (Stationen, Dienste, Heute)
+- Planungsansicht: Planung eintragen
+- Übertragung in den eigenen Kalender
+
+#### Ausführliche Anleitung
+
+- Webseite mit Text und Bildern/GIFs
 - Video, Screencast
 
 ## Für Planer
