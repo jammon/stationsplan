@@ -266,6 +266,7 @@ def get_last_change_response(company_id, last_change_pk):
 
 
 def send_activation_mail(user):
+    "send activation mail in the signup process"
     # don't send mails out of playwright tests
     if user.email.startswith("_pwt_"):
         return
