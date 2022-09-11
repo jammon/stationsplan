@@ -542,11 +542,22 @@ class TestGetChangeHistory:
             assert cl_dict in cls
         assert len(cls) == 2
 
-        # TODO
-        # response = self.client.get(
-        #     "/updates/7", HTTP_X_REQUESTED_WITH="XMLHttpRequest"
-        # )
-        # self.assertEqual(response.status_code, HTTPStatus.NOT_MODIFIED)
+    @pytest.fixture
+    def employee_level(self):
+        return "None"
+
+    def test_not_modified(self, client, company, logged_in, some_changes):
+        last_change_pk = (
+            ChangeLogging.objects.filter(company=company)
+            .order_by("pk")
+            .last()
+            .pk
+        )
+        response = client.get(
+            f"/updates/{last_change_pk}",
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+        assert response.status_code == HTTPStatus.NOT_MODIFIED
 
 
 class TestDifferentDays(ViewsTestCase):

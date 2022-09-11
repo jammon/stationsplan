@@ -82,6 +82,11 @@ def employee(user, company, department, employee_level):
 
 
 @pytest.fixture
+def logged_in(client, employee, user):
+    client.login(username="user", password="password")
+
+
+@pytest.fixture
 def user_mueller():
     return User.objects.create_user(
         "hmueller",
