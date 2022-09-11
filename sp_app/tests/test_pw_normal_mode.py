@@ -1,14 +1,25 @@
 import pytest
+import urllib
 from django.conf import settings
-
-if not settings.SERVER_TYPE == "dev":
-    pytest.skip("skipping windows-only tests", allow_module_level=True)
-
-from time import sleep
 from playwright.sync_api import Playwright, sync_playwright, expect
+from time import sleep
+
 
 SERVER = "http://localhost:8000/"
 WAIT = 0.3
+
+no_test_reason = ""
+if not settings.SERVER_TYPE == "dev":
+    pytest.skip("skipping dev-only tests", allow_module_level=True)
+else:
+    try:
+        response = urllib.request.urlopen(SERVER)
+        if response.status >= 400:
+            no_test_reason = "Dev-Server returns error"
+    except urllib.error.URLError:
+        no_test_reason = "Dev-Server not ready"
+if no_test_reason:
+    pytest.skip(no_test_reason, allow_module_level=True)
 
 
 def run(playwright: Playwright) -> None:
