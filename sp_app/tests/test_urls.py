@@ -21,7 +21,7 @@ class TestUrls(TestCase):
             ("/changes", sp_ajax.changes, (), {}),
             (
                 "/changehistory/20210426/17",
-                sp_ajax.change_history,
+                sp_ajax.get_change_history,
                 (),
                 {"date": "20210426", "ward_id": "17"},
             ),

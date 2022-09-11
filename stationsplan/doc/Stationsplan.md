@@ -220,9 +220,9 @@ Der aktuelle Datenbestand soll auf den Staging-Server übertragen werden.
 - Auf Staging:
   - Datenbank löschen: `drop database stpst` und `create database stpst` in Mariadb
   - Softwarestand von Production auschecken
-  - Migration: `python3.9 manage.py migrate`
+  - Migration: `python3.10 manage.py migrate`
   - Daten hochladen: scp
-  - Daten laden: `python3.9 manage.py loaddata <date>.json`
+  - Daten laden: `python3.10 manage.py loaddata <date>.json`
 
 Migrations-Issues 8/22
 

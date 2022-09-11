@@ -39,8 +39,8 @@ urlpatterns = [
     path("changes", sp_ajax.changes, name="changes"),
     re_path(
         r"^changehistory/(?P<date>[0-9]+)/(?P<ward_id>[0-9]+)$",
-        sp_ajax.change_history,
-        name="changehistory",
+        sp_ajax.get_change_history,
+        name="getchangehistory",
     ),
     path("set_approved", sp_ajax.change_approved, name="set_approved"),
     re_path(r"^updates/([0-9]+)/?$", sp_ajax.updates, name="updates"),

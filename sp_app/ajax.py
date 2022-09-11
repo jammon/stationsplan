@@ -148,12 +148,19 @@ def change_function(request):
 
 
 @ajax_login_required
-def change_history(request, date, ward_id):
+def get_change_history(request, date, ward_id):
     """Get all changes to a staffing on one day and ward
 
     date: "YYYYMMDD"
     ward: <ward.id>
     """
+    return JsonResponse(
+        _get_change_history(request.session["company_id"], date, ward_id),
+        safe=False,
+    )
+
+
+def _get_change_history(company_id, date, ward_id):
     day = datetime.strptime(date, "%Y%m%d").date()
     # Get all ChangeLoggings for this day or that include this day
     cls = (
@@ -161,28 +168,13 @@ def change_history(request, date, ward_id):
             Q(continued=False, day=day)
             | Q(continued=True, day__lte=day, until__gte=day)
             | Q(continued=True, day__lte=day, until__isnull=True),
-            company__id=request.session["company_id"],
+            company__id=company_id,
             ward__id=int(ward_id),
         )
         .select_related("user", "person", "ward")
         .order_by("-change_time")
     )
-    return JsonResponse(
-        [
-            {
-                "user": c.user.get_full_name() or c.user.get_username(),
-                "person": c.person.shortname,
-                "ward": c.ward.shortname,
-                "day": c.day,
-                "added": c.added,
-                "continued": c.continued,
-                "until": c.until,
-                "change_time": c.change_time,
-            }
-            for c in cls
-        ],
-        safe=False,
-    )
+    return [c.get_json_for_history() for c in cls]
 
 
 @ajax_login_required

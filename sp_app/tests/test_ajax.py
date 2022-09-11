@@ -326,50 +326,6 @@ class TestDepartmentEditViews(LoggedInTestCase):
         assert department.company == self.company
 
 
-@pytest.fixture
-def company():
-    return Company.objects.create(name="Company", shortname="Comp")
-
-
-@pytest.fixture
-def department(company, db):
-    return Department.objects.create(
-        name="Department 1", shortname="Dep1", company=company
-    )
-
-
-@pytest.fixture
-def user():
-    return User.objects.create_user(
-        "employee", "employee@domain.tld", "password"
-    )
-
-
-@pytest.fixture
-def employee(user, company, department, employee_level):
-    employee = Employee(user=user, company=company)
-    employee.set_level(employee_level)
-    employee.departments.add(department)
-    return employee
-
-
-@pytest.fixture
-def other_user():
-    return User.objects.create_user(
-        "other_employee", "other_employee@domain.tld", "password"
-    )
-
-
-@pytest.fixture
-def other_employee(other_user, company):
-    return Employee.objects.create(user=other_user, company=company)
-
-
-@pytest.fixture
-def logged_in(user, employee, client):
-    client.force_login(user)
-
-
 class TestEmployeeEditViews:
     @pytest.fixture
     def employee_level(self):

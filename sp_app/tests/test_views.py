@@ -7,6 +7,7 @@ from http import HTTPStatus
 from unittest.mock import Mock
 import json
 import logging
+import pytest
 
 from requests import request
 
@@ -19,7 +20,7 @@ from sp_app.models import (
     ChangeLogging,
     Planning,
 )
-from sp_app import logic
+from sp_app import logic, ajax
 from sp_app.logic import get_plan_data
 from sp_app.tests.utils_for_tests import (
     PopulatedTestCase,
@@ -283,7 +284,89 @@ class TestChangeMore(ViewsWithPermissionTestCase):
         self.assertEqual(cl.version, 1)
 
 
-class TestChangeHistory(ViewsTestCase):
+@pytest.fixture
+def some_changes(
+    company, user, user_mueller, person_a, person_b, ward_a, ward_b
+):
+    def make_cl(
+        user=user,
+        person=person_a,
+        ward=ward_a,
+        day=None,
+        added=True,
+        continued=False,
+        until=None,
+        change_time=None,
+    ):
+        ChangeLogging.objects.create(
+            company=company,
+            user=user,
+            person=person,
+            ward=ward,
+            day=day,
+            added=added,
+            continued=continued,
+            until=until,
+            change_time=change_time,
+        )
+
+    # ongoing assignment
+    make_cl(
+        day=date(2020, 4, 1),
+        continued=True,
+        change_time=datetime(2020, 3, 1, 10),
+    )
+    # stop it
+    make_cl(
+        day=date(2020, 4, 10),
+        added=False,
+        continued=True,
+        change_time=datetime(2020, 3, 1, 10, 10),
+    )
+    # just some time until today
+    make_cl(
+        day=date(2020, 4, 20),
+        continued=True,
+        until=date(2020, 4, 24),
+        change_time=datetime(2020, 3, 1, 10, 20),
+    )
+    # just some time from today
+    make_cl(
+        user=user_mueller,
+        person=person_b,
+        day=date(2020, 4, 24),
+        continued=True,
+        until=date(2020, 4, 30),
+        change_time=datetime(2020, 3, 1, 10, 30),
+    )
+    # but not today
+    make_cl(
+        user=user_mueller,
+        person=person_b,
+        day=date(2020, 4, 24),
+        added=False,
+        change_time=datetime(2020, 3, 1, 10, 40),
+    )
+    # different day
+    make_cl(
+        user=user_mueller,
+        person=person_b,
+        day=date(2020, 4, 25),
+        added=False,
+        change_time=datetime(2020, 3, 1, 10, 50),
+    )
+    # different ward
+    make_cl(
+        user=user_mueller,
+        person=person_b,
+        ward=ward_b,
+        day=date(2020, 4, 24),
+        added=False,
+        change_time=datetime(2020, 3, 1, 10, 50),
+    )
+
+
+class TestGetChangeHistory:
     """Get the change history for a day and ward"""
 
     expected = [
@@ -291,7 +374,7 @@ class TestChangeHistory(ViewsTestCase):
             "user": "Heinz Müller",
             "person": "B",
             "ward": "A",
-            "day": "2020-04-24",
+            "day": date(2020, 4, 24),
             "added": False,
             "continued": False,
             "until": None,
@@ -300,25 +383,25 @@ class TestChangeHistory(ViewsTestCase):
             "user": "Heinz Müller",
             "person": "B",
             "ward": "A",
-            "day": "2020-04-24",
+            "day": date(2020, 4, 24),
             "added": True,
             "continued": True,
-            "until": "2020-04-30",
+            "until": date(2020, 4, 30),
         },
         {
             "user": "user",
             "person": "A",
             "ward": "A",
-            "day": "2020-04-20",
+            "day": date(2020, 4, 20),
             "added": True,
             "continued": True,
-            "until": "2020-04-24",
+            "until": date(2020, 4, 24),
         },
         {
             "user": "user",
             "person": "A",
             "ward": "A",
-            "day": "2020-04-10",
+            "day": date(2020, 4, 10),
             "added": False,
             "continued": True,
             "until": None,
@@ -327,153 +410,24 @@ class TestChangeHistory(ViewsTestCase):
             "user": "user",
             "person": "A",
             "ward": "A",
-            "day": "2020-04-01",
+            "day": date(2020, 4, 1),
             "added": True,
             "continued": True,
             "until": None,
         },
     ]
 
-    def _apply_changes(self):
-        user_with_name = User.objects.create_user(
-            "hmueller",
-            "user@domain.tld",
-            "password",
-            first_name="Heinz",
-            last_name="Müller",
-        )
-        employee = Employee.objects.create(
-            user=user_with_name, company=self.company
-        )
-        employee.departments.add(self.department)
-        data = (
-            # ongoing assignment
-            (
-                self.user,
-                self.person_a,
-                self.ward_a,
-                date(2020, 4, 1),
-                True,
-                True,
-                None,
-                datetime(2020, 3, 1, 10),
-            ),
-            # stop it
-            (
-                self.user,
-                self.person_a,
-                self.ward_a,
-                date(2020, 4, 10),
-                False,
-                True,
-                None,
-                datetime(2020, 3, 1, 10, 10),
-            ),
-            # just some time until today
-            (
-                self.user,
-                self.person_a,
-                self.ward_a,
-                date(2020, 4, 20),
-                True,
-                True,
-                date(2020, 4, 24),
-                datetime(2020, 3, 1, 10, 20),
-            ),
-            # just some time from today
-            (
-                user_with_name,
-                self.person_b,
-                self.ward_a,
-                date(2020, 4, 24),
-                True,
-                True,
-                date(2020, 4, 30),
-                datetime(2020, 3, 1, 10, 30),
-            ),
-            # but not today
-            (
-                user_with_name,
-                self.person_b,
-                self.ward_a,
-                date(2020, 4, 24),
-                False,
-                False,
-                None,
-                datetime(2020, 3, 1, 10, 40),
-            ),
-            # different day
-            (
-                user_with_name,
-                self.person_b,
-                self.ward_a,
-                date(2020, 4, 25),
-                False,
-                False,
-                None,
-                datetime(2020, 3, 1, 10, 50),
-            ),
-            # different ward
-            (
-                user_with_name,
-                self.person_b,
-                self.ward_b,
-                date(2020, 4, 24),
-                False,
-                False,
-                None,
-                datetime(2020, 3, 1, 10, 50),
-            ),
-        )
-        for (
-            user,
-            person,
-            ward,
-            day,
-            added,
-            continued,
-            until,
-            change_time,
-        ) in data:
-            # Create the objects one at a time, so that the json is constructed
-            ChangeLogging.objects.create(
-                company=self.company,
-                user=user,
-                person=person,
-                ward=ward,
-                day=day,
-                added=added,
-                continued=continued,
-                until=until,
-                change_time=change_time,
-            )
+    def test_getchangehistory_empty(self, company, ward_a):
+        """Test 'ajax._get_change_history' with no data"""
+        data = ajax._get_change_history(company.id, "20200424", str(ward_a.id))
+        assert data == []
 
-    def test_changehistory_empty(self):
-        """Test 'changehistory' with no data"""
-        response = self.client.get(
-            reverse(
-                "changehistory", kwargs={"date": "20200424", "ward_id": "3"}
-            ),
-            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
-        )
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertEqual(response.content, b"[]")
+    def test_getchangehistory_with_data(self, company, ward_a, some_changes):
+        """Test 'ajax._get_change_history' with data"""
+        data = ajax._get_change_history(company.id, "20200424", str(ward_a.id))
 
-    def test_changehistory_with_data(self):
-        """Test 'changehistory' with data"""
-        self._apply_changes()
-        response = self.client.get(
-            reverse(
-                "changehistory",
-                kwargs={"date": "20200424", "ward_id": str(self.ward_a.id)},
-            ),
-            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
-        )
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-
-        got = json.loads(response.content)
-        self.assertEqual(len(got), 5)
-        for res, exp in zip(got, self.expected):
+        assert len(data) == 5
+        for res, exp in zip(data, self.expected):
             for key in (
                 "user",
                 "person",
@@ -483,15 +437,17 @@ class TestChangeHistory(ViewsTestCase):
                 "continued",
                 "until",
             ):
-                self.assertEqual(res[key], exp[key], msg=str(exp))
+                assert res[key] == exp[key]
 
-    def test_updates(self):
-        """Test if 'updates' return the right data"""
-        self._apply_changes()
-        response = self.client.get(
-            "/updates/0", HTTP_X_REQUESTED_WITH="XMLHttpRequest"
+    def test_updates(self, company, some_changes):
+        """Test if 'updates' return the right data
+
+        Test changed: the data com from logic.get_last_change_response.
+        This is tested directly.
+        """
+        response = logic.get_last_change_response(
+            company_id=company.id, last_change_pk=0
         )
-        self.assertEqual(response.status_code, HTTPStatus.OK)
         res = json.loads(response.content)
         cls = res["cls"]
         for cl in cls:
@@ -549,20 +505,19 @@ class TestChangeHistory(ViewsTestCase):
                 "ward": "B",
             },
         ]:
-            self.assertIn(cl_dict, cls)
-        self.assertEqual(len(cls), 7)
-        self.assertEqual(
-            res["last_change"]["pk"],
-            ChangeLogging.objects.filter(company=self.company)
+            assert cl_dict in cls
+        assert len(cls) == 7
+        last_change_pk = (
+            ChangeLogging.objects.filter(company=company)
             .order_by("pk")
             .last()
-            .pk,
+            .pk
         )
+        assert res["last_change"]["pk"] == last_change_pk
 
-        response = self.client.get(
-            "/updates/5", HTTP_X_REQUESTED_WITH="XMLHttpRequest"
+        response = logic.get_last_change_response(
+            company_id=company.id, last_change_pk=last_change_pk - 2
         )
-        self.assertEqual(response.status_code, HTTPStatus.OK)
         res = json.loads(response.content)
         cls = res["cls"]
         for cl in cls:
@@ -584,13 +539,14 @@ class TestChangeHistory(ViewsTestCase):
                 "ward": "B",
             },
         ]:
-            self.assertIn(cl_dict, res["cls"])
-        self.assertEqual(len(res["cls"]), 2)
+            assert cl_dict in cls
+        assert len(cls) == 2
 
-        response = self.client.get(
-            "/updates/7", HTTP_X_REQUESTED_WITH="XMLHttpRequest"
-        )
-        self.assertEqual(response.status_code, HTTPStatus.NOT_MODIFIED)
+        # TODO
+        # response = self.client.get(
+        #     "/updates/7", HTTP_X_REQUESTED_WITH="XMLHttpRequest"
+        # )
+        # self.assertEqual(response.status_code, HTTPStatus.NOT_MODIFIED)
 
 
 class TestDifferentDays(ViewsTestCase):

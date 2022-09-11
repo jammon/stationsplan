@@ -423,6 +423,18 @@ class ChangeLogging(models.Model):
             data["until"] = self.until.strftime("%Y%m%d")
         return data
 
+    def get_json_for_history(self):
+        return {
+            "user": self.user.get_full_name() or self.user.get_username(),
+            "person": self.person.shortname,
+            "ward": self.ward.shortname,
+            "day": self.day,
+            "added": self.added,
+            "continued": self.continued,
+            "until": self.until,
+            "change_time": self.change_time,
+        }
+
     def save(self, *args, **kwargs):
         self.make_description()
         self.version = self.current_version
