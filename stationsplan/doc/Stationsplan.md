@@ -220,13 +220,13 @@ Der aktuelle Datenbestand soll auf den Staging-Server übertragen werden.
 - Auf Staging:
   - Datenbank löschen: `drop database stpst` und `create database stpst` in Mariadb
   - Softwarestand von Production auschecken
-  - Migration: `python3.10 manage.py migrate`
+  - Migration: `python3.9 manage.py migrate`
   - Daten hochladen: scp
-  - Daten laden: `python3.10 manage.py loaddata <date>.json`
+  - Daten laden: `python3.9 manage.py loaddata <date>.json`
 
 Migrations-Issues 8/22
 
-- venv mit Python3.10 anlegen
+- venv mit Python3.9 anlegen
 - in der Datenbank gleiche Namen und Shortnames eliminieren (Ünacan, Nas (Nasif, Alnasrallah), Aßmann)
 
 ## Umstellung auf htmx

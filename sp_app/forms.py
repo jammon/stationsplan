@@ -153,7 +153,7 @@ class WardForm(forms.ModelForm):
         ).order_by("name")
         for field_name in ("after_this", "not_with_this"):
             self.fields[field_name].queryset = Ward.objects.filter(
-                company__id=self.initial["company"]
+                company__id=self.initial["company"], active=True
             )
         for fn in ("name", "shortname", "max", "min", "position"):
             self.fields[fn].widget.attrs["class"] = "form-control"

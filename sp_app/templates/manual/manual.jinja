@@ -1,0 +1,122 @@
+{% extends "base.jinja" %}
+
+{% block content %}
+<div class="row manual">
+    <div class="col-xs-12 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2">
+<h1>Anleitung</h1>
+<h2>Einstellungen</h2>
+<p>Auf der Seite "Einstellungen" können Sie die spezifischen Verhältnisse für die Planung in Ihrem Krankenhaus konfigurieren.
+Sie ist aufgeteilt in Einstellungen für die Abteilungen, die Bearbeiter/innen, die Mitarbeiter/innen und die zu planenden Funktionen. 
+Unter "Zuordnung" können Sie festlegen, welche Mitarbeiter/innen für welche Funktionen geplant werden können.
+</p>
+
+<h3>Abteilungen</h3>
+<p>
+Mit "Neue Abteilung" konfigurieren Sie eine zusätzliche Abteilung. 
+Jede Abteilung führt einen eigenen Dienstplan. 
+Mehrere Abteilungen können auch zusammen arbeiten, indem sie eine Funktion wie ZNA, Intensivstation oder Notarztdienst gemeinsam besetzen.
+Dennoch bekommt jede Abteilung nur die Funktionen angezeigt, für die sie auch regelmäßig Mitarbeiter/innen stellt.
+</p>
+<p>Um eine neue Abteilung zu erstellen, geben Sie deren Namen und eine Kurzbezeichnung ein. 
+Sie können den Namen der Abteilung ändern, indem Sie auf die Abteilung in der Liste auf der linken Seite klicken. 
+Keine zwei Abteilungen eines Hauses sollten den gleichen Namen haben.
+</p>
+
+<h3>Bearbeiter/innen</h3>
+<p>Unter "Bearbeiter/innen" konfigurieren Sie die Accounts derjenigen, die die Planung sehen oder bearbeiten können.
+</p>
+<p>Mit "Neue/r Bearbeiter/in" legen Sie einen Account an. 
+</p>
+<p>Geben Sie einen Benutzernamen ein, damit kann die Besitzerin des Accounts sich anmelden. </p>
+<p>Das Passwort kann von Ihnen vorgegeben werden, es kann später immer geändert werden. Oder Sie lassen es die Besitzerin des Accounts gleich selbst eingeben.</p>
+<p>Unter "Funktion" legen Sie fest, welche Rechte die neue Benutzerin haben soll.
+<dl>
+    <dt>Admin</dt>
+    <dd>Die Benutzerin kann alle Einstellungen verändern, insbesondere auch neue Abteilungen anlegen und deren Einstellungen verändern.</dd>
+    <dt>Abteilungsleiter/in</dt>
+    <dd>Die Benutzerin kann Mitarbeiter/innen, Funktionen und Planungen ihrer Abteilung bearbeiten.</dd>
+    <dt>Planen</dt>
+    <dd>Die Benutzerin kann die Besetzung von Funktionen planen.</dd>
+    <dt>Lesen</dt>
+    <dd>Die Benutzerin kann die Planungen einsehen, aber nichts verändern.</dd>
+</dl>
+</p>
+<p>Legen Sie immer auch einen Account an, der keine Schreibrechte hat (Funktion "Lesen").
+Dieser hat üblicherweise ein einfaches, leicht merkbares Passwort und wird an alle Mitarbeiterinnen der Abteilung heraus gegeben.
+So kann jeder Beteiligte den Dienstplan seiner Abteilung einsehen, ohne dass dieser öffentlich zugänglich ist und ohne dass jeder auch Änderungen eintragen könnte.
+Die Benutzer dieses Account können das Passwort nicht ändern.
+</p>
+
+<h3>Mitarbeiter/innen</h3>
+<p>Hier können Sie die Personen anlegen und bearbeiten, deren Dienste geplant werden sollen.
+</p>
+<p>Für jede Mitarbeiterin muss ein Name (üblicherweise der Nachname) und ein Kurzname eingegeben werden. 
+Diese müssen für Ihre Klinik eindeutig sein, sie erscheinen so in den Dienstplänen. </p>
+<p>(Falls eine neue Mitarbeiterin den gleichen Namen hat wie ein früherer Mitarbeiter, 
+dann können Sie den früheren Mitarbeiter umbenennen (z.B. "Müller 1 / Mül1") 
+und dann der neuen Mitarbeiterin den frei gewordenen Namen/Kurznamen geben.)</p>
+<p>Geben Sie den Dienstbeginn an, ab diesem Zeitpunkt kann die Mitarbeiterin geplant werden.
+Bei ausscheidenden Mitarbeitern geben sie das Dienstende ein, das in der Voreinstellung weit in der Zukunft liegt. 
+Nach diesem Zeitpunkt tauchen sie nicht mehr in der Planung auf.</p>
+<p>Sollte eine frühere Mitarbeiterin z.B. nach einer externen Rotation oder einem Forschungsaufenthalt wieder kommen, 
+dann brauchen Sie sie nicht neu anzulegen, sondern tragen einfach den neuen Dienstbeginn ein und setzen das Dienstende in die ferne Zukunft.</p>
+<p>Jede Mitarbeiterin muss mindestens einer Abteilung zugeordnet werden. Sie kann auch für mehrere Abteilungen eingetragen sein, z.B. im Rahmen einer Rotation.</p>
+<p>Die "Position" bestimmt nur die Reihenfolge der Auflistung, üblicherweise werden hier die Assistentinnen zuerst und die Chefin ganz am Schluss genannt.</p>
+<p>Die E-Mail-Adresse kann leer bleiben, sie ist für eine zukünftige Funktion vorgesehen.</p>
+
+<h3>Funktionen</h3>
+<p>Hier werden die Funktionen festgelegt, die von den Mitarbeiter/innen besetzt werden müssen. 
+Dies können Stationen, Schicht- oder Bereitschaftsdienste aber auch andere Aufgaben wie "Endoskopie", "NEF" oder Spezialambulanzen sein.
+</p>
+<p>Jede Funktion muss einen eindeutigen Namen und Kurznamen haben.
+</p>
+<p>Tragen Sie die minimale und die maximale Besetzung der Funktion ein. 
+Wenn in der Planung an einem Tag zu wenige (oder zu viele) Kolleginnen für eine Funktion eingetragen sind, wird diese im Plan mit einer Warnfarbe markiert.
+</p>
+<p>Die nächsten Felder bestimmen genauer, wie diese Funktionen geplant werden.
+<dl>
+    <dt>Täglich</dt>
+    <dd>Wenn dieses Feld angekreuzt ist, wird die Funktion an jedem Tag geplant. 
+    Im anderen Fall erscheint sie nur an regulären Arbeitstagen im Plan. 
+    Dies ist i.d.R. bei Nachtdiensten die richtige Einstellung. </dd>
+    <dt>Freie Tage</dt>
+    <dd>Diese Funktionen werden nicht an Werktagen, sondern nur an Sonn- und Feiertagen geplant. 
+    Das könnte zum Beispiel ein 12-Stunden-Tagdienst auf der Intensivstation sein.</dd>
+    <dt>Bereitschaftsdienst</dt>
+    <dd>Bereitschaftsdienste werden in der Planung anders dargestellt. Dafür muss dieses Feld aktiviert werden.</dd>
+    <dt>Urlaub/frei</dt>
+    <dd>Diese "Funktion" bedeutet, dass die Person an diesem Tag nicht für die Planung zur Verfügung steht.
+    In der Regel gibt es die Rubriken "Urlaub" und "Krank". 
+    Falls Sie einen anderen Grund für "dienstfrei" dokumentieren wollen, könnten Sie das mit dieser Einstellung tun. 
+    </dd>
+    <dt>Abteilungen</dt>
+    <dd>Kreuzen Sie alle Abteilungen an, die an der Besetzung dieser Funktion beteiligt sind.</dd>
+    <dt>Wochentage</dt>
+    <dd>Wenn eine Funktion nur an bestimmten Wochentagen geplant werden soll, können Sie das hier vorgeben. 
+    Beispiel: Ein Visitendienst jeden Samstag oder eine Spezialambulanz jeden Dienstag und Donnerstag.</dd>
+    <dt>Anders geplante Tage</dt>
+    <dd>Wenn es vorkommen kann, dass eine Funktion auch mal an einem Tag geplant werden muss, an dem sie regulär nicht vorgesehen wäre, kreuzen Sie hier an.
+    Das betrifft vor allem Funktionen, die mit der vorigen Rubrik auf bestimmte Wochentage festgelegt sind.</dd>
+    <dt>Position</dt>
+    <dd>Hier legen Sie die Reihenfolge der Darstellung im Dienstplan fest. 
+    Die Funktion werden nach der hier eingegebenen Nummer sortiert, bei gleicher Nummer alphabetisch.</dd>
+    <dt>Deaktivert</dt>
+    <dd>Falls eine Funktion wegfällt, setzen Sie hier ein Kreuz. Beispiel: Die Covid-Station kann geschlossen werden oder eine Spezialambulanz wird geschlossen.
+    Die Funktion taucht dann nicht mehr in der Planung auf, kann aber ggf. reaktiviert werden.</dd>
+    <dt>Nicht zusammen mit</dt>
+    <dd>Bestimmte Funktionen schließen andere aus. Wer z.B. als Notärztin eingeteilt ist kann nicht endoskopieren oder für die Intensivstation verantwortlich sein. 
+    Andere Aufgaben wie EKG-Befundung oder Prämedikation könnten aber kompatibel sein.
+    Kreuzen Sie alle Funktionen an, die durch die aktuell bearbeitete Funktion ausgeschlossen sind.</dd>
+    <dt>Folgeschicht</dt>
+    <dd>Wenn nach einer Funktion am nächsten Tag nur bestimmte andere Funktionen zulässig sind, müssen diese hier angekreuzt werden.
+    Beispiel: Am Tag nach einer Nachtschicht wäre nur eine weitere Nachtschicht oder Urlaub/frei zulässig, nicht aber Frühschicht oder Endoskopiedienst. </dd>
+    <dd>Achtung: Wenn jemand, der z.B. am Folgetag für den Tagdienst eingetragen ist, für den Nachtdienst geplant wird, 
+    fällt er automatisch am Folgetag aus der Planung heraus und der Tagdienst muss neu vergeben werden. 
+    In der Regel ist das genau das, was man erreichen will, weil so auch ggf. unerwartete Lücken offenbar werden.</dd>
+</dl>
+</p>
+<p>Am Ende müssen Sie <strong>Speichern</strong>, und die Änderungen wirksam werden zu lassen.</p>
+    </div>
+</div>
+{% endblock content %}
+{% block footer %} {% include "sp_app/footer.jinja" %} {% endblock footer %}

@@ -118,6 +118,7 @@ urlpatterns = [
     ),
     path("/", include("django.contrib.auth.urls")),
     #
+    # Signup process
     path2template("offer", "sp_app/signup/offer.jinja", "offer"),
     path("signup", sp_views.signup, name="signup"),
     path(
@@ -140,6 +141,10 @@ urlpatterns = [
         ),
         name="activation_success",
     ),
+    #
+    # Manual -------------------------------------------------------------
+    #
+    path2template("manual", "manual/manual.jinja", "manual"),
     #
     # Other -------------------------------------------------------------
     #
