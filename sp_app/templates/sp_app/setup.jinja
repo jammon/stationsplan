@@ -18,7 +18,11 @@
         {% include "sp_app/setup/setup-nav.jinja" %}
       {% endwith %}</nav>
       <div class="setup-tab" id="setup-tab">
-      {% include "sp_app/setup/lists/departments.jinja" %}
+      {% if is_company_admin %}
+        {% include "sp_app/setup/lists/departments.jinja" %}
+      {% else %}
+        {% include "sp_app/setup/lists/employees.jinja" %}
+      {% endif %}
       </div>
     </div>
   </div>
