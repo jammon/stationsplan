@@ -30,10 +30,10 @@
 (B) Navigation für nicht angemeldete Benutzer
 (A) Wer nur für eine Abteilung zuständig ist, soll auch nur für die Personen oder Wards anlegen können
 (B) Use Lighthouse https://developer.chrome.com/docs/lighthouse/overview/ or https://www.webpagetest.org
-(A) Auf Staging ausprobiereen
 (C) Progressive Web App bauen https://web.dev/new-pwa-training/
 (C) Wenn Changes empfangen werden, häufiger nach Updates fragen
 (B) Fehlerzustände loggen
 (A) Anleitung konzipieren, schreiben
-Beispielklinik anlegen
-In Mobilbrowsern angemeldet bleiben
+(A) Beispielklinik anlegen
+(C) Design überarbeiten, backstop.js zum Testen von CSS
+(A) In Einstellung nur das anzeigen was der Bearbeiter auch bearbeiten kann

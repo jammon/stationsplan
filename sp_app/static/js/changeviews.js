@@ -17,10 +17,14 @@ let changeviews = (function ($, _, Backbone) {
             this.save(this.$("#date-picker").datepicker('getDate'));
         },
         save: function (continued) {
+            if (this.changes.length === 0) {
+                this.missing_person_error(true);
+                return;
+            }
             models.save_change(this.staffing.day,
                 this.staffing.ward,
                 continued,
-                this.collect_changes());
+                this.changes);
             this.$el.modal('hide');
         },
         collect_changes: function () {
@@ -40,8 +44,7 @@ let changeviews = (function ($, _, Backbone) {
         render: function () {
             let staffing = this.staffing;
             let day = this.staffing.day;
-            let min_staffing = staffing.ward.get('min');
-            this.no_dblclick = (min_staffing && min_staffing > 1);
+            this.no_dblclick = (staffing.ward.get('min') || 0) > 1;
             this.current_date = day.get('date');
             let datestr = utils.day_long_names[this.current_date.getDay()] +
                 ', ' + utils.datestr(this.current_date);
@@ -93,7 +96,14 @@ let changeviews = (function ($, _, Backbone) {
         calc_changes: function () {
             this.changes = this.collect_changes();
             this.$(".submitbuttons button").toggleClass("disabled", this.changes.length === 0);
+            if (this.changes.length) {
+                this.missing_person_error(false);
+            }
             return this;
+        },
+        missing_person_error: function (show) {
+            this.$("#person-list").toggleClass("bg-danger", show);
+            this.$("#missing-person-error").toggleClass("hidden", !show);
         },
         show_changehistory: function () {
             let div = this.$("#changehistory");
