@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import re
 from datetime import timedelta, datetime, date
 from zoneinfo import ZoneInfo
 
@@ -38,3 +38,11 @@ def post_with_company(request):
 def time_since(dt):
     """Return the timedelta between now and dt"""
     return datetime.now(TZ_BERLIN) - dt
+
+
+def is_mobile(request):
+    """Return True if the request comes from a mobile device."""
+
+    MOBILE_AGENT_RE = re.compile(r".*(iphone|mobile|android)", re.IGNORECASE)
+
+    return bool(MOBILE_AGENT_RE.match(request.META["HTTP_USER_AGENT"]))

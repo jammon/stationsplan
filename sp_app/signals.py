@@ -2,6 +2,7 @@ from django.contrib.auth.signals import user_logged_in
 from django.dispatch import receiver
 
 from .models import Employee
+from .utils import is_mobile
 
 
 @receiver(user_logged_in)
@@ -21,10 +22,11 @@ def write_department_id_to_session(sender, **kwargs):
     for perm in editors:
         request.session[perm] = user.has_perm("sp_app." + perm)
     # User with editing rights should have their sessions expired
-    # when the browser is closed.
+    # when the browser is closed, except on their mobile devices
     # They can change their passwords
     for perm in editors:
         if request.session[perm]:
-            request.session.set_expiry(0)
+            if not is_mobile(request):
+                request.session.set_expiry(0)
             request.session["can_change_password"] = True
             break

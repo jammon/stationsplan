@@ -121,6 +121,10 @@ td.free-day {
   width: auto;
 }
 
+.setup-tab {
+  padding: 10px 15px;
+}
+
 .login-form {
   margin-bottom: 15px;
 }
