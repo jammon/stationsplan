@@ -44,5 +44,5 @@ def is_mobile(request):
     """Return True if the request comes from a mobile device."""
 
     MOBILE_AGENT_RE = re.compile(r".*(iphone|mobile|android)", re.IGNORECASE)
-
-    return bool(MOBILE_AGENT_RE.match(request.META["HTTP_USER_AGENT"]))
+    user_agent = request.META.get("HTTP_USER_AGENT", "")
+    return bool(MOBILE_AGENT_RE.match(user_agent))

@@ -37,3 +37,5 @@
 (A) Beispielklinik anlegen
 (C) Design überarbeiten, backstop.js zum Testen von CSS
 (A) In Einstellung nur das anzeigen was der Bearbeiter auch bearbeiten kann
+Wenn ein Client 403-Errors bekommt soll er aufhören zu pollen
+Ausführlichere Playwright-Tests
