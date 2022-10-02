@@ -13,17 +13,10 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-xs-12">
-      <nav>{% with current_url="/setup/departments" %}
-        {% include "sp_app/setup/setup-nav.jinja" %}
-      {% endwith %}</nav>
-      <div class="setup-tab" id="setup-tab">
-      {% if is_company_admin %}
-        {% include "sp_app/setup/lists/departments.jinja" %}
-      {% else %}
-        {% include "sp_app/setup/lists/employees.jinja" %}
-      {% endif %}
-      </div>
+    <div class="col-xs-12" id="setup-tab">
+      {% with current_tab="departments" if is_company_admin else "employees" %}
+        {% include "sp_app/setup/setup-pane.jinja" %}
+      {% endwith %}
     </div>
   </div>
 </div>

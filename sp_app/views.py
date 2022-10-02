@@ -78,6 +78,7 @@ def setup(request):
         {
             "company": company,
             "is_company_admin": is_company_admin,
+            "employees": company.employees.all(),
             "persons": persons,
             "former_persons": any(not p.current() for p in persons),
             "wards": wards,

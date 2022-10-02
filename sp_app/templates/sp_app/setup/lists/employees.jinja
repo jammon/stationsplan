@@ -1,6 +1,6 @@
 <div class="row">
   <div class="col-md-3 col-sm-6">
-{% for employee in company.employees.all() if employee.user.is_active %}
+{% for employee in employees if employee.user.is_active %}
 		<p>
       <a hx-get={{ url("employee-update", employee.id) }}
 		     hx-target="#edit-area" class="employee-detail editable" >

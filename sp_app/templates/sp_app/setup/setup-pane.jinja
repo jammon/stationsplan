@@ -1,0 +1,25 @@
+{# params: current_tab: 
+    ["departments"|"employees"|"persons"|"wards"|"zuordnung"] 
+#}
+
+{% macro tab(id, title) -%}
+  <li {% if id==current_tab %}class="active"{% endif %}>
+    <a hx-get="/setup/{{ id }}" hx-target="#setup-tab"
+      id="setup-{{ id }}" >{{ title }}</a>
+  </li>
+{%- endmacro %}
+
+<nav>
+  <ul class="nav nav-tabs" id="setup-nav" role="presentation">
+  {% if request.session.is_company_admin %}
+    {{ tab("departments", "Abteilungen") }}
+  {% endif %}
+    {{ tab("employees", "Bearbeiter/innen") }}
+    {{ tab("persons", "Mitarbeiter/innen") }}
+    {{ tab("wards", "Funktionen") }}
+    {{ tab("zuordnung", "Zuordnung") }}
+  </ul>
+</nav>
+<div class="setup-tab">
+{% include "sp_app/setup/lists/" + current_tab + ".jinja" %}
+</div>
