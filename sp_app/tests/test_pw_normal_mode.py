@@ -22,117 +22,119 @@ if no_test_reason:
     pytest.skip(no_test_reason, allow_module_level=True)
 
 
-def run(playwright: Playwright) -> None:
-    browser = playwright.chromium.launch(headless=True)
-    context = browser.new_context()
-    page = context.new_page()
+def anmelden(page, username):
+    page.goto(SERVER)
+    page.locator("#username").fill(username)
+    page.locator("#password").fill("123456")
+    page.locator("#password").press("Enter")
 
-    def anmelden(username):
-        page.goto(SERVER)
-        page.locator("#username").fill(username)
-        page.locator("#password").fill("123456")
-        page.locator("#password").press("Enter")
 
-    def abmelden():
-        page.locator(".glyphicon-cog").click()
-        page.locator("text=Abmelden").click()
+def abmelden(page):
+    page.locator(".glyphicon-cog").click()
+    page.locator("text=Abmelden").click()
 
-    def tools_inhalt(items, not_items=[]):
-        page.locator(".glyphicon-cog").click()
-        expect(page.locator(".dropdown-menu")).to_contain_text(items)
-        for i in not_items:
-            expect(page.locator(".dropdown-menu")).not_to_contain_text(i)
-        page.locator(".glyphicon-cog").click()
 
-    def edit_dept(dept):
-        page.goto(SERVER + "setup/")
-        page.locator(f"text={dept}").click()
-        sleep(WAIT)
-        page.locator('input[name="name"]').fill("Neuer Name")
-        page.locator('input[name="name"]').press("Enter")
-        sleep(WAIT)
-        page.locator("text=Neuer Name").click()
-        page.locator('input[name="name"]').fill(dept)
-        sleep(WAIT)
-        page.locator('input[name="name"]').press("Enter")
-        sleep(WAIT)
+def check_content(locator, items, not_items):
+    expect(locator).to_contain_text(items)
+    # see https://github.com/microsoft/playwright/issues/16083
+    for i in not_items:
+        expect(locator).not_to_contain_text(i)
 
-    # Anmelden mit den verschiedenen Berechtigungs-Levels
-    # - Welche Setup-Optionen werden gezeigt?
-    # - Abteilung verändern
-    # - Employee bearbeiten
-    # - Person bearbeiten
-    # - Funktion bearbeiten
 
-    # is_company_admin
-    anmelden("_pwt2_is_company_admin")
-    tools_inhalt(
-        ["Abmelden", "Passwort ändern", "Einstellungen"], ["Admin-Seite"]
+def check_tools_content(page, items, not_items=[]):
+    page.locator(".glyphicon-cog").click()
+    check_content(page.locator(".dropdown-menu"), items, not_items)
+    page.locator(".glyphicon-cog").click()
+
+
+def check_setup_nav_content(page, items, not_items=[], active=None):
+    check_content(page.locator("#setup-nav"), items, not_items)
+    if active is not None:
+        expect(page.locator("#setup-nav li.active")).to_contain_text(active)
+
+
+def edit_dept(page, dept):
+    "Change name of department"
+    page.goto(SERVER + "setup/")
+    page.locator(f"text={dept}").click()
+    sleep(WAIT)
+    page.locator('input[name="name"]').fill("Neuer Name")
+    page.locator('input[name="name"]').press("Enter")
+    sleep(WAIT)
+    page.locator("text=Neuer Name").click()
+    page.locator('input[name="name"]').fill(dept)
+    sleep(WAIT)
+    page.locator('input[name="name"]').press("Enter")
+    sleep(WAIT)
+
+
+def check_setup_persons(page, items, not_items=[]):
+    page.locator("text=Mitarbeiter/innen").click()
+    sleep(WAIT)
+    check_content(page.locator("#setup-tab"), items, not_items)
+
+
+def check_setup_wards(page, items, not_items=[]):
+    page.locator("text=Funktionen").click()
+    sleep(WAIT)
+    check_content(page.locator("#setup-tab"), items, not_items)
+
+
+def test_as_company_admin(page):
+    anmelden(page, "_pwt2_is_company_admin")
+    check_tools_content(
+        page, ["Abmelden", "Passwort ändern", "Einstellungen"], ["Admin-Seite"]
     )
     page.goto(SERVER + "setup/")
-    expect(page.locator("#setup-nav")).to_contain_text(
+    check_setup_nav_content(
+        page,
         [
             "Abteilungen",
             "Bearbeiter/innen",
             "Mitarbeiter/innen",
             "Funktionen",
             "Zuordnung",
-        ]
+        ],
+        active="Abteilungen",
     )
-    edit_dept("Innere")
-    edit_dept("Chirurgie")
-    # Persons
-    page.locator("text=Mitarbeiter/innen").click()
-    sleep(WAIT)
-    expect(page.locator("#setup-tab")).to_contain_text(
-        ["Person A", "Person B", "Chirurg"]
-    )
-    page.locator("text=Funktionen").click()
-    sleep(WAIT)
-    expect(page.locator("#setup-tab")).to_contain_text(["Ward A", "Ward B"])
-    abmelden()
+    edit_dept(page, "Innere")
+    edit_dept(page, "Chirurgie")
+    check_setup_persons(page, ["Person A", "Person B", "Chirurg"], [])
+    check_setup_wards(page, ["Ward A", "Ward B"])
+    abmelden(page)
 
-    # is_dep_lead
-    anmelden("_pwt2_is_dep_lead")
-    tools_inhalt(
-        items=["Abmelden", "Passwort ändern", "Einstellungen"],
-        not_items=["Admin-Seite"],
+
+def test_as_dep_lead(page):
+    anmelden(page, "_pwt2_is_dep_lead")
+    check_tools_content(
+        page, ["Abmelden", "Passwort ändern", "Einstellungen"], ["Admin-Seite"]
     )
     page.goto(SERVER + "setup/")
-    expect(page.locator("#setup-nav")).to_contain_text(
-        [
-            "Bearbeiter/innen",
-            "Mitarbeiter/innen",
-            "Funktionen",
-            "Zuordnung",
-        ]
+    check_setup_nav_content(
+        page,
+        ["Bearbeiter/innen", "Mitarbeiter/innen", "Funktionen", "Zuordnung"],
+        ["Abteilungen"],
+        active="Bearbeiter/innen",
     )
-    expect(page.locator("#setup-nav")).not_to_contain_text("Abteilungen")
-    # Persons
-    page.locator("text=Mitarbeiter/innen").click()
-    sleep(WAIT)
-    expect(page.locator("#setup-tab")).to_contain_text(
-        ["Person A", "Person B"]
-    )
-    expect(page.locator("#setup-tab")).not_to_contain_text("Chirurg")
-    page.locator("text=Funktionen").click()
-    sleep(WAIT)
-    expect(page.locator("#setup-tab")).to_contain_text(["Ward A", "Ward B"])
-    abmelden()
+    check_setup_persons(page, ["Person A", "Person B"], ["Chirurg"])
+    check_setup_wards(page, ["Ward A", "Ward B"])
+    abmelden(page)
 
-    # is_editor
-    anmelden("_pwt2_is_editor")
-    tools_inhalt(
-        ["Abmelden", "Passwort ändern"], ["Einstellungen", "Admin-Seite"]
-    )
-    abmelden()
 
-    # nur Lese-Berechtigung
-    anmelden("_pwt2_None")
-    tools_inhalt(
-        ["Abmelden"], ["Passwort ändern", "Einstellungen", "Admin-Seite"]
+def test_as_editor(page):
+    anmelden(page, "_pwt2_is_editor")
+    check_tools_content(
+        page, ["Abmelden", "Passwort ändern"], ["Einstellungen", "Admin-Seite"]
     )
-    abmelden()
+    abmelden(page)
+
+
+def test_as_None(page):
+    anmelden(page, "_pwt2_None")
+    check_tools_content(
+        page, ["Abmelden"], ["Passwort ändern", "Einstellungen", "Admin-Seite"]
+    )
+    abmelden(page)
 
     # page.locator("text=Bearbeiter/innen").click()
     # page.locator('p:has-text("_pwt2_None (Lesen)")').click()
@@ -185,10 +187,8 @@ def run(playwright: Playwright) -> None:
     # page.locator("#changestaff >> text=×").click()
     # page.locator('a[role="button"]').click()
     # page.locator("text=Abmelden").click()
-    context.close()
-    browser.close()
 
 
-def test_pw():
-    with sync_playwright() as playwright:
-        run(playwright)
+# def test_pw():
+#     with sync_playwright() as playwright:
+#         run(playwright)
