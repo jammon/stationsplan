@@ -177,13 +177,16 @@ def error_for_testing(request):
     assert False
 
 
+_TEST_COMPANY_NAME = "_pw_test_company2"
+
+
 def make_test_data(request):
     if settings.SERVER_TYPE == "production":
         return HttpResponse("No Testdata in production")
-    if Company.objects.filter(name="_pw_test_company2").exists():
+    if Company.objects.filter(name=_TEST_COMPANY_NAME).exists():
         return HttpResponse("Testdata already exist")
     company = Company.objects.create(
-        name="_pw_test_company2", shortname="_pwt_2", region_id=1
+        name=_TEST_COMPANY_NAME, shortname="_pwt_2", region_id=1
     )
     innere = Department.objects.create(
         name="Innere", shortname="Inn", company=company
@@ -217,3 +220,15 @@ def make_test_data(request):
         employee.set_level(level)
         employee.departments.add(innere)
     return HttpResponse("Testdata created")
+
+
+def delete_test_data(request):
+    "Delete data from the playwright tests"
+    if settings.SERVER_TYPE == "production":
+        return HttpResponse("No Testdata in production")
+    query = {"name__startswith": "Test", "company__name": _TEST_COMPANY_NAME}
+    print(Department.objects.filter(**query).delete())
+    print(Person.objects.filter(**query).delete())
+    print(Ward.objects.filter(**query).delete())
+    print(User.objects.filter(username="_Test-Employee").delete())
+    return HttpResponse("Data from tests deleted")

@@ -157,6 +157,7 @@ urlpatterns = [
     ),
     path("delete_playwright_tests", sp_views.delete_playwright_tests),
     path("_make_test_data", sp_views.make_test_data),
+    path("_delete_test_data", sp_views.delete_test_data),
     path2template("datenschutz", "datenschutz.jinja", "datenschutz"),
     path2template("impressum", "impressum.jinja", "impressum"),
     path2template(
