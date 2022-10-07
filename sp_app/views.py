@@ -15,6 +15,8 @@ from .models import (
     Department,
     Employee,
     StatusEntry,
+    Planning,
+    ChangeLogging,
     EMPLOYEE_LEVEL,
 )
 
@@ -227,8 +229,10 @@ def delete_test_data(request):
     if settings.SERVER_TYPE == "production":
         return HttpResponse("No Testdata in production")
     query = {"name__startswith": "Test", "company__name": _TEST_COMPANY_NAME}
-    print(Department.objects.filter(**query).delete())
-    print(Person.objects.filter(**query).delete())
-    print(Ward.objects.filter(**query).delete())
-    print(User.objects.filter(username="_Test-Employee").delete())
+    Department.objects.filter(**query).delete()
+    Person.objects.filter(**query).delete()
+    Ward.objects.filter(**query).delete()
+    User.objects.filter(username="_Test-Employee").delete()
+    Planning.objects.filter(company__name=_TEST_COMPANY_NAME).delete()
+    ChangeLogging.objects.filter(company__name=_TEST_COMPANY_NAME).delete()
     return HttpResponse("Data from tests deleted")

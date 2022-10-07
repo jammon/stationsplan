@@ -28,7 +28,6 @@
 (B) not_with_this besser definieren - shadowing
 (B) ward_type, weight in edit_ward
 (B) Navigation für nicht angemeldete Benutzer
-(A) Wer nur für eine Abteilung zuständig ist, soll auch nur für die Personen oder Wards anlegen können
 (B) Use Lighthouse https://developer.chrome.com/docs/lighthouse/overview/ or https://www.webpagetest.org
 (C) Progressive Web App bauen https://web.dev/new-pwa-training/
 (C) Wenn Changes empfangen werden, häufiger nach Updates fragen

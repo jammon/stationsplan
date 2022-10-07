@@ -85,13 +85,15 @@ class PersonForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        departments = kwargs.pop("departments", [])
         super().__init__(*args, **kwargs)
         for name, field in self.fields.items():
             if name not in ("position", "departments"):
                 field.widget.attrs.update({"class": "form-control"})
-        self.fields["departments"].queryset = Department.objects.filter(
-            company__id=self.initial["company"]
-        )
+        qs = {"company__id": self.initial["company"]}
+        if departments:
+            qs["id__in"] = departments
+        self.fields["departments"].queryset = Department.objects.filter(**qs)
 
 
 class WardForm(forms.ModelForm):
@@ -147,9 +149,13 @@ class WardForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        departments = kwargs.pop("departments", [])
         super().__init__(*args, **kwargs)
+        qs = {"company__id": self.initial["company"]}
+        if departments:
+            qs["id__in"] = departments
         self.fields["departments"].queryset = Department.objects.filter(
-            company__id=self.initial["company"]
+            **qs
         ).order_by("name")
         for field_name in ("after_this", "not_with_this"):
             self.fields[field_name].queryset = Ward.objects.filter(
@@ -213,17 +219,35 @@ class EmployeeForm(forms.ModelForm):
             "departments": forms.CheckboxSelectMultiple,
         }
 
-    def __init__(self, data=None, initial=None, instance=None):
+    def __init__(
+        self,
+        data=None,
+        initial=None,
+        instance=None,
+        departments=[],
+        no_admin=False,
+    ):
         if instance is not None:
             if initial is None:
                 initial = {}
             initial["lvl"] = instance.get_level() or "None"
         super().__init__(data=data, initial=initial, instance=instance)
-        self.fields["departments"].queryset = Department.objects.filter(
-            company__id=instance.company.id
-            if instance is not None
+        qs = {
+            "company__id": instance.company.id
+            if instance
             else initial["company"]
-        )
+        }
+        if departments:
+            qs["id__in"] = departments
+        self.fields["departments"].queryset = Department.objects.filter(
+            **qs
+        ).order_by("name")
+        if no_admin:
+            self.fields["lvl"].choices = [
+                (level, name)
+                for level, name in self.fields["lvl"].choices
+                if level != "is_company_admin"
+            ]
 
 
 class UserSignupForm(UserCreationForm):

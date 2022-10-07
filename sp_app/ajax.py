@@ -258,6 +258,8 @@ def setup_employees(request):
     employees = Employee.objects.select_related("user").filter(
         company__id=request.session["company_id"]
     )
+    if not request.session.get("is_company_admin", False):
+        employees = employees.exclude(_level="is_company_admin")
     return render(
         request,
         f"sp_app/setup/setup-pane.jinja",
@@ -363,6 +365,9 @@ def edit_employee(request, employee_id=None):
         employee = None
         emp_kwargs = {"initial": {"company": company_id}}
         user_kwargs = {}
+    if not request.session.get("is_company_admin", False):
+        emp_kwargs["departments"] = request.session["department_ids"]
+        emp_kwargs["no_admin"] = True
     employee_form = forms.EmployeeForm(request.POST or None, **emp_kwargs)
     user_form = (
         forms.UserFormWithPassword if employee_id is None else forms.UserForm
@@ -432,6 +437,8 @@ def edit_person(request, pk=None):
         kwargs = {"initial": {"company": company_id}}
     else:
         kwargs = {"instance": person}
+    if not request.session.get("is_company_admin", False):
+        kwargs["departments"] = request.session["department_ids"]
     form = forms.PersonForm(post_with_company(request), **kwargs)
     if form.is_valid():
         form.save()
@@ -462,6 +469,8 @@ def edit_ward(request, pk=None):
         kwargs = {"initial": {"company": company_id}}
     else:
         kwargs = {"instance": ward}
+    if not request.session.get("is_company_admin", False):
+        kwargs["departments"] = request.session["department_ids"]
     form = forms.WardForm(post_with_company(request), **kwargs)
     if form.is_valid():
         form.save()

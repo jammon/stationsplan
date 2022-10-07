@@ -41,8 +41,8 @@ def abmelden(page):
 
 
 def check_content(locator, items, not_visible_items=[]):
-    expect(locator).to_contain_text(items)
-    # see https://github.com/microsoft/playwright/issues/16083
+    for i in items:
+        expect(locator).to_contain_text(i)
     for i in not_visible_items:
         expect(locator).not_to_contain_text(i)
 
@@ -82,7 +82,7 @@ def add_department(page):
     )
 
 
-def add_employee(page, items, not_visible_items=[]):
+def add_employee(page, items, not_visible_items=[], is_admin=True):
     page.locator("text=Bearbeiter/innen").click()
     sleep(WAIT)
     check_content(
@@ -98,8 +98,17 @@ def add_employee(page, items, not_visible_items=[]):
     page.locator("#id_password2").fill("pa55w0rd")
     page.locator("#id_first_name").fill("Test")
     page.locator("#id_last_name").fill("Employee")
+    expect(page.locator('select[name="lvl"] option')).to_have_count(
+        4 if is_admin else 3
+    )
     page.locator('select[name="lvl"]').select_option("is_editor")
     page.locator('text=Innere (Inn) >> input[name="departments"]').check()
+    assert (
+        is_admin
+        == page.locator(
+            'text=Chirurgie (Chi) >> input[name="departments"]'
+        ).is_visible()
+    )
     page.locator("text=Speichern").click()
     sleep(WAIT)
     check_content(
@@ -120,7 +129,7 @@ def add_employee(page, items, not_visible_items=[]):
     )
 
 
-def add_person(page, items, not_visible_items=[]):
+def add_person(page, items, not_visible_items=[], chirurgie_visible=True):
     NAME1 = "Test-Person"
     NAME2 = "Testing-Person"
     page.locator("text=Mitarbeiter/innen").click()
@@ -135,7 +144,14 @@ def add_person(page, items, not_visible_items=[]):
     sleep(WAIT)
     page.locator("#id_name").fill(NAME1)
     page.locator("#id_shortname").fill("TP")
+    page.locator("#id_position_4").click()  # Externe
     page.locator('text=Innere (Inn) >> input[name="departments"]').check()
+    assert (
+        chirurgie_visible
+        == page.locator(
+            'text=Chirurgie (Chi) >> input[name="departments"]'
+        ).is_visible()
+    )
     page.locator("text=Speichern").click()
     sleep(WAIT)
     check_content(
@@ -156,7 +172,7 @@ def add_person(page, items, not_visible_items=[]):
     )
 
 
-def add_ward(page, items, not_visible_items=[]):
+def add_ward(page, items, not_visible_items=[], chirurgie_visible=True):
     NAME1 = "Test-Ward"
     NAME2 = "Testing-Ward"
     page.locator("text=Funktionen").click()
@@ -173,7 +189,14 @@ def add_ward(page, items, not_visible_items=[]):
     page.locator("#id_shortname").fill("TW")
     page.locator("#id_min").fill("2")
     page.locator("#id_max").fill("5")
+    page.locator("#id_position").fill("2")
     page.locator('text=Innere (Inn) >> input[name="departments"]').check()
+    assert (
+        chirurgie_visible
+        == page.locator(
+            'text=Chirurgie (Chi) >> input[name="departments"]'
+        ).is_visible()
+    )
     page.locator("text=Speichern").click()
     sleep(WAIT)
     check_content(
@@ -192,6 +215,30 @@ def add_ward(page, items, not_visible_items=[]):
         items + [NAME2],
         not_visible_items + [NAME1],
     )
+
+
+def zuordnen(page):
+    page.locator("text=Zuordnung").click()
+    sleep(WAIT)
+    zuordnung = page.locator("tr:last-child td:last-child")
+    expect(zuordnung).to_contain_text("❌")
+    zuordnung.click()
+    sleep(WAIT)
+    expect(zuordnung).to_contain_text("✅")
+
+
+def dienst_planen(page):
+    page.goto(SERVER + "plan/20221001")
+    # first_day_ward_a = page.locator(".wardrow:nth-child(2) td:nth-child(3)")
+    first_lacking = page.locator(".lacking").first
+    for person in ("A", "B"):
+        expect(first_lacking).not_to_contain_text(person)
+    first_lacking.click()
+    page.locator('button:has-text("Person A")').click()
+    # page.locator("text=Person A").click()
+    page.locator("text=bis 03.10.2022 = 1 Tag").click()
+    sleep(WAIT)
+    expect(first_lacking).to_contain_text("A")
 
 
 def test_as_company_admin(page, changes_data):
@@ -223,10 +270,12 @@ def test_as_company_admin(page, changes_data):
     )
     add_person(page, ["Person A", "Person B", "Chirurg"], [])
     add_ward(page, ["Ward A", "Ward B"])
+    zuordnen(page)
+    dienst_planen(page)
     abmelden(page)
 
 
-def test_as_dep_lead(page):
+def test_as_dep_lead(page, changes_data):
     anmelden(page, "_pwt2_is_dep_lead")
     check_tools_content(
         page, ["Abmelden", "Passwort ändern", "Einstellungen"], ["Admin-Seite"]
@@ -238,16 +287,31 @@ def test_as_dep_lead(page):
         ["Abteilungen"],
         active="Bearbeiter/innen",
     )
-    add_person(page, ["Person A", "Person B"], ["Chirurg"])
-    add_ward(page, ["Ward A", "Ward B"])
+    add_employee(
+        page,
+        [
+            "_pwt2_is_dep_lead (Abteilungsleiter/in)",
+            "_pwt2_is_editor (Planen)",
+            "_pwt2_None (Lesen)",
+        ],
+        ["_pwt2_is_company_admin (Admin)"],
+        is_admin=False,
+    )
+    add_person(
+        page, ["Person A", "Person B"], ["Chirurg"], chirurgie_visible=False
+    )
+    add_ward(page, ["Ward A", "Ward B"], chirurgie_visible=False)
+    zuordnen(page)
+    dienst_planen(page)
     abmelden(page)
 
 
-def test_as_editor(page):
+def test_as_editor(page, changes_data):
     anmelden(page, "_pwt2_is_editor")
     check_tools_content(
         page, ["Abmelden", "Passwort ändern"], ["Einstellungen", "Admin-Seite"]
     )
+    dienst_planen(page)
     abmelden(page)
 
 
